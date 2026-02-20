@@ -130,10 +130,12 @@ const App: React.FC = () => {
       {currentView === View.HOME && (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div
-            className="absolute inset-0 bg-cover animate-kenburns scale-110"
+            className="absolute inset-0 bg-cover animate-kenburns"
             style={{
               backgroundImage: 'url("https://i.ibb.co/VW04b2Jq/0d6d58fd546567643f77a4f341558e9c.png")',
-              backgroundPosition: 'center'
+              backgroundPosition: 'center',
+              imageRendering: 'auto',
+              opacity: 1
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
