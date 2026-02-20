@@ -133,11 +133,10 @@ const App: React.FC = () => {
             className="absolute inset-0 bg-cover animate-kenburns scale-110"
             style={{
               backgroundImage: 'url("https://i.ibb.co/VW04b2Jq/0d6d58fd546567643f77a4f341558e9c.png")',
-              backgroundPosition: 'center',
-              filter: 'brightness(0.9) contrast(1.1)'
+              backgroundPosition: 'center'
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
         </div>
       )}
 
