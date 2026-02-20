@@ -159,6 +159,20 @@
       -webkit-backface-visibility: hidden;
     }
 
+    /* Glassmorphism Header */
+    .glass-header {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .text-shadow-premium,
+    .glass-header h1 span,
+    .glass-header p {
+      text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
     /* Pausar al interactuar */
     .animate-delicate-marquee:hover {
       animation-play-state: paused;

@@ -141,10 +141,15 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* HEADER: Identidad Visual */}
       {currentView !== View.DETAIL && currentView !== View.EDIT_PANEL && (
-        <header className={`${currentView === View.HOME ? 'bg-transparent' : 'bg-white'} flex-shrink-0 flex flex-col items-center pt-8 relative z-10 transition-all duration-700`}>
-          <Logo />
+        <header className={`${currentView === View.HOME ? 'bg-transparent pt-12' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
+          {currentView === View.HOME ? (
+            <div className="glass-header rounded-3xl p-6 mb-4 animate-in fade-in zoom-in duration-1000">
+              <Logo />
+            </div>
+          ) : (
+            <Logo />
+          )}
 
           {currentView === View.CATEGORY && selectedCategory && (
             <div className="w-full px-8 flex items-center justify-between py-10 border-b border-gray-50 mt-2 bg-white sticky top-0 z-20 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -175,7 +180,7 @@ const App: React.FC = () => {
           <div className="flex flex-col pt-2 pb-12 animate-in fade-in duration-700">
             <div className="flex flex-col items-center mb-10 mt-2 fade-up-item">
               <div className={`h-[1px] w-12 ${currentView === View.HOME ? 'bg-white/20' : 'bg-[#0A224E]/10'} mb-5`}></div>
-              <h2 className={`text-[10px] font-black ${currentView === View.HOME ? 'text-white' : 'text-[#0A224E]'} uppercase tracking-[0.4em] text-center`}>
+              <h2 className={`text-[10px] font-black ${currentView === View.HOME ? 'text-white text-shadow-premium' : 'text-[#0A224E]'} uppercase tracking-[0.4em] text-center`}>
                 Seleccionar Categoría
               </h2>
               <div className="flex gap-1.5 mt-4">
