@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>shopdigital.ar - Esteban Echeverría</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background-color: #ffffff; 
+      color: #0A224E; 
+      margin: 0; 
+      padding: 0; 
+      overflow: hidden; 
+      height: 100vh; 
+      width: 100vw;
+      -webkit-font-smoothing: antialiased;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Estilo Base para Botones con Volumen */
+    .btn-volume {
+      background: #E8F5EA;
+      border: 1.5px solid #0A224E;
+      border-bottom-width: 4.5px;
+      box-shadow: 
+        0 10px 20px -8px rgba(10, 34, 78, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      top: 0;
+      cursor: pointer;
+    }
+    
+    .btn-volume:hover {
+      top: -2px;
+      border-bottom-width: 6px;
+      background: #f0faf2;
+      box-shadow: 0 14px 28px -10px rgba(10, 34, 78, 0.18);
+    }
+    
+    .btn-volume:active {
+      top: 3.5px;
+      border-bottom-width: 1px;
+      box-shadow: 0 4px 6px -2px rgba(10, 34, 78, 0.1);
+    }
+
+    .category-btn {
+      border-radius: 2.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem;
+    }
+
+    .share-btn {
+      border-radius: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .fade-up-item {
+      animation: fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Animación de Catálogo (Marquee Suave) */
+    .animate-delicate-marquee {
+      display: flex;
+      width: max-content;
+      animation: delicateMarquee 45s linear infinite;
+    }
+
+    @keyframes delicateMarquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Animación Error Password */
+    .animate-shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    /* Pausar al interactuar */
+    .animate-delicate-marquee:hover {
+      animation-play-state: paused;
+    }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.460.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

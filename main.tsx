@@ -1,0 +1,1 @@
+// Eliminado para usar index.tsx como punto de entrada único.

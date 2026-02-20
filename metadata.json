@@ -1,0 +1,7 @@
+{
+  "name": "shopdigital.ar - Esteban Echeverría",
+  "description": "Una plataforma de transformación digital para los comercios de Esteban Echeverría, facilitando la conexión entre vecinos y locales comerciales.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
