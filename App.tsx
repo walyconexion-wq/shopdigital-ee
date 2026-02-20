@@ -2,14 +2,14 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Shop, Category } from './types';
 import { CATEGORIES, MOCK_SHOPS } from './constants';
 import Logo from './components/Logo';
-import { 
-  Share2, 
-  Star, 
-  MessageCircle, 
-  ChevronLeft, 
-  MapPin, 
-  ArrowLeft, 
-  Info, 
+import {
+  Share2,
+  Star,
+  MessageCircle,
+  ChevronLeft,
+  MapPin,
+  ArrowLeft,
+  Info,
   BookOpen,
   ShoppingBag,
   Handshake,
@@ -95,7 +95,7 @@ const App: React.FC = () => {
       if (type === 'banner') {
         setEditableShop({ ...editableShop, bannerImage: base64String });
       } else if (type === 'offer' && offerId) {
-        const newOffers = editableShop.offers.map(o => 
+        const newOffers = editableShop.offers.map(o =>
           o.id === offerId ? { ...o, image: base64String } : o
         );
         setEditableShop({ ...editableShop, offers: newOffers });
@@ -108,8 +108,8 @@ const App: React.FC = () => {
     if (navigator.share) {
       navigator.share({
         title: selectedShop ? selectedShop.name : 'shopdigital.ar',
-        text: selectedShop 
-          ? `¡Mira el catálogo de ${selectedShop.name} en Esteban Echeverría!` 
+        text: selectedShop
+          ? `¡Mira el catálogo de ${selectedShop.name} en Esteban Echeverría!`
           : '¡Mira los comercios de Esteban Echeverría!',
         url: window.location.href,
       }).catch(console.error);
@@ -124,43 +124,57 @@ const App: React.FC = () => {
   }, [selectedCategory]);
 
   return (
-    <div className="max-w-md mx-auto h-screen flex flex-col bg-white overflow-hidden relative border-x border-gray-100 shadow-2xl">
-      
+    <div className={`max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative border-x border-gray-100 shadow-2xl`}>
+
+      {/* FONDO ANIMADO INTERFAZ 1 (KEN BURNS) */}
+      {currentView === View.HOME && (
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div
+            className="absolute inset-0 bg-cover bg-center animate-kenburns scale-110"
+            style={{
+              backgroundImage: 'url("https://images.unsplash.com/photo-1441984904996-e0b6ba687e12?q=80&w=1600")',
+              filter: 'brightness(0.7) contrast(1.1)'
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/70" />
+        </div>
+      )}
+
       {/* HEADER: Identidad Visual */}
       {currentView !== View.DETAIL && currentView !== View.EDIT_PANEL && (
-        <header className="bg-white flex-shrink-0 flex flex-col items-center pt-8">
+        <header className={`${currentView === View.HOME ? 'bg-transparent' : 'bg-white'} flex-shrink-0 flex flex-col items-center pt-8 relative z-10 transition-all duration-700`}>
           <Logo />
-          
+
           {currentView === View.CATEGORY && selectedCategory && (
             <div className="w-full px-8 flex items-center justify-between py-10 border-b border-gray-50 mt-2 bg-white sticky top-0 z-20 animate-in fade-in slide-in-from-top-4 duration-500">
-               <button onClick={handleBack} className="p-2 -ml-2 text-[#0A224E] active:scale-90 transition-transform">
-                  <ChevronLeft size={32} strokeWidth={2.5} />
-               </button>
-               <div className="flex flex-col items-center">
-                 <h2 className="text-[24px] font-[900] text-[#0A224E] uppercase tracking-[0.25em] leading-none text-center">
-                   {selectedCategory.name}
-                 </h2>
-                 <div className="flex gap-2 mt-4">
-                   <div className="w-2 h-2 rounded-full bg-[#22C55E]"></div>
-                   <div className="w-2 h-2 rounded-full bg-[#FF0000]"></div>
-                   <div className="w-2 h-2 rounded-full bg-[#0A224E]"></div>
-                 </div>
-               </div>
-               <div className="w-10"></div>
+              <button onClick={handleBack} className="p-2 -ml-2 text-[#0A224E] active:scale-90 transition-transform">
+                <ChevronLeft size={32} strokeWidth={2.5} />
+              </button>
+              <div className="flex flex-col items-center">
+                <h2 className="text-[24px] font-[900] text-[#0A224E] uppercase tracking-[0.25em] leading-none text-center">
+                  {selectedCategory.name}
+                </h2>
+                <div className="flex gap-2 mt-4">
+                  <div className="w-2 h-2 rounded-full bg-[#22C55E]"></div>
+                  <div className="w-2 h-2 rounded-full bg-[#FF0000]"></div>
+                  <div className="w-2 h-2 rounded-full bg-[#0A224E]"></div>
+                </div>
+              </div>
+              <div className="w-10"></div>
             </div>
           )}
         </header>
       )}
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className={`flex-grow overflow-y-auto no-scrollbar ${currentView === View.DETAIL || currentView === View.EDIT_PANEL ? 'p-0' : 'px-8 pb-12'}`}>
-        
+      <main className={`flex-grow overflow-y-auto no-scrollbar relative z-10 ${currentView === View.DETAIL || currentView === View.EDIT_PANEL ? 'p-0' : 'px-8 pb-12'}`}>
+
         {/* INTERFAZ 1: HOME */}
         {currentView === View.HOME && (
           <div className="flex flex-col pt-2 pb-12 animate-in fade-in duration-700">
             <div className="flex flex-col items-center mb-10 mt-2 fade-up-item">
-              <div className="h-[1px] w-12 bg-[#0A224E]/10 mb-5"></div>
-              <h2 className="text-[10px] font-black text-[#0A224E] uppercase tracking-[0.4em] text-center">
+              <div className={`h-[1px] w-12 ${currentView === View.HOME ? 'bg-white/20' : 'bg-[#0A224E]/10'} mb-5`}></div>
+              <h2 className={`text-[10px] font-black ${currentView === View.HOME ? 'text-white' : 'text-[#0A224E]'} uppercase tracking-[0.4em] text-center`}>
                 Seleccionar Categoría
               </h2>
               <div className="flex gap-1.5 mt-4">
@@ -191,7 +205,7 @@ const App: React.FC = () => {
             <div className="mt-16 mb-16 flex justify-center fade-up-item" style={{ animationDelay: '700ms' }}>
               <button
                 onClick={handleShare}
-                className="btn-volume share-btn text-[#0A224E] py-3.5 px-10 text-[10px] font-black uppercase tracking-[0.2em]"
+                className={`btn-volume share-btn ${currentView === View.HOME ? 'bg-white/10 backdrop-blur-md border-white/20 text-white' : 'text-[#0A224E]'} py-3.5 px-10 text-[10px] font-black uppercase tracking-[0.2em]`}
               >
                 <Share2 size={16} strokeWidth={2.5} />
                 Compartir App
@@ -205,11 +219,11 @@ const App: React.FC = () => {
           <div className="space-y-12 pt-12 animate-in slide-in-from-bottom-6 duration-700 pb-24">
             {filteredShops.length > 0 ? (
               filteredShops.map((shop, index) => (
-                <div 
-                  key={shop.id} 
-                  style={{ 
+                <div
+                  key={shop.id}
+                  style={{
                     animationDelay: `${index * 100}ms`,
-                    backgroundColor: '#D1E7D5' 
+                    backgroundColor: '#D1E7D5'
                   }}
                   className="btn-volume rounded-[3rem] overflow-hidden flex flex-col cursor-default p-5 hover:top-0 active:top-0 fade-up-item max-w-[340px] mx-auto border-[#0A224E]/25"
                 >
@@ -230,7 +244,7 @@ const App: React.FC = () => {
                       <span className="truncate max-w-[180px]">{shop.address}</span>
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => handleShopClick(shop)}
                       className="btn-volume w-[85%] bg-white text-[#0A224E] text-[10px] font-black py-4 px-6 rounded-[1.5rem] uppercase tracking-[0.25em] flex items-center justify-center gap-3 transition-all border-[#0A224E] border-bottom-[5px] shadow-sm active:border-bottom-[1px] mx-auto"
                     >
@@ -252,13 +266,13 @@ const App: React.FC = () => {
                 <p className="text-[11px] font-black uppercase tracking-[0.3em] max-w-[200px] leading-relaxed">Próximamente novedades en esta categoría</p>
               </div>
             )}
-            
+
             <div className="pt-10 flex justify-center w-full">
-              <button 
-                onClick={handleBack} 
+              <button
+                onClick={handleBack}
                 className="btn-volume w-[85%] max-w-[340px] bg-white text-[#0A224E] text-[10px] font-black py-4 px-6 rounded-[1.5rem] uppercase tracking-[0.25em] flex items-center justify-center gap-3 transition-all border-[#0A224E] border-bottom-[5px] shadow-md active:border-bottom-[1px] mx-auto active:scale-95"
               >
-                <ArrowLeft size={17} strokeWidth={3} /> 
+                <ArrowLeft size={17} strokeWidth={3} />
                 Regresar
               </button>
             </div>
@@ -272,9 +286,9 @@ const App: React.FC = () => {
             <div className="relative w-full h-[260px] bg-[#0A224E] overflow-hidden">
               <img src={selectedShop.bannerImage} alt="Banner" className="w-full h-full object-cover opacity-65" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A224E] via-[#0A224E]/20 to-transparent"></div>
-              
+
               {/* Botón Volver */}
-              <button 
+              <button
                 onClick={handleBack}
                 className="btn-volume absolute top-6 left-6 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0A224E] z-50 border-[#0A224E]/20 shadow-lg"
               >
@@ -289,7 +303,7 @@ const App: React.FC = () => {
               </div>
 
               {/* Botón Autogestión (Candado) */}
-              <button 
+              <button
                 onClick={() => setShowLoginModal(true)}
                 className="btn-volume absolute top-6 right-6 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0A224E] z-50 border-[#0A224E]/20 shadow-lg"
               >
@@ -302,9 +316,9 @@ const App: React.FC = () => {
                   <div className="bg-[#22C55E] text-white px-3 py-1.5 rounded-xl text-[7.5px] font-black uppercase tracking-[0.1em] shadow-lg border border-white/20">
                     {selectedShop.specialty}
                   </div>
-                  
+
                   {/* Botón Menú Online (Discreto y al costado) */}
-                  <button 
+                  <button
                     onClick={scrollToCatalog}
                     className="btn-volume px-4 py-2.5 rounded-[1.2rem] bg-white flex items-center justify-center gap-2 text-[#0A224E] z-40 border-[#0A224E]/15 shadow-xl active:scale-95 transition-all"
                   >
@@ -316,130 +330,130 @@ const App: React.FC = () => {
             </div>
 
             <div className="-mt-8 relative z-10 flex flex-col items-center">
-               <div className="bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm flex items-center gap-1.5 mb-6">
-                  <div className="w-1 h-1 rounded-full bg-[#22C55E]"></div>
-                  <span className="text-[7px] font-black text-[#0A224E]/40 uppercase tracking-[0.3em]">Oficial</span>
-               </div>
+              <div className="bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm flex items-center gap-1.5 mb-6">
+                <div className="w-1 h-1 rounded-full bg-[#22C55E]"></div>
+                <span className="text-[7px] font-black text-[#0A224E]/40 uppercase tracking-[0.3em]">Oficial</span>
+              </div>
 
-               {/* SECCIÓN CATÁLOGO */}
-               <div ref={catalogRef} className="w-full mb-8 scroll-mt-24">
-                  <div className="flex flex-col items-center mb-6 px-6">
-                    <div className="flex items-center gap-2 opacity-60">
-                      <ShoppingBag size={14} className="text-[#0A224E]" />
-                      <h3 className="font-black text-[#0A224E] text-[10px] uppercase tracking-[0.4em]">
-                        Catálogo de Ofertas
-                      </h3>
-                    </div>
-                    <div className="h-[1px] w-4 bg-[#0A224E]/10 mt-1.5"></div>
+              {/* SECCIÓN CATÁLOGO */}
+              <div ref={catalogRef} className="w-full mb-8 scroll-mt-24">
+                <div className="flex flex-col items-center mb-6 px-6">
+                  <div className="flex items-center gap-2 opacity-60">
+                    <ShoppingBag size={14} className="text-[#0A224E]" />
+                    <h3 className="font-black text-[#0A224E] text-[10px] uppercase tracking-[0.4em]">
+                      Catálogo de Ofertas
+                    </h3>
                   </div>
-                  
-                  <div className="overflow-hidden w-full">
-                    <div className="animate-delicate-marquee flex gap-4 px-4">
-                      {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => (
-                        <div 
-                          key={`${offer.id}-${idx}`} 
-                          className="btn-volume flex-shrink-0 w-36 rounded-[1.8rem] bg-[#D1E7D5] p-2 flex flex-col border-[#0A224E]/15 active:scale-95 transition-transform"
-                        >
-                          <div className="rounded-[1.4rem] overflow-hidden aspect-square mb-2.5 border border-[#0A224E]/5 shadow-sm">
-                            <img src={offer.image} alt={offer.name} className="w-full h-full object-cover" />
-                          </div>
-                          <div className="px-1 pb-0.5 text-center">
-                            <p className="text-[8.5px] font-black uppercase tracking-tight text-[#0A224E] mb-2 line-clamp-1">
-                              {offer.name}
-                            </p>
-                            <div className="btn-volume bg-white text-[#0A224E] py-1 px-2 rounded-lg border-[#0A224E]/15">
-                              <span className="text-[9px] font-black">${offer.price.toLocaleString('es-AR')}</span>
-                            </div>
+                  <div className="h-[1px] w-4 bg-[#0A224E]/10 mt-1.5"></div>
+                </div>
+
+                <div className="overflow-hidden w-full">
+                  <div className="animate-delicate-marquee flex gap-4 px-4">
+                    {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => (
+                      <div
+                        key={`${offer.id}-${idx}`}
+                        className="btn-volume flex-shrink-0 w-36 rounded-[1.8rem] bg-[#D1E7D5] p-2 flex flex-col border-[#0A224E]/15 active:scale-95 transition-transform"
+                      >
+                        <div className="rounded-[1.4rem] overflow-hidden aspect-square mb-2.5 border border-[#0A224E]/5 shadow-sm">
+                          <img src={offer.image} alt={offer.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="px-1 pb-0.5 text-center">
+                          <p className="text-[8.5px] font-black uppercase tracking-tight text-[#0A224E] mb-2 line-clamp-1">
+                            {offer.name}
+                          </p>
+                          <div className="btn-volume bg-white text-[#0A224E] py-1 px-2 rounded-lg border-[#0A224E]/15">
+                            <span className="text-[9px] font-black">${offer.price.toLocaleString('es-AR')}</span>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-               </div>
+                </div>
+              </div>
 
-               {/* TRIO DE BOTONES DE ACCIÓN */}
-               <div className="w-full px-4 mb-10 grid grid-cols-3 gap-2">
-                  <button className="btn-volume w-full bg-[#FF0000] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
-                    <span className="italic text-[16px] leading-none -mb-1">P</span>
-                    <span>PedidosYa</span>
-                  </button>
-                  <button className="btn-volume w-full bg-[#25D366] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
-                    <MessageCircle size={16} fill="currentColor" strokeWidth={0} />
-                    <span>WhatsApp</span>
-                  </button>
-                  <button className="btn-volume w-full bg-[#009EE3] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
-                    <Handshake size={16} strokeWidth={2.5} />
-                    <span>M. Pago</span>
-                  </button>
-               </div>
+              {/* TRIO DE BOTONES DE ACCIÓN */}
+              <div className="w-full px-4 mb-10 grid grid-cols-3 gap-2">
+                <button className="btn-volume w-full bg-[#FF0000] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
+                  <span className="italic text-[16px] leading-none -mb-1">P</span>
+                  <span>PedidosYa</span>
+                </button>
+                <button className="btn-volume w-full bg-[#25D366] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
+                  <MessageCircle size={16} fill="currentColor" strokeWidth={0} />
+                  <span>WhatsApp</span>
+                </button>
+                <button className="btn-volume w-full bg-[#009EE3] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
+                  <Handshake size={16} strokeWidth={2.5} />
+                  <span>M. Pago</span>
+                </button>
+              </div>
 
-               {/* SECCIÓN MAPA */}
-               <div className="w-full px-6 mb-10">
-                  <div className="flex flex-col items-center mb-5">
-                    <div className="flex items-center gap-2 opacity-60">
-                      <MapPin size={14} className="text-[#0A224E]" />
-                      <h3 className="font-black text-[#0A224E] text-[10px] uppercase tracking-[0.4em]">
-                        Ubicación del Local
-                      </h3>
-                    </div>
-                    <div className="h-[1px] w-4 bg-[#0A224E]/10 mt-1.5"></div>
+              {/* SECCIÓN MAPA */}
+              <div className="w-full px-6 mb-10">
+                <div className="flex flex-col items-center mb-5">
+                  <div className="flex items-center gap-2 opacity-60">
+                    <MapPin size={14} className="text-[#0A224E]" />
+                    <h3 className="font-black text-[#0A224E] text-[10px] uppercase tracking-[0.4em]">
+                      Ubicación del Local
+                    </h3>
                   </div>
+                  <div className="h-[1px] w-4 bg-[#0A224E]/10 mt-1.5"></div>
+                </div>
 
-                  <div className="btn-volume w-full h-64 rounded-[2.5rem] overflow-hidden border-[#0A224E]/15 bg-white relative shadow-sm mb-4">
-                    <iframe 
-                      title="Ubicación del comercio"
-                      src={selectedShop.mapUrl} 
-                      width="100%" 
-                      height="100%" 
-                      style={{ border: 0, filter: 'grayscale(0.1) contrast(1.1)' }} 
-                      allowFullScreen={false} 
-                      loading="lazy" 
-                      referrerPolicy="no-referrer-when-downgrade"
-                    ></iframe>
-                  </div>
-                  
-                  <div className="mt-4 text-center px-4 mb-6">
-                     <p className="text-[9px] font-bold text-[#0A224E]/60 uppercase tracking-widest leading-relaxed">
-                        {selectedShop.address}
-                     </p>
-                  </div>
+                <div className="btn-volume w-full h-64 rounded-[2.5rem] overflow-hidden border-[#0A224E]/15 bg-white relative shadow-sm mb-4">
+                  <iframe
+                    title="Ubicación del comercio"
+                    src={selectedShop.mapUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, filter: 'grayscale(0.1) contrast(1.1)' }}
+                    allowFullScreen={false}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
 
-                  <div className="flex flex-col gap-3 w-full px-2">
-                    <div className="grid grid-cols-2 gap-3 w-full">
-                      <button 
-                        onClick={() => window.open(selectedShop.mapUrl, '_blank')}
-                        className="btn-volume w-full bg-[#0A224E] text-white py-4 rounded-[1.6rem] flex items-center justify-center gap-2 text-[10px] font-[900] uppercase tracking-[0.1em] shadow-lg border-[#061633] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
-                      >
-                        <Navigation size={16} strokeWidth={2.5} />
-                        Cómo llegar
-                      </button>
-                      <button 
-                        className="btn-volume w-full bg-black text-white py-4 rounded-[1.6rem] flex items-center justify-center gap-2 text-[10px] font-[900] uppercase tracking-[0.1em] shadow-lg border-gray-800 border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
-                      >
-                        <Car size={16} strokeWidth={2.5} />
-                        Uber
-                      </button>
-                    </div>
+                <div className="mt-4 text-center px-4 mb-6">
+                  <p className="text-[9px] font-bold text-[#0A224E]/60 uppercase tracking-widest leading-relaxed">
+                    {selectedShop.address}
+                  </p>
+                </div>
 
-                    <button 
-                      onClick={handleShare}
-                      className="btn-volume w-full bg-white text-[#0A224E] py-4 rounded-[1.6rem] flex items-center justify-center gap-3 text-[11px] font-[900] uppercase tracking-[0.2em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
+                <div className="flex flex-col gap-3 w-full px-2">
+                  <div className="grid grid-cols-2 gap-3 w-full">
+                    <button
+                      onClick={() => window.open(selectedShop.mapUrl, '_blank')}
+                      className="btn-volume w-full bg-[#0A224E] text-white py-4 rounded-[1.6rem] flex items-center justify-center gap-2 text-[10px] font-[900] uppercase tracking-[0.1em] shadow-lg border-[#061633] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
                     >
-                      <Share2 size={18} strokeWidth={2.5} />
-                      Compartir Catálogo Online
+                      <Navigation size={16} strokeWidth={2.5} />
+                      Cómo llegar
+                    </button>
+                    <button
+                      className="btn-volume w-full bg-black text-white py-4 rounded-[1.6rem] flex items-center justify-center gap-2 text-[10px] font-[900] uppercase tracking-[0.1em] shadow-lg border-gray-800 border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
+                    >
+                      <Car size={16} strokeWidth={2.5} />
+                      Uber
                     </button>
                   </div>
-               </div>
 
-               <div className="w-full flex justify-center mt-6 mb-12">
-                  <button 
-                    onClick={handleBack}
-                    className="btn-volume w-[60%] bg-white text-[#0A224E] py-3 px-6 rounded-[1.2rem] flex items-center justify-center gap-2 text-[9px] font-[900] uppercase tracking-[0.25em] shadow-sm border-[#0A224E] border-bottom-[4px] active:border-bottom-[1px] active:scale-95 transition-all"
+                  <button
+                    onClick={handleShare}
+                    className="btn-volume w-full bg-white text-[#0A224E] py-4 rounded-[1.6rem] flex items-center justify-center gap-3 text-[11px] font-[900] uppercase tracking-[0.2em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
                   >
-                    <ArrowLeft size={14} strokeWidth={3} />
-                    Volver
+                    <Share2 size={18} strokeWidth={2.5} />
+                    Compartir Catálogo Online
                   </button>
-               </div>
+                </div>
+              </div>
+
+              <div className="w-full flex justify-center mt-6 mb-12">
+                <button
+                  onClick={handleBack}
+                  className="btn-volume w-[60%] bg-white text-[#0A224E] py-3 px-6 rounded-[1.2rem] flex items-center justify-center gap-2 text-[9px] font-[900] uppercase tracking-[0.25em] shadow-sm border-[#0A224E] border-bottom-[4px] active:border-bottom-[1px] active:scale-95 transition-all"
+                >
+                  <ArrowLeft size={14} strokeWidth={3} />
+                  Volver
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -449,7 +463,7 @@ const App: React.FC = () => {
           <div className="pb-24 animate-in slide-in-from-right duration-500 bg-[#E8F5EA] min-h-screen">
             {/* Header del Panel */}
             <div className="bg-white pt-8 pb-6 px-8 flex flex-col items-center shadow-sm border-b border-[#0A224E]/5 mb-8">
-              <button 
+              <button
                 onClick={handleBack}
                 className="btn-volume self-start mb-4 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0A224E] border-[#0A224E]/20"
               >
@@ -466,16 +480,16 @@ const App: React.FC = () => {
                   <ImageIcon size={16} className="text-[#0A224E]/40" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0A224E]">Imagen de Portada</h3>
                 </div>
-                
-                <input 
-                  type="file" 
+
+                <input
+                  type="file"
                   ref={bannerInputRef}
                   onChange={(e) => handleImageUpload(e, 'banner')}
                   accept="image/*"
                   className="hidden"
                 />
 
-                <div 
+                <div
                   onClick={() => bannerInputRef.current?.click()}
                   className="btn-volume relative h-36 rounded-3xl overflow-hidden border-2 border-[#0A224E]/10 shadow-inner group cursor-pointer active:scale-95 transition-transform"
                 >
@@ -498,19 +512,19 @@ const App: React.FC = () => {
                     <Plus size={16} strokeWidth={3} />
                   </button>
                 </div>
-                
+
                 <div className="space-y-3">
                   {editableShop.offers.map((offer, idx) => (
                     <div key={offer.id} className="btn-volume bg-white p-3 rounded-2xl flex items-center gap-4 hover:top-0 active:top-0 cursor-default">
-                      <input 
-                        type="file" 
+                      <input
+                        type="file"
                         ref={el => offerInputRefs.current[offer.id] = el}
                         onChange={(e) => handleImageUpload(e, 'offer', offer.id)}
                         accept="image/*"
                         className="hidden"
                       />
 
-                      <div 
+                      <div
                         onClick={() => offerInputRefs.current[offer.id]?.click()}
                         className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 relative group cursor-pointer border border-[#0A224E]/5"
                       >
@@ -519,29 +533,29 @@ const App: React.FC = () => {
                           <Camera size={12} className="text-white" />
                         </div>
                       </div>
-                      
+
                       <div className="flex-grow flex flex-col gap-1">
-                        <input 
-                          type="text" 
-                          value={offer.name} 
+                        <input
+                          type="text"
+                          value={offer.name}
                           onChange={(e) => {
                             const newOffers = [...editableShop.offers];
                             newOffers[idx].name = e.target.value;
-                            setEditableShop({...editableShop, offers: newOffers});
+                            setEditableShop({ ...editableShop, offers: newOffers });
                           }}
-                          className="text-[10px] font-black uppercase tracking-tight text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-full" 
+                          className="text-[10px] font-black uppercase tracking-tight text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-full"
                         />
                         <div className="flex items-center gap-1">
                           <span className="text-[10px] font-black text-[#0A224E]/50">$</span>
-                          <input 
-                            type="number" 
-                            value={offer.price} 
+                          <input
+                            type="number"
+                            value={offer.price}
                             onChange={(e) => {
                               const newOffers = [...editableShop.offers];
                               newOffers[idx].price = Number(e.target.value);
-                              setEditableShop({...editableShop, offers: newOffers});
+                              setEditableShop({ ...editableShop, offers: newOffers });
                             }}
-                            className="text-[10px] font-black text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-20" 
+                            className="text-[10px] font-black text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-20"
                           />
                         </div>
                       </div>
@@ -561,8 +575,8 @@ const App: React.FC = () => {
                 </div>
                 <div className="btn-volume bg-white p-4 rounded-2xl flex items-center gap-3">
                   <span className="text-[12px] font-black text-[#0A224E]/30">+54 9</span>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     placeholder="11 1234 5678"
                     className="text-[12px] font-black text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-full"
                   />
@@ -571,7 +585,7 @@ const App: React.FC = () => {
 
               {/* Botón Guardar */}
               <div className="pt-8 flex flex-col items-center">
-                <button 
+                <button
                   onClick={handleSaveEdit}
                   className="btn-volume w-full bg-[#22C55E] text-white py-5 rounded-[1.8rem] flex items-center justify-center gap-3 text-[13px] font-[900] uppercase tracking-[0.25em] shadow-xl border-[#15803d] border-bottom-[6px] active:border-bottom-[1px] active:scale-95 transition-all mb-10"
                 >
@@ -588,17 +602,17 @@ const App: React.FC = () => {
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
           <div className="absolute inset-0 bg-[#0A224E]/60 backdrop-blur-md" onClick={() => setShowLoginModal(false)}></div>
-          
+
           <div className={`btn-volume relative w-full max-w-[300px] bg-white rounded-[2.5rem] p-8 flex flex-col items-center border-[#0A224E]/20 shadow-2xl transition-all ${loginError ? 'animate-shake' : ''}`}>
             <div className="w-16 h-16 rounded-full bg-[#E8F5EA] flex items-center justify-center text-[#0A224E] mb-6 border border-[#0A224E]/5 shadow-inner">
               <Lock size={28} strokeWidth={2.5} />
             </div>
-            
+
             <h3 className="text-[13px] font-black text-[#0A224E] uppercase tracking-[0.2em] mb-2">Acceso Dueño</h3>
             <p className="text-[9px] font-bold text-[#0A224E]/40 uppercase tracking-widest text-center mb-8">Ingresá la contraseña de gestión</p>
-            
-            <input 
-              type="password" 
+
+            <input
+              type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -607,14 +621,14 @@ const App: React.FC = () => {
               autoFocus
             />
 
-            <button 
+            <button
               onClick={handleLogin}
               className="btn-volume w-full bg-[#0A224E] text-white py-4 rounded-[1.4rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-lg border-[#061633] border-bottom-[5px] active:border-bottom-[1px]"
             >
               Entrar
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setShowLoginModal(false)}
               className="mt-6 text-[8px] font-black text-[#0A224E]/30 uppercase tracking-[0.4em] hover:text-[#0A224E] transition-colors"
             >
