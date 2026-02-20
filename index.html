@@ -146,14 +146,15 @@
       }
 
       100% {
-        transform: scale(1.1);
+        transform: scale(1.08);
       }
     }
 
     .animate-kenburns {
-      animation: kenburns 10s ease-in-out infinite alternate;
+      animation: kenburns 6s ease-in-out infinite alternate;
       will-change: transform;
-      image-rendering: auto;
+      image-rendering: -webkit-optimize-contrast;
+      transform: translateZ(0);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }

@@ -133,8 +133,7 @@ const App: React.FC = () => {
             className="absolute inset-0 bg-cover animate-kenburns"
             style={{
               backgroundImage: 'url("https://i.ibb.co/VW04b2Jq/0d6d58fd546567643f77a4f341558e9c.png")',
-              backgroundPosition: 'center',
-              imageRendering: 'auto',
+              backgroundPosition: 'center center',
               opacity: 1
             }}
           />
