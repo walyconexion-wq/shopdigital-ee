@@ -358,11 +358,12 @@ const App: React.FC = () => {
                 <ChevronLeft size={20} strokeWidth={3} />
               </button>
 
-              {/* Nombre del Negocio (Sello Central Superior) */}
-              <div className="glass-header absolute top-6 left-1/2 -translate-x-1/2 px-6 h-10 rounded-full flex items-center justify-center z-50 border-white/30 shadow-xl pointer-events-none">
-                <span className="text-[10px] font-[900] uppercase tracking-[0.25em] text-white whitespace-nowrap px-1 text-shadow-premium">
+              {/* Nombre del Negocio (Título Central Superior) */}
+              <div className="absolute top-7 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-3/4">
+                <h1 className="text-[13px] font-[1000] uppercase tracking-[0.3em] text-white text-center text-shadow-premium leading-tight">
                   {selectedShop.name}
-                </span>
+                </h1>
+                <div className="w-10 h-[1px] bg-white/30 mx-auto mt-2 shadow-[0_0_10px_rgba(255,255,255,0.4)]"></div>
               </div>
 
               {/* Botón Autogestión (Candado) */}
