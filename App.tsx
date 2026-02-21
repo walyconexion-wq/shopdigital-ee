@@ -190,7 +190,7 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-x-5 gap-y-9 px-1">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-10 px-0">
               {CATEGORIES.map((cat, index) => (
                 <button
                   key={cat.id}
@@ -201,7 +201,7 @@ const App: React.FC = () => {
                   <div className="mb-2 transform group-hover:scale-110 transition-transform duration-500 ease-out">
                     {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 30, strokeWidth: 1.3 })}
                   </div>
-                  <span className="text-[8.5px] text-center font-black uppercase leading-tight tracking-[0.01em] px-1">
+                  <span className="text-[9.5px] text-center font-black uppercase leading-tight tracking-[0.01em] px-1">
                     {cat.name}
                   </span>
                 </button>

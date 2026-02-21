@@ -185,32 +185,48 @@
       filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
     }
 
-    /* Botón Vidrio 3D Táctil */
+    /* Botón Vidrio 3D Táctil - Versión Cuadrada HD */
     .glass-button-3d {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      border-radius: 1.6rem;
+      /* Cuadrado con esquinas suaves */
       box-shadow:
-        inset 0 1px 2px rgba(255, 255, 255, 0.5),
+        inset 0 4px 6px rgba(255, 255, 255, 0.4),
+        0 20px 40px rgba(0, 0, 0, 0.6),
         0 10px 20px rgba(0, 0, 0, 0.4);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
       cursor: pointer;
+      position: relative;
+      top: -6px;
+      /* Efecto sobresaliente */
     }
 
     .glass-button-3d:active {
-      transform: translateY(3px) scale(0.94);
+      transform: translateY(14px) scale(0.92);
+      top: 0;
       box-shadow:
-        inset 0 3px 6px rgba(0, 0, 0, 0.5),
-        0 2px 4px rgba(0, 0, 0, 0.2);
+        inset 0 6px 12px rgba(0, 0, 0, 0.7),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+      filter: brightness(0.8);
       background: rgba(255, 255, 255, 0.05);
     }
 
     .glass-button-3d svg,
     .glass-button-3d span {
       color: #FFFFFF !important;
-      filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
       font-weight: 900 !important;
+    }
+
+    .category-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem;
     }
 
     /* Pausar al interactuar */
