@@ -196,12 +196,12 @@ const App: React.FC = () => {
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat)}
                   style={{ animationDelay: `${index * 35}ms` }}
-                  className="btn-volume category-btn fade-up-item aspect-square group"
+                  className="glass-button-3d category-btn fade-up-item aspect-square group"
                 >
-                  <div className="text-[#0A224E] mb-2 transform group-hover:scale-110 transition-transform duration-500 ease-out">
+                  <div className="mb-2 transform group-hover:scale-110 transition-transform duration-500 ease-out">
                     {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 30, strokeWidth: 1.3 })}
                   </div>
-                  <span className="text-[8.5px] text-center font-black text-[#0A224E] uppercase leading-tight tracking-[0.01em] px-1">
+                  <span className="text-[8.5px] text-center font-black uppercase leading-tight tracking-[0.01em] px-1">
                     {cat.name}
                   </span>
                 </button>
