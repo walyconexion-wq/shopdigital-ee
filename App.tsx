@@ -126,8 +126,8 @@ const App: React.FC = () => {
   return (
     <div className={`max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative border-x border-gray-100 shadow-2xl`}>
 
-      {/* FONDO TECNOLÓGICO INTERFAZ 1 (ESTÁTICO) */}
-      {currentView === View.HOME && (
+      {/* FONDO TECNOLÓGICO (ESTÁTICO) */}
+      {(currentView === View.HOME || currentView === View.CATEGORY) && (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div
             className="absolute inset-0 bg-cover"
@@ -142,33 +142,27 @@ const App: React.FC = () => {
       )}
 
       {currentView !== View.DETAIL && currentView !== View.EDIT_PANEL && (
-        <header className={`${currentView === View.HOME ? 'bg-transparent pt-12' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
+        <header className={`${(currentView === View.HOME || currentView === View.CATEGORY) ? 'bg-transparent pt-12' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
           {currentView === View.HOME ? (
             <div className="glass-header rounded-3xl p-6 mb-4 animate-in fade-in zoom-in duration-1000">
               <Logo />
+            </div>
+          ) : currentView === View.CATEGORY ? (
+            <div className="w-full px-8 flex items-center justify-between py-6">
+              <button onClick={handleBack} className="p-2 -ml-2 text-white active:scale-90 transition-transform filter drop-shadow(0 0 5px rgba(255,255,255,0.3))">
+                <ChevronLeft size={32} strokeWidth={2.5} />
+              </button>
+              <div className="glass-header rounded-2xl px-6 py-3 flex flex-col items-center">
+                <h2 className="text-[20px] font-[900] text-white uppercase tracking-[0.25em] leading-none text-center text-shadow-premium">
+                  {selectedCategory?.name}
+                </h2>
+              </div>
+              <div className="w-12"></div>
             </div>
           ) : (
             <Logo />
           )}
 
-          {currentView === View.CATEGORY && selectedCategory && (
-            <div className="w-full px-8 flex items-center justify-between py-10 border-b border-gray-50 mt-2 bg-white sticky top-0 z-20 animate-in fade-in slide-in-from-top-4 duration-500">
-              <button onClick={handleBack} className="p-2 -ml-2 text-[#0A224E] active:scale-90 transition-transform">
-                <ChevronLeft size={32} strokeWidth={2.5} />
-              </button>
-              <div className="flex flex-col items-center">
-                <h2 className="text-[24px] font-[900] text-[#0A224E] uppercase tracking-[0.25em] leading-none text-center">
-                  {selectedCategory.name}
-                </h2>
-                <div className="flex gap-2 mt-4">
-                  <div className="w-2 h-2 rounded-full bg-[#22C55E]"></div>
-                  <div className="w-2 h-2 rounded-full bg-[#FF0000]"></div>
-                  <div className="w-2 h-2 rounded-full bg-[#0A224E]"></div>
-                </div>
-              </div>
-              <div className="w-10"></div>
-            </div>
-          )}
         </header>
       )}
 
@@ -227,32 +221,29 @@ const App: React.FC = () => {
               filteredShops.map((shop, index) => (
                 <div
                   key={shop.id}
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    backgroundColor: '#D1E7D5'
-                  }}
-                  className="btn-volume rounded-[3rem] overflow-hidden flex flex-col cursor-default p-5 hover:top-0 active:top-0 fade-up-item max-w-[340px] mx-auto border-[#0A224E]/25"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="glass-card-3d overflow-hidden flex flex-col cursor-default p-5 fade-up-item max-w-[340px] mx-auto"
                 >
-                  <div className="relative h-44 rounded-[2.2rem] overflow-hidden border border-[#0A224E]/10 shadow-lg">
+                  <div className="relative h-44 rounded-[2.2rem] overflow-hidden border border-white/10 shadow-lg">
                     <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                    <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 shadow-sm border border-[#0A224E]/5">
+                    <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 shadow-sm border border-white/10">
                       <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                      <span className="text-[12px] font-black text-[#0A224E]">{shop.rating}</span>
+                      <span className="text-[12px] font-black text-white">{shop.rating}</span>
                     </div>
                   </div>
 
                   <div className="px-4 pt-7 pb-3 flex flex-col items-center text-center">
-                    <h3 className="font-black text-[19px] text-[#0A224E] uppercase tracking-tighter leading-tight mb-2">
+                    <h3 className="font-black text-[19px] text-white uppercase tracking-tighter leading-tight mb-2 text-shadow-premium">
                       {shop.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-[#0A224E]/30 uppercase text-[8.5px] font-bold tracking-[0.3em] mb-8">
+                    <div className="flex items-center gap-2 text-white/50 uppercase text-[8.5px] font-bold tracking-[0.3em] mb-8">
                       <MapPin size={10} strokeWidth={3} />
                       <span className="truncate max-w-[180px]">{shop.address}</span>
                     </div>
 
                     <button
                       onClick={() => handleShopClick(shop)}
-                      className="btn-volume w-[85%] bg-white text-[#0A224E] text-[10px] font-black py-4 px-6 rounded-[1.5rem] uppercase tracking-[0.25em] flex items-center justify-center gap-3 transition-all border-[#0A224E] border-bottom-[5px] shadow-sm active:border-bottom-[1px] mx-auto"
+                      className="glass-action-btn w-[85%] py-4 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto"
                     >
                       <BookOpen size={17} strokeWidth={2.5} />
                       Ver Catálogo
@@ -261,22 +252,22 @@ const App: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="py-24 flex flex-col items-center opacity-30 text-center">
-                <div className="p-8 bg-[#E8F5EA] rounded-full mb-6 border border-[#0A224E]/10">
-                  <div className="text-[#0A224E]">
+              <div className="py-24 flex flex-col items-center opacity-40 text-center">
+                <div className="p-8 glass-header rounded-full mb-6 border border-white/10 shadow-xl">
+                  <div className="text-white">
                     <div className="p-1">
                       <Info size={40} />
                     </div>
                   </div>
                 </div>
-                <p className="text-[11px] font-black uppercase tracking-[0.3em] max-w-[200px] leading-relaxed">Próximamente novedades en esta categoría</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] max-w-[200px] leading-relaxed text-white text-shadow-premium">Próximamente novedades en esta categoría</p>
               </div>
             )}
 
             <div className="pt-10 flex justify-center w-full">
               <button
                 onClick={handleBack}
-                className="btn-volume w-[85%] max-w-[340px] bg-white text-[#0A224E] text-[10px] font-black py-4 px-6 rounded-[1.5rem] uppercase tracking-[0.25em] flex items-center justify-center gap-3 transition-all border-[#0A224E] border-bottom-[5px] shadow-md active:border-bottom-[1px] mx-auto active:scale-95"
+                className="glass-action-btn w-[85%] max-w-[340px] py-4 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto active:scale-95 transition-all"
               >
                 <ArrowLeft size={17} strokeWidth={3} />
                 Regresar
