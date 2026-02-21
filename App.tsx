@@ -375,10 +375,7 @@ const App: React.FC = () => {
 
               <div className="absolute inset-0 flex flex-col justify-end pb-6 px-6">
                 <div className="flex items-end justify-between w-full">
-                  {/* Etiqueta Especialidad (A un costado, discreto) */}
-                  <div className="bg-[#22C55E] text-white px-3 py-1.5 rounded-xl text-[7.5px] font-black uppercase tracking-[0.1em] shadow-lg border border-white/20">
-                    {selectedShop.specialty}
-                  </div>
+                  <div />
 
                   {/* Botón Menú Online (Discreto y al costado) */}
                   <button
@@ -393,10 +390,7 @@ const App: React.FC = () => {
             </div>
 
             <div className="-mt-8 relative z-10 flex flex-col items-center">
-              <div className="glass-header px-4 py-1.5 rounded-full border border-white/20 shadow-lg flex items-center gap-2 mb-8">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse"></div>
-                <span className="text-[8px] font-black text-white uppercase tracking-[0.4em]">Verificado Oficial</span>
-              </div>
+              <div className="mb-4" />
 
               {/* SECCIÓN CATÁLOGO */}
               <div ref={catalogRef} className="w-full mb-10 scroll-mt-24">
