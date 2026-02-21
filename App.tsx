@@ -222,8 +222,10 @@ const App: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat)}
-                  style={{ animationDelay: `${index * 35}ms` }}
-                  className="glass-button-3d category-btn fade-up-item aspect-square group animate-pulse-glow"
+                  style={{
+                    animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms forwards, pulse-glow-white 2s infinite ease-in-out ${0.7 + index * 0.035}s`
+                  }}
+                  className="glass-button-3d category-btn aspect-square group opacity-0"
                 >
                   <div className="mb-2 transform group-hover:scale-110 transition-transform duration-500 ease-out">
                     {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 30, strokeWidth: 1.3 })}
