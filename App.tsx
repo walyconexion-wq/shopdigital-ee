@@ -238,34 +238,35 @@ const App: React.FC = () => {
                   className="glass-card-3d overflow-hidden flex flex-row cursor-default p-3 fade-up-item w-full items-center gap-4"
                 >
                   {/* Imagen Horizontal a la Izquierda */}
-                  <div className="relative w-28 h-28 rounded-2xl overflow-hidden border border-white/10 shadow-lg flex-shrink-0">
+                  <div className="relative w-32 h-32 rounded-2xl overflow-hidden border border-white/10 shadow-lg flex-shrink-0">
                     <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
                   </div>
 
                   {/* Contenido a la Derecha */}
-                  <div className="flex-1 flex flex-col justify-between py-1 pr-1 h-28 text-left">
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <h3 className="font-black text-[14px] text-white uppercase tracking-tighter leading-tight text-shadow-premium truncate">
-                          {shop.name}
-                        </h3>
-                        <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-lg border border-white/10 flex-shrink-0">
-                          <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
-                          <span className="text-[10px] font-black text-white">{shop.rating}</span>
-                        </div>
+                  <div className="flex-1 flex flex-col justify-between py-1 pr-1 h-32 text-left">
+                    <div className="flex flex-col gap-1">
+                      <h3 className="font-black text-[15px] text-white uppercase tracking-tighter leading-tight text-shadow-premium truncate w-full">
+                        {shop.name}
+                      </h3>
+
+                      <div className="flex items-center gap-1.5 text-white/50 uppercase text-[8.5px] font-bold tracking-[0.1em]">
+                        <MapPin size={10} strokeWidth={3} />
+                        <span className="truncate max-w-[160px]">{shop.address}</span>
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-white/50 uppercase text-[8px] font-bold tracking-[0.1em] mb-4">
-                        <MapPin size={10} strokeWidth={3} />
-                        <span className="truncate max-w-[140px]">{shop.address}</span>
+                      <div className="flex items-center gap-1 mt-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={10} className={`${i < Math.floor(shop.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-white/20'}`} />
+                        ))}
+                        <span className="text-[10px] font-black text-white ml-1">{shop.rating}</span>
                       </div>
                     </div>
 
                     <button
                       onClick={() => handleShopClick(shop)}
-                      className="glass-action-btn w-full py-2.5 px-3 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2"
+                      className="glass-action-btn w-full py-3 px-3 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                     >
-                      <BookOpen size={13} strokeWidth={3} />
+                      <BookOpen size={14} strokeWidth={3} />
                       Ver Catálogo
                     </button>
                   </div>
