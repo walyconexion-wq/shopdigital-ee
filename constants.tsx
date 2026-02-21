@@ -112,5 +112,23 @@ export const MOCK_SHOPS: Shop[] = [
       { id: 'o9', name: 'Flan con Mixta', price: 3200, image: 'https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?w=200&h=200&fit=crop' },
     ],
     mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3275.4042857039014!2d-58.4682025!3d-34.821991!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1361c77876d%3A0x6a099c2d1d4d13e!2sMonte%20Grande!5e0!3m2!1ses!2sar!4v1715456789012'
+  },
+  {
+    id: 'la-primavera-1',
+    name: 'PIZZERÍA LA PRIMAVERA ESCONDIDA',
+    category: 'pizzerias',
+    rating: 4.5,
+    specialty: 'Tradición y Sabor Casero',
+    address: 'Luis Guillón, Esteban Echeverría',
+    image: 'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=400&h=400&fit=crop',
+    bannerImage: 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=800&h=400&fit=crop',
+    offers: [
+      { id: 'p1', name: 'Pizza Primavera Especial', price: 9500, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop' },
+      { id: 'p2', name: 'Docena de Empanadas', price: 8500, image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?w=200&h=200&fit=crop' },
+      { id: 'p3', name: 'Promo Familiar: 2 Pizzas', price: 15000, image: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=200&h=200&fit=crop' },
+      { id: 'p4', name: 'Próximamente más ofertas', price: 0, image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=200&h=200&fit=crop' },
+      { id: 'p5', name: 'Explorá nuestro catálogo', price: 0, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop' },
+    ],
+    mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d19179.2389887386!2d-58.47719184412144!3d-34.79268170323702!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcc9982260d265%3A0x30cd34ef3522e513!2sPizzeria%20La%20primavera%20escondida!5e1!3m2!1ses!2sar!4v1771707078800!5m2!1ses!2sar'
   }
 ];
