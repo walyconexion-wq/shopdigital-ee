@@ -216,37 +216,39 @@ const App: React.FC = () => {
 
         {/* INTERFAZ 2: LISTADO DE COMERCIOS */}
         {currentView === View.CATEGORY && (
-          <div className="space-y-12 pt-12 animate-in slide-in-from-bottom-6 duration-700 pb-24">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-6 px-4 pt-6 animate-in slide-in-from-bottom-6 duration-700 pb-12">
             {filteredShops.length > 0 ? (
               filteredShops.map((shop, index) => (
                 <div
                   key={shop.id}
-                  style={{ animationDelay: `${index * 100}ms` }}
-                  className="glass-card-3d overflow-hidden flex flex-col cursor-default p-5 fade-up-item max-w-[340px] mx-auto"
+                  style={{ animationDelay: `${index * 80}ms` }}
+                  className="glass-card-3d overflow-hidden flex flex-col cursor-default p-3 fade-up-item w-full"
                 >
-                  <div className="relative h-44 rounded-[2.2rem] overflow-hidden border border-white/10 shadow-lg">
+                  {/* Imagen más compacta */}
+                  <div className="relative h-28 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
                     <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                    <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 shadow-sm border border-white/10">
-                      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                      <span className="text-[12px] font-black text-white">{shop.rating}</span>
+                    <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-xl flex items-center gap-1 shadow-sm border border-white/10">
+                      <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
+                      <span className="text-[10px] font-black text-white">{shop.rating}</span>
                     </div>
                   </div>
 
-                  <div className="px-4 pt-7 pb-3 flex flex-col items-center text-center">
-                    <h3 className="font-black text-[19px] text-white uppercase tracking-tighter leading-tight mb-2 text-shadow-premium">
+                  {/* Cuerpo de tarjeta más ajustado */}
+                  <div className="px-1 pt-4 pb-1 flex flex-col items-center text-center">
+                    <h3 className="font-black text-[13px] text-white uppercase tracking-tighter leading-tight mb-1 text-shadow-premium line-clamp-1 w-full px-1">
                       {shop.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-white/50 uppercase text-[8.5px] font-bold tracking-[0.3em] mb-8">
-                      <MapPin size={10} strokeWidth={3} />
-                      <span className="truncate max-w-[180px]">{shop.address}</span>
+                    <div className="flex items-center gap-1 text-white/50 uppercase text-[7px] font-bold tracking-[0.2em] mb-4">
+                      <MapPin size={8} strokeWidth={3} />
+                      <span className="truncate max-w-[100px]">{shop.address}</span>
                     </div>
 
                     <button
                       onClick={() => handleShopClick(shop)}
-                      className="glass-action-btn w-[85%] py-4 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto"
+                      className="glass-action-btn w-full py-2.5 px-2 text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 mx-auto"
                     >
-                      <BookOpen size={17} strokeWidth={2.5} />
-                      Ver Catálogo
+                      <BookOpen size={13} strokeWidth={2.5} />
+                      Ver Menú
                     </button>
                   </div>
                 </div>
@@ -264,10 +266,10 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <div className="pt-10 flex justify-center w-full">
+            <div className="pt-6 col-span-2 flex justify-center w-full">
               <button
                 onClick={handleBack}
-                className="glass-action-btn w-[85%] max-w-[340px] py-4 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto active:scale-95 transition-all"
+                className="glass-action-btn w-[70%] py-3.5 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto active:scale-95 transition-all"
               >
                 <ArrowLeft size={17} strokeWidth={3} />
                 Regresar
