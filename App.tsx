@@ -377,7 +377,13 @@ const App: React.FC = () => {
                 <div className="flex justify-center w-full">
                   {/* Botón Menú Online Centrado */}
                   <button
-                    onClick={scrollToCatalog}
+                    onClick={() => {
+                      if (selectedShop.category === 'pizzerias') {
+                        window.open('https://infograph.venngage.com/ps/uzZVBEpQoCM', '_blank');
+                      } else {
+                        scrollToCatalog();
+                      }
+                    }}
                     className="glass-action-btn px-6 py-3 rounded-2xl flex items-center justify-center gap-2 z-40 border-white/30 shadow-2xl"
                   >
                     <BookOpen size={16} strokeWidth={3} />
