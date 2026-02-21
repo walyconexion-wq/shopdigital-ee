@@ -374,13 +374,11 @@ const App: React.FC = () => {
               </button>
 
               <div className="absolute inset-0 flex flex-col justify-end pb-6 px-6">
-                <div className="flex items-end justify-between w-full">
-                  <div />
-
-                  {/* Botón Menú Online (Discreto y al costado) */}
+                <div className="flex justify-center w-full">
+                  {/* Botón Menú Online Centrado */}
                   <button
                     onClick={scrollToCatalog}
-                    className="glass-action-btn px-5 py-3 rounded-2xl flex items-center justify-center gap-2 z-40 border-white/30"
+                    className="glass-action-btn px-6 py-3 rounded-2xl flex items-center justify-center gap-2 z-40 border-white/30 shadow-2xl"
                   >
                     <BookOpen size={16} strokeWidth={3} />
                     <span className="text-[9px] font-[1000] uppercase tracking-[0.2em]">Menú Online</span>
@@ -389,20 +387,17 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="-mt-8 relative z-10 flex flex-col items-center">
-              <div className="mb-4" />
+            <div className="-mt-10 relative z-10 flex flex-col items-center">
+              {/* Título Flotante del Catálogo */}
+              <div className="glass-header px-6 py-2.5 rounded-full border border-white/20 shadow-2xl flex items-center gap-3 mb-12">
+                <ShoppingBag size={15} className="text-white filter drop-shadow(0 0 5px rgba(255,255,255,0.4))" />
+                <h3 className="font-black text-white text-[10px] uppercase tracking-[0.4em] text-shadow-premium">
+                  Catálogo de Ofertas
+                </h3>
+              </div>
 
               {/* SECCIÓN CATÁLOGO */}
               <div ref={catalogRef} className="w-full mb-10 scroll-mt-24">
-                <div className="flex flex-col items-center mb-8 px-6">
-                  <div className="flex items-center gap-2">
-                    <ShoppingBag size={16} className="text-white filter drop-shadow(0 0 5px rgba(255,255,255,0.4))" />
-                    <h3 className="font-black text-white text-[11px] uppercase tracking-[0.5em] text-shadow-premium">
-                      Catálogo de Ofertas
-                    </h3>
-                  </div>
-                  <div className="h-[1px] w-8 bg-white/20 mt-3"></div>
-                </div>
 
                 <div className="overflow-hidden w-full">
                   <div className="animate-delicate-marquee flex gap-4 px-4">
