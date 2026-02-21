@@ -130,5 +130,23 @@ export const MOCK_SHOPS: Shop[] = [
       { id: 'p5', name: 'Explorá nuestro catálogo', price: 0, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop' },
     ],
     mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d19179.2389887386!2d-58.47719184412144!3d-34.79268170323702!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcc9982260d265%3A0x30cd34ef3522e513!2sPizzeria%20La%20primavera%20escondida!5e1!3m2!1ses!2sar!4v1771707078800!5m2!1ses!2sar'
+  },
+  {
+    id: 'juancho-jaguel-1',
+    name: 'PIZZERÍA JUANCHO',
+    category: 'pizzerias',
+    rating: 4.1,
+    specialty: 'Sabor auténtico en El Jagüel',
+    address: 'Los Alerces 445, El Jagüel',
+    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&fit=crop',
+    bannerImage: 'https://images.unsplash.com/photo-1574126154517-d1e0d89ef734?w=800&h=400&fit=crop',
+    offers: [
+      { id: 'j1', name: 'Especial Juancho', price: 9800, image: 'https://images.unsplash.com/photo-1593504049359-74330189a355?w=200&h=200&fit=crop' },
+      { id: 'j2', name: 'Fugazzeta de la Casa', price: 9200, image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=200&h=200&fit=crop' },
+      { id: 'j3', name: 'Combo Amigos (2 Muzza)', price: 16500, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop' },
+      { id: 'j4', name: 'Próximamente más ofertas', price: 0, image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=200&h=200&fit=crop' },
+      { id: 'j5', name: 'Explorá nuestro catálogo', price: 0, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop' },
+    ],
+    mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d19169.980567714178!2d-58.51979918487758!3d-34.832467999999984!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd13cd51da8c3%3A0xf0751db50907c456!2sPizzer%C3%ADa%20Juancho!5e1!3m2!1ses!2sar!4v1771708290427!5m2!1ses!2sar'
   }
 ];
