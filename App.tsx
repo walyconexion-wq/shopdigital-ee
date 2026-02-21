@@ -126,13 +126,13 @@ const App: React.FC = () => {
   return (
     <div className={`max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative border-x border-gray-100 shadow-2xl`}>
 
-      {/* FONDO ANIMADO INTERFAZ 1 (KEN BURNS) */}
+      {/* FONDO TECNOLÓGICO INTERFAZ 1 (ESTÁTICO) */}
       {currentView === View.HOME && (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div
-            className="absolute inset-0 bg-cover animate-kenburns"
+            className="absolute inset-0 bg-cover"
             style={{
-              backgroundImage: 'url("https://i.ibb.co/VW04b2Jq/0d6d58fd546567643f77a4f341558e9c.png")',
+              backgroundImage: 'url("https://img.freepik.com/fotos-premium/fondo-tecnologia-red-digital-azul_939148-135.jpg")',
               backgroundPosition: 'center center',
               opacity: 1
             }}
