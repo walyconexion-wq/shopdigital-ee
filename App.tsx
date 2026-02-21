@@ -127,7 +127,7 @@ const App: React.FC = () => {
     <div className={`max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative border-x border-gray-100 shadow-2xl`}>
 
       {/* FONDO TECNOLÓGICO (ESTÁTICO) */}
-      {(currentView === View.HOME || currentView === View.CATEGORY) && (
+      {(currentView === View.HOME || currentView === View.CATEGORY || currentView === View.DETAIL) && (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div
             className="absolute inset-0 bg-cover"
@@ -289,14 +289,14 @@ const App: React.FC = () => {
               {/* Botón Volver */}
               <button
                 onClick={handleBack}
-                className="btn-volume absolute top-6 left-6 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0A224E] z-50 border-[#0A224E]/20 shadow-lg"
+                className="glass-action-btn absolute top-6 left-6 w-10 h-10 rounded-full flex items-center justify-center z-50 transition-all border-white/30"
               >
-                <ChevronLeft size={18} strokeWidth={3} />
+                <ChevronLeft size={20} strokeWidth={3} />
               </button>
 
               {/* Nombre del Negocio (Sello Central Superior) */}
-              <div className="btn-volume absolute top-6 left-1/2 -translate-x-1/2 px-5 h-9 rounded-full bg-white flex items-center justify-center z-50 border-[#0A224E]/20 shadow-lg pointer-events-none">
-                <span className="text-[9px] font-[900] uppercase tracking-[0.2em] text-[#0A224E] whitespace-nowrap px-1">
+              <div className="glass-header absolute top-6 left-1/2 -translate-x-1/2 px-6 h-10 rounded-full flex items-center justify-center z-50 border-white/30 shadow-xl pointer-events-none">
+                <span className="text-[10px] font-[900] uppercase tracking-[0.25em] text-white whitespace-nowrap px-1 text-shadow-premium">
                   {selectedShop.name}
                 </span>
               </div>
@@ -304,9 +304,9 @@ const App: React.FC = () => {
               {/* Botón Autogestión (Candado) */}
               <button
                 onClick={() => setShowLoginModal(true)}
-                className="btn-volume absolute top-6 right-6 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0A224E] z-50 border-[#0A224E]/20 shadow-lg"
+                className="glass-action-btn absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center z-50 transition-all border-white/30"
               >
-                <Lock size={15} strokeWidth={3} />
+                <Lock size={16} strokeWidth={3} />
               </button>
 
               <div className="absolute inset-0 flex flex-col justify-end pb-6 px-6">
@@ -319,31 +319,31 @@ const App: React.FC = () => {
                   {/* Botón Menú Online (Discreto y al costado) */}
                   <button
                     onClick={scrollToCatalog}
-                    className="btn-volume px-4 py-2.5 rounded-[1.2rem] bg-white flex items-center justify-center gap-2 text-[#0A224E] z-40 border-[#0A224E]/15 shadow-xl active:scale-95 transition-all"
+                    className="glass-action-btn px-5 py-3 rounded-2xl flex items-center justify-center gap-2 z-40 border-white/30"
                   >
-                    <BookOpen size={14} strokeWidth={3} />
-                    <span className="text-[8.5px] font-[1000] uppercase tracking-[0.15em]">Menú Online</span>
+                    <BookOpen size={16} strokeWidth={3} />
+                    <span className="text-[9px] font-[1000] uppercase tracking-[0.2em]">Menú Online</span>
                   </button>
                 </div>
               </div>
             </div>
 
             <div className="-mt-8 relative z-10 flex flex-col items-center">
-              <div className="bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm flex items-center gap-1.5 mb-6">
-                <div className="w-1 h-1 rounded-full bg-[#22C55E]"></div>
-                <span className="text-[7px] font-black text-[#0A224E]/40 uppercase tracking-[0.3em]">Oficial</span>
+              <div className="glass-header px-4 py-1.5 rounded-full border border-white/20 shadow-lg flex items-center gap-2 mb-8">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse"></div>
+                <span className="text-[8px] font-black text-white uppercase tracking-[0.4em]">Verificado Oficial</span>
               </div>
 
               {/* SECCIÓN CATÁLOGO */}
-              <div ref={catalogRef} className="w-full mb-8 scroll-mt-24">
-                <div className="flex flex-col items-center mb-6 px-6">
-                  <div className="flex items-center gap-2 opacity-60">
-                    <ShoppingBag size={14} className="text-[#0A224E]" />
-                    <h3 className="font-black text-[#0A224E] text-[10px] uppercase tracking-[0.4em]">
+              <div ref={catalogRef} className="w-full mb-10 scroll-mt-24">
+                <div className="flex flex-col items-center mb-8 px-6">
+                  <div className="flex items-center gap-2">
+                    <ShoppingBag size={16} className="text-white filter drop-shadow(0 0 5px rgba(255,255,255,0.4))" />
+                    <h3 className="font-black text-white text-[11px] uppercase tracking-[0.5em] text-shadow-premium">
                       Catálogo de Ofertas
                     </h3>
                   </div>
-                  <div className="h-[1px] w-4 bg-[#0A224E]/10 mt-1.5"></div>
+                  <div className="h-[1px] w-8 bg-white/20 mt-3"></div>
                 </div>
 
                 <div className="overflow-hidden w-full">
@@ -351,17 +351,17 @@ const App: React.FC = () => {
                     {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => (
                       <div
                         key={`${offer.id}-${idx}`}
-                        className="btn-volume flex-shrink-0 w-36 rounded-[1.8rem] bg-[#D1E7D5] p-2 flex flex-col border-[#0A224E]/15 active:scale-95 transition-transform"
+                        className="glass-card-3d flex-shrink-0 w-40 p-3 flex flex-col active:scale-95 transition-transform"
                       >
-                        <div className="rounded-[1.4rem] overflow-hidden aspect-square mb-2.5 border border-[#0A224E]/5 shadow-sm">
-                          <img src={offer.image} alt={offer.name} className="w-full h-full object-cover" />
+                        <div className="rounded-2xl overflow-hidden aspect-square mb-3 border border-white/10 shadow-lg">
+                          <img src={offer.image} alt={offer.name} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
                         </div>
-                        <div className="px-1 pb-0.5 text-center">
-                          <p className="text-[8.5px] font-black uppercase tracking-tight text-[#0A224E] mb-2 line-clamp-1">
+                        <div className="px-1 pb-1 text-center">
+                          <p className="text-[9.5px] font-black uppercase tracking-tight text-white mb-3 line-clamp-1 text-shadow-premium">
                             {offer.name}
                           </p>
-                          <div className="btn-volume bg-white text-[#0A224E] py-1 px-2 rounded-lg border-[#0A224E]/15">
-                            <span className="text-[9px] font-black">${offer.price.toLocaleString('es-AR')}</span>
+                          <div className="glass-action-btn py-2 px-3 rounded-xl border-white/20">
+                            <span className="text-[11px] font-black text-white">$ {offer.price.toLocaleString('es-AR')}</span>
                           </div>
                         </div>
                       </div>
@@ -371,86 +371,86 @@ const App: React.FC = () => {
               </div>
 
               {/* TRIO DE BOTONES DE ACCIÓN */}
-              <div className="w-full px-4 mb-10 grid grid-cols-3 gap-2">
-                <button className="btn-volume w-full bg-[#FF0000] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
-                  <span className="italic text-[16px] leading-none -mb-1">P</span>
-                  <span>PedidosYa</span>
+              <div className="w-full px-4 mb-12 grid grid-cols-3 gap-3">
+                <button className="glass-action-btn w-full bg-[#FF0000]/20 hover:bg-[#FF0000]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#FF0000]/40">
+                  <span className="italic text-[20px] leading-none -mb-1 text-[#FF0000] filter drop-shadow(0 0 5px rgba(255,0,0,0.5))">P</span>
+                  <span className="text-[8.5px] font-black text-white/90">PedidosYa</span>
                 </button>
-                <button className="btn-volume w-full bg-[#25D366] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
-                  <MessageCircle size={16} fill="currentColor" strokeWidth={0} />
-                  <span>WhatsApp</span>
+                <button className="glass-action-btn w-full bg-[#25D366]/20 hover:bg-[#25D366]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#25D366]/40">
+                  <MessageCircle size={18} className="text-[#25D366] filter drop-shadow(0 0 5px rgba(37,211,102,0.5))" fill="currentColor" strokeWidth={0} />
+                  <span className="text-[8.5px] font-black text-white/90">WhatsApp</span>
                 </button>
-                <button className="btn-volume w-full bg-[#009EE3] text-white py-4 rounded-[1.4rem] flex flex-col items-center justify-center gap-1 text-[8px] font-[950] uppercase tracking-[0.05em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all">
-                  <Handshake size={16} strokeWidth={2.5} />
-                  <span>M. Pago</span>
+                <button className="glass-action-btn w-full bg-[#009EE3]/20 hover:bg-[#009EE3]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#009EE3]/40">
+                  <Handshake size={18} className="text-[#009EE3] filter drop-shadow(0 0 5px rgba(0,158,227,0.5))" strokeWidth={2.5} />
+                  <span className="text-[8.5px] font-black text-white/90">M. Pago</span>
                 </button>
               </div>
 
               {/* SECCIÓN MAPA */}
-              <div className="w-full px-6 mb-10">
-                <div className="flex flex-col items-center mb-5">
-                  <div className="flex items-center gap-2 opacity-60">
-                    <MapPin size={14} className="text-[#0A224E]" />
-                    <h3 className="font-black text-[#0A224E] text-[10px] uppercase tracking-[0.4em]">
+              <div className="w-full px-6 mb-12">
+                <div className="flex flex-col items-center mb-6">
+                  <div className="flex items-center gap-2">
+                    <MapPin size={16} className="text-white" />
+                    <h3 className="font-black text-white text-[11px] uppercase tracking-[0.5em] text-shadow-premium">
                       Ubicación del Local
                     </h3>
                   </div>
-                  <div className="h-[1px] w-4 bg-[#0A224E]/10 mt-1.5"></div>
+                  <div className="h-[1px] w-8 bg-white/20 mt-3"></div>
                 </div>
 
-                <div className="btn-volume w-full h-64 rounded-[2.5rem] overflow-hidden border-[#0A224E]/15 bg-white relative shadow-sm mb-4">
+                <div className="glass-card-3d w-full h-64 overflow-hidden bg-black/20 relative shadow-2xl mb-6">
                   <iframe
                     title="Ubicación del comercio"
                     src={selectedShop.mapUrl}
                     width="100%"
                     height="100%"
-                    style={{ border: 0, filter: 'grayscale(0.1) contrast(1.1)' }}
+                    style={{ border: 0, filter: 'grayscale(0.3) contrast(1.2) brightness(0.8)' }}
                     allowFullScreen={false}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                   ></iframe>
                 </div>
 
-                <div className="mt-4 text-center px-4 mb-6">
-                  <p className="text-[9px] font-bold text-[#0A224E]/60 uppercase tracking-widest leading-relaxed">
+                <div className="mt-4 text-center px-4 mb-8">
+                  <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.25em] leading-relaxed text-shadow-premium">
                     {selectedShop.address}
                   </p>
                 </div>
 
-                <div className="flex flex-col gap-3 w-full px-2">
-                  <div className="grid grid-cols-2 gap-3 w-full">
+                <div className="flex flex-col gap-4 w-full px-2">
+                  <div className="grid grid-cols-2 gap-4 w-full">
                     <button
                       onClick={() => window.open(selectedShop.mapUrl, '_blank')}
-                      className="btn-volume w-full bg-[#0A224E] text-white py-4 rounded-[1.6rem] flex items-center justify-center gap-2 text-[10px] font-[900] uppercase tracking-[0.1em] shadow-lg border-[#061633] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
+                      className="glass-action-btn w-full bg-white/5 py-4 flex items-center justify-center gap-2 border-white/20"
                     >
-                      <Navigation size={16} strokeWidth={2.5} />
-                      Cómo llegar
+                      <Navigation size={18} strokeWidth={2.5} className="text-white" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.1em]">Cómo llegar</span>
                     </button>
                     <button
-                      className="btn-volume w-full bg-black text-white py-4 rounded-[1.6rem] flex items-center justify-center gap-2 text-[10px] font-[900] uppercase tracking-[0.1em] shadow-lg border-gray-800 border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
+                      className="glass-action-btn w-full bg-black/40 py-4 flex items-center justify-center gap-2 border-white/20"
                     >
-                      <Car size={16} strokeWidth={2.5} />
-                      Uber
+                      <Car size={18} strokeWidth={2.5} className="text-white" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.1em]">Uber</span>
                     </button>
                   </div>
 
                   <button
                     onClick={handleShare}
-                    className="btn-volume w-full bg-white text-[#0A224E] py-4 rounded-[1.6rem] flex items-center justify-center gap-3 text-[11px] font-[900] uppercase tracking-[0.2em] shadow-lg border-[#0A224E] border-bottom-[5px] active:border-bottom-[1px] active:scale-95 transition-all"
+                    className="glass-action-btn w-full py-5 flex items-center justify-center gap-3 border-white/30"
                   >
-                    <Share2 size={18} strokeWidth={2.5} />
-                    Compartir Catálogo Online
+                    <Share2 size={20} strokeWidth={2.5} />
+                    <span className="text-[11px] font-[1000] uppercase tracking-[0.2em]">Compartir Catálogo Online</span>
                   </button>
                 </div>
               </div>
 
-              <div className="w-full flex justify-center mt-6 mb-12">
+              <div className="w-full flex justify-center mt-10 mb-12">
                 <button
                   onClick={handleBack}
-                  className="btn-volume w-[60%] bg-white text-[#0A224E] py-3 px-6 rounded-[1.2rem] flex items-center justify-center gap-2 text-[9px] font-[900] uppercase tracking-[0.25em] shadow-sm border-[#0A224E] border-bottom-[4px] active:border-bottom-[1px] active:scale-95 transition-all"
+                  className="glass-action-btn w-[70%] py-4 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto transition-all"
                 >
-                  <ArrowLeft size={14} strokeWidth={3} />
-                  Volver
+                  <ArrowLeft size={18} strokeWidth={3} />
+                  <span className="text-[10px] font-black">Regresar a Locales</span>
                 </button>
               </div>
             </div>
