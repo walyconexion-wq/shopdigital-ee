@@ -393,17 +393,19 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="-mt-10 relative z-10 flex flex-col items-center">
-              {/* Título Flotante del Catálogo */}
-              <div className="glass-header px-6 py-2.5 rounded-full border border-white/20 shadow-2xl flex items-center gap-3 mb-12">
-                <ShoppingBag size={15} className="text-white filter drop-shadow(0 0 5px rgba(255,255,255,0.4))" />
-                <h3 className="font-black text-white text-[10px] uppercase tracking-[0.4em] text-shadow-premium">
-                  Catálogo de Ofertas
-                </h3>
-              </div>
-
+            <div className="relative z-10 flex flex-col items-center">
               {/* SECCIÓN CATÁLOGO */}
-              <div ref={catalogRef} className="w-full mb-10 scroll-mt-24">
+              <div ref={catalogRef} className="w-full mb-10 mt-8 scroll-mt-24">
+                {/* Título de Navegación (Limpio, sin efecto vidrio) */}
+                <div className="flex flex-col items-center mb-8 px-6">
+                  <div className="flex items-center gap-2">
+                    <ShoppingBag size={14} className="text-white/40" />
+                    <h3 className="font-black text-white/50 text-[10px] uppercase tracking-[0.4em]">
+                      Catálogo de Ofertas
+                    </h3>
+                  </div>
+                  <div className="h-[1px] w-6 bg-white/10 mt-3"></div>
+                </div>
 
                 <div className="overflow-hidden w-full">
                   <div className="animate-delicate-marquee flex gap-4 px-4">
