@@ -118,6 +118,22 @@ const App: React.FC = () => {
     }
   };
 
+  const LOCALITIES = ['Monte Grande', 'Luis Guillón', 'El Jagüel'];
+
+  const groupedShops = useMemo(() => {
+    if (!selectedCategory) return {};
+    const grouped: Record<string, Shop[]> = {};
+
+    LOCALITIES.forEach(loc => {
+      grouped[loc] = MOCK_SHOPS.filter(shop =>
+        shop.category === selectedCategory.id &&
+        shop.address.toLowerCase().includes(loc.toLowerCase().replace('ó', 'o'))
+      );
+    });
+
+    return grouped;
+  }, [selectedCategory]);
+
   const filteredShops = useMemo(() => {
     if (!selectedCategory) return [];
     return MOCK_SHOPS.filter(shop => shop.category === selectedCategory.id);
@@ -229,66 +245,82 @@ const App: React.FC = () => {
 
         {/* INTERFAZ 2: LISTADO DE COMERCIOS */}
         {currentView === View.CATEGORY && (
-          <div className="flex flex-col gap-5 px-4 pt-6 animate-in slide-in-from-bottom-6 duration-700 pb-16">
-            {filteredShops.length > 0 ? (
-              filteredShops.map((shop, index) => (
-                <div
-                  key={shop.id}
-                  style={{ animationDelay: `${index * 80}ms` }}
-                  className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-32"
-                >
-                  {/* Foto estirada al contenedor (Izquierda) */}
-                  <div className="relative w-24 flex-shrink-0 overflow-hidden border-r border-white/10">
-                    <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                    <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-lg border border-white/10">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-2 h-2 fill-yellow-400 text-yellow-400" />
-                        <span className="text-[9px] font-black text-white">{shop.rating}</span>
-                      </div>
-                    </div>
+          <div className="flex flex-col gap-8 px-4 pt-6 animate-in slide-in-from-bottom-6 duration-700 pb-16">
+            {LOCALITIES.map((locality) => (
+              <div key={locality} className="flex flex-col gap-4">
+                {/* Cabecera de Región */}
+                <div className="flex items-center gap-3 ml-2">
+                  <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
+                    <MapPin size={16} className="text-red-500 fill-red-500/20" />
                   </div>
+                  <h3 className="text-[12px] font-black text-white uppercase tracking-[0.4em] text-shadow-premium">
+                    {locality}
+                  </h3>
+                  <div className="h-[1px] flex-1 bg-white/10"></div>
+                </div>
 
-                  {/* Contenido Legible (Derecha) */}
-                  <div className="flex-1 flex flex-col justify-between p-3.5 text-left min-w-0">
-                    <div>
-                      <h3 className="font-[1000] text-[15px] text-white uppercase tracking-tight leading-tight text-shadow-premium truncate mb-1">
-                        {shop.name}
-                      </h3>
-
-                      <div className="flex items-center gap-1.5 text-white/50 uppercase text-[8.5px] font-bold tracking-[0.05em] mb-2">
-                        <MapPin size={10} strokeWidth={3} className="flex-shrink-0" />
-                        <span className="truncate">{shop.address}</span>
-                      </div>
-
-                      <div className="flex items-center gap-0.5 mt-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={9} className={`${i < Math.floor(shop.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-white/10'}`} />
-                        ))}
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => handleShopClick(shop)}
-                      className="glass-action-btn w-[85%] py-2 px-3 text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-white/20 mt-auto mx-auto animate-pulse-glow"
+                {groupedShops[locality] && groupedShops[locality].length > 0 ? (
+                  groupedShops[locality].map((shop, index) => (
+                    <div
+                      key={shop.id}
+                      style={{ animationDelay: `${index * 80}ms` }}
+                      className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-32"
                     >
-                      <BookOpen size={13} strokeWidth={3} />
-                      Ver Catálogo
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="py-24 flex flex-col items-center opacity-40 text-center">
-                <div className="p-8 glass-header rounded-full mb-6 border border-white/10 shadow-xl">
-                  <div className="text-white">
-                    <div className="p-1">
-                      <Info size={40} />
+                      {/* Foto estirada al contenedor (Izquierda) */}
+                      <div className="relative w-24 flex-shrink-0 overflow-hidden border-r border-white/10">
+                        <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
+                        <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-lg border border-white/10">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-2 h-2 fill-yellow-400 text-yellow-400" />
+                            <span className="text-[9px] font-black text-white">{shop.rating}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Contenido Legible (Derecha) */}
+                      <div className="flex-1 flex flex-col justify-between p-3.5 text-left min-w-0">
+                        <div>
+                          <h3 className="font-[1000] text-[15px] text-white uppercase tracking-tight leading-tight text-shadow-premium truncate mb-1">
+                            {shop.name}
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-white/50 uppercase text-[8.5px] font-bold tracking-[0.05em] mb-2">
+                            <MapPin size={10} strokeWidth={3} className="flex-shrink-0" />
+                            <span className="truncate">{shop.address}</span>
+                          </div>
+                          <div className="flex items-center gap-0.5 mt-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} size={9} className={`${i < Math.floor(shop.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-white/10'}`} />
+                            ))}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleShopClick(shop)}
+                          className="glass-action-btn w-[85%] py-2 px-3 text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-white/20 mt-auto mx-auto animate-pulse-glow"
+                        >
+                          <BookOpen size={13} strokeWidth={3} />
+                          Ver Catálogo
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  /* Tarjeta de Ejemplo / Próximamente para la región */
+                  <div className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-28 opacity-60 grayscale-[0.5]">
+                    <div className="relative w-24 bg-white/5 flex items-center justify-center border-r border-white/10">
+                      <Pizza size={32} className="text-white/20" />
+                    </div>
+                    <div className="flex-1 flex flex-col justify-center p-4 text-left">
+                      <h3 className="font-black text-[12px] text-white/40 uppercase tracking-widest mb-1">
+                        Próximas ofertas
+                      </h3>
+                      <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.1em]">
+                        Estamos sumando nuevos locales en {locality}
+                      </p>
                     </div>
                   </div>
-                </div>
-                <p className="text-[11px] font-black uppercase tracking-[0.3em] max-w-[200px] leading-relaxed text-white text-shadow-premium">Próximamente novedades en esta categoría</p>
+                )}
               </div>
-            )}
+            ))}
 
             <div className="pt-8 flex justify-center w-full">
               <button
