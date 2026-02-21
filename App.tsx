@@ -229,39 +229,44 @@ const App: React.FC = () => {
 
         {/* INTERFAZ 2: LISTADO DE COMERCIOS */}
         {currentView === View.CATEGORY && (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-6 px-4 pt-6 animate-in slide-in-from-bottom-6 duration-700 pb-12">
+          <div className="flex flex-col gap-5 px-4 pt-6 animate-in slide-in-from-bottom-6 duration-700 pb-16">
             {filteredShops.length > 0 ? (
               filteredShops.map((shop, index) => (
                 <div
                   key={shop.id}
                   style={{ animationDelay: `${index * 80}ms` }}
-                  className="glass-card-3d overflow-hidden flex flex-col cursor-default p-3 fade-up-item w-full"
+                  className="glass-card-3d overflow-hidden flex flex-row cursor-default p-3 fade-up-item w-full items-center gap-4"
                 >
-                  {/* Imagen más compacta */}
-                  <div className="relative h-28 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+                  {/* Imagen Horizontal a la Izquierda */}
+                  <div className="relative w-28 h-28 rounded-2xl overflow-hidden border border-white/10 shadow-lg flex-shrink-0">
                     <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                    <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-xl flex items-center gap-1 shadow-sm border border-white/10">
-                      <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
-                      <span className="text-[10px] font-black text-white">{shop.rating}</span>
-                    </div>
                   </div>
 
-                  {/* Cuerpo de tarjeta más ajustado */}
-                  <div className="px-1 pt-4 pb-1 flex flex-col items-center text-center">
-                    <h3 className="font-black text-[13px] text-white uppercase tracking-tighter leading-tight mb-1 text-shadow-premium line-clamp-1 w-full px-1">
-                      {shop.name}
-                    </h3>
-                    <div className="flex items-center gap-1 text-white/50 uppercase text-[7px] font-bold tracking-[0.2em] mb-4">
-                      <MapPin size={8} strokeWidth={3} />
-                      <span className="truncate max-w-[100px]">{shop.address}</span>
+                  {/* Contenido a la Derecha */}
+                  <div className="flex-1 flex flex-col justify-between py-1 pr-1 h-28 text-left">
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <h3 className="font-black text-[14px] text-white uppercase tracking-tighter leading-tight text-shadow-premium truncate">
+                          {shop.name}
+                        </h3>
+                        <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-lg border border-white/10 flex-shrink-0">
+                          <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
+                          <span className="text-[10px] font-black text-white">{shop.rating}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 text-white/50 uppercase text-[8px] font-bold tracking-[0.1em] mb-4">
+                        <MapPin size={10} strokeWidth={3} />
+                        <span className="truncate max-w-[140px]">{shop.address}</span>
+                      </div>
                     </div>
 
                     <button
                       onClick={() => handleShopClick(shop)}
-                      className="glass-action-btn w-full py-2.5 px-2 text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 mx-auto"
+                      className="glass-action-btn w-full py-2.5 px-3 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                     >
-                      <BookOpen size={13} strokeWidth={2.5} />
-                      Ver Menú
+                      <BookOpen size={13} strokeWidth={3} />
+                      Ver Catálogo
                     </button>
                   </div>
                 </div>
@@ -279,7 +284,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <div className="pt-8 col-span-2 flex justify-center w-full">
+            <div className="pt-8 flex justify-center w-full">
               <button
                 onClick={handleBack}
                 className="glass-action-btn w-[75%] py-4 px-8 uppercase tracking-[0.3em] flex items-center justify-center gap-4 mx-auto active:scale-95 transition-all group"
