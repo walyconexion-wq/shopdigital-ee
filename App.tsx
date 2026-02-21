@@ -269,9 +269,9 @@ const App: React.FC = () => {
 
                     <button
                       onClick={() => handleShopClick(shop)}
-                      className="glass-action-btn w-full py-2.5 px-3 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-white/20 mt-auto"
+                      className="glass-action-btn w-[85%] py-2 px-3 text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-white/20 mt-auto mx-auto animate-pulse-glow"
                     >
-                      <BookOpen size={14} strokeWidth={3} />
+                      <BookOpen size={13} strokeWidth={3} />
                       Ver Catálogo
                     </button>
                   </div>
