@@ -149,8 +149,8 @@ const App: React.FC = () => {
             </div>
           ) : currentView === View.CATEGORY ? (
             <div className="w-full px-8 flex items-center justify-between py-6">
-              <button onClick={handleBack} className="p-2 -ml-2 text-white active:scale-90 transition-transform filter drop-shadow(0 0 5px rgba(255,255,255,0.3))">
-                <ChevronLeft size={32} strokeWidth={2.5} />
+              <button onClick={handleBack} className="glass-action-btn p-3 rounded-full flex items-center justify-center border-white/30 active:scale-95 transition-all shadow-xl">
+                <ChevronLeft size={24} strokeWidth={3.5} className="text-white drop-shadow(0 0 5px rgba(255,255,255,0.4))" />
               </button>
               <div className="glass-header rounded-2xl px-6 py-3 flex flex-col items-center">
                 <h2 className="text-[20px] font-[900] text-white uppercase tracking-[0.25em] leading-none text-center text-shadow-premium">
@@ -266,13 +266,15 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <div className="pt-6 col-span-2 flex justify-center w-full">
+            <div className="pt-8 col-span-2 flex justify-center w-full">
               <button
                 onClick={handleBack}
-                className="glass-action-btn w-[70%] py-3.5 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto active:scale-95 transition-all"
+                className="glass-action-btn w-[75%] py-4 px-8 uppercase tracking-[0.3em] flex items-center justify-center gap-4 mx-auto active:scale-95 transition-all group"
               >
-                <ArrowLeft size={17} strokeWidth={3} />
-                Regresar
+                <div className="bg-white/10 p-1.5 rounded-full group-active:translate-x-[-4px] transition-transform">
+                  <ArrowLeft size={20} strokeWidth={4} className="text-white drop-shadow(0 0 5px rgba(255,255,255,0.6))" />
+                </div>
+                <span className="text-[11px] font-[1000] text-shadow-premium">Regresar</span>
               </button>
             </div>
           </div>
