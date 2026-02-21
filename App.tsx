@@ -162,14 +162,14 @@ const App: React.FC = () => {
       )}
 
       {currentView !== View.DETAIL && currentView !== View.EDIT_PANEL && (
-        <header className={`${(currentView === View.HOME || currentView === View.CATEGORY) ? 'bg-transparent pt-12' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
+        <header className={`${currentView === View.HOME ? 'bg-transparent pt-12' : currentView === View.CATEGORY ? 'bg-transparent pt-4' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
           {currentView === View.HOME ? (
             <div className="glass-header rounded-3xl p-4 mb-4 animate-in fade-in zoom-in duration-1000">
               <Logo />
             </div>
           ) : currentView === View.CATEGORY ? (
-            <div className="w-full px-6 flex flex-col pt-2 pb-6">
-              <div className="flex items-center justify-between mb-6">
+            <div className="w-full px-6 flex flex-col pb-4">
+              <div className="flex items-center justify-between mb-2">
                 <button
                   onClick={handleBack}
                   className="glass-action-btn px-4 py-2 rounded-full flex items-center gap-2 border-white/30 active:scale-95 transition-all shadow-xl"
@@ -181,12 +181,12 @@ const App: React.FC = () => {
               </div>
 
               <div className="flex justify-center">
-                <div className="glass-header rounded-3xl px-8 py-5 flex flex-col items-center border-white/20 shadow-2xl">
-                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium mb-3">
+                <div className="glass-header rounded-3xl px-8 py-4 flex flex-col items-center border-white/20 shadow-2xl">
+                  <h2 className="text-[20px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium mb-2">
                     {selectedCategory?.name}
                   </h2>
-                  <div className="h-[1px] w-12 bg-white/20 mb-3"></div>
-                  <p className="text-[9px] font-bold text-white/60 uppercase tracking-[0.15em] leading-relaxed text-center max-w-[220px] text-shadow-premium">
+                  <div className="h-[1px] w-10 bg-white/20 mb-2"></div>
+                  <p className="text-[8.5px] font-bold text-white/60 uppercase tracking-[0.12em] leading-tight text-center max-w-[200px] text-shadow-premium">
                     Seleccioná tu comercio favorito y descubrí ofertas magníficas en su catálogo
                   </p>
                 </div>
@@ -249,7 +249,7 @@ const App: React.FC = () => {
 
         {/* INTERFAZ 2: LISTADO DE COMERCIOS */}
         {currentView === View.CATEGORY && (
-          <div className="flex flex-col gap-8 px-4 pt-6 animate-in slide-in-from-bottom-6 duration-700 pb-16">
+          <div className="flex flex-col gap-8 px-4 pt-0 animate-in slide-in-from-bottom-6 duration-700 pb-16">
             {LOCALITIES.map((locality) => (
               <div key={locality} className="flex flex-col gap-4">
                 {/* Cabecera de Región */}
