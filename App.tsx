@@ -148,16 +148,25 @@ const App: React.FC = () => {
               <Logo />
             </div>
           ) : currentView === View.CATEGORY ? (
-            <div className="w-full px-8 flex items-center justify-between py-6">
-              <button onClick={handleBack} className="glass-action-btn p-3 rounded-full flex items-center justify-center border-white/30 active:scale-95 transition-all shadow-xl">
-                <ChevronLeft size={24} strokeWidth={3.5} className="text-white drop-shadow(0 0 5px rgba(255,255,255,0.4))" />
-              </button>
-              <div className="glass-header rounded-2xl px-6 py-3 flex flex-col items-center">
-                <h2 className="text-[20px] font-[900] text-white uppercase tracking-[0.25em] leading-none text-center text-shadow-premium">
-                  {selectedCategory?.name}
-                </h2>
+            <div className="w-full px-6 flex flex-col pt-2 pb-6">
+              <div className="flex items-center justify-between mb-6">
+                <button
+                  onClick={handleBack}
+                  className="glass-action-btn px-4 py-2 rounded-full flex items-center gap-2 border-white/30 active:scale-95 transition-all shadow-xl"
+                >
+                  <ChevronLeft size={16} strokeWidth={4} className="text-white drop-shadow(0 0 3px rgba(255,255,255,0.4))" />
+                  <span className="text-[9px] font-[1000] text-white uppercase tracking-[0.2em] text-shadow-premium">Regresar</span>
+                </button>
+                <div className="w-10"></div> {/* Espaciador para equilibrio */}
               </div>
-              <div className="w-12"></div>
+
+              <div className="flex justify-center">
+                <div className="glass-header rounded-2xl px-8 py-3.5 flex flex-col items-center border-white/20">
+                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium">
+                    {selectedCategory?.name}
+                  </h2>
+                </div>
+              </div>
             </div>
           ) : (
             <Logo />
