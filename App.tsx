@@ -161,10 +161,14 @@ const App: React.FC = () => {
               </div>
 
               <div className="flex justify-center">
-                <div className="glass-header rounded-2xl px-8 py-3.5 flex flex-col items-center border-white/20">
-                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium">
+                <div className="glass-header rounded-3xl px-8 py-5 flex flex-col items-center border-white/20 shadow-2xl">
+                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium mb-3">
                     {selectedCategory?.name}
                   </h2>
+                  <div className="h-[1px] w-12 bg-white/20 mb-3"></div>
+                  <p className="text-[9px] font-bold text-white/60 uppercase tracking-[0.15em] leading-relaxed text-center max-w-[220px] text-shadow-premium">
+                    Seleccioná tu comercio favorito y descubrí ofertas magníficas en su catálogo
+                  </p>
                 </div>
               </div>
             </div>
