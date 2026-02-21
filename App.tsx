@@ -20,7 +20,8 @@ import {
   Image as ImageIcon,
   Plus,
   Trash2,
-  Camera
+  Camera,
+  Pizza
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -124,10 +125,13 @@ const App: React.FC = () => {
     if (!selectedCategory) return {};
     const grouped: Record<string, Shop[]> = {};
 
+    const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
     LOCALITIES.forEach(loc => {
+      const normalizedLoc = normalize(loc);
       grouped[loc] = MOCK_SHOPS.filter(shop =>
         shop.category === selectedCategory.id &&
-        shop.address.toLowerCase().includes(loc.toLowerCase().replace('ó', 'o'))
+        shop.address && normalize(shop.address).includes(normalizedLoc)
       );
     });
 
