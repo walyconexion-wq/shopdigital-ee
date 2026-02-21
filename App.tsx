@@ -223,7 +223,7 @@ const App: React.FC = () => {
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat)}
                   style={{ animationDelay: `${index * 35}ms` }}
-                  className="glass-button-3d category-btn fade-up-item aspect-square group"
+                  className="glass-button-3d category-btn fade-up-item aspect-square group animate-pulse-glow"
                 >
                   <div className="mb-2 transform group-hover:scale-110 transition-transform duration-500 ease-out">
                     {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 30, strokeWidth: 1.3 })}
