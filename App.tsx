@@ -21,7 +21,9 @@ import {
   Plus,
   Trash2,
   Camera,
-  Pizza
+  Pizza,
+  Facebook,
+  Instagram
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -493,6 +495,33 @@ const App: React.FC = () => {
                     >
                       <Car size={18} strokeWidth={2.5} className="text-white" />
                       <span className="text-[10px] font-black uppercase tracking-[0.1em]">Uber</span>
+                    </button>
+                  </div>
+
+                  {/* Redes Sociales */}
+                  <div className="grid grid-cols-3 gap-3 w-full">
+                    <button
+                      onClick={() => window.open('https://facebook.com', '_blank')}
+                      className="glass-action-btn w-full bg-[#1877F2]/20 hover:bg-[#1877F2]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#1877F2]/40 transition-all"
+                    >
+                      <Facebook size={18} className="text-[#1877F2] filter drop-shadow(0 0 5px rgba(24,119,242,0.5))" strokeWidth={2.5} />
+                      <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Facebook</span>
+                    </button>
+                    <button
+                      onClick={() => window.open('https://instagram.com', '_blank')}
+                      className="glass-action-btn w-full bg-[#E4405F]/20 hover:bg-[#E4405F]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#E4405F]/40 transition-all"
+                    >
+                      <Instagram size={18} className="text-[#E4405F] filter drop-shadow(0 0 5px rgba(228,64,95,0.5))" strokeWidth={2.5} />
+                      <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Instagram</span>
+                    </button>
+                    <button
+                      onClick={() => window.open('https://tiktok.com', '_blank')}
+                      className="glass-action-btn w-full bg-white/10 hover:bg-white/20 py-4 flex flex-col items-center justify-center gap-1.5 border-white/30 transition-all"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#EE1D52] filter drop-shadow(0 0 5px rgba(238,29,82,0.5))">
+                        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                      </svg>
+                      <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">TikTok</span>
                     </button>
                   </div>
 
