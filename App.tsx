@@ -270,10 +270,10 @@ const App: React.FC = () => {
                     <div
                       key={shop.id}
                       style={{ animationDelay: `${index * 80}ms` }}
-                      className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-32"
+                      className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-40"
                     >
                       {/* Foto estirada al contenedor (Izquierda) */}
-                      <div className="relative w-24 flex-shrink-0 overflow-hidden border-r border-white/10">
+                      <div className="relative w-28 flex-shrink-0 overflow-hidden border-r border-white/10">
                         <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
                         <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-lg border border-white/10">
                           <div className="flex items-center gap-1">
@@ -284,9 +284,9 @@ const App: React.FC = () => {
                       </div>
 
                       {/* Contenido Legible (Derecha) */}
-                      <div className="flex-1 flex flex-col justify-between p-3.5 text-left min-w-0">
+                      <div className="flex-1 flex flex-col justify-between p-4 text-left min-w-0">
                         <div>
-                          <h3 className="font-[1000] text-[15px] text-white uppercase tracking-tight leading-tight text-shadow-premium truncate mb-1">
+                          <h3 className="font-[1000] text-[16px] text-white uppercase tracking-tight leading-snug text-shadow-premium line-clamp-2 mb-1.5">
                             {shop.name}
                           </h3>
                           <div className="flex items-center gap-1.5 text-white/50 uppercase text-[8.5px] font-bold tracking-[0.05em] mb-2">
