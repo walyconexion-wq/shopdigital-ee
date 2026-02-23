@@ -108,16 +108,22 @@ const App: React.FC = () => {
   };
 
   const handleShare = () => {
+    const appUrl = window.location.href;
+    const shopName = selectedShop?.name || 'shopdigital.ar';
+    const shareText = selectedShop
+      ? `Te comparto el catálogo de *${shopName}* desde la App del Tanque 🚀\n\n👉 ${appUrl}`
+      : `¡Mirá los comercios de Esteban Echeverría en la App del Tanque! 🚀\n\n👉 ${appUrl}`;
+
     if (navigator.share) {
       navigator.share({
-        title: selectedShop ? selectedShop.name : 'shopdigital.ar',
-        text: selectedShop
-          ? `¡Mira el catálogo de ${selectedShop.name} en Esteban Echeverría!`
-          : '¡Mira los comercios de Esteban Echeverría!',
-        url: window.location.href,
+        title: shopName,
+        text: shareText,
+        url: appUrl,
       }).catch(console.error);
     } else {
-      alert('Enlace copiado: ' + window.location.href);
+      // Fallback: abrir WhatsApp Web con el mensaje pre-armado
+      const whatsappText = encodeURIComponent(shareText);
+      window.open(`https://wa.me/?text=${whatsappText}`, '_blank', 'noopener,noreferrer');
     }
   };
 
