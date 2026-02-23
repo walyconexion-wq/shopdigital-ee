@@ -121,6 +121,14 @@ const App: React.FC = () => {
     }
   };
 
+  const handleOpenLink = useCallback((url: string | null) => {
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      alert('Función próximamente disponible para este comercio');
+    }
+  }, []);
+
   const LOCALITIES = ['Monte Grande', 'Luis Guillón', 'El Jagüel'];
 
   const groupedShops = useMemo(() => {
@@ -436,16 +444,25 @@ const App: React.FC = () => {
 
               {/* TRIO DE BOTONES DE ACCIÓN */}
               <div className="w-full px-4 mb-12 grid grid-cols-3 gap-3">
-                <button className="glass-action-btn w-full bg-[#FF0000]/20 hover:bg-[#FF0000]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#FF0000]/40">
-                  <span className="italic text-[20px] leading-none -mb-1 text-[#FF0000] filter drop-shadow(0 0 5px rgba(255,0,0,0.5))">P</span>
+                <button
+                  onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')}
+                  className="glass-action-btn w-full bg-[#FF0000]/20 hover:bg-[#FF0000]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#FF0000]/40"
+                >
+                  <span className="italic text-[20px] leading-none -mb-1 text-[#FF0000]">P</span>
                   <span className="text-[8.5px] font-black text-white/90">PedidosYa</span>
                 </button>
-                <button className="glass-action-btn w-full bg-[#25D366]/20 hover:bg-[#25D366]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#25D366]/40">
-                  <MessageCircle size={18} className="text-[#25D366] filter drop-shadow(0 0 5px rgba(37,211,102,0.5))" fill="currentColor" strokeWidth={0} />
+                <button
+                  onClick={() => handleOpenLink('https://wa.me/5491112345678?text=Hola!%20Vengo%20de%20la%20App%20del%20Tanque')}
+                  className="glass-action-btn w-full bg-[#25D366]/20 hover:bg-[#25D366]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#25D366]/40"
+                >
+                  <MessageCircle size={18} className="text-[#25D366]" fill="currentColor" strokeWidth={0} />
                   <span className="text-[8.5px] font-black text-white/90">WhatsApp</span>
                 </button>
-                <button className="glass-action-btn w-full bg-[#009EE3]/20 hover:bg-[#009EE3]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#009EE3]/40">
-                  <Handshake size={18} className="text-[#009EE3] filter drop-shadow(0 0 5px rgba(0,158,227,0.5))" strokeWidth={2.5} />
+                <button
+                  onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')}
+                  className="glass-action-btn w-full bg-[#009EE3]/20 hover:bg-[#009EE3]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#009EE3]/40"
+                >
+                  <Handshake size={18} className="text-[#009EE3]" strokeWidth={2.5} />
                   <span className="text-[8.5px] font-black text-white/90">M. Pago</span>
                 </button>
               </div>
@@ -484,13 +501,14 @@ const App: React.FC = () => {
                 <div className="flex flex-col gap-4 w-full px-2">
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <button
-                      onClick={() => window.open(selectedShop.mapUrl, '_blank')}
+                      onClick={() => handleOpenLink('https://www.google.com/maps/place/Monte+Grande,+Provincia+de+Buenos+Aires/')}
                       className="glass-action-btn w-full bg-white/5 py-4 flex items-center justify-center gap-2 border-white/20"
                     >
                       <Navigation size={18} strokeWidth={2.5} className="text-white" />
                       <span className="text-[10px] font-black uppercase tracking-[0.1em]">Cómo llegar</span>
                     </button>
                     <button
+                      onClick={() => handleOpenLink('https://m.uber.com/ul/')}
                       className="glass-action-btn w-full bg-black/40 py-4 flex items-center justify-center gap-2 border-white/20"
                     >
                       <Car size={18} strokeWidth={2.5} className="text-white" />
@@ -501,24 +519,24 @@ const App: React.FC = () => {
                   {/* Redes Sociales */}
                   <div className="grid grid-cols-3 gap-3 w-full">
                     <button
-                      onClick={() => window.open('https://facebook.com', '_blank')}
+                      onClick={() => handleOpenLink('https://www.facebook.com/')}
                       className="glass-action-btn w-full bg-[#1877F2]/20 hover:bg-[#1877F2]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#1877F2]/40 transition-all"
                     >
-                      <Facebook size={18} className="text-[#1877F2] filter drop-shadow(0 0 5px rgba(24,119,242,0.5))" strokeWidth={2.5} />
+                      <Facebook size={18} className="text-[#1877F2]" strokeWidth={2.5} />
                       <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Facebook</span>
                     </button>
                     <button
-                      onClick={() => window.open('https://instagram.com', '_blank')}
+                      onClick={() => handleOpenLink('https://www.instagram.com/')}
                       className="glass-action-btn w-full bg-[#E4405F]/20 hover:bg-[#E4405F]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#E4405F]/40 transition-all"
                     >
-                      <Instagram size={18} className="text-[#E4405F] filter drop-shadow(0 0 5px rgba(228,64,95,0.5))" strokeWidth={2.5} />
+                      <Instagram size={18} className="text-[#E4405F]" strokeWidth={2.5} />
                       <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Instagram</span>
                     </button>
                     <button
-                      onClick={() => window.open('https://tiktok.com', '_blank')}
+                      onClick={() => handleOpenLink('https://www.tiktok.com/')}
                       className="glass-action-btn w-full bg-white/10 hover:bg-white/20 py-4 flex flex-col items-center justify-center gap-1.5 border-white/30 transition-all"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#EE1D52] filter drop-shadow(0 0 5px rgba(238,29,82,0.5))">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#EE1D52]">
                         <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
                       </svg>
                       <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">TikTok</span>
