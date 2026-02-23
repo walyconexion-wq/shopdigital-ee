@@ -225,7 +225,7 @@ const App: React.FC = () => {
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat)}
                   style={{
-                    animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms forwards, pulse-glow-white 2s infinite ease-in-out ${0.7 + index * 0.035}s`
+                    animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms forwards`
                   }}
                   className="glass-button-3d category-btn aspect-square group opacity-0"
                 >
@@ -303,7 +303,7 @@ const App: React.FC = () => {
                         </div>
                         <button
                           onClick={() => handleShopClick(shop)}
-                          className="glass-action-btn w-[70%] py-1.5 px-3 text-[8.5px] font-[1000] uppercase tracking-[0.2em] flex items-center justify-center gap-1.5 border-white/20 mt-auto mx-auto animate-pulse-glow"
+                          className="glass-action-btn w-[70%] py-1.5 px-3 text-[8.5px] font-[1000] uppercase tracking-[0.2em] flex items-center justify-center gap-1.5 border-white/20 mt-auto mx-auto"
                         >
                           <BookOpen size={11} strokeWidth={4} />
                           Ver Catálogo
