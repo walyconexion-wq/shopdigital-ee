@@ -107,16 +107,45 @@ const App: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
+  const DEFAULT_OG_IMAGE = 'https://images.unsplash.com/photo-1574126154517-d1e0d89ef734?w=1200&h=630&fit=crop';
+
+  const updateOGTags = (title: string, description: string, imageUrl: string) => {
+    const setMeta = (property: string, content: string) => {
+      let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement;
+      if (!meta) {
+        meta = document.querySelector(`meta[name="${property}"]`) as HTMLMetaElement;
+      }
+      if (meta) meta.content = content;
+    };
+    setMeta('og:title', title);
+    setMeta('og:description', description);
+    setMeta('og:image', imageUrl);
+    setMeta('twitter:title', title);
+    setMeta('twitter:description', description);
+    setMeta('twitter:image', imageUrl);
+  };
+
   const handleShare = () => {
     const appUrl = window.location.href;
     const shopName = selectedShop?.name || 'shopdigital.ar';
-    const shareText = selectedShop
-      ? `Te comparto el catálogo de *${shopName}* desde la App del Tanque 🚀\n\n👉 ${appUrl}`
-      : `¡Mirá los comercios de Esteban Echeverría en la App del Tanque! 🚀\n\n👉 ${appUrl}`;
+    const shopImage = selectedShop?.bannerImage || DEFAULT_OG_IMAGE;
+
+    const shareTitle = selectedShop
+      ? `${shopName} - Catálogo Online`
+      : 'shopdigital.ar - La App del Tanque';
+
+    const shareDescription = selectedShop
+      ? `Te comparto el catálogo de *${shopName}* desde la App del Tanque 🚀`
+      : `¡Mirá los comercios de Esteban Echeverría en la App del Tanque! 🚀`;
+
+    const shareText = `${shareDescription}\n\n👉 ${appUrl}`;
+
+    // Actualizar OG tags dinámicamente para que el crawler vea la info correcta
+    updateOGTags(shareTitle, shareDescription, shopImage);
 
     if (navigator.share) {
       navigator.share({
-        title: shopName,
+        title: shareTitle,
         text: shareText,
         url: appUrl,
       }).catch(console.error);
