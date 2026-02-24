@@ -4,12 +4,13 @@ import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 // --- CONFIGURACIÓN DE FIREBASE ---
 // Pegá acá tus credenciales de la consola de Firebase
 const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    projectId: "TU_PROYECTO_ID",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+    apiKey: "AIzaSyBSicRJMwdxG76eaXvQh07ncDYhxMz7mF0",
+    authDomain: "shopdigital-ee.firebaseapp.com",
+    projectId: "shopdigital-ee",
+    storageBucket: "shopdigital-ee.firebasestorage.app",
+    messagingSenderId: "201282750733",
+    appId: "1:201282750733:web:e1fc713e99fab35ba8c844",
+    measurementId: "G-D842DKHX2F"
 };
 
 // Inicializar Firebase
