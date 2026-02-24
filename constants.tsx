@@ -56,7 +56,7 @@ export const MOCK_SHOPS: Shop[] = [
     category: 'barber',
     rating: 4.8,
     specialty: 'Estilista & Barbería de Autor',
-    address: '9 de Julio, Llavallol, Esteban Echeverría',
+    address: '9 de Julio, Monte Grande, Esteban Echeverría',
     image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=400&fit=crop',
     bannerImage: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&h=400&fit=crop',
     offers: [
@@ -73,7 +73,7 @@ export const MOCK_SHOPS: Shop[] = [
     category: 'barber',
     rating: 4.9,
     specialty: 'Cortes Urbanos & Barba',
-    address: 'B1842 Llavallol, Esteban Echeverría',
+    address: 'B1842 Monte Grande, Esteban Echeverría',
     image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop',
     bannerImage: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&h=400&fit=crop',
     offers: [
