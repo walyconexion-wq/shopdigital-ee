@@ -21,7 +21,9 @@ import {
   PawPrint,
   Building2,
   Car,
-  Gift
+  Gift,
+  Briefcase,
+  Wrench
 } from 'lucide-react';
 import { Category, Shop } from './types';
 
@@ -47,6 +49,9 @@ export const CATEGORIES: Category[] = [
   { id: 'auto', name: 'Automotor', icon: <Car className="w-8 h-8" /> },
   { id: 'gifts', name: 'Regalería', icon: <Gift className="w-8 h-8" /> },
   { id: 'finance', name: 'Finanzas', icon: <DollarSign className="w-8 h-8" /> },
+  { id: 'servicios', name: 'Servicios y Profesionales', icon: <Briefcase className="w-8 h-8" /> },
+  { id: 'automotormotos', name: 'Automotor y Motos', icon: <Wrench className="w-8 h-8" /> },
+  { id: 'farmacias', name: 'Farmacias', icon: <PlusSquare className="w-8 h-8" /> },
 ];
 
 export const MOCK_SHOPS: Shop[] = [
