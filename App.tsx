@@ -282,6 +282,30 @@ const App: React.FC = () => {
     return allShops.filter(shop => shop.category === selectedCategory.id);
   }, [selectedCategory, allShops]);
 
+  // Agrupado para la Lista de Gestión del Admin
+  const groupedManagementShops = useMemo(() => {
+    const grouped: Record<string, Record<string, Shop[]>> = {};
+
+    LOCALITIES.forEach(loc => {
+      grouped[loc] = {};
+      const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const normalizedLoc = normalize(loc);
+
+      const shopsInLoc = allShops.filter(shop =>
+        shop && (shop.zone === loc || (shop.address && normalize(shop.address).includes(normalizedLoc)))
+      );
+
+      CATEGORIES.forEach(cat => {
+        const shopsInCat = shopsInLoc.filter(s => s.category === cat.id);
+        if (shopsInCat.length > 0) {
+          grouped[loc][cat.id] = shopsInCat;
+        }
+      });
+    });
+
+    return grouped;
+  }, [allShops]);
+
   return (
     <div className={`max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative border-x border-gray-100 shadow-2xl`}>
 
@@ -949,42 +973,83 @@ const App: React.FC = () => {
                   <div className="h-[1px] flex-1 bg-white/10"></div>
                 </div>
 
-                <div className="space-y-3 pb-20">
-                  {allShops.map(shop => (
-                    <div key={shop.id} className="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all">
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
-                          <img src={shop.bannerImage} className="w-full h-full object-cover" />
+                <div className="space-y-10 pb-20">
+                  {LOCALITIES.map(locality => {
+                    const categoriesInLoc = groupedManagementShops[locality];
+                    if (Object.keys(categoriesInLoc).length === 0) return null;
+
+                    return (
+                      <div key={locality} className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <MapPin size={12} className="text-red-500" />
+                          <h4 className="text-[12px] font-black text-white uppercase tracking-[0.2em]">{locality}</h4>
+                          <div className="h-[1px] flex-1 bg-white/5"></div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-[11px] font-black text-white uppercase truncate">{shop.name}</h4>
-                          <div className="flex items-center gap-2">
-                            <span className={`text-[7px] font-black uppercase tracking-widest ${shop.isActive !== false ? 'text-green-500' : 'text-red-500'}`}>
-                              {shop.isActive !== false ? 'Activo' : 'Suspendido'}
-                            </span>
-                            <span className="text-[7px] text-white/20 uppercase font-bold tracking-tighter">• {shop.category}</span>
-                          </div>
+
+                        <div className="space-y-8 pl-2">
+                          {CATEGORIES.map(category => {
+                            const shops = categoriesInLoc[category.id];
+                            if (!shops) return null;
+
+                            return (
+                              <div key={category.id} className="space-y-3">
+                                <div className="flex items-center gap-2 opacity-40">
+                                  {React.cloneElement(category.icon as React.ReactElement<any>, { size: 12 })}
+                                  <span className="text-[9px] font-bold uppercase tracking-widest">{category.name}</span>
+                                </div>
+
+                                <div className="space-y-2">
+                                  {shops.map(shop => (
+                                    <div
+                                      key={shop.id}
+                                      className="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all active:scale-[0.98]"
+                                    >
+                                      <div
+                                        onClick={() => {
+                                          setEditableShop({ ...shop });
+                                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
+                                      >
+                                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
+                                          <img src={shop.bannerImage} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="text-[11px] font-black text-white uppercase truncate">{shop.name}</h4>
+                                          <div className="flex items-center gap-2">
+                                            <span className={`text-[7px] font-black uppercase tracking-widest ${shop.isActive !== false ? 'text-green-500' : 'text-red-500'}`}>
+                                              {shop.isActive !== false ? 'Activo' : 'Suspendido'}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={() => {
+                                            setEditableShop({ ...shop });
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                          }}
+                                          className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all"
+                                        >
+                                          <PlusSquare size={16} />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteShop(shop.id)}
+                                          className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500/40 hover:text-red-500 hover:bg-red-500/20 transition-all"
+                                        >
+                                          <Trash2 size={16} />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => {
-                            setEditableShop({ ...shop });
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                          }}
-                          className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all"
-                        >
-                          <PlusSquare size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteShop(shop.id)}
-                          className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500/40 hover:text-red-500 hover:bg-red-500/20 transition-all"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
