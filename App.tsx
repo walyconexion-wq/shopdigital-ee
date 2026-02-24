@@ -2,6 +2,8 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Shop, Category } from './types';
 import { CATEGORIES, MOCK_SHOPS } from './constants';
 import Logo from './components/Logo';
+import { db, obtenerComercios, guardarComercio } from './firebase';
+import { useEffect } from 'react';
 import {
   Share2,
   Star,
@@ -19,6 +21,7 @@ import {
   Save,
   Image as ImageIcon,
   Plus,
+  PlusSquare,
   Trash2,
   Camera,
   Pizza,
@@ -41,6 +44,19 @@ const App: React.FC = () => {
 
   // Estado para la edición
   const [editableShop, setEditableShop] = useState<Shop | null>(null);
+  const [allShops, setAllShops] = useState<Shop[]>(MOCK_SHOPS);
+
+  // Cargar datos de Firebase al iniciar
+  useEffect(() => {
+    const loadData = async () => {
+      const fbShops = await obtenerComercios();
+      if (fbShops && fbShops.length > 0) {
+        // Mapear IDs si es necesario y actualizar estado
+        setAllShops(fbShops as unknown as Shop[]);
+      }
+    };
+    loadData();
+  }, []);
 
   const handleCategoryClick = useCallback((category: Category) => {
     setSelectedCategory(category);
@@ -80,11 +96,21 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editableShop) {
-      setSelectedShop(editableShop);
-      setCurrentView(View.DETAIL);
-      alert('¡Cambios guardados con éxito!');
+      try {
+        // Enviar a Firebase
+        await guardarComercio(editableShop);
+
+        // Actualizar estado local
+        setSelectedShop(editableShop);
+        setAllShops(prev => prev.map(s => s.id === editableShop.id ? editableShop : s));
+
+        setCurrentView(View.DETAIL);
+        alert('¡Cambios sincronizados en la nube con éxito!');
+      } catch (error) {
+        alert('Error al guardar en Firebase. Verificá la configuración.');
+      }
     }
   };
 
@@ -185,8 +211,8 @@ const App: React.FC = () => {
 
   const filteredShops = useMemo(() => {
     if (!selectedCategory) return [];
-    return MOCK_SHOPS.filter(shop => shop.category === selectedCategory.id);
-  }, [selectedCategory]);
+    return allShops.filter(shop => shop.category === selectedCategory.id);
+  }, [selectedCategory, allShops]);
 
   return (
     <div className={`max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative border-x border-gray-100 shadow-2xl`}>
@@ -617,6 +643,25 @@ const App: React.FC = () => {
             </div>
 
             <div className="px-8 space-y-10">
+              {/* Sección Categoría */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <PlusSquare size={16} className="text-[#0A224E]/40" />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0A224E]">Rubro / Categoría</h3>
+                </div>
+                <div className="btn-volume bg-white p-4 rounded-2xl flex items-center gap-3">
+                  <select
+                    value={editableShop.category}
+                    onChange={(e) => setEditableShop({ ...editableShop, category: e.target.value })}
+                    className="text-[12px] font-black text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-full appearance-none cursor-pointer"
+                  >
+                    {CATEGORIES.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               {/* Sección Portada */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 mb-2">

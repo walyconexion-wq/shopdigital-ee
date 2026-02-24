@@ -17,7 +17,11 @@ import {
   Sparkles,
   Pizza,
   UtensilsCrossed,
-  Beef
+  Beef,
+  PawPrint,
+  Building2,
+  Car,
+  Gift
 } from 'lucide-react';
 import { Category, Shop } from './types';
 
@@ -32,14 +36,17 @@ export const CATEGORIES: Category[] = [
   { id: 'fashion', name: 'Indumentaria', icon: <Shirt className="w-8 h-8" /> },
   { id: 'tech', name: 'Tecnología', icon: <Smartphone className="w-8 h-8" /> },
   { id: 'home', name: 'Hogar', icon: <HomeIcon className="w-8 h-8" /> },
-  { id: 'pharmacy', name: 'Farmacias', icon: <PlusSquare className="w-8 h-8" /> },
   { id: 'barber', name: 'Barberías', icon: <Scissors className="w-8 h-8" /> },
   { id: 'hair', name: 'Peluquerías', icon: <UserCircle className="w-8 h-8" /> },
   { id: 'gym', name: 'Gimnasios', icon: <Dumbbell className="w-8 h-8" /> },
   { id: 'hardware', name: 'Ferreterías', icon: <Hammer className="w-8 h-8" /> },
-  { id: 'finance', name: 'Finanzas', icon: <DollarSign className="w-8 h-8" /> },
+  { id: 'pets', name: 'Mascotas', icon: <PawPrint className="w-8 h-8" /> },
   { id: 'tattoo', name: 'Tatuajes', icon: <PenTool className="w-8 h-8" /> },
   { id: 'beauty', name: 'Estética', icon: <Sparkles className="w-8 h-8" /> },
+  { id: 'inmo', name: 'Inmobiliarias', icon: <Building2 className="w-8 h-8" /> },
+  { id: 'auto', name: 'Automotor', icon: <Car className="w-8 h-8" /> },
+  { id: 'gifts', name: 'Regalería', icon: <Gift className="w-8 h-8" /> },
+  { id: 'finance', name: 'Finanzas', icon: <DollarSign className="w-8 h-8" /> },
 ];
 
 export const MOCK_SHOPS: Shop[] = [
