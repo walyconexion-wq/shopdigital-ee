@@ -185,11 +185,11 @@ const App: React.FC = () => {
 
     const shareTitle = selectedShop
       ? `${shopName} - Catálogo Online`
-      : 'shopdigital.ar - La App del Tanque';
+      : 'shopdigital.ar - La App de Waly';
 
     const shareDescription = selectedShop
-      ? `Te comparto el catálogo de *${shopName}* desde la App del Tanque 🚀`
-      : `¡Mirá los comercios de Esteban Echeverría en la App del Tanque! 🚀`;
+      ? `Te comparto el catálogo de *${shopName}* desde la App de Waly 🚀`
+      : `¡Mirá los comercios de Esteban Echeverría en la App de Waly! 🚀`;
 
     const shareText = `${shareDescription}\n\n👉 ${appUrl}`;
 
@@ -227,9 +227,9 @@ const App: React.FC = () => {
 
     LOCALITIES.forEach(loc => {
       const normalizedLoc = normalize(loc);
-      grouped[loc] = MOCK_SHOPS.filter(shop =>
+      grouped[loc] = allShops.filter(shop =>
         shop.category === selectedCategory.id &&
-        shop.address && normalize(shop.address).includes(normalizedLoc)
+        ((shop.zone === loc) || (shop.address && normalize(shop.address).includes(normalizedLoc)))
       );
     });
 
@@ -813,7 +813,7 @@ const App: React.FC = () => {
       >
         <div className="h-[1px] w-8 bg-white/10 group-hover:w-16 transition-all duration-700"></div>
         <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.5em] group-hover:text-white/40 transition-colors">
-          © 2026 La App del Tanque
+          © 2026 La App de Waly
         </p>
         <p className="text-[6px] font-bold text-white/10 uppercase tracking-[0.2em]">
           E. Echeverría • ShopDigital.ar
