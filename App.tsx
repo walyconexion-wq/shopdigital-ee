@@ -86,7 +86,12 @@ const App: React.FC = () => {
     if (currentView === View.DETAIL) {
       setCurrentView(View.CATEGORY);
     } else if (currentView === View.EDIT_PANEL) {
-      setCurrentView(View.DETAIL);
+      if (selectedShop) {
+        setCurrentView(View.DETAIL);
+      } else {
+        setSelectedCategory(null);
+        setCurrentView(View.HOME);
+      }
     } else {
       setSelectedCategory(null);
       setCurrentView(View.HOME);
@@ -102,6 +107,25 @@ const App: React.FC = () => {
       setShowLoginModal(false);
       setPassword('');
       setLoginError(false);
+
+      // Si no hay un comercio editable (venimos del footer), inicializar uno vacío
+      if (!editableShop) {
+        setEditableShop({
+          id: '',
+          name: '',
+          category: CATEGORIES[0].id,
+          rating: 5.0,
+          specialty: '',
+          address: '',
+          phone: '',
+          bannerImage: '',
+          image: '',
+          offers: [],
+          mapUrl: '',
+          mapSheetUrl: ''
+        });
+      }
+
       setCurrentView(View.EDIT_PANEL);
     } else {
       setLoginError(true);
@@ -656,7 +680,16 @@ const App: React.FC = () => {
 
         {/* INTERFAZ: PANEL DE EDICIÓN (MODO OSCURO) */}
         {currentView === View.EDIT_PANEL && editableShop && (
-          <div className="pb-24 animate-in slide-in-from-right duration-500 bg-[#000] text-white min-h-screen no-scrollbar">
+          <div className="pb-24 animate-in slide-in-from-right duration-500 bg-[#000] text-white min-h-screen no-scrollbar relative z-[60]">
+            {/* Inputs de Archivos Ocultos */}
+            <input
+              type="file"
+              ref={bannerInputRef}
+              onChange={(e) => handleImageUpload(e, 'banner')}
+              accept="image/*"
+              className="hidden"
+            />
+
             {/* Header del Panel */}
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-white/5 mb-8 sticky top-0 z-50">
               <button
@@ -788,6 +821,79 @@ const App: React.FC = () => {
                     rows={3}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[10px] font-mono text-blue-300 resize-none"
                   />
+                </div>
+              </div>
+
+              {/* Sección Ofertas (Restaurada) */}
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <ShoppingBag size={16} className="text-green-500" />
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Ofertas / Productos</h3>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newOffer = { id: `off-${Date.now()}`, name: 'NUEVA OFERTA', price: 0, image: DEFAULT_OG_IMAGE };
+                      setEditableShop({ ...editableShop, offers: [...editableShop.offers, newOffer] });
+                    }}
+                    className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-90 transition-transform"
+                  >
+                    <Plus size={16} strokeWidth={3} />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {editableShop.offers.map((offer, idx) => (
+                    <div key={offer.id} className="bg-white/5 p-4 rounded-2xl flex items-center gap-4 border border-white/5">
+                      <input
+                        type="file"
+                        ref={el => offerInputRefs.current[offer.id] = el}
+                        onChange={(e) => handleImageUpload(e, 'offer', offer.id)}
+                        accept="image/*"
+                        className="hidden"
+                      />
+                      <div
+                        onClick={() => offerInputRefs.current[offer.id]?.click()}
+                        className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 cursor-pointer border border-white/10"
+                      >
+                        <img src={offer.image} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-grow space-y-1">
+                        <input
+                          type="text"
+                          value={offer.name}
+                          onChange={(e) => {
+                            const newOffers = [...editableShop.offers];
+                            newOffers[idx].name = e.target.value;
+                            setEditableShop({ ...editableShop, offers: newOffers });
+                          }}
+                          className="bg-transparent border-none p-0 focus:ring-0 text-[12px] font-bold text-white w-full uppercase"
+                        />
+                        <div className="flex items-center gap-1 text-green-500">
+                          <span className="text-[10px] font-black">$</span>
+                          <input
+                            type="number"
+                            value={offer.price}
+                            onChange={(e) => {
+                              const newOffers = [...editableShop.offers];
+                              newOffers[idx].price = Number(e.target.value);
+                              setEditableShop({ ...editableShop, offers: newOffers });
+                            }}
+                            className="bg-transparent border-none p-0 focus:ring-0 text-[12px] font-black text-white w-24"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newOffers = editableShop.offers.filter(o => o.id !== offer.id);
+                          setEditableShop({ ...editableShop, offers: newOffers });
+                        }}
+                        className="text-red-500/30 hover:text-red-500 transition-colors p-2"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
 
