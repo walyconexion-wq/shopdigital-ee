@@ -28,8 +28,11 @@ export interface Shop {
   rating: number;
   specialty: string;
   address: string;
+  phone?: string;
+  zone?: string;
   image: string;
   bannerImage: string;
   offers: ProductOffer[];
-  mapUrl: string;
+  mapUrl: string; // Este es el iframe (embed)
+  mapSheetUrl?: string; // Este es el link a la ficha técnica
 }

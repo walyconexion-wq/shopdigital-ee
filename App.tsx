@@ -36,6 +36,19 @@ const App: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
+  const [footerClicks, setFooterClicks] = useState(0);
+
+  const handleFooterClick = () => {
+    const newCount = footerClicks + 1;
+    if (newCount >= 6) {
+      setShowLoginModal(true);
+      setFooterClicks(0);
+    } else {
+      setFooterClicks(newCount);
+      // Reset count after 3 seconds of inactivity
+      setTimeout(() => setFooterClicks(0), 3000);
+    }
+  };
 
   // Refs para navegación y archivos
   const catalogRef = useRef<HTMLDivElement>(null);
@@ -99,16 +112,30 @@ const App: React.FC = () => {
   const handleSaveEdit = async () => {
     if (editableShop) {
       try {
+        // Asegurar que tenga los campos nuevos si no los tiene
+        const shopToSave = {
+          ...editableShop,
+          id: editableShop.id || `shop-${Date.now()}`, // Generar ID si es nuevo
+          rating: editableShop.rating || 5.0,
+        };
+
         // Enviar a Firebase
-        await guardarComercio(editableShop);
+        await guardarComercio(shopToSave);
 
         // Actualizar estado local
-        setSelectedShop(editableShop);
-        setAllShops(prev => prev.map(s => s.id === editableShop.id ? editableShop : s));
+        setSelectedShop(shopToSave);
+        setAllShops(prev => {
+          const exists = prev.find(s => s.id === shopToSave.id);
+          if (exists) {
+            return prev.map(s => s.id === shopToSave.id ? shopToSave : s);
+          }
+          return [...prev, shopToSave];
+        });
 
         setCurrentView(View.DETAIL);
-        alert('¡Cambios sincronizados en la nube con éxito!');
+        alert('¡Comercio guardado en la nube con éxito!');
       } catch (error) {
+        console.error(error);
         alert('Error al guardar en Firebase. Verificá la configuración.');
       }
     }
@@ -627,158 +654,151 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* INTERFAZ: PANEL DE EDICIÓN */}
+        {/* INTERFAZ: PANEL DE EDICIÓN (MODO OSCURO) */}
         {currentView === View.EDIT_PANEL && editableShop && (
-          <div className="pb-24 animate-in slide-in-from-right duration-500 bg-[#E8F5EA] min-h-screen">
+          <div className="pb-24 animate-in slide-in-from-right duration-500 bg-[#000] text-white min-h-screen no-scrollbar">
             {/* Header del Panel */}
-            <div className="bg-white pt-8 pb-6 px-8 flex flex-col items-center shadow-sm border-b border-[#0A224E]/5 mb-8">
+            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-white/5 mb-8 sticky top-0 z-50">
               <button
                 onClick={handleBack}
-                className="btn-volume self-start mb-4 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0A224E] border-[#0A224E]/20"
+                className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10 active:scale-90 transition-all"
               >
-                <ChevronLeft size={18} strokeWidth={3} />
+                <ChevronLeft size={20} strokeWidth={3} />
               </button>
-              <h2 className="text-[20px] font-black text-[#0A224E] uppercase tracking-[0.2em] mb-1">Panel de Edición</h2>
-              <p className="text-[10px] font-bold text-[#0A224E]/40 uppercase tracking-widest">{editableShop.name}</p>
+              <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] mb-1">Carga de Comercio</h2>
+              <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Panel de Gestión Real</p>
             </div>
 
-            <div className="px-8 space-y-10">
-              {/* Sección Categoría */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <PlusSquare size={16} className="text-[#0A224E]/40" />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0A224E]">Rubro / Categoría</h3>
-                </div>
-                <div className="btn-volume bg-white p-4 rounded-2xl flex items-center gap-3">
-                  <select
-                    value={editableShop.category}
-                    onChange={(e) => setEditableShop({ ...editableShop, category: e.target.value })}
-                    className="text-[12px] font-black text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-full appearance-none cursor-pointer"
-                  >
-                    {CATEGORIES.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Sección Portada */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <ImageIcon size={16} className="text-[#0A224E]/40" />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0A224E]">Imagen de Portada</h3>
-                </div>
-
+            <div className="px-8 space-y-8">
+              {/* Nombre del Comercio */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block ml-1">Nombre del Comercio</label>
                 <input
-                  type="file"
-                  ref={bannerInputRef}
-                  onChange={(e) => handleImageUpload(e, 'banner')}
-                  accept="image/*"
-                  className="hidden"
+                  type="text"
+                  value={editableShop.name}
+                  onChange={(e) => setEditableShop({ ...editableShop, name: e.target.value })}
+                  placeholder="Ej: PIZZERÍA EL TANQUE"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[14px] font-bold text-white focus:border-green-500 focus:ring-0 transition-all shadow-xl"
                 />
-
-                <div
-                  onClick={() => bannerInputRef.current?.click()}
-                  className="btn-volume relative h-36 rounded-3xl overflow-hidden border-2 border-[#0A224E]/10 shadow-inner group cursor-pointer active:scale-95 transition-transform"
-                >
-                  <img src={editableShop.bannerImage} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera size={24} className="text-white mb-2" />
-                    <span className="text-white text-[9px] font-black uppercase tracking-widest text-center">Toca para subir desde galería</span>
-                  </div>
-                </div>
               </div>
 
-              {/* Sección Ofertas */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <ShoppingBag size={16} className="text-[#0A224E]/40" />
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0A224E]">Ofertas del Catálogo</h3>
-                  </div>
-                  <button className="w-8 h-8 rounded-full bg-[#0A224E] text-white flex items-center justify-center active:scale-90 transition-transform">
-                    <Plus size={16} strokeWidth={3} />
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {editableShop.offers.map((offer, idx) => (
-                    <div key={offer.id} className="btn-volume bg-white p-3 rounded-2xl flex items-center gap-4 hover:top-0 active:top-0 cursor-default">
-                      <input
-                        type="file"
-                        ref={el => offerInputRefs.current[offer.id] = el}
-                        onChange={(e) => handleImageUpload(e, 'offer', offer.id)}
-                        accept="image/*"
-                        className="hidden"
-                      />
-
-                      <div
-                        onClick={() => offerInputRefs.current[offer.id]?.click()}
-                        className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 relative group cursor-pointer border border-[#0A224E]/5"
-                      >
-                        <img src={offer.image} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Camera size={12} className="text-white" />
-                        </div>
-                      </div>
-
-                      <div className="flex-grow flex flex-col gap-1">
-                        <input
-                          type="text"
-                          value={offer.name}
-                          onChange={(e) => {
-                            const newOffers = [...editableShop.offers];
-                            newOffers[idx].name = e.target.value;
-                            setEditableShop({ ...editableShop, offers: newOffers });
-                          }}
-                          className="text-[10px] font-black uppercase tracking-tight text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-full"
-                        />
-                        <div className="flex items-center gap-1">
-                          <span className="text-[10px] font-black text-[#0A224E]/50">$</span>
-                          <input
-                            type="number"
-                            value={offer.price}
-                            onChange={(e) => {
-                              const newOffers = [...editableShop.offers];
-                              newOffers[idx].price = Number(e.target.value);
-                              setEditableShop({ ...editableShop, offers: newOffers });
-                            }}
-                            className="text-[10px] font-black text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-20"
-                          />
-                        </div>
-                      </div>
-                      <button className="text-[#FF0000]/30 hover:text-[#FF0000] transition-colors p-1">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+              {/* Zona / Localidad */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block ml-1">Zona / Localidad</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {LOCALITIES.map(loc => (
+                    <button
+                      key={loc}
+                      onClick={() => setEditableShop({ ...editableShop, zone: loc, address: `${loc}, Esteban Echeverría` })}
+                      className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-wider border transition-all ${editableShop.zone === loc || editableShop.address?.includes(loc) ? 'bg-green-500 border-green-400 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-white/5 border-white/10 text-white/40'}`}
+                    >
+                      {loc}
+                    </button>
                   ))}
                 </div>
               </div>
 
-              {/* Sección Contacto */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <MessageCircle size={16} className="text-[#0A224E]/40" />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0A224E]">Configurar WhatsApp</h3>
+              {/* Rubro / Categoría */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block ml-1">Rubro Oficial</label>
+                <div className="relative">
+                  <select
+                    value={editableShop.category}
+                    onChange={(e) => setEditableShop({ ...editableShop, category: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[13px] font-bold text-white focus:border-green-500 appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled className="bg-zinc-900">Seleccionar rubro...</option>
+                    {CATEGORIES.map(cat => (
+                      <option key={cat.id} value={cat.id} className="bg-zinc-900">{cat.name}</option>
+                    ))}
+                  </select>
+                  <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                    <PlusSquare size={16} />
+                  </div>
                 </div>
-                <div className="btn-volume bg-white p-4 rounded-2xl flex items-center gap-3">
-                  <span className="text-[12px] font-black text-[#0A224E]/30">+54 9</span>
+              </div>
+
+              {/* Dirección y Teléfono */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block ml-1">Dirección</label>
+                  <input
+                    type="text"
+                    value={editableShop.address}
+                    onChange={(e) => setEditableShop({ ...editableShop, address: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-[12px] font-bold text-white"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block ml-1">Teléfono (WhatsApp)</label>
                   <input
                     type="tel"
+                    value={editableShop.phone || ''}
+                    onChange={(e) => setEditableShop({ ...editableShop, phone: e.target.value })}
                     placeholder="11 1234 5678"
-                    className="text-[12px] font-black text-[#0A224E] bg-transparent border-none p-0 focus:ring-0 w-full"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-[12px] font-bold text-white"
                   />
                 </div>
               </div>
 
-              {/* Botón Guardar */}
-              <div className="pt-8 flex flex-col items-center">
+              {/* URL del Banner */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block ml-1">URL Imagen Portada (Banner)</label>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={editableShop.bannerImage}
+                    onChange={(e) => setEditableShop({ ...editableShop, bannerImage: e.target.value })}
+                    placeholder="https://images.unsplash.com/..."
+                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[12px] font-bold text-white"
+                  />
+                  <button
+                    onClick={() => bannerInputRef.current?.click()}
+                    className="w-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white/40"
+                  >
+                    <Camera size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Google Maps Ficha y Embed */}
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin size={16} className="text-red-500" />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Configuración de Google Maps</h3>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 block ml-1">Ficha Técnica (Link Directo)</label>
+                  <input
+                    type="text"
+                    value={editableShop.mapSheetUrl || ''}
+                    onChange={(e) => setEditableShop({ ...editableShop, mapSheetUrl: e.target.value })}
+                    placeholder="https://maps.app.goo.gl/..."
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[11px] text-white/70"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 block ml-1">HTML Embed (Iframe Compartir)</label>
+                  <textarea
+                    value={editableShop.mapUrl}
+                    onChange={(e) => setEditableShop({ ...editableShop, mapUrl: e.target.value })}
+                    placeholder="<iframe src='...'></iframe>"
+                    rows={3}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[10px] font-mono text-blue-300 resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Botón Guardar Principal */}
+              <div className="pt-6 pb-20">
                 <button
                   onClick={handleSaveEdit}
-                  className="btn-volume w-full bg-[#22C55E] text-white py-5 rounded-[1.8rem] flex items-center justify-center gap-3 text-[13px] font-[900] uppercase tracking-[0.25em] shadow-xl border-[#15803d] border-bottom-[6px] active:border-bottom-[1px] active:scale-95 transition-all mb-10"
+                  className="w-full bg-green-500 text-black py-6 rounded-[2rem] flex items-center justify-center gap-4 text-[14px] font-[1000] uppercase tracking-[0.3em] shadow-[0_10px_30px_rgba(34,197,94,0.3)] border-b-[6px] border-green-700 active:border-b-0 active:translate-y-[6px] transition-all"
                 >
-                  <Save size={20} strokeWidth={2.5} />
-                  Guardar Cambios
+                  <Save size={24} strokeWidth={2.5} />
+                  Guardar en Firestore
                 </button>
               </div>
             </div>
@@ -786,18 +806,32 @@ const App: React.FC = () => {
         )}
       </main>
 
+      {/* FOOTER OCULTO - TRIGGER PANEL ADMIN (6 CLICS) */}
+      <footer
+        onClick={handleFooterClick}
+        className="flex-shrink-0 py-6 flex flex-col items-center gap-2 bg-transparent relative z-20 cursor-default select-none group"
+      >
+        <div className="h-[1px] w-8 bg-white/10 group-hover:w-16 transition-all duration-700"></div>
+        <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.5em] group-hover:text-white/40 transition-colors">
+          © 2026 La App del Tanque
+        </p>
+        <p className="text-[6px] font-bold text-white/10 uppercase tracking-[0.2em]">
+          E. Echeverría • ShopDigital.ar
+        </p>
+      </footer>
+
       {/* MODAL DE LOGIN */}
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="absolute inset-0 bg-[#0A224E]/60 backdrop-blur-md" onClick={() => setShowLoginModal(false)}></div>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setShowLoginModal(false)}></div>
 
-          <div className={`btn-volume relative w-full max-w-[300px] bg-white rounded-[2.5rem] p-8 flex flex-col items-center border-[#0A224E]/20 shadow-2xl transition-all ${loginError ? 'animate-shake' : ''}`}>
-            <div className="w-16 h-16 rounded-full bg-[#E8F5EA] flex items-center justify-center text-[#0A224E] mb-6 border border-[#0A224E]/5 shadow-inner">
-              <Lock size={28} strokeWidth={2.5} />
+          <div className={`btn-volume relative w-full max-w-[320px] bg-zinc-900 rounded-[2.8rem] p-10 flex flex-col items-center border border-white/10 shadow-2xl transition-all ${loginError ? 'animate-shake' : ''}`}>
+            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center text-green-500 mb-8 border border-white/5 shadow-inner">
+              <Lock size={32} strokeWidth={2.5} />
             </div>
 
-            <h3 className="text-[13px] font-black text-[#0A224E] uppercase tracking-[0.2em] mb-2">Acceso Dueño</h3>
-            <p className="text-[9px] font-bold text-[#0A224E]/40 uppercase tracking-widest text-center mb-8">Ingresá la contraseña de gestión</p>
+            <h3 className="text-[14px] font-black text-white uppercase tracking-[0.3em] mb-3">Acceso Admin</h3>
+            <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest text-center mb-10">Ingresá la clave de gestión</p>
 
             <input
               type="password"
@@ -805,23 +839,42 @@ const App: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-              className="w-full text-center bg-gray-50 border-2 border-[#0A224E]/10 rounded-2xl py-4 mb-6 focus:border-[#22C55E] focus:ring-0 transition-colors text-[#0A224E] font-black tracking-widest text-[16px]"
+              className="w-full text-center bg-white/5 border-2 border-white/10 rounded-2xl py-5 mb-8 focus:border-green-500 focus:ring-0 transition-all text-white font-black tracking-[0.5em] text-[20px]"
               autoFocus
             />
 
-            <button
-              onClick={handleLogin}
-              className="btn-volume w-full bg-[#0A224E] text-white py-4 rounded-[1.4rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-lg border-[#061633] border-bottom-[5px] active:border-bottom-[1px]"
-            >
-              Entrar
-            </button>
+            <div className="flex flex-col w-full gap-4">
+              <button
+                onClick={handleLogin}
+                className="w-full bg-white text-black py-5 rounded-[1.6rem] text-[11px] font-black uppercase tracking-[0.4em] shadow-lg border-b-[5px] border-gray-300 active:border-b-0 active:translate-y-[5px] transition-all"
+              >
+                Entrar
+              </button>
 
-            <button
-              onClick={() => setShowLoginModal(false)}
-              className="mt-6 text-[8px] font-black text-[#0A224E]/30 uppercase tracking-[0.4em] hover:text-[#0A224E] transition-colors"
-            >
-              Cancelar
-            </button>
+              <button
+                onClick={() => {
+                  // Crear un comercio nuevo vacío para cargar
+                  setEditableShop({
+                    id: '',
+                    name: '',
+                    category: CATEGORIES[0].id,
+                    rating: 5.0,
+                    specialty: '',
+                    address: '',
+                    phone: '',
+                    bannerImage: '',
+                    image: '',
+                    offers: [],
+                    mapUrl: '',
+                    mapSheetUrl: ''
+                  });
+                  handleLogin();
+                }}
+                className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] hover:text-white/50 transition-colors mt-2"
+              >
+                + Cargar Nuevo Comercio
+              </button>
+            </div>
           </div>
         </div>
       )}
