@@ -36,4 +36,7 @@ export interface Shop {
   mapUrl: string; // Este es el iframe (embed)
   mapSheetUrl?: string; // Este es el link a la ficha técnica
   isActive?: boolean;
+  instagram?: string;
+  facebook?: string;
+  tiktok?: string;
 }

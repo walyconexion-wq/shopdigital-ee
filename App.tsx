@@ -26,7 +26,8 @@ import {
   Camera,
   Pizza,
   Facebook,
-  Instagram
+  Instagram,
+  Music
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -122,7 +123,10 @@ const App: React.FC = () => {
           image: '',
           offers: [],
           mapUrl: '',
-          mapSheetUrl: ''
+          mapSheetUrl: '',
+          instagram: '',
+          facebook: '',
+          tiktok: ''
         });
       }
 
@@ -456,6 +460,12 @@ const App: React.FC = () => {
                             <MapPin size={10} strokeWidth={3} className="flex-shrink-0" />
                             <span className="truncate">{shop.address}</span>
                           </div>
+                          {/* Social Icons Mini */}
+                          <div className="flex gap-2 mb-2 opacity-60">
+                            {shop.instagram && <Instagram size={11} className="text-white" />}
+                            {shop.facebook && <Facebook size={11} className="text-white" />}
+                            {shop.tiktok && <Music size={11} className="text-white" />}
+                          </div>
                           <div className="flex items-center gap-0.5 mt-0.5">
                             {[...Array(5)].map((_, i) => (
                               <Star key={i} size={9} className={`${i < Math.floor(shop.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-white/10'}`} />
@@ -672,26 +682,24 @@ const App: React.FC = () => {
                   {/* Redes Sociales */}
                   <div className="grid grid-cols-3 gap-3 w-full">
                     <button
-                      onClick={() => handleOpenLink('https://www.facebook.com/')}
-                      className="glass-action-btn w-full bg-[#1877F2]/20 hover:bg-[#1877F2]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#1877F2]/40 transition-all"
+                      onClick={() => handleOpenLink(selectedShop.facebook || 'https://www.facebook.com/')}
+                      className={`glass-action-btn w-full bg-[#1877F2]/20 hover:bg-[#1877F2]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#1877F2]/40 transition-all ${!selectedShop.facebook && 'opacity-30 grayscale'}`}
                     >
                       <Facebook size={18} className="text-[#1877F2]" strokeWidth={2.5} />
                       <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Facebook</span>
                     </button>
                     <button
-                      onClick={() => handleOpenLink('https://www.instagram.com/')}
-                      className="glass-action-btn w-full bg-[#E4405F]/20 hover:bg-[#E4405F]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#E4405F]/40 transition-all"
+                      onClick={() => handleOpenLink(selectedShop.instagram || 'https://www.instagram.com/')}
+                      className={`glass-action-btn w-full bg-[#E4405F]/20 hover:bg-[#E4405F]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#E4405F]/40 transition-all ${!selectedShop.instagram && 'opacity-30 grayscale'}`}
                     >
                       <Instagram size={18} className="text-[#E4405F]" strokeWidth={2.5} />
                       <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Instagram</span>
                     </button>
                     <button
-                      onClick={() => handleOpenLink('https://www.tiktok.com/')}
-                      className="glass-action-btn w-full bg-white/10 hover:bg-white/20 py-4 flex flex-col items-center justify-center gap-1.5 border-white/30 transition-all"
+                      onClick={() => handleOpenLink(selectedShop.tiktok || 'https://www.tiktok.com/')}
+                      className={`glass-action-btn w-full bg-white/10 hover:bg-white/20 py-4 flex flex-col items-center justify-center gap-1.5 border-white/30 transition-all ${!selectedShop.tiktok && 'opacity-30 grayscale'}`}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#EE1D52]">
-                        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-                      </svg>
+                      <Music size={18} className="text-white" strokeWidth={2.5} />
                       <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">TikTok</span>
                     </button>
                   </div>
@@ -848,6 +856,47 @@ const App: React.FC = () => {
                   >
                     <Camera size={20} />
                   </button>
+                </div>
+              </div>
+
+              {/* Redes Sociales */}
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Share2 size={16} className="text-blue-400" />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Redes Sociales</h3>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 block ml-1">Instagram (URL)</label>
+                    <input
+                      type="text"
+                      value={editableShop.instagram || ''}
+                      onChange={(e) => setEditableShop({ ...editableShop, instagram: e.target.value })}
+                      placeholder="https://instagram.com/perfil"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[11px] text-white/70"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 block ml-1">Facebook (URL)</label>
+                    <input
+                      type="text"
+                      value={editableShop.facebook || ''}
+                      onChange={(e) => setEditableShop({ ...editableShop, facebook: e.target.value })}
+                      placeholder="https://facebook.com/perfil"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[11px] text-white/70"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 block ml-1">TikTok (URL)</label>
+                    <input
+                      type="text"
+                      value={editableShop.tiktok || ''}
+                      onChange={(e) => setEditableShop({ ...editableShop, tiktok: e.target.value })}
+                      placeholder="https://tiktok.com/@usuario"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[11px] text-white/70"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1117,7 +1166,10 @@ const App: React.FC = () => {
                     image: '',
                     offers: [],
                     mapUrl: '',
-                    mapSheetUrl: ''
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
                   });
                   handleLogin();
                 }}
