@@ -142,6 +142,7 @@ const App: React.FC = () => {
           id: editableShop.id || `shop-${Date.now()}`, // Generar ID si es nuevo
           rating: editableShop.rating || 5.0,
           isActive: editableShop.isActive !== undefined ? editableShop.isActive : true,
+          offers: editableShop.offers || [],
         };
 
         // Enviar a Firebase
@@ -266,9 +267,10 @@ const App: React.FC = () => {
     LOCALITIES.forEach(loc => {
       const normalizedLoc = normalize(loc);
       grouped[loc] = allShops.filter(shop =>
+        shop &&
         shop.isActive !== false &&
         shop.category === selectedCategory.id &&
-        ((shop.zone === loc) || (shop.address && normalize(shop.address).includes(normalizedLoc)))
+        ((shop.zone === loc) || (shop.address && normalize(shop.address || "").includes(normalizedLoc)))
       );
     });
 
@@ -865,7 +867,7 @@ const App: React.FC = () => {
                   <button
                     onClick={() => {
                       const newOffer = { id: `off-${Date.now()}`, name: 'NUEVA OFERTA', price: 0, image: DEFAULT_OG_IMAGE };
-                      setEditableShop({ ...editableShop, offers: [...editableShop.offers, newOffer] });
+                      setEditableShop({ ...editableShop, offers: [...(editableShop.offers || []), newOffer] });
                     }}
                     className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-90 transition-transform"
                   >
@@ -874,7 +876,7 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {editableShop.offers.map((offer, idx) => (
+                  {(editableShop.offers || []).map((offer, idx) => (
                     <div key={offer.id} className="bg-white/5 p-4 rounded-2xl flex items-center gap-4 border border-white/5">
                       <input
                         type="file"
