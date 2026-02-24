@@ -1,8 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
-// Pegá acá tus credenciales de la consola de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBSicRJMwdxG76eaXvQh07ncDYhxMz7mF0",
     authDomain: "shopdigital-ee.firebaseapp.com",
@@ -23,9 +22,9 @@ export const db = getFirestore(app);
 export const obtenerComercios = async () => {
     try {
         const querySnapshot = await getDocs(collection(db, "comercios"));
-        return querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
+        return querySnapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
         }));
     } catch (error) {
         console.error("Error obteniendo comercios:", error);
@@ -33,15 +32,29 @@ export const obtenerComercios = async () => {
     }
 };
 
-// 2. Guardar un nuevo comercio en la colección "comercios"
+// 2. Guardar o actualizar un comercio en la colección "comercios"
 export const guardarComercio = async (comercioData: any) => {
     try {
-        // Al usar addDoc, Firebase genera un ID automático
-        const docRef = await addDoc(collection(db, "comercios"), comercioData);
-        console.log("Comercio guardado con éxito. ID:", docRef.id);
-        return docRef.id;
+        const id = comercioData.id;
+        if (!id) throw new Error("ID de comercio es requerido para guardar.");
+
+        await setDoc(doc(db, "comercios", id), comercioData);
+        console.log("Comercio guardado con éxito. ID:", id);
+        return id;
     } catch (error) {
         console.error("Error al guardar en Firestore:", error);
+        throw error;
+    }
+};
+
+// 3. Eliminar un comercio de la colección "comercios"
+export const eliminarComercio = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "comercios", id));
+        console.log("Comercio eliminado con éxito. ID:", id);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar de Firestore:", error);
         throw error;
     }
 };

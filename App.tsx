@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Shop, Category } from './types';
 import { CATEGORIES, MOCK_SHOPS } from './constants';
 import Logo from './components/Logo';
-import { db, obtenerComercios, guardarComercio } from './firebase';
+import { db, obtenerComercios, guardarComercio, eliminarComercio } from './firebase';
 import { useEffect } from 'react';
 import {
   Share2,
@@ -141,6 +141,7 @@ const App: React.FC = () => {
           ...editableShop,
           id: editableShop.id || `shop-${Date.now()}`, // Generar ID si es nuevo
           rating: editableShop.rating || 5.0,
+          isActive: editableShop.isActive !== undefined ? editableShop.isActive : true,
         };
 
         // Enviar a Firebase
@@ -161,6 +162,19 @@ const App: React.FC = () => {
       } catch (error) {
         console.error(error);
         alert('Error al guardar en Firebase. Verificá la configuración.');
+      }
+    }
+  };
+
+  const handleDeleteShop = async (id: string) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este comercio? Esta acción no se puede deshacer.')) {
+      try {
+        await eliminarComercio(id);
+        setAllShops(prev => prev.filter(s => s.id !== id));
+        alert('Comercio eliminado con éxito.');
+      } catch (error) {
+        console.error(error);
+        alert('Error al eliminar de Firebase.');
       }
     }
   };
@@ -252,6 +266,7 @@ const App: React.FC = () => {
     LOCALITIES.forEach(loc => {
       const normalizedLoc = normalize(loc);
       grouped[loc] = allShops.filter(shop =>
+        shop.isActive !== false &&
         shop.category === selectedCategory.id &&
         ((shop.zone === loc) || (shop.address && normalize(shop.address).includes(normalizedLoc)))
       );
@@ -703,6 +718,22 @@ const App: React.FC = () => {
             </div>
 
             <div className="px-8 space-y-8">
+              {/* Estado del Local (Suspensión) */}
+              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center justify-between">
+                <div>
+                  <label className="text-[12px] font-black uppercase tracking-[0.1em] text-white block">Estado del Local</label>
+                  <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest mt-1">
+                    {editableShop.isActive !== false ? '✅ Activo - Visible en la App' : '🚫 Suspendido - No visible'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setEditableShop({ ...editableShop, isActive: editableShop.isActive === false ? true : false })}
+                  className={`w-14 h-8 rounded-full relative transition-all duration-300 ${editableShop.isActive !== false ? 'bg-green-500' : 'bg-zinc-700'}`}
+                >
+                  <div className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-all duration-300 ${editableShop.isActive !== false ? 'left-7 shadow-[0_0_10px_rgba(255,255,255,0.8)]' : 'left-1'}`}></div>
+                </button>
+              </div>
+
               {/* Nombre del Comercio */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block ml-1">Nombre del Comercio</label>
@@ -906,6 +937,53 @@ const App: React.FC = () => {
                   <Save size={24} strokeWidth={2.5} />
                   Guardar en Firestore
                 </button>
+              </div>
+
+              {/* Lista de Gestión de Locales (Agregada) */}
+              <div className="mt-12 space-y-6">
+                <div className="flex items-center gap-3 px-2">
+                  <div className="h-[1px] flex-1 bg-white/10"></div>
+                  <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Lista de Gestión</h3>
+                  <div className="h-[1px] flex-1 bg-white/10"></div>
+                </div>
+
+                <div className="space-y-3 pb-20">
+                  {allShops.map(shop => (
+                    <div key={shop.id} className="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all">
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
+                          <img src={shop.bannerImage} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-[11px] font-black text-white uppercase truncate">{shop.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[7px] font-black uppercase tracking-widest ${shop.isActive !== false ? 'text-green-500' : 'text-red-500'}`}>
+                              {shop.isActive !== false ? 'Activo' : 'Suspendido'}
+                            </span>
+                            <span className="text-[7px] text-white/20 uppercase font-bold tracking-tighter">• {shop.category}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditableShop({ ...shop });
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all"
+                        >
+                          <PlusSquare size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteShop(shop.id)}
+                          className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500/40 hover:text-red-500 hover:bg-red-500/20 transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
