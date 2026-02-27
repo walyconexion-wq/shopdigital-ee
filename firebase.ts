@@ -1,9 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "firebase/firestore";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
-    apiKey: "AIzaSyBSicRJMwdxG76eaXvQh07ncDYhxMz7mF0",
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: "shopdigital-ee.firebaseapp.com",
     projectId: "shopdigital-ee",
     storageBucket: "shopdigital-ee.firebasestorage.app",
@@ -15,6 +15,18 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+
+// Optimización: Habilitar persistencia de datos local (Ahorro Máximo de Lecturas)
+// Esto permite que la app use datos en caché y solo descargue cambios, reduciendo el consumo de cuota.
+import { enableIndexedDbPersistence } from "firebase/firestore";
+
+enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code === 'failed-precondition') {
+        console.warn("La persistencia falló (múltiples pestañas abiertas)");
+    } else if (err.code === 'unimplemented') {
+        console.warn("El navegador no soporta persistencia");
+    }
+});
 
 // --- SERVICIOS ---
 
@@ -30,6 +42,20 @@ export const obtenerComercios = async () => {
         console.error("Error obteniendo comercios:", error);
         return [];
     }
+};
+
+// 1b. Suscribirse a los comercios en tiempo real
+export const suscribirseAComercios = (callback: (comercios: any[]) => void) => {
+    const colRef = collection(db, "comercios");
+    return onSnapshot(colRef, (snapshot) => {
+        const comercios = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+        callback(comercios);
+    }, (error) => {
+        console.error("Error en la suscripción de comercios:", error);
+    });
 };
 
 // 2. Guardar o actualizar un comercio en la colección "comercios"

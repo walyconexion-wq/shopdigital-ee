@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Shop, Category } from './types';
-import { CATEGORIES, MOCK_SHOPS } from './constants';
+import { CATEGORIES } from './constants';
 import Logo from './components/Logo';
-import { db, obtenerComercios, guardarComercio, eliminarComercio } from './firebase';
+import { db, suscribirseAComercios, guardarComercio, eliminarComercio } from './firebase';
 import { useEffect } from 'react';
 import {
   Share2,
@@ -58,18 +58,29 @@ const App: React.FC = () => {
 
   // Estado para la edición
   const [editableShop, setEditableShop] = useState<Shop | null>(null);
-  const [allShops, setAllShops] = useState<Shop[]>(MOCK_SHOPS);
+  const [allShops, setAllShops] = useState<Shop[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Cargar datos de Firebase al iniciar
+  const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
+
+  // Cargar datos de Firebase en tiempo real
   useEffect(() => {
-    const loadData = async () => {
-      const fbShops = await obtenerComercios();
-      if (fbShops && fbShops.length > 0) {
-        // Mapear IDs si es necesario y actualizar estado
-        setAllShops(fbShops as unknown as Shop[]);
-      }
-    };
-    loadData();
+    const unsubscribe = suscribirseAComercios((fbShops) => {
+      // Limpieza y Validación: Solo mostrar locales con nombre y asignar imagen por defecto si falta
+      const cleanedShops = fbShops
+        .filter(shop => shop.name && shop.name.trim() !== "")
+        .map(shop => ({
+          ...shop,
+          bannerImage: shop.bannerImage || DEFAULT_BANNER,
+          image: shop.image || shop.bannerImage || DEFAULT_BANNER,
+          offers: shop.offers || []
+        }));
+
+      setAllShops(cleanedShops);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleCategoryClick = useCallback((category: Category) => {
@@ -152,16 +163,8 @@ const App: React.FC = () => {
         // Enviar a Firebase
         await guardarComercio(shopToSave);
 
-        // Actualizar estado local
+        // Ya no actualizamos allShops manualmente, onSnapshot lo hará
         setSelectedShop(shopToSave);
-        setAllShops(prev => {
-          const exists = prev.find(s => s.id === shopToSave.id);
-          if (exists) {
-            return prev.map(s => s.id === shopToSave.id ? shopToSave : s);
-          }
-          return [...prev, shopToSave];
-        });
-
         setCurrentView(View.DETAIL);
         alert('¡Comercio guardado en la nube con éxito!');
       } catch (error) {
@@ -175,7 +178,7 @@ const App: React.FC = () => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este comercio? Esta acción no se puede deshacer.')) {
       try {
         await eliminarComercio(id);
-        setAllShops(prev => prev.filter(s => s.id !== id));
+        // Ya no filtramos allShops manualmente, onSnapshot lo hará
         alert('Comercio eliminado con éxito.');
       } catch (error) {
         console.error(error);
@@ -289,21 +292,17 @@ const App: React.FC = () => {
   // Agrupado para la Lista de Gestión del Admin
   const groupedManagementShops = useMemo(() => {
     const grouped: Record<string, Record<string, Shop[]>> = {};
+    const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-    LOCALITIES.forEach(loc => {
-      grouped[loc] = {};
-      const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-      const normalizedLoc = normalize(loc);
-
-      const shopsInLoc = allShops.filter(shop =>
-        shop && (shop.zone === loc || (shop.address && normalize(shop.address).includes(normalizedLoc)))
-      );
-
-      CATEGORIES.forEach(cat => {
-        const shopsInCat = shopsInLoc.filter(s => s.category === cat.id);
-        if (shopsInCat.length > 0) {
-          grouped[loc][cat.id] = shopsInCat;
-        }
+    CATEGORIES.forEach(cat => {
+      grouped[cat.id] = {};
+      LOCALITIES.forEach(loc => {
+        const normalizedLoc = normalize(loc);
+        grouped[cat.id][loc] = allShops.filter(shop =>
+          shop &&
+          shop.category === cat.id &&
+          (shop.zone === loc || (shop.address && normalize(shop.address).includes(normalizedLoc)))
+        );
       });
     });
 
@@ -311,7 +310,15 @@ const App: React.FC = () => {
   }, [allShops]);
 
   return (
-    <div className={`max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative border-x border-gray-100 shadow-2xl`}>
+    <div className={`w-full max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative shadow-2xl`}>
+
+      {/* Pantalla de Carga */}
+      {loading && (
+        <div className="fixed inset-0 z-[200] bg-[#0A224E] flex flex-col items-center justify-center">
+          <div className="w-20 h-20 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-6"></div>
+          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] animate-pulse">Sincronizando con la Nube...</p>
+        </div>
+      )}
 
       {/* FONDO TECNOLÓGICO (ESTÁTICO) */}
       {(currentView === View.HOME || currentView === View.CATEGORY || currentView === View.DETAIL) && (
@@ -347,14 +354,14 @@ const App: React.FC = () => {
                 <div className="w-10"></div> {/* Espaciador para equilibrio */}
               </div>
 
-              <div className="flex justify-center">
-                <div className="glass-header rounded-3xl px-8 py-4 flex flex-col items-center border-white/20 shadow-2xl">
-                  <h2 className="text-[20px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium mb-2">
+              <div className="flex justify-center w-full px-2">
+                <div className="glass-header rounded-3xl w-full py-4 flex flex-col items-center border-white/20 shadow-2xl">
+                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium mb-2">
                     {selectedCategory?.name}
                   </h2>
-                  <div className="h-[1px] w-10 bg-white/20 mb-2"></div>
-                  <p className="text-[8.5px] font-bold text-white/60 uppercase tracking-[0.12em] leading-tight text-center max-w-[200px] text-shadow-premium">
-                    Seleccioná tu comercio favorito y descubrí ofertas magníficas en su catálogo
+                  <div className="h-[1px] w-12 bg-white/20 mb-2"></div>
+                  <p className="text-[9px] font-bold text-white/70 uppercase tracking-[0.15em] leading-tight text-center px-6 text-shadow-premium">
+                    Seleccioná tu comercio y descubrí ofertas magníficas
                   </p>
                 </div>
               </div>
@@ -367,7 +374,7 @@ const App: React.FC = () => {
       )}
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className={`flex-grow overflow-y-auto no-scrollbar relative z-10 ${currentView === View.DETAIL || currentView === View.EDIT_PANEL ? 'p-0' : 'px-8 pb-12'}`}>
+      <main className={`flex-grow overflow-y-auto no-scrollbar relative z-10 ${currentView === View.DETAIL || currentView === View.EDIT_PANEL ? 'p-0' : 'p-0 pb-12'}`}>
 
         {/* INTERFAZ 1: HOME */}
         {currentView === View.HOME && (
@@ -418,9 +425,9 @@ const App: React.FC = () => {
 
         {/* INTERFAZ 2: LISTADO DE COMERCIOS */}
         {currentView === View.CATEGORY && (
-          <div className="flex flex-col gap-8 px-4 pt-0 animate-in slide-in-from-bottom-6 duration-700 pb-16">
+          <div className="flex flex-col gap-10 px-2 pt-4 animate-in slide-in-from-bottom-6 duration-700 pb-24">
             {LOCALITIES.map((locality) => (
-              <div key={locality} className="flex flex-col gap-4">
+              <div key={locality} className="flex flex-col gap-6">
                 {/* Cabecera de Región */}
                 <div className="flex items-center gap-3 ml-2">
                   <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
@@ -437,65 +444,61 @@ const App: React.FC = () => {
                     <div
                       key={shop.id}
                       style={{ animationDelay: `${index * 80}ms` }}
-                      className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-40"
+                      className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]"
                     >
                       {/* Foto estirada al contenedor (Izquierda) */}
-                      <div className="relative w-28 flex-shrink-0 overflow-hidden border-r border-white/10">
+                      <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-white/20">
                         <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                        <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-lg border border-white/10">
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-full border border-white/20 shadow-xl">
                           <div className="flex items-center gap-1">
-                            <Star className="w-2 h-2 fill-yellow-400 text-yellow-400" />
-                            <span className="text-[9px] font-black text-white">{shop.rating}</span>
+                            <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
+                            <span className="text-[10px] font-black text-white">{shop.rating}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Contenido Legible (Derecha) */}
-                      <div className="flex-1 flex flex-col justify-between p-4 text-left min-w-0">
-                        <div>
-                          <h3 className="font-[1000] text-[16px] text-white uppercase tracking-tight leading-snug text-shadow-premium line-clamp-2 mb-1.5">
+                      <div className="flex-1 flex flex-col justify-between p-4 text-left min-w-0 bg-white/[0.04]">
+                        <div className="space-y-1.5 overflow-hidden">
+                          <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">
                             {shop.name}
                           </h3>
-                          <div className="flex items-center gap-1.5 text-white/50 uppercase text-[8.5px] font-bold tracking-[0.05em] mb-2">
-                            <MapPin size={10} strokeWidth={3} className="flex-shrink-0" />
-                            <span className="truncate">{shop.address}</span>
+
+                          <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
+                            <MapPin size={12} strokeWidth={3} className="flex-shrink-0 mt-0.5 text-red-500" />
+                            <span className="break-words line-clamp-2">{shop.address}</span>
                           </div>
+
                           {/* Social Icons Mini */}
-                          <div className="flex gap-2 mb-2 opacity-60">
-                            {shop.instagram && <Instagram size={11} className="text-white" />}
-                            {shop.facebook && <Facebook size={11} className="text-white" />}
-                            {shop.tiktok && <Music size={11} className="text-white" />}
-                          </div>
-                          <div className="flex items-center gap-0.5 mt-0.5">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} size={9} className={`${i < Math.floor(shop.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-white/10'}`} />
-                            ))}
+                          <div className="flex gap-5 pt-1.5">
+                            {shop.instagram && <Instagram size={15} className="text-white/60" />}
+                            {shop.facebook && <Facebook size={15} className="text-white/60" />}
+                            {shop.tiktok && <Music size={15} className="text-white/60" />}
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleShopClick(shop)}
-                          className="glass-action-btn w-[70%] py-1.5 px-3 text-[8.5px] font-[1000] uppercase tracking-[0.2em] flex items-center justify-center gap-1.5 border-white/20 mt-auto mx-auto"
-                        >
-                          <BookOpen size={11} strokeWidth={4} />
-                          Ver Catálogo
-                        </button>
+
+                        <div className="mt-4 flex flex-col gap-3">
+                          <div className="flex items-center gap-0.5 mb-1 shop-stars-mobile">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} size={12} className={`${i < Math.floor(shop.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-white/10'}`} />
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => handleShopClick(shop)}
+                            className="glass-action-btn w-full shop-btn-mobile py-3.5 px-3 text-[11px] font-[1000] uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-white/40 active:scale-95 transition-all shadow-2xl"
+                          >
+                            <BookOpen size={15} strokeWidth={4} />
+                            VER CATÁLOGO
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  /* Tarjeta de Ejemplo / Próximamente para la región */
-                  <div className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-28 opacity-60 grayscale-[0.5]">
-                    <div className="relative w-24 bg-white/5 flex items-center justify-center border-r border-white/10">
-                      <Pizza size={32} className="text-white/20" />
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center p-4 text-left">
-                      <h3 className="font-black text-[12px] text-white/40 uppercase tracking-widest mb-1">
-                        Próximas ofertas
-                      </h3>
-                      <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.1em]">
-                        Estamos sumando nuevos locales en {locality}
-                      </p>
-                    </div>
+                  <div className="py-8 text-center">
+                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                      No hay comercios disponibles en esta zona
+                    </p>
                   </div>
                 )}
               </div>
@@ -615,7 +618,14 @@ const App: React.FC = () => {
                   <span className="text-[8.5px] font-black text-white/90">PedidosYa</span>
                 </button>
                 <button
-                  onClick={() => handleOpenLink('https://wa.me/5491112345678?text=Hola!%20Vengo%20de%20la%20App%20del%20Tanque')}
+                  onClick={() => {
+                    if (selectedShop.phone) {
+                      const cleanPhone = selectedShop.phone.replace(/\D/g, '');
+                      handleOpenLink(`https://wa.me/549${cleanPhone}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`);
+                    } else {
+                      alert('Este comercio aún no tiene WhatsApp registrado');
+                    }
+                  }}
                   className="glass-action-btn w-full bg-[#25D366]/20 hover:bg-[#25D366]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#25D366]/40"
                 >
                   <MessageCircle size={18} className="text-[#25D366]" fill="currentColor" strokeWidth={0} />
@@ -1022,75 +1032,93 @@ const App: React.FC = () => {
                   <div className="h-[1px] flex-1 bg-white/10"></div>
                 </div>
 
-                <div className="space-y-10 pb-20">
-                  {LOCALITIES.map(locality => {
-                    const categoriesInLoc = groupedManagementShops[locality];
-                    if (Object.keys(categoriesInLoc).length === 0) return null;
+                <div className="space-y-16 pb-32">
+                  {CATEGORIES.map((category, catIndex) => {
+                    const localitiesInCat = groupedManagementShops[category.id];
 
                     return (
-                      <div key={locality} className="space-y-4">
-                        <div className="flex items-center gap-3">
-                          <MapPin size={12} className="text-red-500" />
-                          <h4 className="text-[12px] font-black text-white uppercase tracking-[0.2em]">{locality}</h4>
-                          <div className="h-[1px] flex-1 bg-white/5"></div>
+                      <div key={category.id} className="space-y-6 relative">
+                        {/* Línea Separadora entre Rubros */}
+                        {catIndex > 0 && (
+                          <div className="absolute -top-8 left-0 right-0 h-[1px] bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]"></div>
+                        )}
+
+                        {/* Cabecera de Categoría */}
+                        <div className="flex items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/10 mx-[-8px] shadow-2xl">
+                          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white/90 border border-white/20 shadow-inner">
+                            {React.cloneElement(category.icon as React.ReactElement<any>, { size: 24, strokeWidth: 1.5 })}
+                          </div>
+                          <div>
+                            <h4 className="text-[14px] font-black text-white uppercase tracking-[0.25em]">{category.name}</h4>
+                            <p className="text-[8px] font-bold text-white/40 uppercase tracking-widest mt-0.5">Rubro Oficial</p>
+                          </div>
+                          <div className="h-[1px] flex-1 bg-white/10 ml-2"></div>
                         </div>
 
-                        <div className="space-y-8 pl-2">
-                          {CATEGORIES.map(category => {
-                            const shops = categoriesInLoc[category.id];
-                            if (!shops) return null;
+                        <div className="space-y-10 pl-6 border-l-2 border-white/5 ml-1">
+                          {LOCALITIES.map(locality => {
+                            const shops = localitiesInCat[locality] || [];
 
                             return (
-                              <div key={category.id} className="space-y-3">
-                                <div className="flex items-center gap-2 opacity-40">
-                                  {React.cloneElement(category.icon as React.ReactElement<any>, { size: 12 })}
-                                  <span className="text-[9px] font-bold uppercase tracking-widest">{category.name}</span>
+                              <div key={locality} className="space-y-4">
+                                <div className="flex items-center gap-3 ml-[-12px]">
+                                  <div className={`w-2.5 h-2.5 rounded-full ${shops.length > 0 ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]'} animate-pulse`}></div>
+                                  <span className={`text-[11px] font-[1000] uppercase tracking-[0.2em] ${shops.length > 0 ? 'text-white/80' : 'text-white/20'}`}>
+                                    {locality}
+                                    <span className="ml-2 text-[8px] opacity-40">({shops.length})</span>
+                                  </span>
                                 </div>
 
-                                <div className="space-y-2">
-                                  {shops.map(shop => (
-                                    <div
-                                      key={shop.id}
-                                      className="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all active:scale-[0.98]"
-                                    >
+                                <div className="space-y-3">
+                                  {shops.length > 0 ? (
+                                    shops.map(shop => (
                                       <div
-                                        onClick={() => {
-                                          setEditableShop({ ...shop });
-                                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                        className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
+                                        key={shop.id}
+                                        className="bg-zinc-900/40 rounded-[2rem] p-4 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all active:scale-[0.98] shadow-lg backdrop-blur-sm"
                                       >
-                                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
-                                          <img src={shop.bannerImage} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                          <h4 className="text-[11px] font-black text-white uppercase truncate">{shop.name}</h4>
-                                          <div className="flex items-center gap-2">
-                                            <span className={`text-[7px] font-black uppercase tracking-widest ${shop.isActive !== false ? 'text-green-500' : 'text-red-500'}`}>
-                                              {shop.isActive !== false ? 'Activo' : 'Suspendido'}
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="flex gap-2">
-                                        <button
+                                        <div
                                           onClick={() => {
                                             setEditableShop({ ...shop });
                                             window.scrollTo({ top: 0, behavior: 'smooth' });
                                           }}
-                                          className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all"
+                                          className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
                                         >
-                                          <PlusSquare size={16} />
-                                        </button>
-                                        <button
-                                          onClick={() => handleDeleteShop(shop.id)}
-                                          className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500/40 hover:text-red-500 hover:bg-red-500/20 transition-all"
-                                        >
-                                          <Trash2 size={16} />
-                                        </button>
+                                          <div className="w-12 h-12 rounded-2xl overflow-hidden bg-zinc-800 flex-shrink-0 border border-white/10 shadow-2xl">
+                                            <img src={shop.bannerImage} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <h4 className="text-[12px] font-black text-white uppercase truncate tracking-tight">{shop.name}</h4>
+                                            <div className="flex items-center gap-2 mt-1">
+                                              <span className={`text-[7px] font-black uppercase tracking-tighter px-2.5 py-1 rounded-full ${shop.isActive !== false ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-400/10 text-red-400 border border-red-400/20'}`}>
+                                                {shop.isActive !== false ? 'Activo' : 'Suspendido'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                          <button
+                                            onClick={() => {
+                                              setEditableShop({ ...shop });
+                                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                            className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all border border-white/10 shadow-inner group-active:scale-95"
+                                          >
+                                            <PlusSquare size={18} />
+                                          </button>
+                                          <button
+                                            onClick={() => handleDeleteShop(shop.id)}
+                                            className="w-10 h-10 rounded-2xl bg-red-500/5 flex items-center justify-center text-red-500/40 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 group-active:scale-95"
+                                          >
+                                            <Trash2 size={18} />
+                                          </button>
+                                        </div>
                                       </div>
+                                    ))
+                                  ) : (
+                                    <div className="bg-white/[0.02] border border-dashed border-white/5 rounded-2xl p-4 flex items-center justify-center">
+                                      <p className="text-[9px] font-bold text-white/10 uppercase tracking-[0.2em]">Sin comercios cargados</p>
                                     </div>
-                                  ))}
+                                  )}
                                 </div>
                               </div>
                             );
