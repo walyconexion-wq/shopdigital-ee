@@ -465,7 +465,7 @@ const App: React.FC = () => {
                           </div>
                           <button
                             onClick={() => handleShopClick(shop)}
-                            className="glass-action-btn btn-premium luminous-glow w-full shop-btn-mobile py-4 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-2xl"
+                            className="glass-action-btn btn-offers-glow pulse-3d-btn w-full shop-btn-mobile py-4 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-2xl"
                           >
                             <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
                             VER CATÁLOGO
