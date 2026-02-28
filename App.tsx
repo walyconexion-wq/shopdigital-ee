@@ -649,7 +649,7 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <button
                       onClick={() => handleOpenLink(selectedShop.mapSheetUrl || 'https://www.google.com/maps/place/Monte+Grande,+Provincia+de+Buenos+Aires/')}
-                      className="glass-action-btn w-full py-4 flex items-center justify-center gap-3 border-white/20 active:scale-95"
+                      className="glass-action-btn btn-violet w-full py-4 flex items-center justify-center gap-3 active:scale-95"
                     >
                       <Navigation size={18} strokeWidth={3} className="text-white drop-shadow-md" />
                       <span className="text-[10px] font-black uppercase tracking-[0.15em]">Cómo llegar</span>
@@ -690,7 +690,7 @@ const App: React.FC = () => {
 
                   <button
                     onClick={handleShare}
-                    className="glass-action-btn btn-premium luminous-glow w-[85%] mx-auto py-4 flex items-center justify-center gap-3 active:scale-[0.98] shadow-2xl"
+                    className="glass-action-btn btn-green luminous-glow w-[85%] mx-auto py-4 flex items-center justify-center gap-3 active:scale-[0.98] shadow-2xl"
                   >
                     <Share2 size={20} strokeWidth={3} className="text-white drop-shadow-md" />
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Compartir Catálogo Online</span>
