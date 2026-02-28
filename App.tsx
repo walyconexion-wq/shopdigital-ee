@@ -535,10 +535,10 @@ const App: React.FC = () => {
                   {/* Botón Menú Online Centrado */}
                   <button
                     onClick={scrollToCatalog}
-                    className="glass-action-btn btn-premium luminous-glow px-6 py-4 rounded-2xl flex items-center justify-center gap-3 z-40 shadow-2xl active:scale-95 group"
+                    className="glass-action-btn btn-offers-glow luminous-glow px-5 py-3 rounded-2xl flex items-center justify-center gap-2.5 z-40 shadow-xl active:scale-95 group"
                   >
-                    <BookOpen size={18} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
-                    <span className="text-[10px] font-[1000] uppercase tracking-[0.25em] text-white">Ver Catálogo</span>
+                    <BookOpen size={15} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Ver precios de oferta</span>
                   </button>
                 </div>
               </div>
