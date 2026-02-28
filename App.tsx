@@ -424,7 +424,7 @@ const App: React.FC = () => {
                     <div
                       key={shop.id}
                       style={{ animationDelay: `${index * 80}ms` }}
-                      className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]"
+                      className={`glass-card-3d ${locality === 'Monte Grande' ? 'card-neon-violet' : locality === 'Luis Guillón' ? 'card-neon-green' : 'card-neon-red'} overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]`}
                     >
                       {/* Foto estirada al contenedor (Izquierda) */}
                       <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-white/20">
