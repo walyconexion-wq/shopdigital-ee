@@ -667,21 +667,21 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-3 gap-3 w-full">
                     <button
                       onClick={() => handleOpenLink(selectedShop.facebook || 'https://www.facebook.com/')}
-                      className={`glass-action-btn btn-fb w-full py-4 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.facebook && 'opacity-30 grayscale'}`}
+                      className="glass-action-btn btn-fb w-full py-4 flex flex-col items-center justify-center gap-2 transition-all"
                     >
                       <Facebook size={18} className="text-[#1877F2] drop-shadow-md" strokeWidth={3} />
                       <span className="text-[8px] font-black text-white uppercase tracking-[0.1em]">Facebook</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink(selectedShop.instagram || 'https://www.instagram.com/')}
-                      className={`glass-action-btn btn-ig w-full py-4 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.instagram && 'opacity-30 grayscale'}`}
+                      className="glass-action-btn btn-ig w-full py-4 flex flex-col items-center justify-center gap-2 transition-all"
                     >
                       <Instagram size={18} className="text-[#E4405F] drop-shadow-md" strokeWidth={3} />
                       <span className="text-[8px] font-black text-white uppercase tracking-[0.1em]">Instagram</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink(selectedShop.tiktok || 'https://www.tiktok.com/')}
-                      className={`glass-action-btn btn-tk w-full py-4 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.tiktok && 'opacity-30 grayscale'}`}
+                      className="glass-action-btn btn-tk w-full py-4 flex flex-col items-center justify-center gap-2 transition-all"
                     >
                       <Music size={18} className="text-white drop-shadow-md" strokeWidth={3} />
                       <span className="text-[8px] font-black text-white uppercase tracking-[0.1em]">TikTok</span>
