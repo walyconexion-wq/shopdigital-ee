@@ -1123,13 +1123,13 @@ const App: React.FC = () => {
       {/* FOOTER OCULTO - TRIGGER PANEL ADMIN (6 CLICS) */}
       <footer
         onClick={handleFooterClick}
-        className="flex-shrink-0 py-6 flex flex-col items-center gap-2 bg-transparent relative z-20 cursor-default select-none group"
+        className="flex-shrink-0 py-6 flex flex-col items-center gap-2 bg-transparent relative z-20 cursor-pointer select-none group"
       >
-        <div className="h-[1px] w-8 bg-white/10 group-hover:w-16 transition-all duration-700"></div>
-        <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.5em] group-hover:text-white/40 transition-colors">
+        <div className="h-[1px] w-12 bg-[#009EE3]/50 shadow-[0_0_10px_rgba(0,158,227,0.8)] group-hover:w-20 transition-all duration-700"></div>
+        <p className="text-[9px] font-[1000] text-white uppercase tracking-[0.5em] transition-colors drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:text-[#009EE3] group-hover:drop-shadow-[0_0_12px_rgba(0,158,227,0.9)] text-shadow-premium">
           © 2026 La App de Waly
         </p>
-        <p className="text-[6px] font-bold text-white/10 uppercase tracking-[0.2em]">
+        <p className="text-[7px] font-black text-[#009EE3] uppercase tracking-[0.3em] drop-shadow-[0_0_5px_rgba(0,158,227,0.6)]">
           E. Echeverría • ShopDigital.ar
         </p>
       </footer>
