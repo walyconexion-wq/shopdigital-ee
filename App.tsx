@@ -441,7 +441,7 @@ const App: React.FC = () => {
                       <div className="flex-1 flex flex-col justify-between p-4 text-left min-w-0 bg-white/[0.04]">
                         <div className="space-y-1.5 overflow-hidden">
                           <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">
-                            {shop.name.split('-')[0].trim()}
+                            {shop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                           </h3>
 
                           <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
@@ -517,7 +517,7 @@ const App: React.FC = () => {
               {/* Nombre del Negocio (Título Central Superior) */}
               <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[85%] flex flex-col items-center">
                 <h1 className="text-[20px] font-[1000] uppercase tracking-[0.2em] text-white text-center leading-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">
-                  {selectedShop.name.split('-')[0].trim()}
+                  {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                 </h1>
                 <div className="flex items-center gap-1.5 mt-1 opacity-90">
                   <MapPin size={10} className="text-red-400" strokeWidth={3} />
