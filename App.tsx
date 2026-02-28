@@ -701,10 +701,10 @@ const App: React.FC = () => {
               <div className="w-full flex justify-center mt-10 mb-12">
                 <button
                   onClick={handleBack}
-                  className="glass-action-btn btn-premium w-[75%] py-5 px-6 uppercase tracking-[0.3em] flex items-center justify-center gap-4 mx-auto transition-all active:scale-95 shadow-2xl border-white/40"
+                  className="glass-action-btn btn-premium w-[65%] py-3.5 px-4 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto transition-all active:scale-95 shadow-xl border-white/40"
                 >
-                  <ArrowLeft size={22} strokeWidth={4} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-                  <span className="text-[11px] font-[1000] text-white">Regresar a Locales</span>
+                  <ArrowLeft size={18} strokeWidth={3} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]" />
+                  <span className="text-[9.5px] font-[1000] text-white">Regresar a Locales</span>
                 </button>
               </div>
             </div>
