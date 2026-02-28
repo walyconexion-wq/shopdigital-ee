@@ -515,11 +515,17 @@ const App: React.FC = () => {
               </button>
 
               {/* Nombre del Negocio (Título Central Superior) */}
-              <div className="absolute top-7 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-3/4">
-                <h1 className="text-[13px] font-[1000] uppercase tracking-[0.3em] text-white text-center text-shadow-premium leading-tight">
+              <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[85%] flex flex-col items-center">
+                <h1 className="text-[20px] font-[1000] uppercase tracking-[0.2em] text-white text-center leading-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">
                   {selectedShop.name}
                 </h1>
-                <div className="w-10 h-[1px] bg-white/30 mx-auto mt-2 shadow-[0_0_10px_rgba(255,255,255,0.4)]"></div>
+                <div className="flex items-center gap-1.5 mt-1 opacity-90">
+                  <MapPin size={10} className="text-red-400" strokeWidth={3} />
+                  <span className="text-[8.5px] font-black uppercase tracking-[0.3em] text-white/80 text-shadow-premium">
+                    {selectedShop.zone || 'Esteban Echeverría'}
+                  </span>
+                </div>
+                <div className="w-12 h-[1px] bg-white/40 mx-auto mt-2.5 shadow-[0_0_10px_rgba(255,255,255,0.6)]"></div>
               </div>
 
               {/* Botón Autogestión (Candado) */}
