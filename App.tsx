@@ -649,17 +649,17 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <button
                       onClick={() => handleOpenLink(selectedShop.mapSheetUrl || 'https://www.google.com/maps/place/Monte+Grande,+Provincia+de+Buenos+Aires/')}
-                      className="glass-action-btn w-full py-5 flex items-center justify-center gap-3 border-white/20 active:scale-95"
+                      className="glass-action-btn w-full py-4 flex items-center justify-center gap-3 border-white/20 active:scale-95"
                     >
-                      <Navigation size={20} strokeWidth={3} className="text-white drop-shadow-md" />
-                      <span className="text-[11px] font-black uppercase tracking-[0.15em]">Cómo llegar</span>
+                      <Navigation size={18} strokeWidth={3} className="text-white drop-shadow-md" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.15em]">Cómo llegar</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink('https://m.uber.com/ul/')}
-                      className="glass-action-btn w-full bg-black/60 py-5 flex items-center justify-center gap-3 border-white/20 active:scale-95"
+                      className="glass-action-btn w-full bg-black/60 py-4 flex items-center justify-center gap-3 border-white/20 active:scale-95"
                     >
-                      <Car size={20} strokeWidth={3} className="text-white drop-shadow-md" />
-                      <span className="text-[11px] font-black uppercase tracking-[0.15em]">Uber</span>
+                      <Car size={18} strokeWidth={3} className="text-white drop-shadow-md" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.15em]">Uber</span>
                     </button>
                   </div>
 
@@ -667,33 +667,33 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-3 gap-3 w-full">
                     <button
                       onClick={() => handleOpenLink(selectedShop.facebook || 'https://www.facebook.com/')}
-                      className={`glass-action-btn btn-fb w-full py-5 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.facebook && 'opacity-30 grayscale'}`}
+                      className={`glass-action-btn btn-fb w-full py-4 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.facebook && 'opacity-30 grayscale'}`}
                     >
-                      <Facebook size={20} className="text-[#1877F2] drop-shadow-md" strokeWidth={3} />
-                      <span className="text-[9px] font-black text-white uppercase tracking-wider">Facebook</span>
+                      <Facebook size={18} className="text-[#1877F2] drop-shadow-md" strokeWidth={3} />
+                      <span className="text-[8px] font-black text-white uppercase tracking-[0.1em]">Facebook</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink(selectedShop.instagram || 'https://www.instagram.com/')}
-                      className={`glass-action-btn btn-ig w-full py-5 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.instagram && 'opacity-30 grayscale'}`}
+                      className={`glass-action-btn btn-ig w-full py-4 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.instagram && 'opacity-30 grayscale'}`}
                     >
-                      <Instagram size={20} className="text-[#E4405F] drop-shadow-md" strokeWidth={3} />
-                      <span className="text-[9px] font-black text-white uppercase tracking-wider">Instagram</span>
+                      <Instagram size={18} className="text-[#E4405F] drop-shadow-md" strokeWidth={3} />
+                      <span className="text-[8px] font-black text-white uppercase tracking-[0.1em]">Instagram</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink(selectedShop.tiktok || 'https://www.tiktok.com/')}
-                      className={`glass-action-btn btn-tk w-full py-5 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.tiktok && 'opacity-30 grayscale'}`}
+                      className={`glass-action-btn btn-tk w-full py-4 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.tiktok && 'opacity-30 grayscale'}`}
                     >
-                      <Music size={20} className="text-white drop-shadow-md" strokeWidth={3} />
-                      <span className="text-[9px] font-black text-white uppercase tracking-wider">TikTok</span>
+                      <Music size={18} className="text-white drop-shadow-md" strokeWidth={3} />
+                      <span className="text-[8px] font-black text-white uppercase tracking-[0.1em]">TikTok</span>
                     </button>
                   </div>
 
                   <button
                     onClick={handleShare}
-                    className="glass-action-btn btn-premium luminous-glow w-full py-6 flex items-center justify-center gap-4 active:scale-[0.98]"
+                    className="glass-action-btn btn-premium luminous-glow w-[85%] mx-auto py-4 flex items-center justify-center gap-3 active:scale-[0.98] shadow-2xl"
                   >
-                    <Share2 size={24} strokeWidth={3} className="text-white drop-shadow-lg" />
-                    <span className="text-[12px] font-[1000] uppercase tracking-[0.3em] text-white">Compartir Catálogo Online</span>
+                    <Share2 size={20} strokeWidth={3} className="text-white drop-shadow-md" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Compartir Catálogo Online</span>
                   </button>
                 </div>
               </div>
