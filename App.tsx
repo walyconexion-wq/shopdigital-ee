@@ -394,9 +394,9 @@ const App: React.FC = () => {
             <div className="mt-16 mb-16 flex justify-center fade-up-item" style={{ animationDelay: '700ms' }}>
               <button
                 onClick={handleShare}
-                className={`btn-volume share-btn ${currentView === View.HOME ? 'bg-white/10 backdrop-blur-md border-white/20 text-white' : 'text-[#0A224E]'} py-3.5 px-10 text-[10px] font-black uppercase tracking-[0.2em]`}
+                className="glass-action-btn btn-premium luminous-glow py-5 px-10 text-[11px] font-[1100] uppercase tracking-[0.3em] active:scale-95 shadow-2xl"
               >
-                <Share2 size={16} strokeWidth={2.5} />
+                <Share2 size={18} strokeWidth={3} className="text-white" />
                 Compartir App
               </button>
             </div>
@@ -465,9 +465,9 @@ const App: React.FC = () => {
                           </div>
                           <button
                             onClick={() => handleShopClick(shop)}
-                            className="glass-action-btn w-full shop-btn-mobile py-3.5 px-3 text-[11px] font-[1000] uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-white/40 active:scale-95 transition-all shadow-2xl"
+                            className="glass-action-btn btn-premium luminous-glow w-full shop-btn-mobile py-4 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-2xl"
                           >
-                            <BookOpen size={15} strokeWidth={4} />
+                            <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
                             VER CATÁLOGO
                           </button>
                         </div>
@@ -487,12 +487,12 @@ const App: React.FC = () => {
             <div className="pt-8 flex justify-center w-full">
               <button
                 onClick={handleBack}
-                className="glass-action-btn w-[75%] py-4 px-8 uppercase tracking-[0.3em] flex items-center justify-center gap-4 mx-auto active:scale-95 transition-all group"
+                className="glass-action-btn btn-premium w-[75%] py-5 px-8 uppercase tracking-[0.3em] flex items-center justify-center gap-4 mx-auto active:scale-95 transition-all group shadow-2xl border-white/40"
               >
-                <div className="bg-white/10 p-1.5 rounded-full group-active:translate-x-[-4px] transition-transform">
-                  <ArrowLeft size={20} strokeWidth={4} className="text-white drop-shadow(0 0 5px rgba(255,255,255,0.6))" />
+                <div className="bg-white/10 p-1.5 rounded-full group-hover:scale-110 transition-transform">
+                  <ArrowLeft size={22} strokeWidth={4} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                 </div>
-                <span className="text-[11px] font-[1000] text-shadow-premium">Regresar</span>
+                <span className="text-[11px] font-[1000] text-white">Regresar</span>
               </button>
             </div>
           </div>
@@ -535,10 +535,10 @@ const App: React.FC = () => {
                   {/* Botón Menú Online Centrado */}
                   <button
                     onClick={scrollToCatalog}
-                    className="glass-action-btn px-6 py-3 rounded-2xl flex items-center justify-center gap-2 z-40 border-white/30 shadow-2xl"
+                    className="glass-action-btn btn-premium luminous-glow px-6 py-4 rounded-2xl flex items-center justify-center gap-3 z-40 shadow-2xl active:scale-95 group"
                   >
-                    <BookOpen size={16} strokeWidth={3} />
-                    <span className="text-[9px] font-[1000] uppercase tracking-[0.2em]">Ver Catálogo</span>
+                    <BookOpen size={18} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] font-[1000] uppercase tracking-[0.25em] text-white">Ver Catálogo</span>
                   </button>
                 </div>
               </div>
@@ -586,10 +586,10 @@ const App: React.FC = () => {
               <div className="w-full px-4 mb-12 grid grid-cols-3 gap-3">
                 <button
                   onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')}
-                  className="glass-action-btn w-full bg-[#FF0000]/20 hover:bg-[#FF0000]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#FF0000]/40"
+                  className="glass-action-btn btn-py w-full py-5 flex flex-col items-center justify-center gap-1.5"
                 >
-                  <span className="italic text-[20px] leading-none -mb-1 text-[#FF0000]">P</span>
-                  <span className="text-[8.5px] font-black text-white/90">PedidosYa</span>
+                  <span className="italic text-[22px] font-black leading-none -mb-1 text-red-500 drop-shadow-md">P</span>
+                  <span className="text-[9px] font-black text-white uppercase tracking-wider">PedidosYa</span>
                 </button>
                 <button
                   onClick={() => {
@@ -600,17 +600,17 @@ const App: React.FC = () => {
                       alert('Este comercio aún no tiene WhatsApp registrado');
                     }
                   }}
-                  className="glass-action-btn w-full bg-[#25D366]/20 hover:bg-[#25D366]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#25D366]/40"
+                  className="glass-action-btn btn-wa w-full py-5 flex flex-col items-center justify-center gap-1.5"
                 >
-                  <MessageCircle size={18} className="text-[#25D366]" fill="currentColor" strokeWidth={0} />
-                  <span className="text-[8.5px] font-black text-white/90">WhatsApp</span>
+                  <MessageCircle size={20} className="text-[#25D366] drop-shadow-md" fill="currentColor" strokeWidth={0} />
+                  <span className="text-[9px] font-black text-white uppercase tracking-wider">WhatsApp</span>
                 </button>
                 <button
                   onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')}
-                  className="glass-action-btn w-full bg-[#009EE3]/20 hover:bg-[#009EE3]/30 py-4 flex flex-col items-center justify-center gap-1 border-[#009EE3]/40"
+                  className="glass-action-btn btn-mp w-full py-5 flex flex-col items-center justify-center gap-1.5"
                 >
-                  <Handshake size={18} className="text-[#009EE3]" strokeWidth={2.5} />
-                  <span className="text-[8.5px] font-black text-white/90">M. Pago</span>
+                  <Handshake size={20} className="text-[#009EE3] drop-shadow-md" strokeWidth={3} />
+                  <span className="text-[9px] font-black text-white uppercase tracking-wider">M. Pago</span>
                 </button>
               </div>
 
@@ -649,17 +649,17 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <button
                       onClick={() => handleOpenLink(selectedShop.mapSheetUrl || 'https://www.google.com/maps/place/Monte+Grande,+Provincia+de+Buenos+Aires/')}
-                      className="glass-action-btn w-full bg-white/5 py-4 flex items-center justify-center gap-2 border-white/20"
+                      className="glass-action-btn w-full py-5 flex items-center justify-center gap-3 border-white/20 active:scale-95"
                     >
-                      <Navigation size={18} strokeWidth={2.5} className="text-white" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.1em]">Cómo llegar</span>
+                      <Navigation size={20} strokeWidth={3} className="text-white drop-shadow-md" />
+                      <span className="text-[11px] font-black uppercase tracking-[0.15em]">Cómo llegar</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink('https://m.uber.com/ul/')}
-                      className="glass-action-btn w-full bg-black/40 py-4 flex items-center justify-center gap-2 border-white/20"
+                      className="glass-action-btn w-full bg-black/60 py-5 flex items-center justify-center gap-3 border-white/20 active:scale-95"
                     >
-                      <Car size={18} strokeWidth={2.5} className="text-white" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.1em]">Uber</span>
+                      <Car size={20} strokeWidth={3} className="text-white drop-shadow-md" />
+                      <span className="text-[11px] font-black uppercase tracking-[0.15em]">Uber</span>
                     </button>
                   </div>
 
@@ -667,33 +667,33 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-3 gap-3 w-full">
                     <button
                       onClick={() => handleOpenLink(selectedShop.facebook || 'https://www.facebook.com/')}
-                      className={`glass-action-btn w-full bg-[#1877F2]/20 hover:bg-[#1877F2]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#1877F2]/40 transition-all ${!selectedShop.facebook && 'opacity-30 grayscale'}`}
+                      className={`glass-action-btn btn-fb w-full py-5 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.facebook && 'opacity-30 grayscale'}`}
                     >
-                      <Facebook size={18} className="text-[#1877F2]" strokeWidth={2.5} />
-                      <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Facebook</span>
+                      <Facebook size={20} className="text-[#1877F2] drop-shadow-md" strokeWidth={3} />
+                      <span className="text-[9px] font-black text-white uppercase tracking-wider">Facebook</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink(selectedShop.instagram || 'https://www.instagram.com/')}
-                      className={`glass-action-btn w-full bg-[#E4405F]/20 hover:bg-[#E4405F]/30 py-4 flex flex-col items-center justify-center gap-1.5 border-[#E4405F]/40 transition-all ${!selectedShop.instagram && 'opacity-30 grayscale'}`}
+                      className={`glass-action-btn btn-ig w-full py-5 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.instagram && 'opacity-30 grayscale'}`}
                     >
-                      <Instagram size={18} className="text-[#E4405F]" strokeWidth={2.5} />
-                      <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">Instagram</span>
+                      <Instagram size={20} className="text-[#E4405F] drop-shadow-md" strokeWidth={3} />
+                      <span className="text-[9px] font-black text-white uppercase tracking-wider">Instagram</span>
                     </button>
                     <button
                       onClick={() => handleOpenLink(selectedShop.tiktok || 'https://www.tiktok.com/')}
-                      className={`glass-action-btn w-full bg-white/10 hover:bg-white/20 py-4 flex flex-col items-center justify-center gap-1.5 border-white/30 transition-all ${!selectedShop.tiktok && 'opacity-30 grayscale'}`}
+                      className={`glass-action-btn btn-tk w-full py-5 flex flex-col items-center justify-center gap-2 transition-all ${!selectedShop.tiktok && 'opacity-30 grayscale'}`}
                     >
-                      <Music size={18} className="text-white" strokeWidth={2.5} />
-                      <span className="text-[8.5px] font-black text-white/90 uppercase tracking-wide">TikTok</span>
+                      <Music size={20} className="text-white drop-shadow-md" strokeWidth={3} />
+                      <span className="text-[9px] font-black text-white uppercase tracking-wider">TikTok</span>
                     </button>
                   </div>
 
                   <button
                     onClick={handleShare}
-                    className="glass-action-btn w-full py-5 flex items-center justify-center gap-3 border-white/30"
+                    className="glass-action-btn btn-premium luminous-glow w-full py-6 flex items-center justify-center gap-4 active:scale-[0.98]"
                   >
-                    <Share2 size={20} strokeWidth={2.5} />
-                    <span className="text-[11px] font-[1000] uppercase tracking-[0.2em]">Compartir Catálogo Online</span>
+                    <Share2 size={24} strokeWidth={3} className="text-white drop-shadow-lg" />
+                    <span className="text-[12px] font-[1000] uppercase tracking-[0.3em] text-white">Compartir Catálogo Online</span>
                   </button>
                 </div>
               </div>
@@ -701,10 +701,10 @@ const App: React.FC = () => {
               <div className="w-full flex justify-center mt-10 mb-12">
                 <button
                   onClick={handleBack}
-                  className="glass-action-btn w-[70%] py-4 px-6 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto transition-all"
+                  className="glass-action-btn btn-premium w-[75%] py-5 px-6 uppercase tracking-[0.3em] flex items-center justify-center gap-4 mx-auto transition-all active:scale-95 shadow-2xl border-white/40"
                 >
-                  <ArrowLeft size={18} strokeWidth={3} />
-                  <span className="text-[10px] font-black">Regresar a Locales</span>
+                  <ArrowLeft size={22} strokeWidth={4} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+                  <span className="text-[11px] font-[1000] text-white">Regresar a Locales</span>
                 </button>
               </div>
             </div>
