@@ -335,12 +335,12 @@ const App: React.FC = () => {
               </div>
 
               <div className="flex justify-center w-full px-2">
-                <div className="glass-header rounded-3xl w-full py-4 flex flex-col items-center border-white/20 shadow-2xl">
-                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center text-shadow-premium mb-2">
+                <div className="glass-header rounded-3xl w-full py-5 flex flex-col items-center border-[#009EE3]/50 shadow-[0_15px_40px_rgba(0,158,227,0.4)] bg-gradient-to-br from-[#009EE3]/20 to-[#0A224E]/60">
+                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(0,158,227,0.8)] mb-2">
                     {selectedCategory?.name}
                   </h2>
-                  <div className="h-[1px] w-12 bg-white/20 mb-2"></div>
-                  <p className="text-[9px] font-bold text-white/70 uppercase tracking-[0.15em] leading-tight text-center px-6 text-shadow-premium">
+                  <div className="h-[1px] w-16 bg-[#009EE3]/60 mb-2 shadow-[0_0_10px_rgba(0,158,227,0.8)]"></div>
+                  <p className="text-[9px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-6 drop-shadow-[0_0_8px_rgba(0,158,227,0.5)]">
                     Seleccioná tu comercio y descubrí ofertas magníficas
                   </p>
                 </div>
