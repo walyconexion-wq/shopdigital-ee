@@ -27,7 +27,8 @@ import {
   Pizza,
   Facebook,
   Instagram,
-  Music
+  Music,
+  Zap
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -53,8 +54,6 @@ const App: React.FC = () => {
 
   // Refs para navegación y archivos
   const catalogRef = useRef<HTMLDivElement>(null);
-  const bannerInputRef = useRef<HTMLInputElement>(null);
-  const offerInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   // Estado para la edición
   const [editableShop, setEditableShop] = useState<Shop | null>(null);
@@ -187,25 +186,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'banner' | 'offer', offerId?: string) => {
-    const file = e.target.files?.[0];
-    if (!file || !editableShop) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      if (type === 'banner') {
-        setEditableShop({ ...editableShop, bannerImage: base64String });
-      } else if (type === 'offer' && offerId) {
-        const newOffers = editableShop.offers.map(o =>
-          o.id === offerId ? { ...o, image: base64String } : o
-        );
-        setEditableShop({ ...editableShop, offers: newOffers });
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
   const DEFAULT_OG_IMAGE = 'https://images.unsplash.com/photo-1574126154517-d1e0d89ef734?w=1200&h=630&fit=crop';
 
   const updateOGTags = (title: string, description: string, imageUrl: string) => {
@@ -282,7 +262,7 @@ const App: React.FC = () => {
     });
 
     return grouped;
-  }, [selectedCategory]);
+  }, [selectedCategory, allShops]);
 
   const filteredShops = useMemo(() => {
     if (!selectedCategory) return [];
@@ -554,17 +534,11 @@ const App: React.FC = () => {
                 <div className="flex justify-center w-full">
                   {/* Botón Menú Online Centrado */}
                   <button
-                    onClick={() => {
-                      if (selectedShop.category === 'pizzerias') {
-                        window.open('https://infograph.venngage.com/ps/uzZVBEpQoCM', '_blank');
-                      } else {
-                        scrollToCatalog();
-                      }
-                    }}
+                    onClick={scrollToCatalog}
                     className="glass-action-btn px-6 py-3 rounded-2xl flex items-center justify-center gap-2 z-40 border-white/30 shadow-2xl"
                   >
                     <BookOpen size={16} strokeWidth={3} />
-                    <span className="text-[9px] font-[1000] uppercase tracking-[0.2em]">Menú Online</span>
+                    <span className="text-[9px] font-[1000] uppercase tracking-[0.2em]">Ver Catálogo</span>
                   </button>
                 </div>
               </div>
@@ -674,7 +648,7 @@ const App: React.FC = () => {
                 <div className="flex flex-col gap-4 w-full px-2">
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <button
-                      onClick={() => handleOpenLink('https://www.google.com/maps/place/Monte+Grande,+Provincia+de+Buenos+Aires/')}
+                      onClick={() => handleOpenLink(selectedShop.mapSheetUrl || 'https://www.google.com/maps/place/Monte+Grande,+Provincia+de+Buenos+Aires/')}
                       className="glass-action-btn w-full bg-white/5 py-4 flex items-center justify-center gap-2 border-white/20"
                     >
                       <Navigation size={18} strokeWidth={2.5} className="text-white" />
@@ -740,17 +714,9 @@ const App: React.FC = () => {
         {/* INTERFAZ: PANEL DE EDICIÓN (MODO OSCURO) */}
         {currentView === View.EDIT_PANEL && editableShop && (
           <div className="pb-24 animate-in slide-in-from-right duration-500 bg-[#000] text-white min-h-screen no-scrollbar relative z-[60]">
-            {/* Inputs de Archivos Ocultos */}
-            <input
-              type="file"
-              ref={bannerInputRef}
-              onChange={(e) => handleImageUpload(e, 'banner')}
-              accept="image/*"
-              className="hidden"
-            />
 
             {/* Header del Panel */}
-            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-white/5 mb-8 sticky top-0 z-50">
+            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-white/5 mb-4 sticky top-0 z-50">
               <button
                 onClick={handleBack}
                 className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10 active:scale-90 transition-all"
@@ -759,6 +725,20 @@ const App: React.FC = () => {
               </button>
               <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] mb-1">Carga de Comercio</h2>
               <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Panel de Gestión Real</p>
+            </div>
+
+            {/* BANNER REGLA DE ORO */}
+            <div className="mx-8 mb-8 bg-yellow-500/10 border border-yellow-500/30 rounded-3xl p-6 flex flex-col gap-4 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-2 h-full bg-yellow-500 group-hover:w-full transition-all duration-700 opacity-20"></div>
+              <div className="flex items-center gap-3 relative z-10">
+                <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black shadow-[0_0_20px_rgba(234,179,8,0.5)]">
+                  <Zap size={20} fill="currentColor" />
+                </div>
+                <h3 className="text-[12px] font-[1000] text-yellow-500 uppercase tracking-[0.3em]">REGLA DE ORO: NO BASE64</h3>
+              </div>
+              <p className="text-[10px] font-bold text-yellow-500/80 leading-relaxed uppercase tracking-widest relative z-10">
+                "Nunca guardamos imágenes pesadas. Siempre usá links externos (Unsplash, Google, etc.). La App debe volar 🚀"
+              </p>
             </div>
 
             <div className="px-8 space-y-8">
@@ -860,12 +840,6 @@ const App: React.FC = () => {
                     placeholder="https://images.unsplash.com/..."
                     className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-[12px] font-bold text-white"
                   />
-                  <button
-                    onClick={() => bannerInputRef.current?.click()}
-                    className="w-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white/40"
-                  >
-                    <Camera size={20} />
-                  </button>
                 </div>
               </div>
 
@@ -961,20 +935,12 @@ const App: React.FC = () => {
                 <div className="space-y-3">
                   {(editableShop.offers || []).map((offer, idx) => (
                     <div key={offer.id} className="bg-white/5 p-4 rounded-2xl flex items-center gap-4 border border-white/5">
-                      <input
-                        type="file"
-                        ref={el => offerInputRefs.current[offer.id] = el}
-                        onChange={(e) => handleImageUpload(e, 'offer', offer.id)}
-                        accept="image/*"
-                        className="hidden"
-                      />
                       <div
-                        onClick={() => offerInputRefs.current[offer.id]?.click()}
-                        className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 cursor-pointer border border-white/10"
+                        className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 border border-white/10"
                       >
                         <img src={offer.image} className="w-full h-full object-cover" />
                       </div>
-                      <div className="flex-grow space-y-1">
+                      <div className="flex-grow space-y-2">
                         <input
                           type="text"
                           value={offer.name}
@@ -983,19 +949,33 @@ const App: React.FC = () => {
                             newOffers[idx].name = e.target.value;
                             setEditableShop({ ...editableShop, offers: newOffers });
                           }}
+                          placeholder="Nombre de la oferta"
                           className="bg-transparent border-none p-0 focus:ring-0 text-[12px] font-bold text-white w-full uppercase"
                         />
-                        <div className="flex items-center gap-1 text-green-500">
-                          <span className="text-[10px] font-black">$</span>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-green-500">
+                            <span className="text-[10px] font-black">$</span>
+                            <input
+                              type="number"
+                              value={offer.price}
+                              onChange={(e) => {
+                                const newOffers = [...editableShop.offers];
+                                newOffers[idx].price = Number(e.target.value);
+                                setEditableShop({ ...editableShop, offers: newOffers });
+                              }}
+                              className="bg-transparent border-none p-0 focus:ring-0 text-[12px] font-black text-white w-20"
+                            />
+                          </div>
                           <input
-                            type="number"
-                            value={offer.price}
+                            type="text"
+                            value={offer.image}
                             onChange={(e) => {
                               const newOffers = [...editableShop.offers];
-                              newOffers[idx].price = Number(e.target.value);
+                              newOffers[idx].image = e.target.value;
                               setEditableShop({ ...editableShop, offers: newOffers });
                             }}
-                            className="bg-transparent border-none p-0 focus:ring-0 text-[12px] font-black text-white w-24"
+                            placeholder="Link Imagen URL"
+                            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[9px] font-bold text-white/50 flex-grow"
                           />
                         </div>
                       </div>
