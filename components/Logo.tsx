@@ -5,12 +5,12 @@ const Logo: React.FC = () => {
     <div className="flex flex-col items-center justify-center pt-1 pb-1 px-4 select-none text-center">
       {/* Nombre de la App */}
       <h1 className="text-[30px] font-[900] tracking-tighter leading-none mb-0.5">
-        <span className="text-[#0A224E]">shopdigital</span>
-        <span className="text-[#FF0000]">.ar</span>
+        <span className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.7)] text-shadow-premium">shopdigital</span>
+        <span className="text-red-500 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)] text-shadow-premium">.ar</span>
       </h1>
 
       {/* Nombre del Distrito */}
-      <p className="text-[11px] font-bold text-[#0A224E]/50 tracking-[0.2em] uppercase mb-2">
+      <p className="text-[11px] font-bold text-white/80 tracking-[0.2em] uppercase mb-2 drop-shadow-[0_0_5px_rgba(0,158,227,0.5)]">
         Esteban Echeverría
       </p>
 
@@ -28,7 +28,7 @@ const Logo: React.FC = () => {
       </div>
 
       {/* Identificación de Zona */}
-      <p className="text-[7.5px] font-black text-[#0A224E]/40 tracking-[0.3em] uppercase mt-1">
+      <p className="text-[7.5px] font-black text-white/40 tracking-[0.3em] uppercase mt-1 drop-shadow-md">
         ZONA:001/BAIRES - REPUBLICA ARGENTINA
       </p>
     </div>

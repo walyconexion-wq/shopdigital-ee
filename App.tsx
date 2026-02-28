@@ -318,7 +318,7 @@ const App: React.FC = () => {
       {currentView !== View.DETAIL && currentView !== View.EDIT_PANEL && (
         <header className={`${currentView === View.HOME ? 'bg-transparent pt-12' : currentView === View.CATEGORY ? 'bg-transparent pt-4' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
           {currentView === View.HOME ? (
-            <div className="glass-header rounded-3xl p-4 mb-4 animate-in fade-in zoom-in duration-1000">
+            <div className="glass-header rounded-3xl p-4 mb-4 border-[#009EE3]/50 shadow-[0_15px_40px_rgba(0,158,227,0.4)] bg-gradient-to-br from-[#009EE3]/20 to-[#0A224E]/60 animate-in fade-in zoom-in duration-1000">
               <Logo />
             </div>
           ) : currentView === View.CATEGORY ? (
