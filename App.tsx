@@ -318,7 +318,7 @@ const App: React.FC = () => {
       {currentView !== View.DETAIL && currentView !== View.EDIT_PANEL && (
         <header className={`${currentView === View.HOME ? 'bg-transparent pt-8' : currentView === View.CATEGORY ? 'bg-transparent pt-4' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
           {currentView === View.HOME ? (
-            <div className="glass-header rounded-3xl p-2.5 mb-2.5 border-[#009EE3]/50 shadow-[0_15px_40px_rgba(0,158,227,0.4)] bg-gradient-to-br from-[#009EE3]/20 to-[#0A224E]/60 animate-in fade-in zoom-in duration-1000">
+            <div className="glass-header rounded-3xl p-2.5 mb-2.5 border-[#8b5cf6]/50 shadow-[0_15px_40px_rgba(139,92,246,0.4)] bg-gradient-to-br from-[#8b5cf6]/20 to-[#0A224E]/60 animate-in fade-in zoom-in duration-1000">
               <Logo />
             </div>
           ) : currentView === View.CATEGORY ? (
@@ -335,12 +335,12 @@ const App: React.FC = () => {
               </div>
 
               <div className="flex justify-center w-full px-2">
-                <div className="glass-header rounded-3xl w-full py-5 flex flex-col items-center border-[#009EE3]/50 shadow-[0_15px_40px_rgba(0,158,227,0.4)] bg-gradient-to-br from-[#009EE3]/20 to-[#0A224E]/60">
-                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(0,158,227,0.8)] mb-2">
+                <div className="glass-header rounded-3xl w-full py-5 flex flex-col items-center border-[#8b5cf6]/50 shadow-[0_15px_40px_rgba(139,92,246,0.4)] bg-gradient-to-br from-[#8b5cf6]/20 to-[#0A224E]/60">
+                  <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(139,92,246,0.8)] mb-2">
                     {selectedCategory?.name}
                   </h2>
-                  <div className="h-[1px] w-16 bg-[#009EE3]/60 mb-2 shadow-[0_0_10px_rgba(0,158,227,0.8)]"></div>
-                  <p className="text-[9px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-6 drop-shadow-[0_0_8px_rgba(0,158,227,0.5)]">
+                  <div className="h-[1px] w-16 bg-[#8b5cf6]/60 mb-2 shadow-[0_0_10px_rgba(139,92,246,0.8)]"></div>
+                  <p className="text-[9px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-6 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]">
                     Seleccioná tu comercio y descubrí ofertas magníficas
                   </p>
                 </div>
@@ -382,7 +382,7 @@ const App: React.FC = () => {
                   className="glass-button-3d category-btn aspect-square group opacity-0"
                 >
                   <div className="mb-2 transform group-hover:scale-110 transition-transform duration-500 ease-out">
-                    {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 26, strokeWidth: 1.3 })}
+                    {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 22, strokeWidth: 1.3 })}
                   </div>
                   <span className="text-[9.5px] text-center font-black uppercase leading-tight tracking-[0.01em] px-1">
                     {cat.name}
@@ -404,9 +404,12 @@ const App: React.FC = () => {
             {/* Footer en flujo natural del scroll */}
             <footer
               onClick={handleFooterClick}
-              className="w-full flex flex-col items-center gap-1.5 pt-4 pb-8 mt-2 border-t border-white/10"
+              className="w-full flex flex-col items-center gap-1.5 pt-4 pb-4 mt-2 border-t border-white/10"
             >
-              <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.35em] text-center select-none">
+              <p
+                className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none"
+                style={{ textShadow: '0 0 8px rgba(255, 255, 255, 0.4)' }}
+              >
                 © 2026 · shopdigital.ar
               </p>
               <p
@@ -418,7 +421,6 @@ const App: React.FC = () => {
               >
                 La app de Waly
               </p>
-              <div className="h-[1px] w-8 bg-white/10 mt-1" />
             </footer>
           </div>
         )}
