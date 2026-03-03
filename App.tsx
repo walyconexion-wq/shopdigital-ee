@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Shop, Category } from './types';
 import { CATEGORIES } from './constants';
 import Logo from './components/Logo';
+import LoadingScreen from './components/LoadingScreen';
 import { db, suscribirseAComercios, guardarComercio, eliminarComercio } from './firebase';
 import { useEffect } from 'react';
 import {
@@ -59,6 +60,8 @@ const App: React.FC = () => {
   const [editableShop, setEditableShop] = useState<Shop | null>(null);
   const [allShops, setAllShops] = useState<Shop[]>([]);
   const [loading, setLoading] = useState(true);
+  // showLoader controls whether LoadingScreen is in the DOM at all
+  const [showLoader, setShowLoader] = useState(true);
 
   const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -292,12 +295,9 @@ const App: React.FC = () => {
   return (
     <div className={`w-full max-w-md mx-auto h-screen flex flex-col ${currentView === View.HOME ? 'bg-gray-900' : 'bg-white'} overflow-hidden relative shadow-2xl`}>
 
-      {/* Pantalla de Carga */}
-      {loading && (
-        <div className="fixed inset-0 z-[200] bg-[#0A224E] flex flex-col items-center justify-center">
-          <div className="w-20 h-20 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-6"></div>
-          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] animate-pulse">Sincronizando con la Nube...</p>
-        </div>
+      {/* Pantalla de Carga — se desmonta completamente del DOM cuando termina */}
+      {showLoader && (
+        <LoadingScreen ready={!loading} onDone={() => setShowLoader(false)} />
       )}
 
       {/* FONDO TECNOLÓGICO (ESTÁTICO) */}
@@ -382,7 +382,7 @@ const App: React.FC = () => {
                   className="glass-button-3d category-btn aspect-square group opacity-0"
                 >
                   <div className="mb-2 transform group-hover:scale-110 transition-transform duration-500 ease-out">
-                    {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 30, strokeWidth: 1.3 })}
+                    {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 26, strokeWidth: 1.3 })}
                   </div>
                   <span className="text-[9.5px] text-center font-black uppercase leading-tight tracking-[0.01em] px-1">
                     {cat.name}
