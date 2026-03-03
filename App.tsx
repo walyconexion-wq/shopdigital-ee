@@ -316,9 +316,9 @@ const App: React.FC = () => {
       )}
 
       {currentView !== View.DETAIL && currentView !== View.EDIT_PANEL && (
-        <header className={`${currentView === View.HOME ? 'bg-transparent pt-12' : currentView === View.CATEGORY ? 'bg-transparent pt-4' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
+        <header className={`${currentView === View.HOME ? 'bg-transparent pt-8' : currentView === View.CATEGORY ? 'bg-transparent pt-4' : 'bg-white pt-8'} flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700`}>
           {currentView === View.HOME ? (
-            <div className="glass-header rounded-3xl p-4 mb-4 border-[#009EE3]/50 shadow-[0_15px_40px_rgba(0,158,227,0.4)] bg-gradient-to-br from-[#009EE3]/20 to-[#0A224E]/60 animate-in fade-in zoom-in duration-1000">
+            <div className="glass-header rounded-3xl p-2.5 mb-2.5 border-[#009EE3]/50 shadow-[0_15px_40px_rgba(0,158,227,0.4)] bg-gradient-to-br from-[#009EE3]/20 to-[#0A224E]/60 animate-in fade-in zoom-in duration-1000">
               <Logo />
             </div>
           ) : currentView === View.CATEGORY ? (
@@ -391,7 +391,7 @@ const App: React.FC = () => {
               ))}
             </div>
 
-            <div className="mt-16 mb-16 flex justify-center fade-up-item" style={{ animationDelay: '700ms' }}>
+            <div className="mt-16 mb-4 flex justify-center fade-up-item" style={{ animationDelay: '700ms' }}>
               <button
                 onClick={handleShare}
                 className="glass-action-btn btn-blue luminous-glow py-5 px-10 text-[11px] font-[1100] uppercase tracking-[0.3em] active:scale-95 shadow-2xl"
@@ -400,6 +400,26 @@ const App: React.FC = () => {
                 Compartir App
               </button>
             </div>
+
+            {/* Footer en flujo natural del scroll */}
+            <footer
+              onClick={handleFooterClick}
+              className="w-full flex flex-col items-center gap-1.5 pt-4 pb-8 mt-2 border-t border-white/10"
+            >
+              <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.35em] text-center select-none">
+                © 2026 · shopdigital.ar
+              </p>
+              <p
+                className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none"
+                style={{
+                  color: '#009EE3',
+                  textShadow: '0 0 10px rgba(0, 158, 227, 0.8), 0 0 20px rgba(0, 158, 227, 0.4)',
+                }}
+              >
+                La app de Waly
+              </p>
+              <div className="h-[1px] w-8 bg-white/10 mt-1" />
+            </footer>
           </div>
         )}
 

@@ -2,21 +2,21 @@ import React from 'react';
 
 const Logo: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center pt-1 pb-1 px-4 select-none text-center">
+    <div className="flex flex-col items-center justify-center pt-0.5 pb-0.5 px-4 select-none text-center">
       {/* Nombre de la App */}
-      <h1 className="text-[30px] font-[900] tracking-tighter leading-none mb-0.5">
+      <h1 className="text-[28px] font-[900] tracking-tighter leading-none mb-0.5">
         <span className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.7)] text-shadow-premium">shopdigital</span>
         <span className="text-red-500 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)] text-shadow-premium">.ar</span>
       </h1>
 
       {/* Nombre del Distrito */}
-      <p className="text-[11px] font-bold text-white/80 tracking-[0.2em] uppercase mb-2 drop-shadow-[0_0_5px_rgba(0,158,227,0.5)]">
+      <p className="text-[10px] font-bold text-white/80 tracking-[0.2em] uppercase mb-1 drop-shadow-[0_0_5px_rgba(0,158,227,0.5)]">
         Esteban Echeverría
       </p>
 
       {/* Emblema del Distrito (Hojas) */}
-      <div className="flex justify-center mb-0.5">
-        <svg width="45" height="34" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div className="flex justify-center mb-0">
+        <svg width="40" height="30" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Círculo Rojo de Fondo (Semicírculo) */}
           <path d="M10 75C10 30 35 5 50 5C65 5 90 30 90 75" fill="#FF0000" />
 
@@ -28,7 +28,7 @@ const Logo: React.FC = () => {
       </div>
 
       {/* Identificación de Zona */}
-      <p className="text-[7.5px] font-black text-white/40 tracking-[0.3em] uppercase mt-1 drop-shadow-md">
+      <p className="text-[7px] font-black text-white/40 tracking-[0.3em] uppercase mt-0.5 drop-shadow-md">
         ZONA:001/BAIRES - REPUBLICA ARGENTINA
       </p>
     </div>
