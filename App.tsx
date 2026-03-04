@@ -509,12 +509,12 @@ const App: React.FC = () => {
             <div className="pt-8 flex justify-center w-full">
               <button
                 onClick={handleBack}
-                className="glass-action-btn btn-premium w-[75%] py-5 px-8 uppercase tracking-[0.3em] flex items-center justify-center gap-4 mx-auto active:scale-95 transition-all group shadow-2xl border-white/40"
+                className="glass-action-btn btn-neon-delicate w-max py-2 px-5 uppercase tracking-[0.2em] flex items-center justify-center gap-2 mx-auto active:scale-95 transition-all group shadow-xl"
               >
-                <div className="bg-white/10 p-1.5 rounded-full group-hover:scale-110 transition-transform">
-                  <ArrowLeft size={22} strokeWidth={4} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+                <div className="bg-white/5 p-1 rounded-full group-hover:scale-110 transition-transform">
+                  <ArrowLeft size={16} strokeWidth={3} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]" />
                 </div>
-                <span className="text-[11px] font-[1000] text-white">Regresar</span>
+                <span className="text-[10px] font-black text-white">Regresar</span>
               </button>
             </div>
           </div>
