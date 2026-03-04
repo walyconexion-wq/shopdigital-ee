@@ -531,9 +531,9 @@ const App: React.FC = () => {
               {/* Botón Volver */}
               <button
                 onClick={handleBack}
-                className="glass-action-btn absolute top-6 left-6 w-10 h-10 rounded-full flex items-center justify-center z-50 transition-all border-white/30"
+                className="glass-action-btn btn-neon-delicate absolute top-6 left-6 w-10 h-10 rounded-full flex items-center justify-center z-50 transition-all"
               >
-                <ChevronLeft size={20} strokeWidth={3} />
+                <ChevronLeft size={16} strokeWidth={3} />
               </button>
 
               {/* Nombre del Negocio (Título Central Superior) */}
@@ -729,10 +729,10 @@ const App: React.FC = () => {
               <div className="w-full flex justify-center mt-10 mb-12">
                 <button
                   onClick={handleBack}
-                  className="glass-action-btn btn-premium w-[65%] py-3.5 px-4 uppercase tracking-[0.25em] flex items-center justify-center gap-3 mx-auto transition-all active:scale-95 shadow-xl border-white/40"
+                  className="glass-action-btn btn-neon-delicate w-max py-2 px-5 uppercase tracking-[0.2em] flex items-center justify-center gap-2 mx-auto transition-all active:scale-95 shadow-xl"
                 >
-                  <ArrowLeft size={18} strokeWidth={3} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]" />
-                  <span className="text-[9.5px] font-[1000] text-white">Regresar a Locales</span>
+                  <ArrowLeft size={16} strokeWidth={3} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]" />
+                  <span className="text-[10px] font-black text-white">Regresar</span>
                 </button>
               </div>
             </div>
