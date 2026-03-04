@@ -634,6 +634,36 @@
       transform: scale(0.96) !important;
       box-shadow: 0 0 10px rgba(0, 242, 255, 0.5) !important;
     }
+
+    /* Título de Impacto - Interfaz 3 */
+    .impact-title {
+      color: #FFFFFF !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.12em !important;
+      text-align: center !important;
+      line-height: 1 !important;
+      text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(255, 255, 255, 0.4),
+        0 0 35px rgba(0, 242, 255, 0.3),
+        2px 2px 15px rgba(0, 0, 0, 0.9) !important;
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4)) !important;
+      animation: title-entry 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+
+    @keyframes title-entry {
+      0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(-10px);
+        filter: blur(10px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+      }
+    }
   </style>
 
   <link rel="stylesheet" href="/index.css">
