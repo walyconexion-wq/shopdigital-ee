@@ -411,12 +411,12 @@ const App: React.FC = () => {
               ))}
             </div>
 
-            <div className="mt-16 mb-4 flex justify-center fade-up-item" style={{ animationDelay: '700ms' }}>
+            <div className="mt-12 mb-4 flex justify-center fade-up-item" style={{ animationDelay: '700ms' }}>
               <button
                 onClick={handleShare}
-                className="glass-action-btn btn-blue luminous-glow py-5 px-10 text-[11px] font-[1100] uppercase tracking-[0.3em] active:scale-95 shadow-2xl"
+                className="glass-action-btn btn-violet luminous-glow py-3.5 px-8 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-2xl"
               >
-                <Share2 size={18} strokeWidth={3} className="text-white" />
+                <Share2 size={16} strokeWidth={3} className="text-white" />
                 Compartir App
               </button>
             </div>
