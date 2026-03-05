@@ -606,17 +606,18 @@ const App: React.FC = () => {
                     {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => (
                       <div
                         key={`${offer.id}-${idx}`}
-                        className="glass-card-3d flex-shrink-0 w-40 p-3 flex flex-col active:scale-95 transition-transform"
+                        className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col active:scale-95 transition-all duration-300"
                       >
-                        <div className="rounded-2xl overflow-hidden aspect-square mb-3 border border-white/10 shadow-lg">
-                          <img src={offer.image} alt={offer.name} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
+                        <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative group-hover:border-cyan-400/50 transition-colors">
+                          <img src={offer.image} alt={offer.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                          <div className="absolute top-2 right-2 bg-cyan-500/80 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-tighter">Oferta</div>
                         </div>
                         <div className="px-1 pb-1 text-center">
-                          <p className="text-[9.5px] font-black uppercase tracking-tight text-white mb-3 line-clamp-1 text-shadow-premium">
+                          <p className="text-[10px] font-black uppercase tracking-tight text-white mb-3.5 line-clamp-1 text-shadow-premium">
                             {offer.name}
                           </p>
-                          <div className="glass-action-btn py-2 px-3 rounded-xl border-white/20">
-                            <span className="text-[11px] font-black text-white">$ {offer.price.toLocaleString('es-AR')}</span>
+                          <div className="glass-action-btn offer-price-tag py-2 px-3 rounded-xl">
+                            <span className="text-[12.5px] font-black text-cyan-50 text-shadow-premium">$ {offer.price.toLocaleString('es-AR')}</span>
                           </div>
                         </div>
                       </div>
