@@ -561,14 +561,6 @@ const App: React.FC = () => {
               })()}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A224E] via-[#0A224E]/20 to-transparent"></div>
 
-              {/* Botón Volver */}
-              <button
-                onClick={handleBack}
-                className="glass-action-btn btn-neon-delicate absolute top-6 left-6 w-10 h-10 rounded-full flex items-center justify-center z-50 transition-all"
-              >
-                <ChevronLeft size={16} strokeWidth={3} />
-              </button>
-
               <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
                 <h1 className="impact-title text-[28px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)]">
                   {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
@@ -581,14 +573,6 @@ const App: React.FC = () => {
                 </div>
                 <div className="w-12 h-[1px] bg-white/40 mx-auto mt-2.5 shadow-[0_0_10px_rgba(255,255,255,0.6)]"></div>
               </div>
-
-              {/* Botón Autogestión (Candado) */}
-              <button
-                onClick={() => setShowLoginModal(true)}
-                className="glass-action-btn absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center z-50 transition-all border-white/30"
-              >
-                <Lock size={16} strokeWidth={3} />
-              </button>
 
               <div className="absolute inset-0 flex flex-col justify-end pb-6 px-6">
                 <div className="flex justify-center w-full">
@@ -638,6 +622,17 @@ const App: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Acceso Admin al final del catálogo */}
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={() => setShowLoginModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/20 hover:text-white/40 transition-all active:scale-95"
+                  >
+                    <Lock size={12} strokeWidth={2} />
+                    <span className="text-[8px] font-bold uppercase tracking-[0.2em]">Acceso Gestión</span>
+                  </button>
                 </div>
               </div>
 
