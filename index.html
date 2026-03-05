@@ -651,6 +651,35 @@
       animation: title-entry 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
     }
 
+    .neon-flicker {
+      animation: neon-flicker-anim 4s linear infinite;
+    }
+
+    @keyframes neon-flicker-anim {
+
+      0%,
+      18%,
+      22%,
+      25%,
+      53%,
+      57%,
+      100% {
+        text-shadow:
+          0 0 10px rgba(255, 255, 255, 0.8),
+          0 0 20px rgba(255, 255, 255, 0.4),
+          0 0 35px rgba(0, 242, 255, 0.3),
+          2px 2px 15px rgba(0, 0, 0, 0.9);
+        opacity: 1;
+      }
+
+      20%,
+      24%,
+      55% {
+        text-shadow: none;
+        opacity: 0.7;
+      }
+    }
+
     @keyframes title-entry {
       0% {
         opacity: 0;

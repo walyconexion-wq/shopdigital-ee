@@ -562,7 +562,7 @@ const App: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A224E] via-[#0A224E]/20 to-transparent"></div>
 
               <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
-                <h1 className="impact-title text-[28px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)]">
+                <h1 className="impact-title neon-flicker text-[28px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)]">
                   {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                 </h1>
                 <div className="flex items-center gap-1.5 mt-1 opacity-90">
@@ -579,10 +579,10 @@ const App: React.FC = () => {
                   {/* Botón Menú Online Centrado */}
                   <button
                     onClick={scrollToCatalog}
-                    className="glass-action-btn btn-offers-glow luminous-glow px-5 py-3 rounded-2xl flex items-center justify-center gap-2.5 z-40 shadow-xl active:scale-95 group"
+                    className="glass-action-btn btn-offers-glow luminous-glow px-4 py-2 rounded-2xl flex items-center justify-center gap-2.5 z-40 shadow-xl active:scale-95 group"
                   >
-                    <BookOpen size={15} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Ver precios de oferta</span>
+                    <BookOpen size={14} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Ver menú</span>
                   </button>
                 </div>
               </div>
