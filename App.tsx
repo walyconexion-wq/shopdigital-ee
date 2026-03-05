@@ -652,21 +652,21 @@ const App: React.FC = () => {
                   <div className="h-[1px] w-8 bg-white/20 mt-3"></div>
                 </div>
 
-                <div className="glass-card-3d w-full h-64 overflow-hidden bg-black/20 relative shadow-2xl mb-6">
+                <div className="map-glow-container w-full h-80 overflow-hidden bg-black/20 relative mb-8 shadow-2xl transition-all duration-700">
                   <iframe
                     title="Ubicación del comercio"
                     src={selectedShop.mapUrl}
                     width="100%"
                     height="100%"
-                    style={{ border: 0, filter: 'grayscale(0.3) contrast(1.2) brightness(0.8)' }}
+                    style={{ border: 0, filter: 'grayscale(0.2) contrast(1.1) brightness(0.9)' }}
                     allowFullScreen={false}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                   ></iframe>
                 </div>
 
-                <div className="mt-4 text-center px-4 mb-8">
-                  <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.25em] leading-relaxed text-shadow-premium">
+                <div className="mt-2 text-center px-4 mb-10">
+                  <p className="neon-text-white text-[11px] font-[1000] uppercase tracking-[0.35em] leading-relaxed">
                     {selectedShop.address}
                   </p>
                 </div>

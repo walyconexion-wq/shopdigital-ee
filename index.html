@@ -675,6 +675,36 @@
         0 0 20px rgba(34, 211, 238, 0.2) !important;
       filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.3)) !important;
     }
+
+    /* Texto Neón Blanco - Dirección */
+    .neon-text-white {
+      color: #FFFFFF !important;
+      text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(255, 255, 255, 0.4),
+        0 0 30px rgba(255, 255, 255, 0.2) !important;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)) !important;
+    }
+
+    /* Contenedor de Mapa con Iluminación */
+    .map-glow-container {
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 2.2rem;
+      overflow: hidden;
+      box-shadow:
+        0 0 40px rgba(255, 255, 255, 0.15),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .map-glow-container::before {
+      content: "";
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
   </style>
 
   <link rel="stylesheet" href="/index.css">
