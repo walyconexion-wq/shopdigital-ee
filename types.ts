@@ -33,6 +33,7 @@ export interface Shop {
   image: string;
   bannerImage: string;
   offers: ProductOffer[];
+  galleryImages?: string[];
   mapUrl: string; // Este es el iframe (embed)
   mapSheetUrl?: string; // Este es el link a la ficha técnica
   isActive?: boolean;

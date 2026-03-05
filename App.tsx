@@ -40,6 +40,7 @@ const App: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
   const [footerClicks, setFooterClicks] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleFooterClick = () => {
     const newCount = footerClicks + 1;
@@ -300,6 +301,25 @@ const App: React.FC = () => {
         <LoadingScreen ready={!loading} onDone={() => setShowLoader(false)} />
       )}
 
+      {/* Efecto Carrusel para Interface 3 */}
+      {useEffect(() => {
+        if (currentView === View.DETAIL && selectedShop) {
+          const gallery = selectedShop.galleryImages && selectedShop.galleryImages.length > 0
+            ? selectedShop.galleryImages
+            : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
+
+          if (gallery.length > 1) {
+            const timer = setInterval(() => {
+              setCurrentImageIndex((prev) => (prev + 1) % gallery.length);
+            }, 6000);
+            return () => clearInterval(timer);
+          }
+        } else {
+          setCurrentImageIndex(0);
+        }
+        return undefined;
+      }, [currentView, selectedShop]) as any}
+
       {/* FONDO TECNOLÓGICO (ESTÁTICO) */}
       {(currentView === View.HOME || currentView === View.CATEGORY || currentView === View.DETAIL) && (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -523,9 +543,22 @@ const App: React.FC = () => {
         {/* INTERFAZ 3: DETALLE */}
         {currentView === View.DETAIL && selectedShop && (
           <div className="pb-24 animate-in fade-in duration-700">
-            {/* PORTADA ESTIRADA */}
+            {/* PORTADA CON CARRUSEL DINÁMICO */}
             <div className="relative w-full h-[260px] bg-[#0A224E] overflow-hidden">
-              <img src={selectedShop.bannerImage} alt="Banner" className="w-full h-full object-cover opacity-65" />
+              {(() => {
+                const gallery = selectedShop.galleryImages && selectedShop.galleryImages.length > 0
+                  ? selectedShop.galleryImages
+                  : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
+
+                return gallery.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`Cover ${idx}`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${idx === currentImageIndex ? 'opacity-65' : 'opacity-0'}`}
+                  />
+                ));
+              })()}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A224E] via-[#0A224E]/20 to-transparent"></div>
 
               {/* Botón Volver */}
