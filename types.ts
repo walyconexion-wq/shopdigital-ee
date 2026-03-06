@@ -10,6 +10,7 @@ export enum View {
 
 export interface Category {
   id: string;
+  slug: string;
   name: string;
   icon: React.ReactNode;
 }
@@ -23,6 +24,7 @@ export interface ProductOffer {
 
 export interface Shop {
   id: string;
+  slug: string;
   name: string;
   category: string;
   rating: number;
