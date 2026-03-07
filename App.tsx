@@ -9,6 +9,7 @@ import CategoryPage from './pages/CategoryPage';
 import ShopDetailPage from './pages/ShopDetailPage';
 import CredencialPage from './pages/CredencialPage';
 import AdminPanelPage from './pages/AdminPanelPage';
+import DiscountsPage from './pages/DiscountsPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -48,6 +49,7 @@ const App: React.FC = () => {
           <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/panel-autogestion" element={<AdminPanelPage allShops={allShops} />} />
+          <Route path="red-comercial/descuentos" element={<DiscountsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
