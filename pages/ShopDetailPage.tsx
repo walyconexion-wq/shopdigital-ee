@@ -196,7 +196,20 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </div>
 
                     <div className="flex flex-col gap-4 w-full">
-                        <button onClick={() => navigate(`/${categorySlug}/${shopSlug}/credencial`)} className="glass-action-btn btn-violet py-4 font-black uppercase tracking-widest text-[10px] text-white">Obtener Credencial de Descuento</button>
+                        <div className="grid grid-cols-3 gap-3">
+                            <button onClick={() => selectedShop.facebook && handleOpenLink(selectedShop.facebook)} className="glass-action-btn btn-fb py-4 flex flex-col items-center justify-center gap-1.5 text-white">
+                                <Facebook size={20} className="text-[#1877F2]" fill="currentColor" strokeWidth={0} />
+                                <span className="text-[8px] font-black uppercase tracking-tighter">Facebook</span>
+                            </button>
+                            <button onClick={() => selectedShop.instagram && handleOpenLink(selectedShop.instagram)} className="glass-action-btn btn-ig py-4 flex flex-col items-center justify-center gap-1.5 text-white">
+                                <Instagram size={20} className="text-[#E4405F]" strokeWidth={2.5} />
+                                <span className="text-[8px] font-black uppercase tracking-tighter">Instagram</span>
+                            </button>
+                            <button onClick={() => selectedShop.tiktok && handleOpenLink(selectedShop.tiktok)} className="glass-action-btn btn-tk py-4 flex flex-col items-center justify-center gap-1.5 text-white">
+                                <Music size={20} className="text-white" strokeWidth={2.5} />
+                                <span className="text-[8px] font-black uppercase tracking-tighter">TikTok</span>
+                            </button>
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <button onClick={() => handleOpenLink(selectedShop.mapSheetUrl || '#')} className="glass-action-btn btn-violet py-4 flex items-center justify-center gap-3 text-white"><Navigation size={18} /><span className="text-[10px] font-black uppercase">Cómo llegar</span></button>
                             <button onClick={() => handleOpenLink('https://m.uber.com/ul/')} className="glass-action-btn bg-black/60 py-4 flex items-center justify-center gap-3 text-white"><Car size={18} /><span className="text-[10px] font-black uppercase">Uber</span></button>
