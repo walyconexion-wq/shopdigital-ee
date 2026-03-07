@@ -16,6 +16,7 @@ import {
     Music,
     ArrowLeft
 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
@@ -93,6 +94,23 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
     return (
         <div className="pb-24 animate-in fade-in duration-700">
+            <Helmet>
+                <title>{selectedShop.name} - Catálogo de Ofertas</title>
+                <meta name="description" content={`Mirá nuestro menú digital de ${selectedShop.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
+
+                {/* Facebook / OG */}
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content={`${selectedShop.name} - Catálogo de Ofertas`} />
+                <meta property="og:description" content={`Mirá nuestro menú digital de ${selectedShop.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
+                <meta property="og:image" content={selectedShop.bannerImage || selectedShop.image} />
+
+                {/* Twitter */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={`${selectedShop.name} - Catálogo de Ofertas`} />
+                <meta name="twitter:description" content={`Mirá nuestro menú digital de ${selectedShop.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
+                <meta name="twitter:image" content={selectedShop.bannerImage || selectedShop.image} />
+            </Helmet>
+
             <div className="relative w-full h-[260px] bg-[#0A224E] overflow-hidden">
                 {gallery.map((img, idx) => (
                     <img

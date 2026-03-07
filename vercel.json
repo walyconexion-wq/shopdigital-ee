@@ -1,6 +1,17 @@
 {
     "rewrites": [
         {
+            "source": "/:category(pizzerias|restaurantes|fastfood|beer|icecream|gastro|markets|fashion|tech|home|barber|hair|gym|hardware|pets|tattoo|beauty|inmo|auto|gifts|finance|servicios|automotormotos|farmacias)/:shop",
+            "has": [
+                {
+                    "type": "header",
+                    "key": "user-agent",
+                    "value": "(WhatsApp|facebookexternalhit|Twitterbot|LinkedInBot|Embedly)"
+                }
+            ],
+            "destination": "/api/og-injector?category=:category&shop=:shop"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
