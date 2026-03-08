@@ -53,7 +53,7 @@ const Home: React.FC = () => {
                         style={{
                             animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms forwards`
                         }}
-                        className="glass-button-3d category-btn aspect-square group opacity-0"
+                        className="glass-button-3d category-btn btn-neon-active aspect-square group opacity-0"
                     >
                         <div className="mb-1.5 transform group-hover:scale-110 transition-transform duration-500 ease-out">
                             {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 19, strokeWidth: 1.3 })}
