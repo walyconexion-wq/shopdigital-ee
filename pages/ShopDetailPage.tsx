@@ -123,7 +123,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A224E] via-[#0A224E]/20 to-transparent"></div>
 
                 <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
-                    <h1 className="impact-title neon-flicker text-[28px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] text-white text-center">
+                    <h1 className="impact-title neon-flicker text-[34px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] text-white text-center">
                         {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                     </h1>
                     <div className="flex items-center gap-1.5 mt-1 opacity-90">
