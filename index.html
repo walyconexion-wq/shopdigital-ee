@@ -314,6 +314,22 @@
       border-radius: 1.2rem;
     }
 
+    /* Animación de entrada para botones de rubros */
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .fade-up-item {
+      animation: fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
     /* Tarjeta Vidrio 3D - Interfaz 2 */
     .glass-card-3d {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);

@@ -55,8 +55,8 @@ const Home: React.FC = () => {
                         }}
                         className="glass-button-3d category-btn btn-neon-active aspect-square group opacity-0"
                     >
-                        <div className="mb-1.5 transform group-hover:scale-110 transition-transform duration-500 ease-out">
-                            {React.cloneElement(cat.icon as React.ReactElement<any>, { size: 19, strokeWidth: 1.3 })}
+                        <div className="mb-1.5 w-[19px] h-[19px] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out [&>svg]:w-full [&>svg]:h-full">
+                            {cat.icon}
                         </div>
                         <span className="text-[8.5px] text-center font-black uppercase leading-[1.1] tracking-[0.01em] px-0.5 text-white">
                             {cat.name}
