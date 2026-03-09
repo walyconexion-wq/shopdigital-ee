@@ -51,11 +51,11 @@ const Home: React.FC = () => {
                         key={cat.id}
                         onClick={() => navigate(`/${cat.slug}`)}
                         style={{
-                            animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms forwards`
+                            animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms both`
                         }}
-                        className="glass-button-3d category-btn btn-neon-active aspect-square group opacity-0"
+                        className="glass-button-3d category-btn btn-neon-active aspect-square group"
                     >
-                        <div className="mb-1.5 w-[19px] h-[19px] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out [&>svg]:w-full [&>svg]:h-full">
+                        <div className="mb-1.5 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out">
                             {cat.icon}
                         </div>
                         <span className="text-[8.5px] text-center font-black uppercase leading-[1.1] tracking-[0.01em] px-0.5 text-white">
