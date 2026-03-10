@@ -26,26 +26,30 @@ const Home: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col pt-8 pb-12 animate-in fade-in duration-700">
+        <div className="flex flex-col pt-8 pb-12 animate-in fade-in duration-700 relative overflow-hidden min-h-screen">
+            {/* HUD Decorative Elements */}
+            <div className="absolute top-20 left-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            
             <header className="flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700 bg-transparent pt-0">
-                <div className="glass-header rounded-3xl p-2.5 mb-2.5 border-[#8b5cf6]/50 shadow-[0_15px_40px_rgba(139,92,246,0.4)] bg-gradient-to-br from-[#8b5cf6]/20 to-[#0A224E]/60 animate-in fade-in zoom-in duration-1000">
+                <div className="glass-header rounded-3xl p-2.5 mb-2.5 border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 animate-in fade-in zoom-in duration-1000">
                     <Logo />
                 </div>
             </header>
 
-            <div className="flex flex-col items-center mb-10 mt-2 fade-up-item">
-                <div className="h-[1px] w-12 bg-white/20 mb-5"></div>
+            <div className="flex flex-col items-center mb-10 mt-2 fade-up-item relative z-10">
+                <div className="h-[1px] w-12 bg-cyan-400/30 mb-5"></div>
                 <h2 className="text-[10px] font-black text-white text-shadow-premium uppercase tracking-[0.4em] text-center">
                     Seleccionar Categoría
                 </h2>
                 <div className="flex gap-1.5 mt-4">
-                    <div className="w-1 h-1 rounded-full bg-[#22C55E]"></div>
-                    <div className="w-1 h-1 rounded-full bg-[#FF0000]"></div>
-                    <div className="w-1 h-1 rounded-full bg-[#0A224E]"></div>
+                    <div className="w-1 h-1 rounded-full bg-cyan-400 animate-pulse"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-500"></div>
+                    <div className="w-1 h-1 rounded-full bg-cyan-400/40"></div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-x-3 gap-y-7 px-6">
+            <div className="grid grid-cols-3 gap-x-3 gap-y-7 px-6 relative z-10">
                 {CATEGORIES.map((cat, index) => (
                     <button
                         key={cat.id}
@@ -55,31 +59,31 @@ const Home: React.FC = () => {
                         }}
                         className="glass-button-3d category-btn btn-neon-active aspect-square group"
                     >
-                        <div className="mb-1.5 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out">
+                        <div className="mb-1.5 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out text-cyan-400">
                             {cat.icon}
                         </div>
-                        <span className="text-[8.5px] text-center font-black uppercase leading-[1.1] tracking-[0.01em] px-0.5 text-white">
+                        <span className="text-[8.5px] text-center font-black uppercase leading-[1.1] tracking-[0.01em] px-0.5 text-white/90 group-hover:text-white transition-colors">
                             {cat.name}
                         </span>
                     </button>
                 ))}
             </div>
 
-            <div className="mt-12 mb-4 flex justify-center fade-up-item" style={{ animationDelay: '700ms' }}>
+            <div className="mt-12 mb-4 flex justify-center fade-up-item relative z-10" style={{ animationDelay: '700ms' }}>
                 <button
                     onClick={handleShare}
-                    className="glass-action-btn btn-violet luminous-glow py-3.5 px-8 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-2xl"
+                    className="glass-action-btn btn-cyan-neon luminous-glow py-4 px-10 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-cyan-400/60"
                 >
-                    <Share2 size={16} strokeWidth={3} className="text-white" />
+                    <Share2 size={16} strokeWidth={3} className="text-cyan-300" />
                     Compartir App
                 </button>
             </div>
 
-            <footer className="w-full flex flex-col items-center gap-1.5 pt-4 pb-4 mt-2 border-t border-white/10">
-                <p className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none" style={{ textShadow: '0 0 8px rgba(255, 255, 255, 0.4)' }}>
+            <footer className="w-full flex flex-col items-center gap-1.5 pt-6 pb-4 mt-auto border-t border-white/10 relative z-10">
+                <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.35em] text-center select-none" style={{ textShadow: '0 0 8px rgba(34, 211, 238, 0.2)' }}>
                     © 2026 · shopdigital.ar
                 </p>
-                <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none" style={{ color: '#009EE3', textShadow: '0 0 10px rgba(0, 158, 227, 0.8), 0 0 20px rgba(0, 158, 227, 0.4)' }}>
+                <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none" style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}>
                     La app de Waly
                 </p>
             </footer>
