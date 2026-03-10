@@ -47,26 +47,30 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
     }
 
     return (
-        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700">
+        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen">
+            {/* HUD Decorative Elements */}
+            <div className="absolute top-40 right-[-10%] w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-40 left-[-10%] w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+
             <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
                 <div className="w-full px-6 flex flex-col pb-4">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-4">
                         <button
                             onClick={() => navigate('/')}
-                            className="glass-action-btn px-4 py-2 rounded-full flex items-center gap-2 border-white/30 active:scale-95 transition-all shadow-xl"
+                            className="btn-cyan-neon px-5 py-2.5 rounded-full flex items-center gap-2 border-cyan-400/50 active:scale-95 transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] bg-cyan-500/10"
                         >
-                            <ChevronLeft size={16} strokeWidth={4} className="text-white" />
-                            <span className="text-[9px] font-[1000] text-white uppercase tracking-[0.2em] text-shadow-premium">Regresar</span>
+                            <ChevronLeft size={18} strokeWidth={4} className="text-cyan-400" />
+                            <span className="text-[10px] font-[1000] text-white uppercase tracking-[0.2em] text-shadow-premium">Regresar</span>
                         </button>
                     </div>
 
                     <div className="flex justify-center w-full px-2">
-                        <div className="glass-header rounded-3xl w-full py-5 flex flex-col items-center border-[#8b5cf6]/50 shadow-[0_15px_40px_rgba(139,92,246,0.4)] bg-gradient-to-br from-[#8b5cf6]/20 to-[#0A224E]/60">
-                            <h2 className="text-[22px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(139,92,246,0.8)] mb-2">
+                        <div className="glass-header rounded-3xl w-full py-6 flex flex-col items-center border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60">
+                            <h2 className="text-[24px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] mb-3">
                                 {selectedCategory.name}
                             </h2>
-                            <div className="h-[1px] w-16 bg-[#8b5cf6]/60 mb-2 shadow-[0_0_10px_rgba(139,92,246,0.8)]"></div>
-                            <p className="text-[9px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-6">
+                            <div className="h-[1px] w-20 bg-cyan-400/60 mb-3 shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
+                            <p className="text-[9.5px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-8">
                                 Seleccioná tu comercio y descubrí ofertas magníficas
                             </p>
                         </div>
@@ -74,17 +78,17 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                 </div>
             </header>
 
-            <div className="flex flex-col gap-10 px-2 pt-4 pb-24">
+            <div className="flex flex-col gap-10 px-2 pt-4 pb-24 relative z-10">
                 {LOCALITIES.map((locality) => (
                     <div key={locality} className="flex flex-col gap-6">
                         <div className="flex items-center gap-3 ml-2">
-                            <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
-                                <MapPin size={16} className="text-red-500 fill-red-500/20" />
+                            <div className="w-8 h-8 rounded-full bg-cyan-500/10 backdrop-blur-md border border-cyan-400/30 flex items-center justify-center shadow-lg">
+                                <MapPin size={16} className="text-cyan-400" />
                             </div>
                             <h3 className="text-[12px] font-black text-white uppercase tracking-[0.4em] text-shadow-premium">
                                 {locality}
                             </h3>
-                            <div className="h-[1px] flex-1 bg-white/10"></div>
+                            <div className="h-[1px] flex-1 bg-cyan-400/10"></div>
                         </div>
 
                         {groupedShops[locality] && groupedShops[locality].length > 0 ? (
@@ -110,7 +114,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                                 {shop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                                             </h3>
                                             <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
-                                                <MapPin size={12} strokeWidth={3} className="flex-shrink-0 mt-0.5 text-red-500" />
+                                                <MapPin size={12} strokeWidth={3} className="flex-shrink-0 mt-0.5 text-cyan-400/80" />
                                                 <span className="break-words line-clamp-2">{shop.address}</span>
                                             </div>
                                         </div>
@@ -137,15 +141,15 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                     </div>
                 ))}
 
-                <div className="pt-8 flex justify-center w-full">
+                <div className="pt-10 flex justify-center w-full">
                     <button
                         onClick={() => navigate('/')}
-                        className="glass-action-btn btn-neon-delicate w-max py-2 px-5 uppercase tracking-[0.2em] flex items-center justify-center gap-2 mx-auto active:scale-95 transition-all group shadow-xl"
+                        className="glass-action-btn btn-cyan-neon w-max py-3 px-8 uppercase tracking-[0.2em] flex items-center justify-center gap-3 mx-auto active:scale-95 transition-all group shadow-[0_0_30px_rgba(34,211,238,0.2)] border-cyan-400/40"
                     >
-                        <div className="bg-white/5 p-1 rounded-full group-hover:scale-110 transition-transform">
-                            <ArrowLeft size={16} strokeWidth={3} className="text-white" />
+                        <div className="bg-cyan-500/10 p-1.5 rounded-full group-hover:scale-110 transition-transform">
+                            <ArrowLeft size={18} strokeWidth={3} className="text-cyan-400" />
                         </div>
-                        <span className="text-[10px] font-black text-white">Regresar</span>
+                        <span className="text-[11px] font-black text-white">Regresar al Inicio</span>
                     </button>
                 </div>
             </div>
