@@ -9,7 +9,7 @@ const Home: React.FC = () => {
 
     const handleShare = () => {
         const appUrl = window.location.origin;
-        const shareTitle = 'ShopDigitaL - La App de Waly';
+        const shareTitle = 'ShopDigital - La App de Waly';
         const shareDescription = '¡Mirá los comercios de Esteban Echeverría en la App de Waly! 🚀';
         const shareText = `${shareDescription}\n\n👉 ${appUrl}`;
 
@@ -81,7 +81,7 @@ const Home: React.FC = () => {
 
             <footer className="w-full flex flex-col items-center gap-1.5 pt-6 pb-4 mt-auto border-t border-white/10 relative z-10">
                 <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.35em] text-center select-none" style={{ textShadow: '0 0 8px rgba(34, 211, 238, 0.2)' }}>
-                    © 2026 · ShopDigitaL
+                    © 2026 · ShopDigital
                 </p>
                 <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none" style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}>
                     La app de Waly
