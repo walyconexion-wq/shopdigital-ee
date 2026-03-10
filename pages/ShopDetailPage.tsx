@@ -93,7 +93,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
 
     return (
-        <div className="pb-24 animate-in fade-in duration-700">
+        <div className="pb-24 animate-in fade-in duration-700 bg-black min-h-screen">
             <Helmet>
                 <title>{selectedShop.name} - Catálogo de Ofertas</title>
                 <meta name="description" content={`Mirá nuestro menú digital de ${selectedShop.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
@@ -111,7 +111,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <meta name="twitter:image" content={selectedShop.bannerImage || selectedShop.image} />
             </Helmet>
 
-            <div className="relative w-full h-[260px] bg-[#0A224E] overflow-hidden">
+            <div className="relative w-full h-[260px] bg-black overflow-hidden">
                 {gallery.map((img, idx) => (
                     <img
                         key={idx}
@@ -120,7 +120,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${idx === currentImageIndex ? 'opacity-65' : 'opacity-0'}`}
                     />
                 ))}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A224E] via-[#0A224E]/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
                 <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
                     <h1 className="impact-title neon-flicker text-[34px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] text-white text-center">
@@ -158,7 +158,9 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         <div className="h-[1px] w-6 bg-white/10 mt-3"></div>
                     </div>
 
-                    <div className="overflow-hidden w-full">
+                    <div className="overflow-hidden w-full relative">
+                        {/* Subtle Glows for Catalog */}
+                        <div className="absolute top-0 left-0 w-32 h-32 bg-cyan-500/5 blur-3xl rounded-full pointer-events-none" />
                         <div className="animate-delicate-marquee flex gap-4 px-4">
                             {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => (
                                 <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col">
