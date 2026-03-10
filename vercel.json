@@ -1,15 +1,26 @@
 {
     "rewrites": [
         {
-            "source": "/:category(pizzerias|restaurantes|fastfood|beer|icecream|gastro|markets|fashion|tech|home|barber|hair|gym|hardware|pets|tattoo|beauty|inmo|auto|gifts|finance|servicios|automotormotos|farmacias)/:shop/:path*",
+            "source": "/:category(pizzerias|restaurantes|fastfood|beer|icecream|gastro|markets|fashion|tech|home|barber|hair|gym|hardware|pets|tattoo|beauty|inmo|auto|gifts|finance|servicios|automotormotos|farmacias)/:shop",
             "has": [
                 {
                     "type": "header",
                     "key": "user-agent",
-                    "value": ".*(WhatsApp|whatsapp|facebookexternalhit|Twitterbot|LinkedInBot|Embedly|Slackbot|-Google|SkypeUriPreview|Line|TelegramBot|Discordbot).*"
+                    "value": "(?i).*(whatsapp|facebook|twitter|linkedin|embedly|slack|skype|telegram|discord|bot|crawler|spider).*"
                 }
             ],
-            "destination": "/api/og-injector?category=:category&shop=:shop&path=:path*"
+            "destination": "/api/og-injector?category=:category&shop=:shop"
+        },
+        {
+            "source": "/:category(pizzerias|restaurantes|fastfood|beer|icecream|gastro|markets|fashion|tech|home|barber|hair|gym|hardware|pets|tattoo|beauty|inmo|auto|gifts|finance|servicios|automotormotos|farmacias)/:shop/:path+",
+            "has": [
+                {
+                    "type": "header",
+                    "key": "user-agent",
+                    "value": "(?i).*(whatsapp|facebook|twitter|linkedin|embedly|slack|skype|telegram|discord|bot|crawler|spider).*"
+                }
+            ],
+            "destination": "/api/og-injector?category=:category&shop=:shop&path=:path+"
         },
         {
             "source": "/(.*)",
