@@ -4,9 +4,8 @@ const Logo: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center pt-0.5 pb-0.5 px-4 select-none text-center">
       {/* Nombre de la App */}
-      <h1 className="text-[28px] font-[900] tracking-tighter leading-none mb-0.5">
-        <span className="text-white drop-shadow-[0_0_15px_rgba(139,92,246,0.5)] text-shadow-premium">shopdigital</span>
-        <span className="text-[#8b5cf6] drop-shadow-[0_0_12px_rgba(139,92,246,0.8)] text-shadow-premium">.ar</span>
+      <h1 className="text-[32px] font-[900] tracking-tighter leading-none mb-1">
+        <span className="text-[#22d3ee] drop-shadow-[0_0_12px_rgba(34,211,238,0.9)] text-shadow-premium">ShopDigitaL</span>
       </h1>
 
       {/* Nombre del Distrito */}
