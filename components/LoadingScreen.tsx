@@ -53,7 +53,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
           width: 65%;
           max-width: 240px;
           height: 2px;
-          background: rgba(139, 92, 246, 0.14);
+          background: rgba(34, 211, 238, 0.1);
           border-radius: 999px;
           overflow: hidden;
           position: relative;
@@ -70,13 +70,13 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(139, 92, 246, 0.55),
-            rgba(167, 139, 250, 1),
-            rgba(139, 92, 246, 0.55),
+            rgba(34, 211, 238, 0.5),
+            rgba(34, 211, 238, 1),
+            rgba(34, 211, 238, 0.5),
             transparent
           );
           animation: sd-shimmer 1.1s ease-in-out infinite;
-          box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+          box-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
         }
 
         .sd-loader-text::after {
@@ -107,13 +107,18 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'linear-gradient(160deg, #0d0d1a 0%, #0f0a1e 50%, #0a0d18 100%)',
+                    background: '#000000',
                     transition: 'opacity 260ms ease-out',
                     opacity: visible ? 1 : 0,
                     pointerEvents: visible ? 'all' : 'none',
+                    overflow: 'hidden'
                 }}
             >
-                {/* Ambient violet glow blob */}
+                {/* HUD Decorative Elements */}
+                <div className="absolute top-20 left-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" style={{ position: 'absolute' }} />
+                <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" style={{ position: 'absolute' }} />
+                
+                {/* Ambient cyan glow blob */}
                 <div
                     style={{
                         position: 'absolute',
@@ -124,7 +129,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
                         height: '300px',
                         borderRadius: '50%',
                         background:
-                            'radial-gradient(circle, rgba(139,92,246,0.11) 0%, transparent 68%)',
+                            'radial-gradient(circle, rgba(34,211,238,0.1) 0%, transparent 68%)',
                         pointerEvents: 'none',
                     }}
                 />
@@ -135,15 +140,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
                         style={{
                             margin: 0,
                             fontFamily: "'Inter', sans-serif",
-                            fontSize: 'clamp(1.9rem, 8vw, 2.5rem)',
+                            fontSize: 'clamp(2.2rem, 9vw, 2.8rem)',
                             fontWeight: 900,
-                            letterSpacing: '-0.01em',
+                            letterSpacing: '-0.02em',
                             lineHeight: 1,
-                            filter: 'drop-shadow(0 0 16px rgba(139,92,246,0.5))',
+                            filter: 'drop-shadow(0 0 20px rgba(34,211,238,0.6))',
                         }}
                     >
-                        <span style={{ color: '#ffffff' }}>shopdigital</span>
-                        <span style={{ color: '#8b5cf6' }}>.ar</span>
+                        <span style={{ color: '#ffffff' }}>ShopDigital</span>
+                        <span style={{ color: '#22d3ee' }}>.tech</span>
                     </h1>
 
                     {/* Glow underline */}
@@ -151,9 +156,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
                         style={{
                             height: '1px',
                             background:
-                                'linear-gradient(90deg, transparent, rgba(139,92,246,0.7), transparent)',
+                                'linear-gradient(90deg, transparent, rgba(34,211,238,0.6), transparent)',
                             marginTop: '7px',
-                            boxShadow: '0 0 8px rgba(139,92,246,0.5)',
+                            boxShadow: '0 0 10px rgba(34,211,238,0.4)',
                         }}
                     />
 
