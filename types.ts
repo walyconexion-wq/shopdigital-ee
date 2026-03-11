@@ -42,4 +42,10 @@ export interface Shop {
   instagram?: string;
   facebook?: string;
   tiktok?: string;
+  // Personal Validation Fields (Master Play)
+  ownerName?: string;
+  ownerPhoto?: string;
+  memberNumber?: string;
+  shopNumber?: string;
+  region?: string;
 }
