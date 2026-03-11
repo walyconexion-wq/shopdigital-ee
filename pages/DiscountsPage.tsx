@@ -42,29 +42,32 @@ const DiscountsPage: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-gray-950 flex flex-col items-center pb-24 animate-in fade-in duration-700">
+        <div className="min-h-screen bg-black flex flex-col items-center pb-24 animate-in fade-in duration-700 relative overflow-hidden">
+             {/* HUD Decorative Elements */}
+             <div className="absolute top-20 left-[-10%] w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+             <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
             {/* Header Premium */}
-            <div className="w-full bg-gradient-to-b from-violet-900/40 to-transparent pt-12 pb-8 px-8 flex flex-col items-center relative overflow-hidden">
+            <div className="w-full bg-gradient-to-b from-cyan-900/20 to-transparent pt-12 pb-8 px-8 flex flex-col items-center relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                    <div className="absolute top-[-50%] left-[-20%] w-[140%] h-[200%] bg-[radial-gradient(circle,rgba(139,92,246,0.3)_0%,transparent_70%)] animate-pulse"></div>
+                    <div className="absolute top-[-50%] left-[-20%] w-[140%] h-[200%] bg-[radial-gradient(circle,rgba(34,211,238,0.2)_0%,transparent_70%)] animate-pulse"></div>
                 </div>
 
                 <button
                     onClick={() => navigate(-1)}
-                    className="self-start mb-6 p-2 rounded-xl bg-white/5 border border-white/10 text-white backdrop-blur-sm active:scale-90 transition-all"
+                    className="self-start mb-6 p-2 rounded-xl bg-white/5 border border-white/10 text-white backdrop-blur-sm active:scale-90 transition-all hover:border-cyan-500/40"
                 >
                     <ArrowLeft size={20} />
                 </button>
 
                 <div className="flex flex-col items-center gap-2 relative z-10">
-                    <div className="bg-violet-500/20 p-3 rounded-2xl border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.3)] mb-2">
-                        <ShieldCheck size={32} className="text-violet-400" />
+                    <div className="bg-cyan-500/20 p-3 rounded-2xl border border-cyan-500/30 shadow-[0_0_30px_rgba(34,211,238,0.3)] mb-2">
+                        <ShieldCheck size={32} className="text-cyan-400" />
                     </div>
                     <h1 className="text-2xl font-[1000] text-white uppercase tracking-[0.2em] text-center text-shadow-premium">
                         Red Comercial
                     </h1>
-                    <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-violet-500 to-transparent"></div>
-                    <p className="text-[10px] font-black text-violet-300 uppercase tracking-[0.4em] mt-2">
+                    <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+                    <p className="text-[10px] font-black text-cyan-300 uppercase tracking-[0.4em] mt-2">
                         Beneficios Exclusivos
                     </p>
                 </div>
@@ -80,7 +83,7 @@ const DiscountsPage: React.FC = () => {
                         <div>
                             <h3 className="text-[11px] font-black text-white uppercase tracking-widest mb-1">¿Cómo obtener tu descuento?</h3>
                             <p className="text-[9px] font-medium text-white/50 leading-relaxed">
-                                Presentá tu <span className="text-violet-400 font-bold">Credencial Electrónica</span> en cualquiera de los locales adheridos a nuestra red comercial de Esteban Echeverría.
+                                Presentá tu <span className="text-cyan-400 font-bold">Credencial Electrónica</span> en cualquiera de los locales adheridos a nuestra red comercial de Esteban Echeverría.
                             </p>
                         </div>
                     </div>
@@ -107,19 +110,19 @@ const DiscountsPage: React.FC = () => {
                                 <div className="absolute bottom-4 left-6">
                                     <div className="flex items-center gap-2 mb-1">
                                         {discount.icon}
-                                        <h3 className="text-xs font-black text-white uppercase tracking-widest">{discount.merchant}</h3>
+                                        <h3 className="text-xs font-black text-white uppercase tracking-widest leading-none outline-text-black">{discount.merchant}</h3>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="p-6 pt-2 flex items-center justify-between">
                                 <div className="flex flex-col gap-1 flex-1">
-                                    <p className="text-[18px] font-black text-violet-400 uppercase tracking-tighter leading-none">{discount.discount}</p>
+                                    <p className="text-[18px] font-black text-cyan-400 uppercase tracking-tighter leading-none">{discount.discount}</p>
                                     <p className="text-[10px] font-bold text-white/40 uppercase tracking-tight">{discount.description}</p>
                                 </div>
 
-                                <div className="bg-violet-500/10 p-4 rounded-3xl border border-violet-500/20">
-                                    <QrCode size={24} className="text-violet-400" />
+                                <div className="bg-cyan-500/10 p-4 rounded-3xl border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.1)]">
+                                    <QrCode size={24} className="text-cyan-400" />
                                 </div>
                             </div>
                         </div>

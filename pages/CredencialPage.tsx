@@ -18,52 +18,83 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     if (!selectedShop) return null;
 
     return (
-        <div className="min-h-screen bg-gray-900 flex flex-col items-center p-8 animate-in fade-in duration-700">
+        <div className="min-h-screen bg-black flex flex-col items-center p-8 animate-in fade-in duration-700 relative overflow-hidden">
+            {/* HUD Decorative Elements */}
+            <div className="absolute top-20 left-[-10%] w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+            
             <button
                 onClick={() => navigate(-1)}
-                className="self-start mb-8 text-white flex items-center gap-2"
+                className="self-start mb-8 text-white/50 hover:text-cyan-400 flex items-center gap-2 transition-colors relative z-10"
             >
-                <ArrowLeft size={20} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Volver</span>
+                <ArrowLeft size={18} />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver</span>
             </button>
 
-            <div className="w-full max-w-sm bg-gradient-to-br from-violet-600 to-indigo-900 rounded-[2rem] p-1 shadow-2xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                <div className="bg-gray-900 rounded-[1.8rem] p-8 flex flex-col items-center relative z-10">
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden mb-4 border-2 border-violet-500/50 shadow-lg">
-                        <img src={selectedShop.image} alt={selectedShop.name} className="w-full h-full object-cover" />
+            <div className="w-full max-w-sm bg-gradient-to-br from-cyan-500/30 to-blue-900/40 rounded-[2.5rem] p-[1.5px] shadow-[0_0_40px_rgba(34,211,238,0.15)] relative overflow-hidden group animate-in slide-in-from-bottom duration-1000">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-cyan-400/20 transition-colors"></div>
+                
+                <div className="bg-[#050505] rounded-[2.4rem] p-8 flex flex-col items-center relative z-10 border border-white/5">
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden mb-6 border-2 border-cyan-500/50 shadow-[0_0_20px_rgba(34,211,238,0.3)] bg-black p-1">
+                        <img src={selectedShop.image} alt={selectedShop.name} className="w-full h-full object-cover rounded-xl" />
                     </div>
 
-                    <h2 className="text-xl font-black text-white uppercase tracking-tighter mb-1">{selectedShop.name}</h2>
-                    <div className="flex items-center gap-1 mb-6">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Cliente VIP</span>
+                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 text-center text-shadow-premium">{selectedShop.name}</h2>
+                    
+                    <div className="flex items-center gap-2 mb-8 bg-cyan-500/10 px-4 py-1.5 rounded-full border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.1)]">
+                        <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
+                        <span className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Socio VIP Digital</span>
                     </div>
 
-                    <div className="w-full bg-white/5 rounded-2xl p-6 flex flex-col items-center border border-white/10 mb-6">
-                        <div className="bg-white p-4 rounded-xl mb-4">
-                            <QrCode size={150} className="text-gray-900" />
+                    <div className="w-full bg-cyan-500/[0.03] rounded-[2rem] p-8 flex flex-col items-center border border-cyan-500/10 mb-8 relative group/qr">
+                        <div className="absolute inset-0 bg-cyan-400/5 blur-xl opacity-0 group-hover/qr:opacity-100 transition-opacity" />
+                        <div className="bg-white p-5 rounded-2xl mb-5 shadow-[0_0_30px_rgba(255,255,255,0.1)] relative z-10">
+                            <QrCode size={160} className="text-black" />
                         </div>
-                        <p className="text-[10px] font-black text-violet-400 uppercase tracking-[0.2em]">Credencial Escaneable</p>
+                        <p className="text-[10px] font-black text-cyan-500/60 uppercase tracking-[0.3em] relative z-10">Escaneá tu beneficio</p>
                     </div>
 
-                    <div className="w-full space-y-3">
-                        <div className="flex justify-between items-center text-white/40 text-[9px] font-black uppercase tracking-widest border-b border-white/5 pb-2">
-                            <span>Válido hasta</span>
-                            <span className="text-white">DIC 2026</span>
+                    <div className="w-full space-y-4">
+                        <div className="flex justify-between items-center text-white/30 text-[9px] font-black uppercase tracking-[0.3em] border-b border-white/5 pb-3">
+                            <span>Membresía Activa</span>
+                            <span className="text-cyan-400">DIC 2026</span>
                         </div>
-                        <div className="flex justify-center pt-4">
-                            <p className="text-[12px] font-black text-center text-white uppercase tracking-[0.3em] leading-relaxed">
-                                Presentá esta credencial y obtené <span className="text-violet-400">BENEFICIOS EXCLUSIVOS</span>
+                        <div className="flex justify-center pt-2">
+                            <p className="text-[11px] font-black text-center text-white/80 uppercase tracking-[0.25em] leading-relaxed">
+                                Presentá este pase y accedé a <br/>
+                                <span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">VENTAJAS EXCLUSIVAS</span>
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <p className="mt-8 text-[9px] font-bold text-white/20 uppercase tracking-[0.4em] text-center px-12 leading-loose">
-                Exclusivo en la App de Waly para comercios de Esteban Echeverría
-            </p>
+            {/* Connecting Button to Discounts */}
+            <div className="mt-10 animate-in fade-in slide-in-from-bottom duration-1000 delay-300">
+                <button
+                    onClick={() => navigate('/red-comercial/descuentos')}
+                    className="glass-button-3d btn-neon-active px-10 py-5 flex items-center gap-3 group"
+                >
+                    <div className="bg-cyan-400/20 p-2 rounded-lg group-hover:bg-cyan-400/30 transition-colors">
+                        <QrCode size={20} className="text-cyan-400" />
+                    </div>
+                    <div className="flex flex-col items-start gap-0.5">
+                        <span className="text-[11px] font-black text-white uppercase tracking-[0.15em] leading-none">Ver Descuentos B2B</span>
+                        <span className="text-[8px] font-bold text-cyan-400/60 uppercase tracking-widest">Beneficios de red</span>
+                    </div>
+                </button>
+            </div>
+
+            <div className="mt-12 flex flex-col items-center gap-2 opacity-30">
+                <p className="text-[8px] font-black text-white uppercase tracking-[0.5em] text-center px-12 leading-loose">
+                    Security ID: SHOP-{selectedShop.id.slice(0, 8).toUpperCase()}
+                </p>
+                <div className="flex items-center gap-4">
+                    <div className="h-[1px] w-8 bg-cyan-500/20" />
+                    <span className="text-[7px] font-bold text-white uppercase tracking-[1em] mr-[-1em]">ShopDigital.tech</span>
+                    <div className="h-[1px] w-8 bg-cyan-500/20" />
+                </div>
+            </div>
         </div>
     );
 };
