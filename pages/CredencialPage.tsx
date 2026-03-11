@@ -13,8 +13,8 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     const navigate = useNavigate();
 
     const validationUrl = useMemo(() => {
-        return `${window.location.origin}${window.location.pathname}/validar`;
-    }, []);
+        return `${window.location.origin}/${categorySlug}/${shopSlug}/validar`;
+    }, [categorySlug, shopSlug]);
 
     const selectedShop = useMemo(() =>
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
