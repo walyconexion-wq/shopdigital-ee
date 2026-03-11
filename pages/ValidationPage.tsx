@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
 import { ArrowLeft, ShieldCheck, User, MapPin, Hash, Sparkles, Clock } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 
 interface ValidationPageProps {
     allShops: Shop[];
@@ -11,6 +12,10 @@ const ValidationPage: React.FC<ValidationPageProps> = ({ allShops }) => {
     const { shopSlug } = useParams<{ shopSlug: string }>();
     const navigate = useNavigate();
     const [currentTime, setCurrentTime] = useState(new Date());
+
+    const validationUrl = useMemo(() => {
+        return window.location.href;
+    }, []);
 
     // Anti-screenshot: Live clock
     useEffect(() => {
@@ -71,7 +76,7 @@ const ValidationPage: React.FC<ValidationPageProps> = ({ allShops }) => {
                         <ShieldCheck className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" size={24} />
                     </div>
 
-                    <div className="p-8">
+                    <div className="p-8 pb-4">
                         {/* Owner Image & Main ID */}
                         <div className="flex items-center gap-6 mb-8">
                             <div className="relative">
@@ -94,7 +99,7 @@ const ValidationPage: React.FC<ValidationPageProps> = ({ allShops }) => {
                         </div>
 
                         {/* Data Grid */}
-                        <div className="grid grid-cols-2 gap-4 mb-8">
+                        <div className="grid grid-cols-2 gap-4 mb-6">
                             <div className="bg-white/[0.03] border border-white/5 p-4 rounded-2xl">
                                 <div className="flex items-center gap-2 mb-1 opacity-40">
                                     <Hash size={10} className="text-white" />
@@ -111,6 +116,19 @@ const ValidationPage: React.FC<ValidationPageProps> = ({ allShops }) => {
                             </div>
                         </div>
 
+                        {/* QR Validation Dynamic */}
+                        <div className="w-full bg-cyan-500/[0.03] rounded-3xl p-6 mb-6 border border-cyan-500/10 flex flex-col items-center">
+                            <div className="bg-white p-3 rounded-xl mb-3 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+                                <QRCodeCanvas 
+                                    value={validationUrl}
+                                    size={120}
+                                    level="H"
+                                    includeMargin={false}
+                                />
+                            </div>
+                            <span className="text-[7px] font-black text-cyan-500/60 uppercase tracking-[0.4em]">Sello Técnico de Validación</span>
+                        </div>
+
                         {/* Status HUD */}
                         <div className="flex flex-col gap-4">
                             <div className="flex justify-between items-center bg-cyan-500/5 border border-cyan-500/20 p-4 rounded-2xl">
@@ -120,12 +138,12 @@ const ValidationPage: React.FC<ValidationPageProps> = ({ allShops }) => {
                                 </div>
                                 <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,1)] animate-ping" />
                             </div>
-
-                            <p className="text-[8.5px] font-bold text-white/40 uppercase tracking-[0.2em] leading-relaxed text-center px-4">
-                                Esta credencial confirma la legitimidad del titular para operar bajo la red **ShopDigital**
-                            </p>
                         </div>
                     </div>
+
+                    <p className="text-[8.5px] font-bold text-white/40 uppercase tracking-[0.2em] leading-relaxed text-center px-4 mb-6">
+                        Esta credencial confirma la legitimidad del titular para operar bajo la red **ShopDigital**
+                    </p>
 
                     {/* Footer HUD info */}
                     <div className="bg-[#0a0a0a] p-4 flex justify-center items-center border-t border-white/5 gap-3">

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
 import { ArrowLeft, Star, QrCode } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 
 interface CredencialPageProps {
     allShops: Shop[];
@@ -10,6 +11,10 @@ interface CredencialPageProps {
 const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     const { categorySlug, shopSlug } = useParams<{ categorySlug: string; shopSlug: string }>();
     const navigate = useNavigate();
+
+    const validationUrl = useMemo(() => {
+        return `${window.location.origin}${window.location.pathname}/validar`;
+    }, []);
 
     const selectedShop = useMemo(() =>
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
@@ -49,7 +54,20 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                     <div className="w-full bg-cyan-500/[0.03] rounded-[2rem] p-8 flex flex-col items-center border border-cyan-500/10 mb-8 relative group/qr">
                         <div className="absolute inset-0 bg-cyan-400/5 blur-xl opacity-0 group-hover/qr:opacity-100 transition-opacity" />
                         <div className="bg-white p-5 rounded-2xl mb-5 shadow-[0_0_30px_rgba(255,255,255,0.1)] relative z-10">
-                            <QrCode size={160} className="text-black" />
+                            <QRCodeCanvas 
+                                value={validationUrl}
+                                size={160}
+                                level="H"
+                                includeMargin={false}
+                                imageSettings={{
+                                    src: selectedShop.image,
+                                    x: undefined,
+                                    y: undefined,
+                                    height: 30,
+                                    width: 30,
+                                    excavate: true,
+                                }}
+                            />
                         </div>
                         <p className="text-[10px] font-black text-cyan-500/60 uppercase tracking-[0.3em] relative z-10">Escaneá tu beneficio</p>
                     </div>
