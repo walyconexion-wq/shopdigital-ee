@@ -25,9 +25,9 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             
             <button
                 onClick={() => navigate(-1)}
-                className="self-start mb-8 text-white/50 hover:text-cyan-400 flex items-center gap-2 transition-colors relative z-10"
+                className="self-start mb-8 text-cyan-400/90 hover:text-cyan-300 flex items-center gap-2 transition-all relative z-10 group/back hover:translate-x-[-4px]"
             >
-                <ArrowLeft size={18} />
+                <ArrowLeft size={18} className="drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver</span>
             </button>
 
@@ -55,9 +55,9 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                     </div>
 
                     <div className="w-full space-y-4">
-                        <div className="flex justify-between items-center text-white/30 text-[9px] font-black uppercase tracking-[0.3em] border-b border-white/5 pb-3">
-                            <span>Membresía Activa</span>
-                            <span className="text-cyan-400">DIC 2026</span>
+                        <div className="flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.3em] border-b border-white/10 pb-3">
+                            <span className="opacity-60">Membresía Activa</span>
+                            <span className="text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]">DIC 2026</span>
                         </div>
                         <div className="flex justify-center pt-2">
                             <p className="text-[11px] font-black text-center text-white/80 uppercase tracking-[0.25em] leading-relaxed">
@@ -85,14 +85,14 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                 </button>
             </div>
 
-            <div className="mt-12 flex flex-col items-center gap-2 opacity-30">
-                <p className="text-[8px] font-black text-white uppercase tracking-[0.5em] text-center px-12 leading-loose">
+            <div className="mt-12 flex flex-col items-center gap-2 opacity-80">
+                <p className="text-[8px] font-black text-cyan-400/80 uppercase tracking-[0.5em] text-center px-12 leading-loose">
                     Security ID: SHOP-{selectedShop.id.slice(0, 8).toUpperCase()}
                 </p>
                 <div className="flex items-center gap-4">
-                    <div className="h-[1px] w-8 bg-cyan-500/20" />
+                    <div className="h-[1px] w-8 bg-cyan-500/40 shadow-[0_0_5px_rgba(34,211,238,0.3)]" />
                     <span className="text-[7px] font-bold text-white uppercase tracking-[1em] mr-[-1em]">ShopDigital.tech</span>
-                    <div className="h-[1px] w-8 bg-cyan-500/20" />
+                    <div className="h-[1px] w-8 bg-cyan-500/40 shadow-[0_0_5px_rgba(34,211,238,0.3)]" />
                 </div>
             </div>
         </div>
