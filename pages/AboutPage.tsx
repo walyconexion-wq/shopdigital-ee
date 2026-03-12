@@ -13,7 +13,8 @@ import {
     ChevronRight,
     Globe,
     ExternalLink,
-    Lock
+    Lock,
+    Share2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -28,6 +29,23 @@ const AboutPage: React.FC = () => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleShare = () => {
+        const shareUrl = window.location.href;
+        const shareTitle = 'ShopDigital - Red Comercial';
+        const shareText = '¡Conocé la red digital de comercios de Esteban Echeverría! Sumate a la comunidad y potenciá tu negocio. 🚀\n\n👉 ' + shareUrl;
+
+        if (navigator.share) {
+            navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: shareUrl,
+            }).catch(console.error);
+        } else {
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+    };
 
     const features = [
         { 
@@ -176,6 +194,20 @@ const AboutPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Funnel Share Button - The Master Move */}
+                    <div className="mt-12 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                        <button 
+                            onClick={handleShare}
+                            className="w-full glass-action-btn btn-cyan-neon luminous-glow py-6 px-10 flex items-center justify-center gap-4 group"
+                        >
+                            <span className="text-sm font-black uppercase tracking-[0.2em]">Compartir Proyecto</span>
+                            <Share2 size={20} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
+                        </button>
+                        <p className="text-[10px] text-cyan-400/40 text-center uppercase tracking-[0.3em] mt-4 font-black italic">
+                            Impulsá la red y ganá puntos ShopDigital
+                        </p>
                     </div>
                 </div>
             </main>
