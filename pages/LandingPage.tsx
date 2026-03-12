@@ -10,7 +10,8 @@ import {
     ChevronRight,
     MessageSquare,
     Info,
-    LayoutDashboard
+    LayoutDashboard,
+    Share2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -23,6 +24,23 @@ const LandingPage: React.FC = () => {
         window.scrollTo(0, 0);
         setIsVisible(true);
     }, []);
+
+    const handleShare = () => {
+        const shareUrl = window.location.href;
+        const shareTitle = 'ShopDigital - Sumá tu Comercio';
+        const shareText = '¡Hacé crecer tu negocio con ShopDigital! Escaneá y descubrí el futuro de Esteban Echeverría. 🚀\n\n👉 ' + shareUrl;
+
+        if (navigator.share) {
+            navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: shareUrl,
+            }).catch(console.error);
+        } else {
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+    };
 
     const benefits = [
         { 
@@ -172,6 +190,17 @@ const LandingPage: React.FC = () => {
                     <p className="text-[8px] font-black text-cyan-500/40 text-center uppercase tracking-[0.5em] mt-10">
                         98% Mobile Optimization Guarantee
                     </p>
+
+                    {/* Funnel Share Button - Drive Growth */}
+                    <div className="mt-8 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                        <button 
+                            onClick={handleShare}
+                            className="w-full glass-action-btn btn-cyan-neon luminous-glow py-5 px-10 flex items-center justify-center gap-4 group"
+                        >
+                            <span className="text-sm font-black uppercase tracking-[0.2em]">Compartir Red</span>
+                            <Share2 size={20} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
+                        </button>
+                    </div>
                 </div>
             </main>
 

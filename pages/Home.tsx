@@ -4,8 +4,6 @@ import Logo from '../components/Logo';
 import { Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { useNavigate } from 'react-router-dom';
-
 const Home: React.FC = () => {
     const navigate = useNavigate();
     const [logoClicks, setLogoClicks] = React.useState(0);
@@ -110,7 +108,11 @@ const Home: React.FC = () => {
                 <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.35em] text-center select-none" style={{ textShadow: '0 0 8px rgba(34, 211, 238, 0.2)' }}>
                     © 2026 · ShopDigital
                 </p>
-                <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none" style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}>
+                <p 
+                    onClick={() => navigate('/unirse')}
+                    className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
+                    style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}
+                >
                     La app de Waly
                 </p>
             </footer>
