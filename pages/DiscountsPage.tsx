@@ -8,7 +8,8 @@ import {
     Zap,
     Building2,
     Gift,
-    QrCode
+    QrCode,
+    Share2
 } from 'lucide-react';
 
 const B2B_DISCOUNTS = [
@@ -40,6 +41,23 @@ const B2B_DISCOUNTS = [
 
 const DiscountsPage: React.FC = () => {
     const navigate = useNavigate();
+
+    const handleShare = () => {
+        const shareUrl = window.location.href;
+        const shareTitle = 'ShopDigital - Beneficios B2B';
+        const shareText = '¡Aprovechá los descuentos exclusivos para la red de comerciantes de ShopDigital! 🚀💼\n\n👉 ' + shareUrl;
+
+        if (navigator.share) {
+            navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: shareUrl,
+            }).catch(console.error);
+        } else {
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black flex flex-col items-center pb-24 animate-in fade-in duration-700 relative overflow-hidden">
@@ -130,7 +148,15 @@ const DiscountsPage: React.FC = () => {
                 </div>
 
                 {/* Footer Footer */}
-                <div className="mt-8 flex flex-col items-center gap-4 py-8 border-t border-white/5">
+                <div className="mt-8 flex flex-col items-center gap-6 py-8 border-t border-white/5 w-full">
+                    <button 
+                        onClick={handleShare}
+                        className="w-full glass-action-btn btn-cyan-neon luminous-glow py-5 px-10 flex items-center justify-center gap-4 group"
+                    >
+                        <span className="text-sm font-black uppercase tracking-[0.2em]">Compartir Beneficios</span>
+                        <Share2 size={20} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
+                    </button>
+
                     <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.5em] text-center">
                         Próximamente más beneficios exclusivos
                     </p>

@@ -242,7 +242,17 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <button onClick={() => navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`)} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
                 </div>
 
-                <button onClick={() => navigate(`/${categorySlug}`)} className="glass-action-btn btn-neon-delicate w-max py-2 px-5 mb-12 flex items-center gap-2 text-white"><ArrowLeft size={16} /><span className="text-[10px] font-black">Regresar</span></button>
+                <button onClick={() => navigate(`/${categorySlug}`)} className="glass-action-btn btn-neon-delicate w-max py-2 px-5 mb-8 flex items-center gap-2 text-white"><ArrowLeft size={16} /><span className="text-[10px] font-black">Regresar</span></button>
+
+                {/* Secret Merchant Cable */}
+                <div 
+                    onClick={() => navigate('/red-comercial/descuentos')}
+                    className="mb-12 cursor-pointer group active:scale-95 transition-all"
+                >
+                    <p className="text-[8px] font-black uppercase tracking-[0.5em] text-cyan-500/30 group-hover:text-cyan-400 transition-colors text-center neon-flicker-slow">
+                        Catálogo exclusivo para comerciantes
+                    </p>
+                </div>
             </div>
         </div>
     );
