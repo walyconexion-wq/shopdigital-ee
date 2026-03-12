@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
-import { ArrowLeft, Star, QrCode } from 'lucide-react';
+import { ArrowLeft, Star, QrCode, Lock, ShieldCheck, X, Volume2 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
 interface CredencialPageProps {
@@ -11,6 +11,59 @@ interface CredencialPageProps {
 const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     const { categorySlug, shopSlug } = useParams<{ categorySlug: string; shopSlug: string }>();
     const navigate = useNavigate();
+    const [isManualModalOpen, setIsManualModalOpen] = React.useState(false);
+    const [manualCode, setManualCode] = React.useState('');
+    const [isVerifying, setIsVerifying] = React.useState(false);
+    const [verificationError, setVerificationError] = React.useState(false);
+    const [showSuccess, setShowSuccess] = React.useState(false);
+
+    // Synthetic Audio Feedback - The Master Sound
+    const playSuccessSound = () => {
+        try {
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+            
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        } catch (e) {
+            console.error("Audio error", e);
+        }
+    };
+
+    const handleManualVerify = () => {
+        setIsVerifying(true);
+        setVerificationError(false);
+
+        // Simulation of a secure delay
+        setTimeout(() => {
+            if (manualCode === '123') {
+                playSuccessSound();
+                setShowSuccess(true);
+                setTimeout(() => {
+                    navigate(`/${categorySlug}/${shopSlug}/validar`);
+                }, 800);
+            } else {
+                setVerificationError(true);
+                setIsVerifying(false);
+                setManualCode('');
+                // Reset error after pulse
+                setTimeout(() => setVerificationError(false), 2000);
+            }
+        }, 1000);
+    };
 
     const validationUrl = useMemo(() => {
         return `${window.location.origin}/${categorySlug}/${shopSlug}/validar`;
@@ -102,6 +155,77 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                     </div>
                 </button>
             </div>
+
+            {/* Manual Verification Action Trigger */}
+            <button 
+                onClick={() => setIsManualModalOpen(true)}
+                className="mt-6 flex items-center gap-2 text-white/20 hover:text-white/40 transition-colors py-2 px-4 group"
+            >
+                <Lock size={12} className="group-hover:text-cyan-400/40 transition-colors" />
+                <span className="text-[8px] font-bold uppercase tracking-[0.3em]">Verificación Manual</span>
+            </button>
+
+            {/* Manual Verification HUD Modal */}
+            {isManualModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => !isVerifying && setIsManualModalOpen(false)} />
+                    
+                    <div className={`relative w-full max-w-sm glass-card-3d border ${verificationError ? 'border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.2)]' : 'border-cyan-500/30 shadow-[0_0_50px_rgba(34,211,238,0.15)]'} rounded-[2.5rem] p-10 overflow-hidden transform animate-in zoom-in-95 duration-300`}>
+                        {/* HUD Scanning Line Animation */}
+                        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent animate-scan z-0 pointer-events-none" />
+                        
+                        <div className="relative z-10 flex flex-col items-center">
+                            <button 
+                                onClick={() => setIsManualModalOpen(false)}
+                                className="absolute -top-4 -right-4 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border ${verificationError ? 'bg-red-500/10 border-red-500/30' : 'bg-cyan-500/10 border-cyan-500/30'} shadow-lg transition-colors`}>
+                                {showSuccess ? (
+                                    <ShieldCheck size={32} className="text-cyan-400 animate-bounce" />
+                                ) : verificationError ? (
+                                    <X size={32} className="text-red-500 animate-pulse" />
+                                ) : (
+                                    <Lock size={32} className={isVerifying ? 'text-cyan-400 animate-pulse' : 'text-white/80'} />
+                                )}
+                            </div>
+
+                            <h3 className={`text-xl font-black uppercase tracking-tighter mb-1 ${verificationError ? 'text-red-500' : 'text-white'}`}>
+                                {showSuccess ? 'Acceso Concedido' : verificationError ? 'Clave Inválida' : 'Protocolo Manual'}
+                            </h3>
+                            <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em] mb-10">Ingresá el código de seguridad</p>
+
+                            <div className="w-full relative mb-8">
+                                <input 
+                                    type="password"
+                                    value={manualCode}
+                                    onChange={(e) => setManualCode(e.target.value)}
+                                    disabled={isVerifying}
+                                    autoFocus
+                                    className={`w-full bg-black/40 border-2 ${verificationError ? 'border-red-500/50 text-red-500' : 'border-cyan-400/20 text-cyan-400'} rounded-2xl py-5 px-6 text-center text-2xl font-black tracking-[0.5em] focus:outline-none focus:border-cyan-400/60 transition-all placeholder:text-white/5`}
+                                    placeholder="••••"
+                                />
+                                {isVerifying && !showSuccess && (
+                                    <div className="absolute inset-x-0 -bottom-1 h-1 bg-cyan-500/20 rounded-full overflow-hidden">
+                                        <div className="h-full bg-cyan-400 animate-progress-indefinite" />
+                                    </div>
+                                )}
+                            </div>
+
+                            <button 
+                                onClick={handleManualVerify}
+                                disabled={isVerifying || !manualCode}
+                                className={`w-full py-5 rounded-2xl font-[1000] uppercase tracking-[0.3em] text-[11px] transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-30 ${showSuccess ? 'bg-cyan-500 text-black shadow-[0_0_30px_rgba(34,211,238,0.5)]' : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'}`}
+                            >
+                                {isVerifying ? 'Verificando...' : 'Autenticar'}
+                                {showSuccess && <Volume2 size={16} />}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="mt-12 flex flex-col items-center gap-2 opacity-80">
                 <p className="text-[8px] font-black text-cyan-400/80 uppercase tracking-[0.5em] text-center px-12 leading-loose">
