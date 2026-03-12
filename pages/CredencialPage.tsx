@@ -160,18 +160,18 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             {/* Manual Verification Action Trigger */}
             <button 
                 onClick={() => setIsManualModalOpen(true)}
-                className="mt-6 flex items-center gap-2 text-white/20 hover:text-white/40 transition-colors py-2 px-4 group"
+                className="mt-6 flex items-center gap-2 text-cyan-400/50 hover:text-cyan-400 transition-all py-3 px-6 group rounded-xl border border-white/5 hover:border-cyan-500/20 active:scale-95 bg-white/0 hover:bg-white/[0.02]"
             >
-                <Lock size={12} className="group-hover:text-cyan-400/40 transition-colors" />
-                <span className="text-[8px] font-bold uppercase tracking-[0.3em]">Verificación Manual</span>
+                <Lock size={12} className="group-hover:text-cyan-400 transition-colors shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Protocolo de Verificación Manual</span>
             </button>
 
             {/* Manual Verification HUD Modal */}
             {isManualModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-6 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => !isVerifying && setIsManualModalOpen(false)} />
                     
-                    <div className={`relative w-full max-w-sm glass-card-3d border ${verificationError ? 'border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.2)]' : 'border-cyan-500/30 shadow-[0_0_50px_rgba(34,211,238,0.15)]'} rounded-[2.5rem] p-10 overflow-hidden transform animate-in zoom-in-95 duration-300`}>
+                    <div className={`relative w-full max-w-sm glass-card-3d border ${verificationError ? 'border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.2)]' : 'border-cyan-500/30 shadow-[0_0_50px_rgba(34,211,238,0.15)]'} rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 md:p-10 overflow-hidden transform animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto`}>
                         {/* HUD Scanning Line Animation */}
                         <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent animate-scan z-0 pointer-events-none" />
                         
@@ -196,7 +196,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                             <h3 className={`text-xl font-black uppercase tracking-tighter mb-1 ${verificationError ? 'text-red-500' : 'text-white'}`}>
                                 {showSuccess ? 'Acceso Concedido' : verificationError ? 'Clave Inválida' : 'Protocolo Manual'}
                             </h3>
-                            <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em] mb-10">Ingresá el código de seguridad</p>
+                            <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em] mb-6 md:mb-10">Ingresá el código de seguridad</p>
 
                             <div className="w-full relative mb-8">
                                 <input 
