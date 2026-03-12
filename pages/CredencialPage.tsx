@@ -1,3 +1,4 @@
+// ShopDigital Technical Protocol - Security Phase 5
 import React, { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
