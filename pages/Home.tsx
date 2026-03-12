@@ -4,8 +4,32 @@ import Logo from '../components/Logo';
 import { Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
+
 const Home: React.FC = () => {
     const navigate = useNavigate();
+    const [logoClicks, setLogoClicks] = React.useState(0);
+
+    // Reset clicks after 1 second of inactivity
+    React.useEffect(() => {
+        if (logoClicks === 0) return;
+        
+        const timer = setTimeout(() => {
+            setLogoClicks(0);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [logoClicks]);
+
+    const handleLogoClick = () => {
+        const nextClicks = logoClicks + 1;
+        if (nextClicks >= 3) {
+            setLogoClicks(0);
+            navigate('/nosotros');
+        } else {
+            setLogoClicks(nextClicks);
+        }
+    };
 
     const handleShare = () => {
         const appUrl = window.location.origin;
@@ -32,7 +56,10 @@ const Home: React.FC = () => {
             <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
             
             <header className="flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700 bg-transparent pt-0">
-                <div className="glass-header rounded-3xl p-2.5 mb-2.5 border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 animate-in fade-in zoom-in duration-1000">
+                <div 
+                    onClick={handleLogoClick}
+                    className="glass-header rounded-3xl p-2.5 mb-2.5 border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 animate-in fade-in zoom-in duration-1000 cursor-pointer active:scale-95 transition-all"
+                >
                     <Logo />
                 </div>
             </header>
