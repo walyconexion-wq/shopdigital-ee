@@ -12,7 +12,8 @@ import {
     Plus,
     Camera,
     PlusSquare,
-    ImageIcon
+    ImageIcon,
+    ExternalLink
 } from 'lucide-react';
 
 interface AdminPanelPageProps {
@@ -138,6 +139,21 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
 
                     {/* Add more fields here as needed */}
                 </div>
+
+                <button 
+                    onClick={() => {
+                        const category = editableShop.category || (existingShop ? existingShop.category : '');
+                        const slug = editableShop.slug || shopSlug;
+                        if (category && slug) {
+                            navigate(`/${category}/${slug}/credencial`);
+                        } else {
+                            alert('Faltan datos para generar la ruta de la credencial');
+                        }
+                    }}
+                    className="w-full glass-action-btn btn-cyan-neon py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[11px] mb-4 active:scale-95 transition-all shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+                >
+                    <ExternalLink size={20} className="text-cyan-400" /> Ver Credencial
+                </button>
 
                 <button onClick={handleSave} className="w-full bg-violet-600 py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[11px] shadow-[0_0_30px_rgba(139,92,246,0.5)] active:scale-95 transition-all">
                     <Save size={20} /> Guardar Cambios
