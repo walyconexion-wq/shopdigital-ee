@@ -12,7 +12,9 @@ import {
     User,
     Store,
     Tag,
-    CheckCircle2
+    CheckCircle2,
+    PartyPopper,
+    ImagePlus
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -41,11 +43,50 @@ const SubscriptionPage: React.FC = () => {
             .replace(/-+$/, '');            // Trim - from end of text
     };
 
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 600;
+                const MAX_HEIGHT = 600;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0, width, height);
+
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                setFormData({ ...formData, bannerImage: compressedDataUrl });
+            };
+            img.src = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         playNeonClick();
         
-        if (!formData.name || !formData.bannerImage || !formData.ownerName || !formData.phone) {
+        if (!formData.name || !formData.ownerName || !formData.phone) {
             alert("Por favor completá todos los datos mínimos para crear tu catálogo.");
             return;
         }
@@ -93,18 +134,17 @@ const SubscriptionPage: React.FC = () => {
                     <div className="absolute inset-0 bg-cyan-500/10 pointer-events-none" />
                     
                     <div className="w-20 h-20 bg-cyan-500/20 rounded-full flex items-center justify-center mb-6 mx-auto border border-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.5)]">
-                        <CheckCircle2 size={40} className="text-cyan-400" />
+                        <PartyPopper size={40} className="text-cyan-400" />
                     </div>
                     
                     <h2 className="text-2xl font-[1000] text-white uppercase tracking-tighter mb-4 text-center text-shadow-premium">
-                        ¡Misión Exitosa!
+                        ¡Felicitaciones!
                     </h2>
                     
                     <p className="text-[12px] font-bold text-white/80 text-center leading-relaxed mb-8">
-                        Tu comercio <span className="text-cyan-400">{formData.name}</span> ya tiene visibilidad básica en la red. 
-                        Un embajador de zona se comunicará pronto para confirmar tus datos.
+                        Pronto un embajador de zona lo estará visitando para completar su catálogo y traerle noticias exclusivas.
                         <br/><br/>
-                        Al suscribirte al Club B2B, podrás activar el catálogo completo.
+                        Ya puede disfrutar de nuestros servicios y compartir su catálogo para promoción en la red.
                     </p>
                     
                     <button
@@ -193,25 +233,36 @@ const SubscriptionPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Foto Portada (URL) */}
+                {/* Foto Portada (Opcional - Input de Archivo) */}
                 <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-6 focus-within:border-cyan-500/50 transition-colors">
                     <div className="flex justify-between items-center mb-4">
                         <label className="text-[10px] flex items-center gap-2 font-black uppercase tracking-[0.2em] text-cyan-400">
-                            <Camera size={14} /> Logo / Portada
+                            <Camera size={14} /> Logo / Foto (Opcional)
                         </label>
-                        <span className="text-[8px] text-red-400 font-bold uppercase">* Requerido</span>
                     </div>
-                    <p className="text-[8px] text-white/40 font-bold uppercase tracking-widest leading-relaxed mb-3">
-                        Por la regla "No Base64", pegá el link directo de tu imagen (ej: Facebook o Instagram). Para cambiarla luego, contactá a tu embajador.
-                    </p>
-                    <input
-                        required
-                        type="url"
-                        placeholder="https://..."
-                        value={formData.bannerImage}
-                        onChange={(e) => setFormData({ ...formData, bannerImage: e.target.value })}
-                        className="w-full bg-transparent border-b border-white/20 pb-2 text-blue-400 text-sm focus:outline-none focus:border-cyan-400 transition-all"
-                    />
+                    
+                    <div className="flex flex-col gap-4">
+                        <label className="w-full flex flex-col items-center justify-center py-6 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer hover:border-cyan-400/50 hover:bg-cyan-500/5 transition-all">
+                            <ImagePlus size={24} className="text-cyan-400 mb-2" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Cargar de cámara o archivo</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                onChange={handleImageUpload}
+                                className="hidden"
+                            />
+                        </label>
+
+                        {formData.bannerImage && (
+                            <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-cyan-400/30">
+                                <img src={formData.bannerImage} alt="Preview" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-2 px-4">
+                                    <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest drop-shadow-md">Imagen lista</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Owner Data */}
@@ -258,7 +309,7 @@ const SubscriptionPage: React.FC = () => {
                             <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                         ) : (
                             <>
-                                <Rocket size={20} className="text-white drop-shadow-md" /> Iniciar Misión
+                                <Store size={20} className="text-white drop-shadow-md" /> Ingresar mi negocio
                             </>
                         )}
                     </button>
