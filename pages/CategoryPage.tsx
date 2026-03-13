@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CATEGORIES } from '../constants';
 import { Shop } from '../types';
 import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft } from 'lucide-react';
+import { playNeonClick } from '../utils/audio';
 
 interface CategoryPageProps {
     allShops: Shop[];
@@ -41,7 +42,10 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
         return (
             <div className="flex flex-col items-center justify-center h-full text-white">
                 <p>Categoría no encontrada</p>
-                <button onClick={() => navigate('/')} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
+                <button onClick={() => {
+                    playNeonClick();
+                    navigate('/');
+                }} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
             </div>
         );
     }
@@ -56,7 +60,10 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                 <div className="w-full px-6 flex flex-col pb-4">
                     <div className="flex items-center justify-between mb-4">
                         <button
-                            onClick={() => navigate('/')}
+                            onClick={() => {
+                                playNeonClick();
+                                navigate('/');
+                            }}
                             className="btn-cyan-neon px-5 py-2.5 rounded-full flex items-center gap-2 border-cyan-400/50 active:scale-95 transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] bg-cyan-500/10"
                         >
                             <ChevronLeft size={18} strokeWidth={4} className="text-cyan-400" />
@@ -121,7 +128,10 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
 
                                         <div className="mt-4 flex flex-col gap-3">
                                             <button
-                                                onClick={() => navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`)}
+                                                onClick={() => {
+                                                    playNeonClick();
+                                                    navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
+                                                }}
                                                 className="glass-action-btn btn-offers-glow pulse-3d-btn w-full shop-btn-mobile py-4 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-2xl"
                                             >
                                                 <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
@@ -143,7 +153,10 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
 
                 <div className="pt-10 flex justify-center w-full">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => {
+                            playNeonClick();
+                            navigate('/');
+                        }}
                         className="glass-action-btn btn-cyan-neon w-max py-3 px-8 uppercase tracking-[0.2em] flex items-center justify-center gap-3 mx-auto active:scale-95 transition-all group shadow-[0_0_30px_rgba(34,211,238,0.2)] border-cyan-400/40"
                     >
                         <div className="bg-cyan-500/10 p-1.5 rounded-full group-hover:scale-110 transition-transform">
