@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
 import { ArrowLeft, ShieldCheck, User, MapPin, Hash, Sparkles, Clock } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
+import { playNeonClick } from '../utils/audio';
 
 interface ValidationPageProps {
     allShops: Shop[];
@@ -48,7 +49,10 @@ const ValidationPage: React.FC<ValidationPageProps> = ({ allShops }) => {
             {/* Top Navigation */}
             <div className="w-full max-w-md flex justify-between items-center mb-8 relative z-10">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={() => {
+                        playNeonClick();
+                        navigate(-1);
+                    }}
                     className="p-3 rounded-2xl bg-white/5 border border-white/10 text-cyan-400 hover:bg-cyan-500/10 transition-all active:scale-95"
                 >
                     <ArrowLeft size={20} />

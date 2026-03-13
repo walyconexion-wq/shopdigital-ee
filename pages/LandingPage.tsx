@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
+import { playNeonClick } from '../utils/audio';
 
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ const LandingPage: React.FC = () => {
     }, []);
 
     const handleShare = () => {
+        playNeonClick();
         const shareUrl = window.location.href;
         const shareTitle = 'ShopDigital - Sumá tu Comercio';
         const shareText = '¡Hacé crecer tu negocio con ShopDigital! Escaneá y descubrí el futuro de Esteban Echeverría. 🚀\n\n👉 ' + shareUrl;
@@ -76,7 +78,10 @@ const LandingPage: React.FC = () => {
                     <Logo />
                 </div>
                 <button 
-                    onClick={() => navigate('/')}
+                    onClick={() => {
+                        playNeonClick();
+                        navigate('/');
+                    }}
                     className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all active:scale-95"
                 >
                     <LayoutDashboard size={14} className="text-cyan-400" />
@@ -163,21 +168,30 @@ const LandingPage: React.FC = () => {
                         </p>
 
                         <div className="space-y-4 relative z-10">
-                            <button className="w-full glass-button-3d btn-neon-active py-5 px-8 flex items-center justify-center gap-4 group">
+                            <button 
+                                onClick={() => playNeonClick()}
+                                className="w-full glass-button-3d btn-neon-active py-5 px-8 flex items-center justify-center gap-4 group"
+                            >
                                 <span className="text-sm font-black uppercase tracking-[0.2em]">Unirse a la Red</span>
                                 <MessageSquare size={20} className="group-hover:translate-x-1 transition-transform" />
                             </button>
                             
                             <div className="grid grid-cols-2 gap-3">
                                 <button 
-                                    onClick={() => navigate('/nosotros')}
+                                    onClick={() => {
+                                        playNeonClick();
+                                        navigate('/nosotros');
+                                    }}
                                     className="bg-white/5 border border-white/10 py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
                                 >
                                     <Info size={14} className="text-cyan-400/50" />
                                     <span className="text-[10px] font-black uppercase tracking-widest">Conocé Más</span>
                                 </button>
                                 <button 
-                                    onClick={() => navigate('/')}
+                                    onClick={() => {
+                                        playNeonClick();
+                                        navigate('/');
+                                    }}
                                     className="bg-white/5 border border-white/10 py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
                                 >
                                     <ChevronRight size={14} className="text-cyan-400/50" />

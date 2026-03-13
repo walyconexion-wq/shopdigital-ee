@@ -17,6 +17,7 @@ import {
     ArrowLeft
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { playNeonClick } from '../utils/audio';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
@@ -49,10 +50,12 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
     }, [selectedShop]);
 
     const scrollToCatalog = () => {
+        playNeonClick();
         catalogRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     const handleShare = () => {
+        playNeonClick();
         const appUrl = window.location.href;
         const shopName = selectedShop?.name || 'shopdigital.ar';
         const shareTitle = `${shopName} - Catálogo Online`;
@@ -72,6 +75,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
     };
 
     const handleOpenLink = (url: string | null) => {
+        playNeonClick();
         if (url) {
             window.open(url, '_blank', 'noopener,noreferrer');
         } else {
@@ -83,7 +87,10 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         return (
             <div className="flex flex-col items-center justify-center h-full text-white">
                 <p>Comercio no encontrado</p>
-                <button onClick={() => navigate('/')} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
+                <button onClick={() => {
+                    playNeonClick();
+                    navigate('/');
+                }} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
             </div>
         );
     }
@@ -239,14 +246,23 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                 <div className="flex flex-col gap-4 w-full px-8 pb-12">
                     <button onClick={handleShare} className="glass-action-btn btn-green py-4 flex items-center justify-center gap-3 text-white"><Share2 size={20} /><span className="text-[10px] font-black uppercase">Compartir Catálogo</span></button>
-                    <button onClick={() => navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`)} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
+                    <button onClick={() => {
+                        playNeonClick();
+                        navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
+                    }} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
                 </div>
 
-                <button onClick={() => navigate(`/${categorySlug}`)} className="glass-action-btn btn-neon-delicate w-max py-2 px-5 mb-8 flex items-center gap-2 text-white"><ArrowLeft size={16} /><span className="text-[10px] font-black">Regresar</span></button>
+                <button onClick={() => {
+                    playNeonClick();
+                    navigate(`/${categorySlug}`);
+                }} className="glass-action-btn btn-neon-delicate w-max py-2 px-5 mb-8 flex items-center gap-2 text-white"><ArrowLeft size={16} /><span className="text-[10px] font-black">Regresar</span></button>
 
                 {/* Secret Merchant Cable */}
                 <div 
-                    onClick={() => navigate('/red-comercial/descuentos')}
+                    onClick={() => {
+                        playNeonClick();
+                        navigate('/red-comercial/descuentos');
+                    }}
                     className="mb-12 cursor-pointer group active:scale-95 transition-all"
                 >
                     <p className="text-[8px] font-black uppercase tracking-[0.5em] text-cyan-500/30 group-hover:text-cyan-400 transition-colors text-center neon-flicker-slow">

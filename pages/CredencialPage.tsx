@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
 import { ArrowLeft, Star, QrCode, Lock, ShieldCheck, X, Volume2 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
+import { playNeonClick, playSuccessSound } from '../utils/audio';
 
 interface CredencialPageProps {
     allShops: Shop[];
@@ -18,31 +19,6 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     const [verificationError, setVerificationError] = React.useState(false);
     const [showSuccess, setShowSuccess] = React.useState(false);
 
-    // Synthetic Audio Feedback - The Master Sound
-    const playSuccessSound = () => {
-        try {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (!AudioContext) return;
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-            
-            gain.gain.setValueAtTime(0.1, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-            
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            
-            osc.start();
-            osc.stop(ctx.currentTime + 0.3);
-        } catch (e) {
-            console.error("Audio error", e);
-        }
-    };
 
     const handleManualVerify = () => {
         setIsVerifying(true);
@@ -83,7 +59,10 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
             
             <button
-                onClick={() => navigate(-1)}
+                onClick={() => {
+                    playNeonClick();
+                    navigate(-1);
+                }}
                 className="self-start mb-8 text-cyan-400/90 hover:text-cyan-300 flex items-center gap-2 transition-all relative z-10 group/back hover:translate-x-[-4px]"
             >
                 <ArrowLeft size={18} className="drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" />
@@ -144,7 +123,10 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             {/* Connecting Button to Discounts */}
             <div className="mt-10 animate-in fade-in slide-in-from-bottom duration-1000 delay-300">
                 <button
-                    onClick={() => navigate('/red-comercial/descuentos')}
+                    onClick={() => {
+                        playNeonClick();
+                        navigate('/red-comercial/descuentos');
+                    }}
                     className="glass-button-3d btn-neon-active px-10 py-5 flex items-center gap-3 group"
                 >
                     <div className="bg-cyan-400/20 p-2 rounded-lg group-hover:bg-cyan-400/30 transition-colors">
@@ -159,7 +141,10 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
 
             {/* Manual Verification Action Trigger */}
             <button 
-                onClick={() => setIsManualModalOpen(true)}
+                onClick={() => {
+                    playNeonClick();
+                    setIsManualModalOpen(true);
+                }}
                 className="mt-6 flex items-center gap-2 text-cyan-400/50 hover:text-cyan-400 transition-all py-3 px-6 group rounded-xl border border-white/5 hover:border-cyan-500/20 active:scale-95 bg-white/0 hover:bg-white/[0.02]"
             >
                 <Lock size={12} className="group-hover:text-cyan-400 transition-colors shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
@@ -177,7 +162,10 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         
                         <div className="relative z-10 flex flex-col items-center">
                             <button 
-                                onClick={() => setIsManualModalOpen(false)}
+                                onClick={() => {
+                                    playNeonClick();
+                                    !isVerifying && setIsManualModalOpen(false);
+                                }}
                                 className="absolute -top-4 -right-4 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors"
                             >
                                 <X size={18} />

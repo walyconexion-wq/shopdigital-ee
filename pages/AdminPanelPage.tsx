@@ -15,6 +15,7 @@ import {
     ImageIcon,
     ExternalLink
 } from 'lucide-react';
+import { playNeonClick } from '../utils/audio';
 
 interface AdminPanelPageProps {
     allShops: Shop[];
@@ -49,6 +50,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
     });
 
     const handleLogin = () => {
+        playNeonClick();
         if (password === 'admin123') {
             setIsAuthenticated(true);
             setLoginError(false);
@@ -59,6 +61,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
     };
 
     const handleSave = async () => {
+        playNeonClick();
         try {
             await guardarComercio(editableShop);
             alert('¡Comercio guardado con éxito!');
@@ -103,7 +106,10 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
     return (
         <div className="min-h-screen bg-black text-white pb-24">
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-white/5 mb-4 sticky top-0 z-50">
-                <button onClick={() => navigate(-1)} className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10"><ChevronLeft size={20} /></button>
+                <button onClick={() => {
+                    playNeonClick();
+                    navigate(-1);
+                }} className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10"><ChevronLeft size={20} /></button>
                 <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] mb-1">Carga de Comercio</h2>
                 <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Panel de Autogestión</p>
             </div>
@@ -142,6 +148,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
 
                 <button 
                     onClick={() => {
+                        playNeonClick();
                         const category = editableShop.category || (existingShop ? existingShop.category : '');
                         const slug = editableShop.slug || shopSlug;
                         if (category && slug) {

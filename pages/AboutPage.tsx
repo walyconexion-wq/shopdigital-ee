@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
+import { playNeonClick } from '../utils/audio';
 
 const AboutPage: React.FC = () => {
     const navigate = useNavigate();
@@ -31,6 +32,7 @@ const AboutPage: React.FC = () => {
     }, []);
 
     const handleShare = () => {
+        playNeonClick();
         const shareUrl = window.location.href;
         const shareTitle = 'ShopDigital - Red Comercial';
         const shareText = '¡Conocé la red digital de comercios de Esteban Echeverría! Sumate a la comunidad y potenciá tu negocio. 🚀\n\n👉 ' + shareUrl;
@@ -82,7 +84,10 @@ const AboutPage: React.FC = () => {
                         <Logo />
                     </div>
                     <button 
-                        onClick={() => navigate('/')}
+                        onClick={() => {
+                            playNeonClick();
+                            navigate('/');
+                        }}
                         className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95 group"
                     >
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400">Entrar App</span>
@@ -111,7 +116,10 @@ const AboutPage: React.FC = () => {
 
                 <div className="w-full space-y-4 mb-16">
                     <button 
-                        onClick={() => navigate('/')}
+                        onClick={() => {
+                            playNeonClick();
+                            navigate('/');
+                        }}
                         className="w-full glass-button-3d btn-neon-active py-5 px-8 flex items-center justify-center gap-4 group"
                     >
                         <span className="text-sm font-black uppercase tracking-[0.2em]">Acceder Ahora</span>
@@ -227,7 +235,10 @@ const AboutPage: React.FC = () => {
                     </div>
 
                     <button 
-                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        onClick={() => {
+                            playNeonClick();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
                         className="text-[9px] font-black uppercase tracking-[0.3em] text-cyan-400/60 hover:text-cyan-400 transition-colors px-6 py-2 border border-cyan-500/10 rounded-full"
                     >
                         Volver al inicio

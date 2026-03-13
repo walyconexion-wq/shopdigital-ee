@@ -3,6 +3,7 @@ import { CATEGORIES } from '../constants';
 import Logo from '../components/Logo';
 import { Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { playNeonClick } from '../utils/audio';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
@@ -20,38 +21,13 @@ const Home: React.FC = () => {
     }, [logoClicks]);
 
     const handleLogoClick = () => {
+        playNeonClick();
         const nextClicks = logoClicks + 1;
         if (nextClicks >= 3) {
             setLogoClicks(0);
             navigate('/nosotros');
         } else {
             setLogoClicks(nextClicks);
-        }
-    };
-
-    // Synthetic Audio Feedback - Neon Click
-    const playNeonClick = () => {
-        try {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (!AudioContext) return;
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-            
-            gain.gain.setValueAtTime(0.05, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-            
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            
-            osc.start();
-            osc.stop(ctx.currentTime + 0.1);
-        } catch (e) {
-            console.error("Audio error", e);
         }
     };
 
@@ -105,7 +81,10 @@ const Home: React.FC = () => {
                 {CATEGORIES.map((cat, index) => (
                     <button
                         key={cat.id}
-                        onClick={() => navigate(`/${cat.slug}`)}
+                        onClick={() => {
+                            playNeonClick();
+                            navigate(`/${cat.slug}`);
+                        }}
                         style={{
                             animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms both`
                         }}
@@ -136,7 +115,10 @@ const Home: React.FC = () => {
                     © 2026 · ShopDigital
                 </p>
                 <p 
-                    onClick={() => navigate('/unirse')}
+                    onClick={() => {
+                        playNeonClick();
+                        navigate('/unirse');
+                    }}
                     className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
                     style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}
                 >
