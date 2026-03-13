@@ -5,13 +5,13 @@ import {
     Target, 
     Sparkles, 
     ArrowRight, 
-    Globe, 
     ShieldCheck, 
     ChevronRight,
     MessageSquare,
     Info,
     LayoutDashboard,
-    Share2
+    Share2,
+    Store
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -206,7 +206,18 @@ const LandingPage: React.FC = () => {
                     </p>
 
                     {/* Funnel Share Button - Drive Growth */}
-                    <div className="mt-8 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                    <div className="mt-8 w-full space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                        <button 
+                            onClick={() => {
+                                playNeonClick();
+                                navigate('/subscripcion');
+                            }}
+                            className="w-full glass-action-btn border-green-400/50 shadow-[0_0_20px_rgba(74,222,128,0.2)] bg-green-500/10 py-5 px-10 flex items-center justify-center gap-4 group hover:bg-green-500/20 transition-all active:scale-95"
+                        >
+                            <Store size={20} className="text-green-400" />
+                            <span className="text-sm font-black uppercase tracking-[0.2em] text-white">Suscribir Mi Comercio</span>
+                        </button>
+
                         <button 
                             onClick={handleShare}
                             className="w-full glass-action-btn btn-cyan-neon luminous-glow py-5 px-10 flex items-center justify-center gap-4 group"

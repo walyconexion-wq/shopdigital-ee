@@ -1,7 +1,7 @@
 import React from 'react';
 import { CATEGORIES } from '../constants';
 import Logo from '../components/Logo';
-import { Share2 } from 'lucide-react';
+import { Share2, Store } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 
@@ -100,10 +100,21 @@ const Home: React.FC = () => {
                 ))}
             </div>
 
-            <div className="mt-12 mb-4 flex justify-center fade-up-item relative z-10" style={{ animationDelay: '700ms' }}>
+            <div className="mt-12 mb-4 px-6 flex flex-col gap-4 justify-center w-full fade-up-item relative z-10" style={{ animationDelay: '700ms' }}>
+                <button
+                    onClick={() => {
+                        playNeonClick();
+                        navigate('/subscripcion');
+                    }}
+                    className="glass-action-btn bg-green-500/10 hover:bg-green-500/20 w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-[0_0_20px_rgba(74,222,128,0.2)] border-green-400/50 flex items-center justify-center gap-3 transition-all"
+                >
+                    <Store size={18} strokeWidth={3} className="text-green-400" />
+                    <span className="text-white text-shadow-premium">Suscribir Comercio</span>
+                </button>
+
                 <button
                     onClick={handleShare}
-                    className="glass-action-btn btn-cyan-neon luminous-glow py-4 px-10 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-cyan-400/60"
+                    className="glass-action-btn btn-cyan-neon luminous-glow w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-cyan-400/60 flex items-center justify-center gap-3"
                 >
                     <Share2 size={16} strokeWidth={3} className="text-cyan-300" />
                     Compartir App
