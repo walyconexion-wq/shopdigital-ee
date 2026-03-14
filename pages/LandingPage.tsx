@@ -84,14 +84,14 @@ const LandingPage: React.FC = () => {
                     </p>
 
                     {/* Hero Image */}
-                    <div className="w-full relative h-48 md:h-64 rounded-3xl overflow-hidden border border-cyan-500/20 shadow-[0_0_40px_rgba(34,211,238,0.2)] mb-8 bg-cyan-900/10">
+                    <div className="w-full relative h-56 md:h-72 rounded-3xl overflow-hidden border border-cyan-400/50 shadow-[0_0_40px_rgba(34,211,238,0.4)] mb-8 bg-cyan-900/10">
                         <img 
                             src="/images/hero-ambassadors.jpg" 
                             alt="Embajadores conectando comercios a ShopDigital"
-                            className="w-full h-full object-cover opacity-90 object-top"
+                            className="w-full h-full object-cover brightness-110 contrast-125 saturate-110 object-top"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
-                        <div className="absolute inset-0 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)] rounded-3xl pointer-events-none"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+                        <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(34,211,238,0.3)] rounded-3xl pointer-events-none"></div>
                     </div>
 
                     <div className="flex flex-col gap-4 px-2">
