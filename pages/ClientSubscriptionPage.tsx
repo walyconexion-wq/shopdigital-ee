@@ -90,11 +90,11 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                     <button
                         onClick={() => {
                             playNeonClick();
-                            navigate('/red-comercial/descuentos');
+                            navigate('/red-comercial/ofertas');
                         }}
                         className="w-full glass-action-btn btn-cyan-neon py-4 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] active:scale-95 transition-all"
                     >
-                        <span className="font-black uppercase tracking-widest text-[11px] text-white">Ver Descuentos</span>
+                        <span className="font-black uppercase tracking-widest text-[11px] text-white">Ver Ofertas</span>
                     </button>
                 </div>
             </div>
