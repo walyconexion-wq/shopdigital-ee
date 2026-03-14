@@ -15,6 +15,28 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
     const { categorySlug } = useParams<{ categorySlug: string }>();
     const navigate = useNavigate();
 
+    // Ambassador Easter Egg Logic
+    const [titleClicks, setTitleClicks] = React.useState(0);
+
+    React.useEffect(() => {
+        if (titleClicks === 0) return;
+        const timer = setTimeout(() => {
+            setTitleClicks(0);
+        }, 1500); // 1.5 seconds window for 5 clicks
+        return () => clearTimeout(timer);
+    }, [titleClicks]);
+
+    const handleTitleClick = () => {
+        playNeonClick();
+        const nextClicks = titleClicks + 1;
+        if (nextClicks >= 5) {
+            setTitleClicks(0);
+            navigate('/embajador');
+        } else {
+            setTitleClicks(nextClicks);
+        }
+    };
+
     const selectedCategory = useMemo(() =>
         CATEGORIES.find(cat => cat.slug === categorySlug),
         [categorySlug]);
@@ -72,8 +94,11 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                     </div>
 
                     <div className="flex justify-center w-full px-2">
-                        <div className="glass-header rounded-3xl w-full py-6 flex flex-col items-center border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60">
-                            <h2 className="text-[24px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] mb-3">
+                        <div 
+                            onClick={handleTitleClick}
+                            className="glass-header rounded-3xl w-full py-6 flex flex-col items-center border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 cursor-pointer select-none active:scale-95 transition-all"
+                        >
+                            <h2 className="text-[24px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] mb-3 transition-transform active:scale-95">
                                 {selectedCategory.name}
                             </h2>
                             <div className="h-[1px] w-20 bg-cyan-400/60 mb-3 shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
