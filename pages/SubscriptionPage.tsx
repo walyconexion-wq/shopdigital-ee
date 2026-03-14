@@ -104,7 +104,7 @@ const SubscriptionPage: React.FC = () => {
             ownerName: formData.ownerName,
             phone: formData.phone,
             rating: 5.0, // Initial perfect rating
-            isActive: true, // Visible immediately
+            isActive: false, // Security: Must be approved by an ambassador
             specialty: '',
             address: formData.zone, // Defaults to zone
             offers: [],

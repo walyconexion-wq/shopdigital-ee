@@ -14,6 +14,7 @@ import LandingPage from './pages/LandingPage';
 import AboutPage from './pages/AboutPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
+import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -57,6 +58,7 @@ const App: React.FC = () => {
           <Route path="red-comercial/descuentos" element={<DiscountsPage />} />
           <Route path="unirse" element={<LandingPage />} />
           <Route path="subscripcion" element={<SubscriptionPage />} />
+          <Route path="embajador" element={<AmbassadorPanelPage allShops={allShops} />} />
           <Route path="nosotros" element={<AboutPage />} />
         </Route>
       </Routes>
