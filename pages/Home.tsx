@@ -8,6 +8,7 @@ import { playNeonClick } from '../utils/audio';
 const Home: React.FC = () => {
     const navigate = useNavigate();
     const [logoClicks, setLogoClicks] = React.useState(0);
+    const [walyClicks, setWalyClicks] = React.useState(0);
 
     // Reset clicks after 1 second of inactivity
     React.useEffect(() => {
@@ -20,6 +21,16 @@ const Home: React.FC = () => {
         return () => clearTimeout(timer);
     }, [logoClicks]);
 
+    React.useEffect(() => {
+        if (walyClicks === 0) return;
+        
+        const timer = setTimeout(() => {
+            setWalyClicks(0);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [walyClicks]);
+
     const handleLogoClick = () => {
         playNeonClick();
         const nextClicks = logoClicks + 1;
@@ -28,6 +39,17 @@ const Home: React.FC = () => {
             navigate('/nosotros');
         } else {
             setLogoClicks(nextClicks);
+        }
+    };
+
+    const handleWalyClick = () => {
+        playNeonClick();
+        const nextClicks = walyClicks + 1;
+        if (nextClicks >= 3) {
+            setWalyClicks(0);
+            navigate('/unirse');
+        } else {
+            setWalyClicks(nextClicks);
         }
     };
 
@@ -126,10 +148,7 @@ const Home: React.FC = () => {
                     © 2026 · ShopDigital
                 </p>
                 <p 
-                    onClick={() => {
-                        playNeonClick();
-                        navigate('/unirse');
-                    }}
+                    onClick={handleWalyClick}
                     className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
                     style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}
                 >

@@ -11,7 +11,8 @@ import {
     Info,
     LayoutDashboard,
     Share2,
-    Store
+    Store,
+    Globe
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
