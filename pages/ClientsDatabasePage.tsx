@@ -14,6 +14,37 @@ import {
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
+const safeString = (val: any, fallback = 'Desconocido'): string => {
+    if (typeof val === 'string') return val;
+    if (typeof val === 'number') return String(val);
+    return fallback;
+};
+
+const safeDate = (val: any): string => {
+    if (!val) return 'Desconocida';
+    try {
+        if (typeof val.toDate === 'function') return val.toDate().toLocaleDateString();
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return 'Desconocida';
+        return d.toLocaleDateString();
+    } catch {
+        return 'Desconocida';
+    }
+};
+
+const getSortTime = (val: any): number => {
+    if (!val) return 0;
+    try {
+        if (typeof val.toDate === 'function') return val.toDate().getTime();
+        if (typeof val.seconds === 'number') return val.seconds * 1000;
+        const d = new Date(val);
+        if (!isNaN(d.getTime())) return d.getTime();
+        return 0;
+    } catch {
+        return 0;
+    }
+};
+
 const ClientsDatabasePage: React.FC = () => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,10 +58,10 @@ const ClientsDatabasePage: React.FC = () => {
         if (isAuthenticated) {
             setLoading(true);
             obtenerClientes().then(data => {
-                // Sort by date descending (newest first). Add fallback for missing createdAt
+                // Sort by date descending safely
                 const sorted = data.sort((a, b) => {
-                    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-                    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                    const dateA = getSortTime(a.createdAt);
+                    const dateB = getSortTime(b.createdAt);
                     return dateB - dateA;
                 });
                 setClients(sorted as Client[]);
@@ -43,7 +74,7 @@ const ClientsDatabasePage: React.FC = () => {
     const groupedClients = useMemo(() => {
         const groups: Record<string, Client[]> = {};
         clients.forEach(client => {
-            const shopName = client.sourceShopName || 'Desconocido';
+            const shopName = safeString(client.sourceShopName, 'Desconocido');
             if (!groups[shopName]) {
                 groups[shopName] = [];
             }
@@ -77,7 +108,7 @@ const ClientsDatabasePage: React.FC = () => {
         const headers = ['Nombre', 'WhatsApp', 'Comercio Origen', 'Fecha de Alta'];
         const csvContent = [
             headers.join(','),
-            ...clients.map(c => `"${c.name}","${c.phone}","${c.sourceShopName}","${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Desconocida'}"`)
+            ...clients.map(c => `"${safeString(c.name)}","${safeString(c.phone)}","${safeString(c.sourceShopName)}","${safeDate(c.createdAt)}"`)
         ].join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -169,7 +200,7 @@ const ClientsDatabasePage: React.FC = () => {
                                     <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-4">
                                         <div className="flex items-center gap-2">
                                             <Store size={16} className="text-cyan-400" />
-                                            <h3 className="text-sm font-black text-white uppercase tracking-wider">{group.shopName}</h3>
+                                            <h3 className="text-sm font-black text-white uppercase tracking-wider">{safeString(group.shopName)}</h3>
                                         </div>
                                         <div className="bg-cyan-500/20 px-3 py-1 rounded-full border border-cyan-400/30 flex items-center gap-1">
                                             <Users size={12} className="text-cyan-400" />
@@ -185,15 +216,15 @@ const ClientsDatabasePage: React.FC = () => {
                                                         <User size={12} className="text-cyan-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-[11px] font-black text-white">{client.name}</p>
+                                                        <p className="text-[11px] font-black text-white">{safeString(client.name, 'Sin Nombre')}</p>
                                                         <p className="text-[9px] text-white/50 flex items-center gap-1 mt-0.5">
-                                                            <Calendar size={8} /> {client.createdAt ? new Date(client.createdAt).toLocaleDateString() : 'Desconocida'}
+                                                            <Calendar size={8} /> {safeDate(client.createdAt)}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-1 bg-green-500/10 px-2 py-1 rounded-lg border border-green-500/20">
                                                     <Phone size={10} className="text-green-400" />
-                                                    <span className="text-[10px] font-black text-green-400">{client.phone}</span>
+                                                    <span className="text-[10px] font-black text-green-400">{safeString(client.phone, 'Sin Teléfono')}</span>
                                                 </div>
                                             </div>
                                         ))}
