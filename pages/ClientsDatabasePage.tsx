@@ -27,8 +27,12 @@ const ClientsDatabasePage: React.FC = () => {
         if (isAuthenticated) {
             setLoading(true);
             obtenerClientes().then(data => {
-                // Sort by date descending (newest first)
-                const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                // Sort by date descending (newest first). Add fallback for missing createdAt
+                const sorted = data.sort((a, b) => {
+                    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                    return dateB - dateA;
+                });
                 setClients(sorted as Client[]);
                 setLoading(false);
             });
@@ -73,7 +77,7 @@ const ClientsDatabasePage: React.FC = () => {
         const headers = ['Nombre', 'WhatsApp', 'Comercio Origen', 'Fecha de Alta'];
         const csvContent = [
             headers.join(','),
-            ...clients.map(c => `"${c.name}","${c.phone}","${c.sourceShopName}","${new Date(c.createdAt).toLocaleDateString()}"`)
+            ...clients.map(c => `"${c.name}","${c.phone}","${c.sourceShopName}","${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Desconocida'}"`)
         ].join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -183,7 +187,7 @@ const ClientsDatabasePage: React.FC = () => {
                                                     <div>
                                                         <p className="text-[11px] font-black text-white">{client.name}</p>
                                                         <p className="text-[9px] text-white/50 flex items-center gap-1 mt-0.5">
-                                                            <Calendar size={8} /> {new Date(client.createdAt).toLocaleDateString()}
+                                                            <Calendar size={8} /> {client.createdAt ? new Date(client.createdAt).toLocaleDateString() : 'Desconocida'}
                                                         </p>
                                                     </div>
                                                 </div>
