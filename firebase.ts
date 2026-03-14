@@ -84,3 +84,43 @@ export const eliminarComercio = async (id: string) => {
         throw error;
     }
 };
+
+// --- SERVICIOS BASE CLIENTES (B2C) ---
+
+export const guardarCliente = async (clienteData: any) => {
+    try {
+        const id = clienteData.id;
+        if (!id) throw new Error("ID de cliente es requerido para guardar.");
+
+        await setDoc(doc(db, "clientes", id), clienteData);
+        console.log("Cliente guardado con éxito. ID:", id);
+        return id;
+    } catch (error) {
+        console.error("Error al guardar cliente en Firestore:", error);
+        throw error;
+    }
+};
+
+export const obtenerClientes = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "clientes"));
+        return querySnapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+    } catch (error) {
+        console.error("Error obteniendo clientes:", error);
+        return [];
+    }
+};
+
+export const eliminarCliente = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "clientes", id));
+        console.log("Cliente eliminado con éxito. ID:", id);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar cliente de Firestore:", error);
+        throw error;
+    }
+};

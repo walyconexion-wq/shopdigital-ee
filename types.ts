@@ -22,6 +22,15 @@ export interface ProductOffer {
   image: string;
 }
 
+export interface Client {
+  id: string;
+  name: string;
+  phone: string;
+  sourceShopId: string;
+  sourceShopName: string;
+  createdAt: string;
+}
+
 export interface Shop {
   id: string;
   slug: string;

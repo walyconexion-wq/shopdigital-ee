@@ -15,6 +15,8 @@ import AboutPage from './pages/AboutPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
+import ClientSubscriptionPage from './pages/ClientSubscriptionPage';
+import ClientsDatabasePage from './pages/ClientsDatabasePage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -59,7 +61,9 @@ const App: React.FC = () => {
           <Route path="unirse" element={<LandingPage />} />
           <Route path="subscripcion" element={<SubscriptionPage />} />
           <Route path="embajador" element={<AmbassadorPanelPage allShops={allShops} />} />
+          <Route path="base-clientes" element={<ClientsDatabasePage />} />
           <Route path="nosotros" element={<AboutPage />} />
+          <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
         </Route>
       </Routes>
     </BrowserRouter>

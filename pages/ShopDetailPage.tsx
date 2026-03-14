@@ -14,7 +14,8 @@ import {
     Facebook,
     Instagram,
     Music,
-    ArrowLeft
+    ArrowLeft,
+    Gift
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
@@ -185,6 +186,22 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                             ))}
                         </div>
                     </div>
+                </div>
+
+                {/* B2C Client Fidelity Subscription Trigger */}
+                <div className="w-full px-6 mb-12">
+                    <button
+                        onClick={() => {
+                            playNeonClick();
+                            navigate(`/${categorySlug}/${shopSlug}/cliente-subscripcion`);
+                        }}
+                        className="w-full glass-action-btn btn-cyan-neon py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[12px] shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95 transition-all text-white overflow-hidden relative group"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/20 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <Gift size={20} className="text-white drop-shadow-md group-hover:scale-110 transition-transform" />
+                        SUSCRIBIRSE PARA OFERTAS
+                    </button>
+                    <p className="text-[8px] text-center text-white/50 uppercase tracking-widest mt-3">Sumate a nuestra red VIP de beneficios locales</p>
                 </div>
 
                 {/* Action Buttons */}
