@@ -232,7 +232,7 @@ const LandingPage: React.FC = () => {
                         Convertí tu vidriera en una <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">puerta digital</span>.
                     </h2>
                     <img 
-                        src="https://images.unsplash.com/photo-1595054134109-77569baf4152?w=800&h=600&fit=crop" 
+                        src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop" 
                         alt="Escaneando código QR"
                         className="w-full h-48 object-cover rounded-[2rem] mb-6 border border-white/10 opacity-80"
                     />
@@ -250,7 +250,7 @@ const LandingPage: React.FC = () => {
                             Sistema verificado por embajadores.
                         </h2>
                         <img 
-                            src="https://images.unsplash.com/photo-1556761175-5973dc0f32b7?w=800&h=600&fit=crop" 
+                            src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop" 
                             alt="Verificación en persona"
                             className="w-full h-32 object-cover rounded-2xl mb-4 border border-white/5 opacity-70 relative z-10"
                         />
@@ -286,6 +286,29 @@ const LandingPage: React.FC = () => {
                     <p className="text-[10px] text-cyan-300/80 font-black uppercase tracking-widest relative z-10 mt-6 px-4">
                         Una embajadora de ShopDigital se pondrá en contacto y visitará tu comercio para activar tu presencia en la red digital.
                     </p>
+                </section>
+
+                {/* 8. SECCIÓN NOSOTROS (ABOUT) */}
+                <section className="w-full mt-16 mb-4 text-center pb-8 border-b border-white/5">
+                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
+                        <Info size={24} className="text-cyan-400" />
+                    </div>
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-white mb-3">
+                        ¿Querés saber <span className="text-cyan-400">quiénes somos</span>?
+                    </h3>
+                    <p className="text-[13px] font-bold text-white/60 leading-relaxed px-6 mb-8">
+                        Conocé al equipo detrás de ShopDigital, nuestra historia y la misión de digitalizar el comercio local en Esteban Echeverría.
+                    </p>
+                    <button 
+                        onClick={() => {
+                            playNeonClick();
+                            navigate('/nosotros');
+                        }}
+                        className="inline-flex items-center justify-center gap-3 bg-white/5 border border-white/10 hover:bg-white/10 text-cyan-400 py-4 px-8 rounded-[1.5rem] transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                    >
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Conocé nuestra historia</span>
+                        <ChevronRight size={16} />
+                    </button>
                 </section>
 
             </main>
