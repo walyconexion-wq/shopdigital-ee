@@ -9,20 +9,59 @@ import {
     Navigation,
     Handshake,
     Store,
-    Instagram
+    Instagram,
+    LayoutDashboard,
+    Gift
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
-import { playNeonClick } from '../utils/audio';
+import { playNeonClick, playSuccessSound } from '../utils/audio';
+import { guardarCliente } from '../firebase';
+import { Client } from '../types';
 
 const ClientLandingPage: React.FC = () => {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(false);
+    const [showForm, setShowForm] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState({ name: '', phone: '' });
 
     useEffect(() => {
         window.scrollTo(0, 0);
         setIsVisible(true);
     }, []);
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        playNeonClick();
+        
+        if (!formData.name || !formData.phone) {
+            alert("Por favor completá los datos para suscribirte.");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const newClient: Client = {
+            id: `client-${Date.now()}`,
+            name: formData.name,
+            phone: formData.phone,
+            sourceShopId: "b2c-landing-qr",
+            sourceShopName: "QR Vía Pública",
+            createdAt: new Date().toISOString()
+        };
+
+        try {
+            await guardarCliente(newClient);
+            playSuccessSound();
+            navigate('/red-comercial/ofertas');
+        } catch (error) {
+            console.error(error);
+            alert("Hubo un error al suscribirte. Por favor intentá nuevamente.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleShare = () => {
         playNeonClick();
@@ -58,11 +97,11 @@ const ClientLandingPage: React.FC = () => {
                     <Logo />
                 </div>
                 <button 
-                    onClick={handleShare}
+                    onClick={() => { playNeonClick(); navigate('/'); }}
                     className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all active:scale-95 text-cyan-400"
                 >
-                    <Share2 size={14} />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white">Compartir</span>
+                    <LayoutDashboard size={14} />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white">Ir a App</span>
                 </button>
             </header>
 
@@ -83,13 +122,13 @@ const ClientLandingPage: React.FC = () => {
                     </p>
 
                     {/* Hero Image (User Provided) */}
-                    <div className="w-full relative h-64 md:h-72 rounded-[2rem] overflow-hidden border border-cyan-400/50 shadow-[0_0_50px_rgba(34,211,238,0.3)] mb-8 bg-cyan-900/10">
+                    <div className="w-full relative rounded-[2rem] overflow-hidden border border-cyan-400/50 shadow-[0_0_50px_rgba(34,211,238,0.3)] mb-8 bg-cyan-900/10">
                         <img 
                             src="/images/hero-client-landing.jpg" 
                             alt="Cliente escaneando ofertas en vidriera"
-                            className="w-full h-full object-cover brightness-105 contrast-110 saturate-110 object-top"
+                            className="w-full h-auto aspect-[4/5] md:aspect-square object-cover brightness-105 contrast-110 saturate-110 object-top"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
                         <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(34,211,238,0.4)] rounded-[2rem] pointer-events-none"></div>
                         
                         <div className="absolute bottom-4 left-0 w-full text-center px-4">
@@ -102,21 +141,65 @@ const ClientLandingPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-4 px-2">
-                        <button 
-                            onClick={() => {
-                                playNeonClick();
-                                navigate('/red-comercial/ofertas');
-                            }}
-                            className="w-full glass-action-btn border-cyan-400/50 shadow-[0_0_30px_rgba(34,211,238,0.4)] bg-cyan-500/20 py-5 px-6 flex items-center justify-center gap-3 active:scale-95 transition-all text-white"
-                        >
-                            <ShoppingBag size={20} className="text-cyan-100" />
-                            <span className="text-[12px] font-[1000] uppercase tracking-widest text-shadow-premium">Ver Ofertas del Barrio</span>
-                        </button>
-                        <p className="text-[9px] text-cyan-400/60 font-black uppercase tracking-widest">
-                            👆 Ingresá ahora para ahorrar en tus compras
-                        </p>
-                    </div>
+                    {showForm ? (
+                        <div className="w-full glass-card-3d bg-white/[0.02] border border-cyan-500/30 rounded-3xl p-6 mb-8 animate-in slide-in-from-bottom-4">
+                            <h3 className="text-[14px] font-black uppercase tracking-[0.2em] text-cyan-400 mb-2 text-shadow-premium flex items-center justify-center gap-2">
+                                <Gift size={18} /> Beneficio Exclusivo
+                            </h3>
+                            <p className="text-[11px] text-white/80 font-bold mb-6 leading-relaxed">
+                                Dejanos tu nombre y WhatsApp para acceder gratis a la red de descuentos en tu barrio.
+                            </p>
+                            <form onSubmit={handleSubscribe} className="space-y-4 text-left">
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-cyan-500 ml-2">Tu Nombre</label>
+                                    <input 
+                                        required
+                                        type="text"
+                                        placeholder="Ej: Juan"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition-all font-bold placeholder:text-white/20"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-cyan-500 ml-2">Tu WhatsApp</label>
+                                    <input 
+                                        required
+                                        type="tel"
+                                        placeholder="Ej: 1145678900"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition-all font-bold placeholder:text-white/20"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full btn-cyan-neon glass-action-btn border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)] py-4 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all mt-4 opacity-100 disabled:opacity-50 text-white"
+                                >
+                                    <Store size={18} />
+                                    <span className="text-[11px] font-black uppercase tracking-widest">{isSubmitting ? 'Conectando...' : 'Entrar a Ofertas'}</span>
+                                </button>
+                                <button type="button" onClick={() => setShowForm(false)} className="w-full text-center text-[10px] font-bold text-white/40 uppercase tracking-widest mt-2 hover:text-white/80 transition-colors">Cancelar</button>
+                            </form>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-4 px-2">
+                            <button 
+                                onClick={() => {
+                                    playNeonClick();
+                                    setShowForm(true);
+                                }}
+                                className="w-full glass-action-btn border-cyan-400/50 shadow-[0_0_30px_rgba(34,211,238,0.4)] bg-cyan-500/20 py-5 px-6 flex items-center justify-center gap-3 active:scale-95 transition-all text-white"
+                            >
+                                <Gift size={20} className="text-cyan-100" />
+                                <span className="text-[12px] font-[1000] uppercase tracking-widest text-shadow-premium">Suscribite Gratis</span>
+                            </button>
+                            <p className="text-[9px] text-cyan-400/60 font-black uppercase tracking-widest">
+                                👆 Ingresá ahora para ahorrar en tus compras
+                            </p>
+                        </div>
+                    )}
                 </section>
 
                 {/* 2. SECCIÓN EXPLICACIÓN */}
@@ -221,23 +304,26 @@ const ClientLandingPage: React.FC = () => {
 
                 {/* 5. CTA INFERIOR */}
                 <section className="w-full mt-4 mb-4 text-center">
-                    <button 
-                        onClick={() => {
-                            playNeonClick();
-                            navigate('/red-comercial/ofertas');
-                        }}
-                        className="w-full glass-action-btn border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.2)] bg-cyan-500/10 py-5 px-6 flex items-center justify-center gap-3 active:scale-95 transition-all text-white mb-6 rounded-2xl"
-                    >
-                        <ShoppingBag size={20} className="text-cyan-400" />
-                        <span className="text-[12px] font-[1000] uppercase tracking-widest">Entrar a la red de beneficios</span>
-                    </button>
+                    {!showForm && (
+                        <button 
+                            onClick={() => {
+                                playNeonClick();
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                setShowForm(true);
+                            }}
+                            className="w-full glass-action-btn border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.2)] bg-cyan-500/10 py-5 px-6 flex items-center justify-center gap-3 active:scale-95 transition-all text-white mb-6 rounded-2xl"
+                        >
+                            <Gift size={20} className="text-cyan-400" />
+                            <span className="text-[12px] font-[1000] uppercase tracking-widest">Suscribirme y Ver Ofertas</span>
+                        </button>
+                    )}
                     
                     <button 
                         onClick={handleShare}
-                        className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white py-4 px-6 rounded-2xl transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.05)] flex items-center justify-center gap-3"
+                        className="w-full glass-action-btn border-violet-400/50 shadow-[0_0_20px_rgba(139,92,246,0.3)] bg-violet-600/20 py-4 px-6 rounded-2xl hover:bg-violet-600/30 transition-all active:scale-95 flex items-center justify-center gap-3 text-white mt-4"
                     >
-                        <Share2 size={16} />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Compartir esta App con un amigo</span>
+                        <Share2 size={16} className="text-violet-300" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-shadow-premium">Compartir esta App con un amigo</span>
                     </button>
                     <p className="text-[8px] text-white/40 uppercase tracking-[0.3em] font-bold mt-4">
                         Recomendá ShopDigital y ayudá al comercio local
