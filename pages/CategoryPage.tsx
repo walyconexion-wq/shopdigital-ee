@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CATEGORIES } from '../constants';
 import { Shop } from '../types';
@@ -14,6 +14,7 @@ const LOCALITIES = ['Monte Grande', 'Luis Guillón', 'El Jagüel'];
 const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
     const { categorySlug } = useParams<{ categorySlug: string }>();
     const navigate = useNavigate();
+    const [activeLocation, setActiveLocation] = useState<string>(LOCALITIES[0]);
 
     // Ambassador Easter Egg Logic
     const [titleClicks, setTitleClicks] = React.useState(0);
@@ -110,71 +111,119 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                 </div>
             </header>
 
-            <div className="flex flex-col gap-10 px-2 pt-4 pb-24 relative z-10">
-                {LOCALITIES.map((locality) => (
-                    <div key={locality} className="flex flex-col gap-6">
-                        <div className="flex items-center gap-3 ml-2">
-                            <div className="w-8 h-8 rounded-full bg-cyan-500/10 backdrop-blur-md border border-cyan-400/30 flex items-center justify-center shadow-lg">
-                                <MapPin size={16} className="text-cyan-400" />
-                            </div>
-                            <h3 className="text-[12px] font-black text-white uppercase tracking-[0.4em] text-shadow-premium">
-                                {locality}
-                            </h3>
-                            <div className="h-[1px] flex-1 bg-cyan-400/10"></div>
+            <div className="flex flex-col gap-8 px-2 pt-4 pb-24 relative z-10">
+                {/* LOCATION TABS NAVIGATION */}
+                <div className="flex gap-2 w-full justify-center px-2 mb-2">
+                    {LOCALITIES.map(loc => {
+                        const isActive = activeLocation === loc;
+                        let colorClasses = "border-white/10 text-white/50 bg-white/5"; // default
+                        
+                        if (isActive) {
+                            if (loc === 'Monte Grande') colorClasses = "border-violet-400/80 text-white bg-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.6)] scale-105";
+                            else if (loc === 'Luis Guillón') colorClasses = "border-green-400/80 text-white bg-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.6)] scale-105";
+                            else if (loc === 'El Jagüel') colorClasses = "border-rose-400/80 text-white bg-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.6)] scale-105";
+                        }
+
+                        return (
+                            <button
+                                key={loc}
+                                onClick={() => {
+                                    playNeonClick();
+                                    setActiveLocation(loc);
+                                }}
+                                className={`flex-1 py-3 px-2 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 active:scale-95 ${colorClasses}`}
+                            >
+                                <span className={`text-[10px] sm:text-[11px] font-[1000] uppercase tracking-widest text-center leading-tight ${isActive ? 'text-shadow-premium' : ''}`}>
+                                    {loc}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500" key={activeLocation}>
+                    <div className="flex items-center gap-3 ml-2">
+                        <div className={`w-8 h-8 rounded-full backdrop-blur-md border flex items-center justify-center shadow-lg transition-colors
+                            ${activeLocation === 'Monte Grande' ? 'bg-violet-500/20 border-violet-400/50' : 
+                              activeLocation === 'Luis Guillón' ? 'bg-green-500/20 border-green-400/50' : 
+                              'bg-rose-500/20 border-rose-400/50'}`}
+                        >
+                            <MapPin size={16} className={
+                                activeLocation === 'Monte Grande' ? 'text-violet-400' :
+                                activeLocation === 'Luis Guillón' ? 'text-green-400' :
+                                'text-rose-400'
+                            } />
                         </div>
+                        <h3 className="text-[12px] font-black text-white uppercase tracking-[0.4em] text-shadow-premium">
+                            {activeLocation}
+                        </h3>
+                        <div className={`h-[1px] flex-1 opacity-50 transition-colors
+                            ${activeLocation === 'Monte Grande' ? 'bg-violet-400/30' :
+                              activeLocation === 'Luis Guillón' ? 'bg-green-400/30' :
+                              'bg-rose-400/30'}`}
+                        ></div>
+                    </div>
 
-                        {groupedShops[locality] && groupedShops[locality].length > 0 ? (
-                            groupedShops[locality].map((shop, index) => (
-                                <div
-                                    key={shop.id}
-                                    style={{ animationDelay: `${index * 80}ms` }}
-                                    className={`glass-card-3d ${locality === 'Monte Grande' ? 'card-neon-violet' : locality === 'Luis Guillón' ? 'card-neon-green' : 'card-neon-red'} overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]`}
-                                >
-                                    <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-white/20">
-                                        <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-full border border-white/20 shadow-xl">
-                                            <div className="flex items-center gap-1">
-                                                <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
-                                                <span className="text-[10px] font-black text-white">{shop.rating}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex-1 flex flex-col justify-between p-4 text-left min-w-0 bg-white/[0.04]">
-                                        <div className="space-y-1.5 overflow-hidden">
-                                            <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">
-                                                {shop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
-                                            </h3>
-                                            <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
-                                                <MapPin size={12} strokeWidth={3} className="flex-shrink-0 mt-0.5 text-cyan-400/80" />
-                                                <span className="break-words line-clamp-2">{shop.address}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 flex flex-col gap-3">
-                                            <button
-                                                onClick={() => {
-                                                    playNeonClick();
-                                                    navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
-                                                }}
-                                                className="glass-action-btn btn-offers-glow pulse-3d-btn w-full shop-btn-mobile py-4 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-2xl"
-                                            >
-                                                <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
-                                                VER CATÁLOGO
-                                            </button>
+                    {groupedShops[activeLocation] && groupedShops[activeLocation].length > 0 ? (
+                        groupedShops[activeLocation].map((shop, index) => (
+                            <div
+                                key={shop.id}
+                                style={{ animationDelay: `${index * 80}ms` }}
+                                className={`glass-card-3d ${activeLocation === 'Monte Grande' ? 'card-neon-violet' : activeLocation === 'Luis Guillón' ? 'card-neon-green' : 'card-neon-red'} overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]`}
+                            >
+                                <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-white/20">
+                                    <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
+                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-full border border-white/20 shadow-xl">
+                                        <div className="flex items-center gap-1">
+                                            <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
+                                            <span className="text-[10px] font-black text-white">{shop.rating}</span>
                                         </div>
                                     </div>
                                 </div>
-                            ))
-                        ) : (
-                            <div className="py-8 text-center">
-                                <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
-                                    No hay comercios disponibles en esta zona
-                                </p>
+
+                                <div className="flex-1 flex flex-col justify-between p-4 text-left min-w-0 bg-white/[0.04]">
+                                    <div className="space-y-1.5 overflow-hidden">
+                                        <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">
+                                            {shop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
+                                        </h3>
+                                        <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
+                                            <MapPin size={12} strokeWidth={3} className={`flex-shrink-0 mt-0.5 ${
+                                                activeLocation === 'Monte Grande' ? 'text-violet-400/80' :
+                                                activeLocation === 'Luis Guillón' ? 'text-green-400/80' :
+                                                'text-rose-400/80'
+                                            }`} />
+                                            <span className="break-words line-clamp-2">{shop.address}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex flex-col gap-3">
+                                        <button
+                                            onClick={() => {
+                                                playNeonClick();
+                                                navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
+                                            }}
+                                            className={`glass-action-btn pulse-3d-btn w-full shop-btn-mobile py-4 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-2xl
+                                                ${activeLocation === 'Monte Grande' ? 'border-violet-400/50 bg-violet-600/30' :
+                                                  activeLocation === 'Luis Guillón' ? 'border-green-400/50 bg-green-600/30' :
+                                                  'border-rose-400/50 bg-rose-600/30'}
+                                            `}
+                                        >
+                                            <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
+                                            VER CATÁLOGO
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                ))}
+                        ))
+                    ) : (
+                        <div className="py-12 px-6 text-center glass-card-3d bg-white/5 border-white/10 rounded-3xl mt-4">
+                            <MapPin size={32} className="mx-auto text-white/20 mb-3" />
+                            <p className="text-[10px] sm:text-[11px] font-black text-white/50 uppercase tracking-widest leading-relaxed">
+                                No hay comercios adheridos <br/>en {activeLocation} para {selectedCategory?.name}
+                            </p>
+                        </div>
+                    )}
+                </div>
 
                 <div className="pt-10 flex justify-center w-full">
                     <button
