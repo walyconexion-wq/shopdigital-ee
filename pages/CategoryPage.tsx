@@ -9,12 +9,12 @@ interface CategoryPageProps {
     allShops: Shop[];
 }
 
-const LOCALITIES = ['Monte Grande', 'Luis Guillón', 'El Jagüel'];
+const LOCALITIES = ['Luis Guillón', 'Monte Grande', 'El Jagüel'];
 
 const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
     const { categorySlug } = useParams<{ categorySlug: string }>();
     const navigate = useNavigate();
-    const [activeLocation, setActiveLocation] = useState<string>(LOCALITIES[0]);
+    const [activeLocation, setActiveLocation] = useState<string>('Monte Grande');
 
     // Ambassador Easter Egg Logic
     const [titleClicks, setTitleClicks] = React.useState(0);
@@ -116,12 +116,12 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                 <div className="flex gap-2 w-full justify-center px-2 mb-2">
                     {LOCALITIES.map(loc => {
                         const isActive = activeLocation === loc;
-                        let colorClasses = "border-white/10 text-white/50 bg-white/5"; // default
+                        let colorClasses = "border-white/20 text-white/70 bg-white/10 hover:bg-white/15"; // slightly brighter inactive
                         
                         if (isActive) {
-                            if (loc === 'Monte Grande') colorClasses = "border-violet-400/80 text-white bg-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.6)] scale-105";
-                            else if (loc === 'Luis Guillón') colorClasses = "border-green-400/80 text-white bg-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.6)] scale-105";
-                            else if (loc === 'El Jagüel') colorClasses = "border-rose-400/80 text-white bg-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.6)] scale-105";
+                            if (loc === 'Monte Grande') colorClasses = "border-violet-400/80 text-white bg-violet-600/50 shadow-[0_0_20px_rgba(139,92,246,0.8)] scale-110 z-10";
+                            else if (loc === 'Luis Guillón') colorClasses = "border-green-400/80 text-white bg-green-600/50 shadow-[0_0_20px_rgba(34,197,94,0.8)] scale-110 z-10";
+                            else if (loc === 'El Jagüel') colorClasses = "border-rose-400/80 text-white bg-rose-600/50 shadow-[0_0_20px_rgba(244,63,94,0.8)] scale-110 z-10";
                         }
 
                         return (
