@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
+import { CATEGORIES } from '../constants';
 import { guardarComercio, eliminarComercio } from '../firebase';
 import {
     ChevronLeft,
