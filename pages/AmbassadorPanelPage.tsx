@@ -16,7 +16,8 @@ import {
     Image as ImageIcon,
     MessageSquare,
     Navigation,
-    Settings
+    Settings,
+    Users
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -138,15 +139,24 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                 <p className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest text-center mt-2 px-4">
                     Comercios Pendientes: {pendingShops.length}
                 </p>
-                
-                {/* Botón Gestión de Comercios */}
-                <button
-                    onClick={() => { playNeonClick(); navigate('/embajador/gestion'); }}
-                    className="mt-4 w-full max-w-xs bg-yellow-500/15 border border-yellow-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-yellow-300 active:scale-95 transition-all hover:bg-yellow-500/25 shadow-[0_0_15px_rgba(234,179,8,0.2)]"
-                >
-                    <Settings size={16} />
-                    Gestión de Comercios
-                </button>
+                {/* Botones de Gestión */}
+                <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
+                    <button
+                        onClick={() => { playNeonClick(); navigate('/embajador/gestion'); }}
+                        className="w-full bg-yellow-500/15 border border-yellow-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-yellow-300 active:scale-95 transition-all hover:bg-yellow-500/25 shadow-[0_0_15px_rgba(234,179,8,0.2)]"
+                    >
+                        <Settings size={16} />
+                        Gestión de Comercios
+                    </button>
+                    
+                    <button
+                        onClick={() => { playNeonClick(); navigate('/embajador/clientes'); }}
+                        className="w-full bg-blue-500/15 border border-blue-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-blue-300 active:scale-95 transition-all hover:bg-blue-500/25 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                    >
+                        <Users size={16} />
+                        Gestión de Clientes
+                    </button>
+                </div>
             </div>
 
             <div className="px-6 space-y-6 relative z-10 max-w-2xl mx-auto">

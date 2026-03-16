@@ -114,6 +114,19 @@ export const obtenerClientes = async () => {
     }
 };
 
+export const suscribirseAClientes = (callback: (clientes: any[]) => void) => {
+    const colRef = collection(db, "clientes");
+    return onSnapshot(colRef, (snapshot) => {
+        const clientes = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+        callback(clientes);
+    }, (error) => {
+        console.error("Error en la suscripción de clientes:", error);
+    });
+};
+
 export const eliminarCliente = async (id: string) => {
     try {
         await deleteDoc(doc(db, "clientes", id));

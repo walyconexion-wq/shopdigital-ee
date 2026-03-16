@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Shop } from './types';
-import { suscribirseAComercios } from './firebase';
+import { Shop, Client } from './types';
+import { suscribirseAComercios, suscribirseAClientes } from './firebase';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -21,9 +21,11 @@ import ClientOffersPage from './pages/ClientOffersPage';
 import ClientLandingPage from './pages/ClientLandingPage';
 import BusinessLandingPage from './pages/BusinessLandingPage';
 import ShopManagementPage from './pages/ShopManagementPage';
+import ClientManagementPage from './pages/ClientManagementPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
+  const [allClients, setAllClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoader, setShowLoader] = useState(true);
 
@@ -44,7 +46,14 @@ const App: React.FC = () => {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    const unsubscribeClients = suscribirseAClientes((fbClients) => {
+      setAllClients(fbClients as Client[]);
+    });
+
+    return () => {
+      unsubscribeShops();
+      unsubscribeClients();
+    };
   }, []);
 
   return (
@@ -69,6 +78,7 @@ const App: React.FC = () => {
           <Route path="subscripcion" element={<SubscriptionPage />} />
           <Route path="embajador" element={<AmbassadorPanelPage allShops={allShops} />} />
           <Route path="embajador/gestion" element={<ShopManagementPage allShops={allShops} />} />
+          <Route path="embajador/clientes" element={<ClientManagementPage allShops={allShops} allClients={allClients} />} />
           <Route path="base-clientes" element={<ClientsDatabasePage />} />
           <Route path="nosotros" element={<AboutPage />} />
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
