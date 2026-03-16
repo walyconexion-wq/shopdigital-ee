@@ -52,7 +52,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
             const normalizedLoc = normalize(loc);
             grouped[loc] = allShops.filter(shop =>
                 shop &&
-                shop.isActive !== false &&
+                shop.isActive === true &&
                 shop.category === selectedCategory.id &&
                 ((shop.zone === loc) || (shop.address && normalize(shop.address || "").includes(normalizedLoc)))
             );

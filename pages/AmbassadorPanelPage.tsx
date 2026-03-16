@@ -30,9 +30,9 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
     const [loginError, setLoginError] = useState(false);
     const [processingId, setProcessingId] = useState<string | null>(null);
 
-    // Filtrar solo los comercios con isActive === false
+    // Filtrar comercios que NO están aprobados (isActive !== true)
     const pendingShops = useMemo(() => {
-        return allShops.filter(shop => shop.isActive === false);
+        return allShops.filter(shop => shop.isActive !== true);
     }, [allShops]);
 
     const handleLogin = () => {
