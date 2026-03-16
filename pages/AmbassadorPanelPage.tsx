@@ -12,7 +12,9 @@ import {
     CheckCircle,
     XCircle,
     MapPin,
-    Image as ImageIcon
+    Image as ImageIcon,
+    MessageSquare,
+    Navigation
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -178,8 +180,8 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                                     </div>
                                 </div>
 
-                                {/* Details: Titular y Contacto */}
-                                <div className="grid grid-cols-2 gap-4">
+                                {/* Details: Titular, Contacto y Dirección */}
+                                <div className="grid grid-cols-2 gap-3">
                                     <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
                                         <User size={14} className="text-white/40" />
                                         <div>
@@ -195,6 +197,29 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                                         </div>
                                     </div>
                                 </div>
+                                
+                                {/* Dirección del Local */}
+                                <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
+                                    <Navigation size={14} className="text-yellow-400" />
+                                    <div>
+                                        <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-0.5">Dirección del Local</p>
+                                        <p className="text-[11px] font-black text-white/90">{shop.address || 'No provista'}</p>
+                                    </div>
+                                </div>
+
+                                {/* Botón Contactar por WhatsApp */}
+                                {shop.phone && (
+                                    <a
+                                        href={`https://wa.me/549${shop.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`¡Hola ${shop.ownerName || ''}! Soy embajador de ShopDigital. Tu comercio "${shop.name}" está pendiente de verificación. \u00bfPodemos coordinar una visita? 🚀`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => playNeonClick()}
+                                        className="w-full bg-green-600/20 border border-green-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] text-green-300 active:scale-95 transition-all hover:bg-green-600/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                                    >
+                                        <MessageSquare size={16} />
+                                        Contactar por WhatsApp
+                                    </a>
+                                )}
 
                                 {/* Botones CTA para Embajador */}
                                 <div className="pt-2 flex gap-3">

@@ -29,6 +29,7 @@ const SubscriptionPage: React.FC = () => {
         name: '',
         category: CATEGORIES[0].id,
         zone: LOCALITIES[0],
+        address: '',
         bannerImage: '',
         ownerName: '',
         phone: ''
@@ -106,7 +107,7 @@ const SubscriptionPage: React.FC = () => {
             rating: 5.0, // Initial perfect rating
             isActive: false, // Security: Must be approved by an ambassador
             specialty: '',
-            address: formData.zone, // Defaults to zone
+            address: formData.address || formData.zone, // Uses typed address or falls back to zone
             offers: [],
             mapUrl: '',
             mapSheetUrl: '',
@@ -231,6 +232,23 @@ const SubscriptionPage: React.FC = () => {
                             ))}
                         </select>
                     </div>
+                </div>
+
+                {/* Dirección del Local */}
+                <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-6 focus-within:border-cyan-500/50 transition-colors">
+                    <div className="flex justify-between items-center mb-4">
+                        <label className="text-[10px] flex items-center gap-2 font-black uppercase tracking-[0.2em] text-cyan-400">
+                            <MapPin size={14} /> Dirección del Local
+                        </label>
+                        <span className="text-[8px] text-red-400 font-bold uppercase">* Requerido</span>
+                    </div>
+                    <input
+                        required
+                        placeholder="Ej: Av. Tomás Guido 1450, Monte Grande"
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold placeholder:text-white/20 focus:outline-none focus:border-cyan-400 transition-all"
+                    />
                 </div>
 
                 {/* Foto Portada (Opcional - Input de Archivo) */}
