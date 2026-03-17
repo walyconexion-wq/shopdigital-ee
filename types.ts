@@ -31,6 +31,24 @@ export interface Client {
   createdAt: string;
 }
 
+export interface Offer {
+  id: string;
+  target: 'B2B' | 'B2C';
+  title: string;
+  description: string;
+  price: string;
+  discountLabel: string;
+  image: string;
+  merchantName: string;
+  merchantZone: string;
+  category: string;
+  validFrom: string;
+  validUntil: string;
+  stockLimit?: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface Shop {
   id: string;
   slug: string;

@@ -137,3 +137,42 @@ export const eliminarCliente = async (id: string) => {
         throw error;
     }
 };
+
+// --- SERVICIOS OFERTAS (B2B & B2C) ---
+
+export const suscribirseAOfertas = (callback: (ofertas: any[]) => void) => {
+    const colRef = collection(db, "ofertas");
+    return onSnapshot(colRef, (snapshot) => {
+        const ofertas = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+        callback(ofertas);
+    }, (error) => {
+        console.error("Error en la suscripción de ofertas:", error);
+    });
+};
+
+export const guardarOferta = async (ofertaData: any) => {
+    try {
+        const id = ofertaData.id;
+        if (!id) throw new Error("ID de oferta es requerido para guardar.");
+        await setDoc(doc(db, "ofertas", id), ofertaData);
+        console.log("Oferta guardada con éxito. ID:", id);
+        return id;
+    } catch (error) {
+        console.error("Error al guardar oferta en Firestore:", error);
+        throw error;
+    }
+};
+
+export const eliminarOferta = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "ofertas", id));
+        console.log("Oferta eliminada con éxito. ID:", id);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar oferta de Firestore:", error);
+        throw error;
+    }
+};

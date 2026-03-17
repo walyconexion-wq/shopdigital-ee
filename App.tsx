@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Shop, Client } from './types';
-import { suscribirseAComercios, suscribirseAClientes } from './firebase';
+import { Shop, Client, Offer } from './types';
+import { suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas } from './firebase';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -24,10 +24,13 @@ import ShopManagementPage from './pages/ShopManagementPage';
 import ClientManagementPage from './pages/ClientManagementPage';
 import ClientCredentialPage from './pages/ClientCredentialPage';
 import ClientValidationPage from './pages/ClientValidationPage';
+import OfferManagementPage from './pages/OfferManagementPage';
+import OfferFormPage from './pages/OfferFormPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
   const [allClients, setAllClients] = useState<Client[]>([]);
+  const [allOffers, setAllOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoader, setShowLoader] = useState(true);
 
@@ -52,9 +55,14 @@ const App: React.FC = () => {
       setAllClients(fbClients as Client[]);
     });
 
+    const unsubscribeOffers = suscribirseAOfertas((fbOffers) => {
+      setAllOffers(fbOffers as Offer[]);
+    });
+
     return () => {
       unsubscribe();
       unsubscribeClients();
+      unsubscribeOffers();
     };
   }, []);
 
@@ -72,8 +80,8 @@ const App: React.FC = () => {
           <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/panel-autogestion" element={<AdminPanelPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/validar" element={<ValidationPage allShops={allShops} />} />
-          <Route path="red-comercial/descuentos" element={<DiscountsPage />} />
-          <Route path="red-comercial/ofertas" element={<ClientOffersPage allShops={allShops} />} />
+          <Route path="red-comercial/descuentos" element={<DiscountsPage allOffers={allOffers} />} />
+          <Route path="red-comercial/ofertas" element={<ClientOffersPage allOffers={allOffers} />} />
           <Route path="unirse" element={<LandingPage />} />
           <Route path="negocios" element={<BusinessLandingPage />} />
           <Route path="descubrir" element={<ClientLandingPage />} />
@@ -81,6 +89,9 @@ const App: React.FC = () => {
           <Route path="embajador" element={<AmbassadorPanelPage allShops={allShops} />} />
           <Route path="embajador/gestion" element={<ShopManagementPage allShops={allShops} />} />
           <Route path="embajador/clientes" element={<ClientManagementPage allShops={allShops} allClients={allClients} />} />
+          <Route path="embajador/ofertas/:target" element={<OfferManagementPage allOffers={allOffers} />} />
+          <Route path="embajador/ofertas/crear/:target" element={<OfferFormPage />} />
+          <Route path="embajador/ofertas/editar/:offerId" element={<OfferFormPage allOffers={allOffers} />} />
           <Route path="base-clientes" element={<ClientsDatabasePage />} />
           <Route path="nosotros" element={<AboutPage />} />
           <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
