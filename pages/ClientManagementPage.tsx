@@ -106,10 +106,12 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     // ACTIONS
     // =========================================================
 
-    const openWhatsApp = (phone: string, message: string) => {
+    const openWhatsApp = (client: Client, baseMessage: string) => {
         playNeonClick();
-        const formattedPhone = phone.replace(/\D/g, '');
-        const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(message)}`;
+        const formattedPhone = client.phone.replace(/\D/g, '');
+        const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/cliente/${client.id}/credencial`;
+        const fullMessage = baseMessage + credentialLink;
+        const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
         window.open(url, '_blank');
     };
 
@@ -120,7 +122,9 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         if (window.confirm(`¿Se intentarán abrir ${shopClients.length} pestañas de WhatsApp. Es posible que tu navegador bloquee las ventanas emergentes (pop-ups). ¿Quieres continuar?`)) {
             shopClients.forEach(client => {
                 const formattedPhone = client.phone.replace(/\D/g, '');
-                const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(customMessage)}`;
+                const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/cliente/${client.id}/credencial`;
+                const fullMessage = customMessage + credentialLink;
+                const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
                 window.open(url, '_blank');
             });
         }
@@ -244,7 +248,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                                     </p>
                                 </div>
                                 <button
-                                    onClick={() => openWhatsApp(client.phone, customMessage)}
+                                    onClick={() => openWhatsApp(client, customMessage)}
                                     className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 border border-green-400/30 hover:bg-green-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(34,197,94,0.1)]"
                                 >
                                     <Send size={16} className="-ml-1" />

@@ -22,6 +22,8 @@ import ClientLandingPage from './pages/ClientLandingPage';
 import BusinessLandingPage from './pages/BusinessLandingPage';
 import ShopManagementPage from './pages/ShopManagementPage';
 import ClientManagementPage from './pages/ClientManagementPage';
+import ClientCredentialPage from './pages/ClientCredentialPage';
+import ClientValidationPage from './pages/ClientValidationPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -51,7 +53,7 @@ const App: React.FC = () => {
     });
 
     return () => {
-      unsubscribeShops();
+      unsubscribe();
       unsubscribeClients();
     };
   }, []);
@@ -81,6 +83,8 @@ const App: React.FC = () => {
           <Route path="embajador/clientes" element={<ClientManagementPage allShops={allShops} allClients={allClients} />} />
           <Route path="base-clientes" element={<ClientsDatabasePage />} />
           <Route path="nosotros" element={<AboutPage />} />
+          <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
+          <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
         </Route>
       </Routes>
