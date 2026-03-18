@@ -10,9 +10,12 @@ import {
     MessageSquare,
     ArrowLeft,
     Phone,
-    Send
+    Send,
+    Trash2,
+    Eye
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { eliminarCliente } from '../firebase';
 
 const LOCALITIES = ['Luis Guillón', 'Monte Grande', 'El Jagüel'];
 
@@ -127,6 +130,18 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                 const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
                 window.open(url, '_blank');
             });
+        }
+    };
+
+    const handleDeleteClient = async (client: Client) => {
+        if (window.confirm(`¿Estás seguro de que querés eliminar definitivamente a ${client.name || 'este cliente'} de la red VIP? Esta acción no se puede deshacer.`)) {
+            playNeonClick();
+            try {
+                await eliminarCliente(client.id);
+            } catch (error) {
+                console.error("Error al eliminar cliente:", error);
+                alert("Hubo un error al eliminar el cliente.");
+            }
         }
     };
 
@@ -247,12 +262,29 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                                         <Phone size={10} /> {client.phone}
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() => openWhatsApp(client, customMessage)}
-                                    className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 border border-green-400/30 hover:bg-green-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(34,197,94,0.1)]"
-                                >
-                                    <Send size={16} className="-ml-1" />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => { playNeonClick(); window.open(`/cliente/${client.id}/credencial`, '_blank'); }}
+                                        className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
+                                        title="Ver Credencial VIP"
+                                    >
+                                        <Eye size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => openWhatsApp(client, customMessage)}
+                                        className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 border border-green-400/30 hover:bg-green-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(34,197,94,0.1)]"
+                                        title="Enviar WhatsApp"
+                                    >
+                                        <Send size={16} className="-ml-1" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteClient(client)}
+                                        className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/30 hover:bg-red-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
+                                        title="Eliminar Cliente"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
