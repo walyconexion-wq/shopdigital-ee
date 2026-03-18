@@ -85,6 +85,12 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                <button
+                    onClick={() => { playNeonClick(); navigate('/'); }}
+                    className="absolute top-6 left-6 w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all active:scale-95 z-20"
+                >
+                    <ChevronLeft size={20} />
+                </button>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse pointer-events-none" />
                 <div className="w-full max-w-sm bg-zinc-900/80 border border-cyan-500/30 rounded-[2rem] p-8 backdrop-blur-xl z-10 relative shadow-2xl">
                     <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6 border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.3)]">
