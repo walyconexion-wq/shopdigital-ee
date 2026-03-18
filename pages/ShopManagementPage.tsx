@@ -131,7 +131,7 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                 </div>
 
                 {/* Category Grid */}
-                <div className="px-5 grid grid-cols-3 gap-3 max-w-lg mx-auto relative z-10">
+                <div className="px-5 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-lg mx-auto relative z-10">
                     {CATEGORIES.map(cat => {
                         const count = shopCountByCategory[cat.id] || 0;
                         return (

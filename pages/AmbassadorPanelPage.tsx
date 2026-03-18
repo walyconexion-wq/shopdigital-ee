@@ -84,10 +84,10 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
 
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse pointer-events-none" />
-                <div className="w-full max-w-sm glass-card-3d border border-cyan-500/30 rounded-[2rem] p-10 backdrop-blur-xl z-10 relative">
-                    <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-8 border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                <div className="w-full max-w-sm bg-zinc-900/80 border border-cyan-500/30 rounded-[2rem] p-8 backdrop-blur-xl z-10 relative shadow-2xl">
+                    <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6 border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.3)]">
                         <ShieldCheck size={32} className="text-cyan-400" />
                     </div>
                     <h2 className="text-2xl font-[1000] text-white uppercase tracking-tighter mb-2 text-shadow-premium">Panel de Embajador</h2>

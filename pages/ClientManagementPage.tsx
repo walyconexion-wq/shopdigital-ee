@@ -157,7 +157,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                     </p>
                 </div>
 
-                <div className="px-5 grid grid-cols-3 gap-3 max-w-lg mx-auto relative z-10">
+                <div className="px-5 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-lg mx-auto relative z-10">
                     {CATEGORIES.map(cat => {
                         const count = clientCountByCategory[cat.id] || 0;
                         return (
