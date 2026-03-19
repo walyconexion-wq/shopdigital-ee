@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
+    Lock, ChevronLeft, Share2, ExternalLink, 
     Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
