@@ -45,9 +45,9 @@ const Home: React.FC = () => {
     const handleWalyClick = () => {
         playNeonClick();
         const nextClicks = walyClicks + 1;
-        if (nextClicks >= 3) {
+        if (nextClicks >= 5) {
             setWalyClicks(0);
-            navigate('/unirse');
+            navigate('/tablero-maestro');
         } else {
             setWalyClicks(nextClicks);
         }

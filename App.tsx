@@ -12,6 +12,7 @@ import AdminPanelPage from './pages/AdminPanelPage';
 import DiscountsPage from './pages/DiscountsPage';
 import LandingPage from './pages/LandingPage';
 import AboutPage from './pages/AboutPage';
+import MasterPanelPage from './pages/MasterPanelPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
@@ -97,6 +98,7 @@ const App: React.FC = () => {
           <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
           <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
+          <Route path="tablero-maestro" element={<MasterPanelPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
