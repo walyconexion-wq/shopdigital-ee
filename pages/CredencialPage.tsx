@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop } from '../types';
-import { ArrowLeft, Star, QrCode, Lock, ShieldCheck, X, Volume2 } from 'lucide-react';
+import { ArrowLeft, Star, QrCode, Lock, ShieldCheck, X, Volume2, CreditCard } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -215,6 +215,19 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                     </div>
                 </div>
             )}
+
+            {/* Merchant Access Link */}
+            <div className="w-full flex justify-center mt-6 opacity-40 hover:opacity-100 transition-opacity">
+                <button 
+                    onClick={() => {
+                        playNeonClick();
+                        navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
+                    }}
+                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-cyan-400"
+                >
+                    <Lock size={12} /> Acceso Comercio
+                </button>
+            </div>
 
             <div className="mt-12 flex flex-col items-center gap-2 opacity-80">
                 <p className="text-[8px] font-black text-cyan-400/80 uppercase tracking-[0.5em] text-center px-12 leading-loose">

@@ -286,6 +286,19 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         Catálogo exclusivo para comerciantes
                     </p>
                 </div>
+
+                {/* Merchant Access Link */}
+                <div className="w-full flex justify-center pb-8 opacity-40 hover:opacity-100 transition-opacity">
+                    <button
+                        onClick={() => {
+                            playNeonClick();
+                            navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
+                        }}
+                        className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-white"
+                    >
+                        <Lock size={12} /> Acceso Comercio
+                    </button>
+                </div>
             </div>
         </div>
     );
