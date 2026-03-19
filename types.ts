@@ -22,6 +22,14 @@ export interface ProductOffer {
   image: string;
 }
 
+export interface PointsTransaction {
+  id: string;
+  shopName: string;
+  type: 'earned' | 'redeemed';
+  points: number;
+  date: string;
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -29,6 +37,8 @@ export interface Client {
   sourceShopId: string;
   sourceShopName: string;
   createdAt: string;
+  points?: number;
+  pointsHistory?: PointsTransaction[];
 }
 
 export interface Offer {
@@ -45,6 +55,7 @@ export interface Offer {
   validFrom: string;
   validUntil: string;
   stockLimit?: number;
+  pointsPrice?: number;
   isActive: boolean;
   createdAt: string;
 }

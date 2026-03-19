@@ -78,7 +78,7 @@ const App: React.FC = () => {
           <Route path=":categorySlug" element={<CategoryPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
-          <Route path=":categorySlug/:shopSlug/panel-autogestion" element={<AdminPanelPage allShops={allShops} />} />
+          <Route path=":categorySlug/:shopSlug/panel-autogestion" element={<AdminPanelPage allShops={allShops} allClients={allClients} />} />
           <Route path=":categorySlug/:shopSlug/validar" element={<ValidationPage allShops={allShops} />} />
           <Route path="red-comercial/descuentos" element={<DiscountsPage allOffers={allOffers} />} />
           <Route path="red-comercial/ofertas" element={<ClientOffersPage allOffers={allOffers} />} />

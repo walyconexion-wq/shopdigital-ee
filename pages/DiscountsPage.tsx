@@ -11,7 +11,8 @@ import {
     Store,
     MapPin,
     Calendar,
-    Package
+    Package,
+    Coins
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
@@ -131,8 +132,20 @@ const DiscountsPage: React.FC<DiscountsPageProps> = ({ allOffers }) => {
                                             <p className="text-[12px] font-bold text-white/80 leading-tight">{offer.title}</p>
                                             {offer.description && <p className="text-[10px] font-bold text-white/40 mt-1">{offer.description}</p>}
                                         </div>
-                                        <div className="bg-cyan-500/10 p-4 rounded-3xl border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.1)]">
-                                            <QrCode size={24} className="text-cyan-400" />
+                                        <div className="flex flex-col items-end gap-2 shrink-0">
+                                            {offer.pointsPrice ? (
+                                                <div className="bg-yellow-500/10 px-3 py-1.5 rounded-xl border border-yellow-500/20 flex flex-col items-center justify-center min-w-[70px]">
+                                                    <Coins size={14} className="text-yellow-400 mb-0.5" />
+                                                    <span className="text-[9px] font-black text-yellow-500 uppercase">Pts: {offer.pointsPrice}</span>
+                                                </div>
+                                            ) : offer.price && (
+                                                <div className="bg-cyan-500/10 px-3 py-1.5 rounded-xl border border-cyan-500/20 min-w-[70px] flex items-center justify-center">
+                                                    <span className="text-[12px] font-black text-cyan-400">{offer.price}</span>
+                                                </div>
+                                            )}
+                                            <div className="bg-white/10 p-2 rounded-xl border border-white/20">
+                                                <QrCode size={20} className="text-white/80" />
+                                            </div>
                                         </div>
                                     </div>
 

@@ -4,7 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Client } from '../types';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { ShieldCheck, User, Clock, ChevronLeft, Ticket } from 'lucide-react';
+import { ShieldCheck, User, Clock, ChevronLeft, Ticket, Wallet, Coins, ArrowRightLeft, ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -14,6 +14,7 @@ const ClientCredentialPage: React.FC = () => {
     const [client, setClient] = useState<Client | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [showWallet, setShowWallet] = useState(false);
 
     // Anti-screenshot real-time clock
     useEffect(() => {
@@ -121,30 +122,100 @@ const ClientCredentialPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="text-center mb-8 relative w-full">
-                        <h3 className="text-2xl font-[1000] uppercase tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] mb-1 break-words leading-none">
-                            {client.name}
-                        </h3>
-                        <p className="text-[10px] text-cyan-400 uppercase tracking-[0.2em] font-bold">
-                            Miembro Verificado
-                        </p>
-                    </div>
+                    {!showWallet ? (
+                        <>
+                            <div className="text-center mb-6 relative w-full">
+                                <h3 className="text-2xl font-[1000] uppercase tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] mb-1 break-words leading-none">
+                                    {client.name}
+                                </h3>
+                                <p className="text-[10px] text-cyan-400 uppercase tracking-[0.2em] font-bold">
+                                    Miembro Verificado
+                                </p>
+                            </div>
 
-                    {/* BOTTOM: QR Code */}
-                    <div className="bg-white p-3 rounded-2xl relative group">
-                        <div className="absolute inset-0 bg-cyan-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-                        <QRCodeSVG
-                            value={validationUrl}
-                            size={160}
-                            bgColor="#ffffff"
-                            fgColor="#000000"
-                            level="H"
-                            className="relative z-10"
-                        />
-                    </div>
-                    <p className="text-[7px] text-white/40 uppercase tracking-widest mt-4 text-center">
-                        Escaneá para validar en puerta
-                    </p>
+                            <button
+                                onClick={() => { playNeonClick(); setShowWallet(true); }}
+                                className="w-full mb-8 glass-action-btn btn-cyan-neon py-4 rounded-xl font-black uppercase tracking-[0.2em] active:scale-95 transition-all flex items-center justify-center gap-3 relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-400/20 rounded-full blur-[20px] pointer-events-none" />
+                                <Wallet size={18} className="text-white relative z-10" />
+                                <span className="text-[11px] text-white relative z-10">Mi Billetera VIP</span>
+                                <div className="bg-cyan-900/50 border border-cyan-400/30 px-2 py-0.5 rounded-md flex items-center gap-1 relative z-10">
+                                    <Coins size={12} className="text-yellow-400" />
+                                    <span className="text-[10px] text-yellow-400 font-black">{client.points || 0}</span>
+                                </div>
+                            </button>
+
+                            {/* BOTTOM: QR Code */}
+                            <div className="bg-white p-3 rounded-2xl relative group">
+                                <div className="absolute inset-0 bg-cyan-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+                                <QRCodeSVG
+                                    value={validationUrl}
+                                    size={160}
+                                    bgColor="#ffffff"
+                                    fgColor="#000000"
+                                    level="H"
+                                    className="relative z-10"
+                                />
+                            </div>
+                            <p className="text-[7px] text-white/40 uppercase tracking-widest mt-4 text-center">
+                                Escaneá para validar en puerta
+                            </p>
+                        </>
+                    ) : (
+                        <div className="w-full flex flex-col items-center animate-in slide-in-from-right-8 duration-300">
+                            <div className="w-full flex justify-between items-center mb-6">
+                                <button onClick={() => { playNeonClick(); setShowWallet(false); }} className="text-cyan-400 flex items-center gap-1 text-[10px] font-black uppercase tracking-wider hover:text-cyan-300 transition-colors">
+                                    <ChevronLeft size={14} /> Volver
+                                </button>
+                                <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] flex items-center gap-1">
+                                    <Wallet size={14} /> Billetera
+                                </span>
+                            </div>
+
+                            <div className="glass-card-3d bg-cyan-950/30 border border-cyan-400/40 w-full rounded-2xl p-6 mb-6 flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.2)]">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-[30px] pointer-events-none" />
+                                <p className="text-[9px] uppercase tracking-[0.3em] text-cyan-400/80 font-bold mb-2">Saldo Actual</p>
+                                <div className="flex items-center gap-3">
+                                    <Coins size={36} className="text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" />
+                                    <span className="text-5xl font-[1000] tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+                                        {client.points || 0}
+                                    </span>
+                                </div>
+                                <p className="text-[8px] uppercase tracking-widest text-white/40 mt-3">
+                                    Un punto = Un beneficio
+                                </p>
+                            </div>
+
+                            <div className="w-full">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
+                                    <ArrowRightLeft size={12} /> Movimientos Recientes
+                                </h4>
+                                <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
+                                    {!client.pointsHistory || client.pointsHistory.length === 0 ? (
+                                        <p className="text-center text-[10px] text-white/40 italic py-4">Aún no hay movimientos registrados.</p>
+                                    ) : (
+                                        client.pointsHistory.map((trx) => (
+                                            <div key={trx.id} className="bg-black/40 border border-white/5 rounded-xl p-3 flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${trx.type === 'earned' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                                                        {trx.type === 'earned' ? <ArrowDownRight size={14} /> : <ArrowUpRight size={14} />}
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[11px] font-black text-white uppercase tracking-wider">{trx.shopName}</span>
+                                                        <span className="text-[8px] text-white/40">{new Date(trx.date).toLocaleDateString('es-AR')} - {new Date(trx.date).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</span>
+                                                    </div>
+                                                </div>
+                                                <div className={`text-[14px] font-[1000] ${trx.type === 'earned' ? 'text-green-400' : 'text-red-400'}`}>
+                                                    {trx.type === 'earned' ? '+' : '-'}{trx.points}
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

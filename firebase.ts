@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc } from "firebase/firestore";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
@@ -134,6 +134,42 @@ export const eliminarCliente = async (id: string) => {
         return true;
     } catch (error) {
         console.error("Error al eliminar cliente de Firestore:", error);
+        throw error;
+    }
+};
+
+export const actualizarPuntosCliente = async (clientId: string, pointsDelta: number, shopName: string, type: 'earned' | 'redeemed') => {
+    try {
+        const docRef = doc(db, "clientes", clientId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            const clientData = docSnap.data();
+            const currentPoints = clientData.points || 0;
+            const newPoints = Math.max(0, currentPoints + pointsDelta);
+            
+            const transactionRef = {
+                id: `trx-${Date.now()}`,
+                shopName,
+                type,
+                points: Math.abs(pointsDelta),
+                date: new Date().toISOString()
+            };
+
+            const currentHistory = clientData.pointsHistory || [];
+            
+            await updateDoc(docRef, {
+                points: newPoints,
+                pointsHistory: [transactionRef, ...currentHistory]
+            });
+            
+            console.log(`Puntos actualizados para el cliente ${clientId}. Nuevo saldo: ${newPoints}`);
+            return newPoints;
+        } else {
+            throw new Error("Cliente no encontrado.");
+        }
+    } catch (error) {
+        console.error("Error al actualizar puntos del cliente en Firestore:", error);
         throw error;
     }
 };

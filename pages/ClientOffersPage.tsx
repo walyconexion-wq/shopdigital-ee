@@ -12,7 +12,8 @@ import {
     Ticket,
     MapPin,
     Calendar,
-    Package
+    Package,
+    Coins
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
@@ -128,7 +129,14 @@ const ClientOffersPage: React.FC<ClientOffersPageProps> = ({ allOffers }) => {
                                 <div className="p-5 pt-3">
                                     <h3 className="text-[14px] font-[1000] text-white uppercase tracking-tighter leading-tight mb-1">{offer.title}</h3>
                                     {offer.description && <p className="text-[10px] text-white/50 mb-3 leading-relaxed">{offer.description}</p>}
-                                    {offer.price && <p className="text-lg font-black text-green-400 tracking-tighter mb-3">{offer.price}</p>}
+                                    {offer.pointsPrice ? (
+                                        <div className="flex items-center gap-1.5 mb-3 bg-yellow-500/10 w-fit px-3 py-1.5 rounded-xl border border-yellow-500/20 shadow-[0_0_15px_rgba(250,204,21,0.15)]">
+                                            <Coins size={14} className="text-yellow-400" />
+                                            <span className="text-[12px] font-[1000] text-yellow-400 tracking-widest uppercase">CANJE: {offer.pointsPrice} PTS</span>
+                                        </div>
+                                    ) : (
+                                        offer.price && <p className="text-lg font-black text-green-400 tracking-tighter mb-3">{offer.price}</p>
+                                    )}
 
                                     {/* Meta */}
                                     <div className="flex flex-wrap gap-1.5 mb-4">

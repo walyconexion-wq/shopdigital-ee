@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shop } from '../types';
+import { Shop, Client } from '../types';
 import { CATEGORIES } from '../constants';
-import { guardarComercio, eliminarComercio } from '../firebase';
+import { guardarComercio, eliminarComercio, actualizarPuntosCliente } from '../firebase';
 import {
     ChevronLeft,
     Zap,
@@ -13,20 +13,29 @@ import {
     Camera,
     PlusSquare,
     ImageIcon,
-    ExternalLink
+    ExternalLink,
+    Search,
+    User,
+    Coins,
+    Award
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
 interface AdminPanelPageProps {
     allShops: Shop[];
+    allClients?: Client[];
 }
 
-const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
+const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = [] }) => {
     const { shopSlug } = useParams<{ shopSlug: string }>();
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [loginError, setLoginError] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [foundClient, setFoundClient] = useState<Client | null>(null);
+    const [searchError, setSearchError] = useState('');
+    const [isUpdatingPoints, setIsUpdatingPoints] = useState(false);
 
     const existingShop = allShops.find(shop => (shop.slug || shop.id) === shopSlug);
 
@@ -69,6 +78,76 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
         } catch (error) {
             console.error(error);
             alert('Error al guardar');
+        }
+    };
+
+    const handleSearchClient = () => {
+        playNeonClick();
+        setSearchError('');
+        const normalizedQuery = searchQuery.trim().toLowerCase();
+        
+        if (!normalizedQuery) {
+            setSearchError('Ingresá un DNI, teléfono o nombre.');
+            setFoundClient(null);
+            return;
+        }
+
+        // Search by phone (digits only) or partial name match
+        const queryDigits = normalizedQuery.replace(/\D/g, '');
+        const client = allClients.find(c => {
+            const phoneDigits = c.phone.replace(/\D/g, '');
+            return (queryDigits && phoneDigits.includes(queryDigits)) || c.name.toLowerCase().includes(normalizedQuery);
+        });
+
+        if (client) {
+            setFoundClient(client);
+        } else {
+            setFoundClient(null);
+            setSearchError('Cliente VIP no encontrado.');
+        }
+    };
+
+    const handleAwardPoints = async (points: number) => {
+        if (!foundClient || !existingShop) return;
+        playNeonClick();
+        setIsUpdatingPoints(true);
+        try {
+            const newBalance = await actualizarPuntosCliente(foundClient.id, points, existingShop.name, 'earned');
+            setFoundClient({ ...foundClient, points: newBalance });
+        } catch (error) {
+            alert('Error al actualizar puntos.');
+        } finally {
+            setIsUpdatingPoints(false);
+        }
+    };
+
+    const handleRedeemPoints = async () => {
+        if (!foundClient || !existingShop) return;
+        playNeonClick();
+        
+        const pointsStr = window.prompt(`¿Cuántos puntos querés descontar de ${foundClient.name}? (Saldo actual: ${foundClient.points || 0})`);
+        if (!pointsStr) return;
+        
+        const points = parseInt(pointsStr, 10);
+        if (isNaN(points) || points <= 0) {
+            alert('Cantidad inválida.');
+            return;
+        }
+        
+        if (points > (foundClient.points || 0)) {
+            alert('El cliente no tiene suficientes puntos.');
+            return;
+        }
+
+        setIsUpdatingPoints(true);
+        try {
+            const newBalance = await actualizarPuntosCliente(foundClient.id, -points, existingShop.name, 'redeemed');
+            setFoundClient({ ...foundClient, points: newBalance });
+            alert(`Puntos canjeados con éxito. Nuevo saldo: ${newBalance}`);
+        } catch (error) {
+            alert('Error al canjear puntos.');
+        } finally {
+            setIsUpdatingPoints(false);
         }
     };
 
@@ -145,6 +224,87 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops }) => {
 
                     {/* Add more fields here as needed */}
                 </div>
+
+                {/* VIP LOYALTY TERMINAL */}
+                <div className="bg-zinc-900/40 border border-cyan-500/20 rounded-[2rem] p-6 relative overflow-hidden mt-8 shadow-[0_0_30px_rgba(34,211,238,0.05)]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/5 rounded-full blur-[40px] pointer-events-none" />
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                            <Award size={20} className="text-cyan-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-[12px] font-[1000] text-cyan-400 uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Punto de Venta VIP</h3>
+                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">Gestión de Puntos</p>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2 mb-4 relative z-10">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchClient()}
+                            className="flex-1 bg-black/50 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_10px_rgba(34,211,238,0.2)] transition-all font-mono"
+                            placeholder="DNI, Teléfono o Nombre"
+                        />
+                        <button
+                            onClick={handleSearchClient}
+                            className="bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 rounded-xl px-4 flex items-center justify-center hover:bg-cyan-500/30 active:scale-95 transition-all"
+                        >
+                            <Search size={18} />
+                        </button>
+                    </div>
+
+                    {searchError && <p className="text-red-400 text-[10px] font-bold mt-2 uppercase tracking-wide px-2">{searchError}</p>}
+
+                    {foundClient && (
+                        <div className="mt-6 bg-black/60 border border-cyan-500/20 rounded-2xl p-5 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 p-0.5 shadow-[0_0_15px_rgba(34,211,238,0.3)]">
+                                        <div className="w-full h-full bg-black rounded-full flex items-center justify-center">
+                                            <User size={20} className="text-cyan-400/80" />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-black text-white uppercase tracking-wider">{foundClient.name}</span>
+                                        <span className="text-[10px] text-cyan-400/80 uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                                            <Coins size={10} /> Saldo: {foundClient.points || 0} pts
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3 ml-1">Sumar Puntos de Compra</p>
+                            <div className="grid grid-cols-4 gap-2 mb-4">
+                                {[5, 10, 15, 20].map((pts) => (
+                                    <button
+                                        key={pts}
+                                        onClick={() => handleAwardPoints(pts)}
+                                        disabled={isUpdatingPoints}
+                                        className="bg-green-500/10 border border-green-500/30 rounded-xl py-3 flex flex-col items-center justify-center hover:bg-green-500/20 active:scale-95 transition-all disabled:opacity-50"
+                                    >
+                                        <span className="text-[14px] font-[1000] text-green-400 leading-none">+{pts}</span>
+                                        <span className="text-[7px] text-green-400/60 uppercase tracking-widest mt-1">Pts</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3 ml-1 mt-6">Canjear Recompensas</p>
+                            <button
+                                onClick={handleRedeemPoints}
+                                disabled={isUpdatingPoints || (foundClient.points || 0) === 0}
+                                className="w-full relative group bg-indigo-500/10 border border-indigo-500/30 rounded-xl py-4 flex items-center justify-center gap-2 hover:bg-indigo-500/20 active:scale-95 transition-all disabled:opacity-50"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none animate-[scan_2s_ease-in-out_infinite]" />
+                                <Coins size={16} className="text-indigo-400 relative z-10" />
+                                <span className="text-[11px] font-black uppercase tracking-widest text-indigo-400 relative z-10">Cobrar con Puntos</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="h-4" /> {/* Spacer */}
 
                 <button 
                     onClick={() => {

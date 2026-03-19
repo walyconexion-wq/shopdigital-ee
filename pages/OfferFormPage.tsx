@@ -14,7 +14,8 @@ import {
     Image as ImageIcon,
     Type,
     FileText,
-    DollarSign
+    DollarSign,
+    Coins
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -47,6 +48,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
         validFrom: new Date().toISOString().split('T')[0],
         validUntil: '',
         stockLimit: '',
+        pointsPrice: '',
     });
     const [saved, setSaved] = useState(false);
 
@@ -64,6 +66,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                 validFrom: existingOffer.validFrom,
                 validUntil: existingOffer.validUntil,
                 stockLimit: existingOffer.stockLimit?.toString() || '',
+                pointsPrice: existingOffer.pointsPrice?.toString() || '',
             });
         }
     }, [existingOffer]);
@@ -115,6 +118,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
             validFrom: formData.validFrom,
             validUntil: formData.validUntil || 'indefinido',
             stockLimit: formData.stockLimit ? parseInt(formData.stockLimit) : undefined,
+            pointsPrice: formData.pointsPrice ? parseInt(formData.pointsPrice) : undefined,
             isActive: false,
             createdAt: isEditing && existingOffer ? existingOffer.createdAt : new Date().toISOString(),
         };
@@ -186,6 +190,10 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                 <div>
                     <label className={LABEL_CLASS}><DollarSign size={10} /> Precio (Opcional)</label>
                     <input name="price" value={formData.price} onChange={handleChange} placeholder="Ej: $2.500" className={INPUT_CLASS} />
+                </div>
+                <div>
+                    <label className={LABEL_CLASS}><Coins size={10} className="text-yellow-400" /> Precio en Puntos VIP (Opcional)</label>
+                    <input type="number" name="pointsPrice" value={formData.pointsPrice} onChange={handleChange} placeholder="Ej: 30" className={INPUT_CLASS + " border-yellow-500/30 focus:border-yellow-400/50"} />
                 </div>
                 <div>
                     <label className={LABEL_CLASS}><FileText size={10} /> Descripción</label>
