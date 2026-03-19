@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-    Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
@@ -11,6 +10,7 @@ const MasterPanelPage: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [loginError, setLoginError] = useState(false);
+    const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
     const handleLogin = () => {
         playNeonClick();
@@ -38,6 +38,18 @@ const MasterPanelPage: React.FC = () => {
         } else {
             const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
             window.open(waUrl, '_blank');
+        }
+    };
+
+    const handleCopy = async (path: string) => {
+        playNeonClick();
+        const url = `${window.location.origin}${path}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopiedPath(path);
+            setTimeout(() => setCopiedPath(null), 2000);
+        } catch (err) {
+            console.error('Failed to copy', err);
         }
     };
 
@@ -131,18 +143,25 @@ const MasterPanelPage: React.FC = () => {
                                         <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">{page.desc}</p>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                <div className="grid grid-cols-3 gap-2 mt-2">
                                     <button 
                                         onClick={() => { playNeonClick(); navigate(page.path); }}
-                                        className="bg-white/5 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest hover:bg-white/10 active:scale-95 transition-all text-white/80"
+                                        className="bg-white/5 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-white/10 active:scale-95 transition-all text-white/80"
                                     >
-                                        <ExternalLink size={14} /> Ver App
+                                        <ExternalLink size={12} /> Ver App
                                     </button>
                                     <button 
                                         onClick={() => handleShare(page.path, page.title, page.desc)}
-                                        className="bg-cyan-500/10 border border-cyan-500/30 py-2.5 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest hover:bg-cyan-500/20 active:scale-95 transition-all text-cyan-400"
+                                        className="bg-cyan-500/10 border border-cyan-500/30 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-cyan-500/20 active:scale-95 transition-all text-cyan-400"
                                     >
-                                        <Share2 size={14} /> Compartir
+                                        <Share2 size={12} /> Compartir
+                                    </button>
+                                    <button 
+                                        onClick={() => handleCopy(page.path)}
+                                        className={`${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest active:scale-95 transition-all`}
+                                    >
+                                        {copiedPath === page.path ? <Check size={12} /> : <Copy size={12} />} 
+                                        {copiedPath === page.path ? 'Copiado' : 'Copiar'}
                                     </button>
                                 </div>
                             </div>
@@ -162,12 +181,20 @@ const MasterPanelPage: React.FC = () => {
                                 onClick={() => { playNeonClick(); navigate(page.path); }}
                                 className="bg-gradient-to-r from-red-500/10 to-orange-500/5 border border-red-500/20 rounded-2xl p-4 flex items-center justify-between group hover:border-red-400/40 active:scale-95 transition-all"
                             >
-                                <div className="flex flex-col items-start text-left">
+                                <div className="flex flex-col items-start text-left flex-1">
                                     <h3 className="text-[12px] font-[1000] text-red-400 uppercase tracking-wider group-hover:text-red-300 transition-colors">{page.title}</h3>
                                     <p className="text-[9px] text-white/40 uppercase tracking-widest mt-1">{page.desc}</p>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30 text-red-400 group-hover:bg-red-500/30 transition-colors">
-                                    <ExternalLink size={14} />
+                                <div className="flex items-center gap-2">
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); handleCopy(page.path); }}
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center border transition-colors ${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                                    >
+                                        {copiedPath === page.path ? <Check size={14} /> : <Copy size={14} />}
+                                    </button>
+                                    <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30 text-red-400 group-hover:bg-red-500/30 transition-colors">
+                                        <ExternalLink size={14} />
+                                    </div>
                                 </div>
                             </button>
                         ))}
