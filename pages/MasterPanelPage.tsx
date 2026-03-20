@@ -65,7 +65,7 @@ const MasterPanelPage: React.FC = () => {
                     <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-8 mx-auto border border-cyan-400/30">
                         <Terminal size={24} className="text-cyan-400" />
                     </div>
-                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 text-center text-shadow-premium">Modo Dios</h2>
+                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 text-center text-shadow-premium">Panel Central</h2>
                     <p className="text-[10px] font-bold text-cyan-400/60 uppercase tracking-widest mb-8 text-center">Gestión Maestra Encriptada</p>
 
                     <input
