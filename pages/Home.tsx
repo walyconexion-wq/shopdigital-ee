@@ -143,17 +143,26 @@ const Home: React.FC = () => {
                 </button>
             </div>
 
-            <footer className="w-full flex flex-col items-center gap-1.5 pt-6 pb-4 mt-auto border-t border-white/10 relative z-10">
+            <footer className="w-full flex flex-col items-center gap-2 pt-6 pb-6 mt-auto border-t border-white/10 relative z-10">
                 <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.35em] text-center select-none" style={{ textShadow: '0 0 8px rgba(34, 211, 238, 0.2)' }}>
                     © 2026 · ShopDigital
                 </p>
-                <p 
-                    onClick={handleWalyClick}
-                    className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
-                    style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}
-                >
-                    La app de Waly
-                </p>
+                <div className="flex items-center gap-4 mt-1">
+                    <p 
+                        onClick={handleWalyClick}
+                        className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
+                        style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4)' }}
+                    >
+                        La app de Waly
+                    </p>
+                    <span className="text-white/20 text-[8px]">|</span>
+                    <button 
+                        onClick={() => { playNeonClick(); navigate('/terminos'); }}
+                        className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-white/40 hover:text-white transition-colors"
+                    >
+                        Términos y Condiciones
+                    </button>
+                </div>
             </footer>
         </div>
     );
