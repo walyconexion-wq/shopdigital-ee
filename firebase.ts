@@ -308,6 +308,18 @@ export const eliminarRelevamiento = async (id: string) => {
     }
 };
 
+export const actualizarRelevamiento = async (id: string, updateData: any) => {
+    try {
+        const docRef = doc(db, "relevamientos", id);
+        await updateDoc(docRef, updateData);
+        console.log(`Relevamiento ${id} actualizado con éxito.`);
+        return true;
+    } catch (error) {
+        console.error(`Error al actualizar relevamiento ${id}:`, error);
+        throw error;
+    }
+};
+
 export const suscribirseARelevamientos = (callback: (leads: any[]) => void) => {
     const colRef = collection(db, "relevamientos");
     return onSnapshot(colRef, (snapshot) => {
