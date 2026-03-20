@@ -95,7 +95,8 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
         }
 
         const phone = shop.phone.replace(/\D/g, '');
-        const message = `¡Hola *${shop.name}*! 👋\n\nTe enviamos el aviso de pago para:\n*${inv.concept}*\n\n💰 Importe: *$${inv.amount}*\n📅 Vencimiento: *${new Date(inv.dueDate).toLocaleDateString()}*\n\n🏦 *Datos para transferencia:*\nAlias: SHOP.DIGITAL.VIP\n\nPor favor, enviá el comprobante por este medio una vez realizado el pago. ¡Muchas gracias! 🚀`;
+        const invoiceUrl = `${window.location.origin}/factura/${inv.id}`;
+        const message = `¡Hola *${shop.name}*! 👋\n\nTe generamos el comprobante para:\n*${inv.concept}*\n\n👉 *Click aquí para ver tu factura y los datos de pago:*\n${invoiceUrl}\n\nPor favor, enviá el comprobante por este medio una vez realizado el pago. ¡Muchas gracias! 🚀`;
         
         window.open(`https://wa.me/549${phone}?text=${encodeURIComponent(message)}`, '_blank');
     };

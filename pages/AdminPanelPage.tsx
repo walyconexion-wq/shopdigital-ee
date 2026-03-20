@@ -355,11 +355,11 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                                         <button 
                                             onClick={() => {
                                                 playNeonClick();
-                                                alert("Se descargará el recibo en formato PDF (Funcionalidad Simulada)");
+                                                window.open(`/factura/${inv.id}`, '_blank');
                                             }}
                                             className="bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 rounded-xl py-2 px-3 flex items-center gap-2 text-[9px] uppercase font-black tracking-widest transition-all"
                                         >
-                                            <Download size={12} /> Recibo
+                                            <ExternalLink size={12} /> Ver Factura
                                         </button>
                                     </div>
                                 </div>

@@ -228,6 +228,21 @@ export const suscribirseAFacturas = (callback: (facturas: any[]) => void) => {
     });
 };
 
+export const obtenerFactura = async (id: string) => {
+    try {
+        const docRef = doc(db, "facturas", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return { id: docSnap.id, ...docSnap.data() };
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Error al obtener factura:", error);
+        throw error;
+    }
+};
+
 export const crearFactura = async (facturaData: any) => {
     try {
         const id = facturaData.id || `inv-${Date.now()}`;

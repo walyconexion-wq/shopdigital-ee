@@ -28,6 +28,7 @@ import ClientValidationPage from './pages/ClientValidationPage';
 import OfferManagementPage from './pages/OfferManagementPage';
 import OfferFormPage from './pages/OfferFormPage';
 import BillingManagementPage from './pages/BillingManagementPage';
+import InvoiceViewerPage from './pages/InvoiceViewerPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -101,6 +102,7 @@ const App: React.FC = () => {
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
           <Route path="tablero-maestro" element={<MasterPanelPage />} />
           <Route path="embajador/facturacion" element={<BillingManagementPage allShops={allShops} />} />
+          <Route path="factura/:invoiceId" element={<InvoiceViewerPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
