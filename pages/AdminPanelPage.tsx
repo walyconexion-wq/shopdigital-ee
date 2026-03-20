@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shop, Client } from '../types';
+import { Shop, Client, Invoice } from '../types';
 import { CATEGORIES } from '../constants';
-import { guardarComercio, eliminarComercio, actualizarPuntosCliente } from '../firebase';
+import { guardarComercio, eliminarComercio, actualizarPuntosCliente, suscribirseAFacturas } from '../firebase';
 import {
     ChevronLeft,
     Zap,
@@ -17,7 +17,11 @@ import {
     Search,
     User,
     Coins,
-    Award
+    Award,
+    FileText,
+    CheckCircle,
+    Clock,
+    Download
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
@@ -36,6 +40,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
     const [foundClient, setFoundClient] = useState<Client | null>(null);
     const [searchError, setSearchError] = useState('');
     const [isUpdatingPoints, setIsUpdatingPoints] = useState(false);
+    const [shopInvoices, setShopInvoices] = useState<Invoice[]>([]);
 
     const existingShop = allShops.find(shop => (shop.slug || shop.id) === shopSlug);
 
@@ -57,6 +62,17 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
         facebook: '',
         tiktok: ''
     });
+
+    React.useEffect(() => {
+        if (existingShop?.id) {
+            const unsubscribe = suscribirseAFacturas((facturas) => {
+                const shopFacturas = facturas.filter(f => f.shopId === existingShop.id);
+                // Sort by date descending
+                setShopInvoices(shopFacturas.sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime()));
+            });
+            return () => unsubscribe();
+        }
+    }, [existingShop?.id]);
 
     const handleLogin = () => {
         playNeonClick();
@@ -302,6 +318,54 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                             </button>
                         </div>
                     )}
+                </div>
+
+                {/* MIS FACTURAS TERMINAL */}
+                <div className="bg-zinc-900/40 border border-green-500/20 rounded-[2rem] p-6 relative overflow-hidden mt-8 shadow-[0_0_30px_rgba(34,197,94,0.05)]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-400/5 rounded-full blur-[40px] pointer-events-none" />
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center border border-green-400/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+                            <FileText size={20} className="text-green-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-[12px] font-[1000] text-green-400 uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]">Suscripción y Pagos</h3>
+                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">Mis Facturas Mensuales</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        {shopInvoices.length === 0 ? (
+                            <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest text-center py-4">No tenés facturas registradas</p>
+                        ) : (
+                            shopInvoices.map(inv => (
+                                <div key={inv.id} className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden hover:border-green-500/30 transition-colors">
+                                    <div className="flex justify-between items-start z-10">
+                                        <div>
+                                            <p className="text-[11px] font-[1000] text-white uppercase tracking-wider">{inv.concept}</p>
+                                            <p className="text-[8px] font-bold text-white/40 uppercase tracking-widest mt-1">Vence: {new Date(inv.dueDate).toLocaleDateString()}</p>
+                                        </div>
+                                        <div className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 ${inv.status === 'paid' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-500'}`}>
+                                            {inv.status === 'paid' ? <CheckCircle size={10} /> : <Clock size={10} />}
+                                            {inv.status === 'paid' ? 'Pagado' : 'Pendiente'}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between mt-1 z-10 border-t border-white/5 pt-3">
+                                        <div className="text-xl font-[1000] text-green-400 tracking-wider">${inv.amount}</div>
+                                        <button 
+                                            onClick={() => {
+                                                playNeonClick();
+                                                alert("Se descargará el recibo en formato PDF (Funcionalidad Simulada)");
+                                            }}
+                                            className="bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 rounded-xl py-2 px-3 flex items-center gap-2 text-[9px] uppercase font-black tracking-widest transition-all"
+                                        >
+                                            <Download size={12} /> Recibo
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
 
                 <div className="h-4" /> {/* Spacer */}

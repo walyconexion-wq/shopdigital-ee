@@ -212,3 +212,58 @@ export const eliminarOferta = async (id: string) => {
         throw error;
     }
 };
+
+// --- SERVICIOS DE SUSCRIPCIÓN Y FACTURACIÓN (FASE 1) ---
+
+export const suscribirseAFacturas = (callback: (facturas: any[]) => void) => {
+    const colRef = collection(db, "facturas");
+    return onSnapshot(colRef, (snapshot) => {
+        const facturas = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+        callback(facturas);
+    }, (error) => {
+        console.error("Error en la suscripción de facturas:", error);
+    });
+};
+
+export const crearFactura = async (facturaData: any) => {
+    try {
+        const id = facturaData.id || `inv-${Date.now()}`;
+        await setDoc(doc(db, "facturas", id), { ...facturaData, id });
+        console.log("Factura creada con éxito. ID:", id);
+        return id;
+    } catch (error) {
+        console.error("Error al crear factura en Firestore:", error);
+        throw error;
+    }
+};
+
+export const actualizarEstadoFactura = async (id: string, status: 'pending' | 'paid') => {
+    try {
+        const docRef = doc(db, "facturas", id);
+        const updateData: any = { status };
+        if (status === 'paid') {
+            updateData.paymentDate = new Date().toISOString();
+        }
+        await updateDoc(docRef, updateData);
+        console.log(`Estado de factura ${id} actualizado a ${status}`);
+        return true;
+    } catch (error) {
+        console.error(`Error al actualizar estado de factura ${id}:`, error);
+        throw error;
+    }
+};
+
+export const actualizarFactura = async (id: string, updateData: any) => {
+    try {
+        const docRef = doc(db, "facturas", id);
+        await updateDoc(docRef, updateData);
+        console.log(`Factura ${id} actualizada con éxito.`);
+        return true;
+    } catch (error) {
+        console.error(`Error al actualizar factura ${id}:`, error);
+        throw error;
+    }
+};

@@ -27,6 +27,7 @@ import ClientCredentialPage from './pages/ClientCredentialPage';
 import ClientValidationPage from './pages/ClientValidationPage';
 import OfferManagementPage from './pages/OfferManagementPage';
 import OfferFormPage from './pages/OfferFormPage';
+import BillingManagementPage from './pages/BillingManagementPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -99,6 +100,7 @@ const App: React.FC = () => {
           <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
           <Route path="tablero-maestro" element={<MasterPanelPage />} />
+          <Route path="embajador/facturacion" element={<BillingManagementPage allShops={allShops} />} />
         </Route>
       </Routes>
     </BrowserRouter>

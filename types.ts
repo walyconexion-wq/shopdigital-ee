@@ -15,6 +15,19 @@ export interface Category {
   icon: React.ReactNode;
 }
 
+export interface Invoice {
+  id: string;
+  shopId: string;
+  shopName: string;
+  amount: number;
+  issueDate: string;
+  dueDate: string;
+  status: 'pending' | 'paid';
+  concept: string;
+  pdfUrl?: string;
+  paymentDate?: string;
+}
+
 export interface ProductOffer {
   id: string;
   name: string;
@@ -86,4 +99,7 @@ export interface Shop {
   memberNumber?: string;
   shopNumber?: string;
   region?: string;
+  // Billing Fields
+  billingStatus?: 'active' | 'pending' | 'suspended';
+  billingAmount?: number;
 }
