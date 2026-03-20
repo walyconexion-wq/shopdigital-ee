@@ -102,6 +102,8 @@ const MasterPanelPage: React.FC = () => {
     const managementPages = [
         { title: 'Panel de Embajador', desc: 'Autenticación para dar de alta comercios', path: '/embajador' },
         { title: 'Facturación y Avisos', desc: 'Suscripciones B2C y B2B', path: '/embajador/facturacion' },
+        { title: 'Relevamiento Táctico', desc: 'Carga Express Mobile de prospectos en calle', path: '/embajador/relevamiento/nuevo' },
+        { title: 'Gestión de Prospectos', desc: 'Ver, revisar, y activar leads de relevamiento', path: '/embajador/relevamiento/gestion' },
         { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: '/subscripcion' },
         { title: 'Base de Clientes', desc: 'Para ver todos los clientes registrados', path: '/base-clientes' },
         { title: 'Gestión Comercial', desc: 'Ruta directa a listado de comercios', path: '/embajador/gestion' },

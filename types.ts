@@ -28,6 +28,25 @@ export interface Invoice {
   paymentDate?: string;
 }
 
+export interface Lead {
+    id: string;
+    name: string;
+    category: string;
+    address: string;
+    zone: string;
+    contactName: string;
+    phone: string;
+    socialNetworks: string;
+    digitalDiagnosis: {
+        missing: string;
+        interestLevel: 'high' | 'medium' | 'low';
+        observations: string;
+    };
+    ambassadorName: string;
+    date: string;
+    status: 'pending' | 'activated';
+}
+
 export interface ProductOffer {
   id: string;
   name: string;

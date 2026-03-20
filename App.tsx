@@ -30,6 +30,8 @@ import OfferFormPage from './pages/OfferFormPage';
 import BillingManagementPage from './pages/BillingManagementPage';
 import InvoiceViewerPage from './pages/InvoiceViewerPage';
 import TermsPage from './pages/TermsPage';
+import SurveyFormPage from './pages/SurveyFormPage';
+import SurveyManagementPage from './pages/SurveyManagementPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -105,6 +107,8 @@ const App: React.FC = () => {
           <Route path="embajador/facturacion" element={<BillingManagementPage allShops={allShops} />} />
           <Route path="factura/:invoiceId" element={<InvoiceViewerPage />} />
           <Route path="terminos" element={<TermsPage />} />
+          <Route path="embajador/relevamiento/nuevo" element={<SurveyFormPage />} />
+          <Route path="embajador/relevamiento/gestion" element={<SurveyManagementPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

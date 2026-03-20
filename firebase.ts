@@ -282,3 +282,41 @@ export const actualizarFactura = async (id: string, updateData: any) => {
         throw error;
     }
 };
+
+// --- MÓDULO DE RELEVAMIENTO TÁCTICO (Prospectos/Leads) ---
+
+export const guardarRelevamiento = async (leadData: any) => {
+    try {
+        const id = leadData.id || `lead-${Date.now()}`;
+        await setDoc(doc(db, "relevamientos", id), { ...leadData, id });
+        console.log("Relevamiento guardado con éxito. ID:", id);
+        return id;
+    } catch (error) {
+        console.error("Error al guardar relevamiento en Firestore:", error);
+        throw error;
+    }
+};
+
+export const eliminarRelevamiento = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "relevamientos", id));
+        console.log("Relevamiento eliminado con éxito. ID:", id);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar relevamiento de Firestore:", error);
+        throw error;
+    }
+};
+
+export const suscribirseARelevamientos = (callback: (leads: any[]) => void) => {
+    const colRef = collection(db, "relevamientos");
+    return onSnapshot(colRef, (snapshot) => {
+        const leads = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+        callback(leads);
+    }, (error) => {
+        console.error("Error en la suscripción de relevamientos:", error);
+    });
+};
