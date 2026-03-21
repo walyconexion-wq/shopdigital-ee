@@ -85,6 +85,19 @@ export const eliminarComercio = async (id: string) => {
     }
 };
 
+// 4. Actualizar un comercio en la colección "comercios"
+export const actualizarComercio = async (id: string, updateData: any) => {
+    try {
+        const docRef = doc(db, "comercios", id);
+        await updateDoc(docRef, updateData);
+        console.log(`Comercio ${id} actualizado con éxito.`);
+        return true;
+    } catch (error) {
+        console.error(`Error al actualizar comercio ${id}:`, error);
+        throw error;
+    }
+};
+
 // --- SERVICIOS BASE CLIENTES (B2C) ---
 
 export const guardarCliente = async (clienteData: any) => {

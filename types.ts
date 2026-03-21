@@ -45,6 +45,7 @@ export interface Lead {
     ambassadorName: string;
     date: string;
     status: 'pending' | 'activated';
+    createdShopId?: string;
 }
 
 export interface ProductOffer {

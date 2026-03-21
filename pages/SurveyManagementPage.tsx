@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { 
     ChevronLeft, Search, Plus, UserCheck, 
     MapPin, Trash2, Zap, Send, FileText, CheckCircle,
-    Edit3, ExternalLink, X, Save, Eye
+    Edit3, ExternalLink, X, Save, Eye, PauseCircle
 } from 'lucide-react';
 import { Lead } from '../types';
-import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio } from '../firebase';
+import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio, eliminarComercio, actualizarComercio } from '../firebase';
 import { playNeonClick } from '../utils/audio';
 
 const categoryMap: Record<string, string> = {
@@ -85,13 +85,14 @@ const SurveyManagementPage: React.FC = () => {
                 specialty: lead.category,
                 offers: [],
                 bannerImage: '',
-                image: ''
+                image: '',
+                isActive: true
             };
 
             await guardarComercio(newShop);
             
             // Mark as activated instead of deleting
-            await actualizarRelevamiento(lead.id, { status: 'activated' });
+            await actualizarRelevamiento(lead.id, { status: 'activated', createdShopId: newShopId });
             
             alert(`✅ ¡${lead.name} Activado Exitosamente!`);
             handleSendWelcomeMessage(lead, newShop);
@@ -110,6 +111,40 @@ const SurveyManagementPage: React.FC = () => {
         const wpMsg = `¡Hola *${lead.contactName}*! 👋\n\nBienvenido a la red de *ShopDigital VIP* 🚀. Ya creamos tu perfil comercial.\n\n👉 *Acá tenés el link a tu Credencial VIP y Catálogo Interactvo:*\n${credencialUrl}\n\n¡Cualquier duda, avisanos!`;
         
         window.open(`https://wa.me/549${phoneStr}?text=${encodeURIComponent(wpMsg)}`, '_blank');
+    };
+
+    const handleDeleteActivatedLead = async (lead: Lead) => {
+        const confirmMsg = `⚠️ ¿Eliminar Definitivamente al prospecto ${lead.name}?\n\nEsto borrará el relevamiento y el comercio asociado de la plataforma si existe.`;
+        if (!window.confirm(confirmMsg)) return;
+
+        try {
+            if (lead.createdShopId) {
+                await eliminarComercio(lead.createdShopId);
+            }
+            await eliminarRelevamiento(lead.id);
+            setViewingLead(null);
+            setEditingLead(null);
+        } catch (error) {
+            console.error("Error eliminando", error);
+            alert("Hubo un error al eliminar.");
+        }
+    };
+
+    const handleSuspendActivatedLead = async (lead: Lead) => {
+        const confirmMsg = `⏸️ ¿Suspender Comercio ${lead.name}?\n\nEl comercio se ocultará de la plataforma (isActive: false) hasta que sea reactivado.`;
+        if (!window.confirm(confirmMsg)) return;
+
+        try {
+            if (lead.createdShopId) {
+                await actualizarComercio(lead.createdShopId, { isActive: false });
+                alert(`⏸️ Comercio suspendido exitosamente.`);
+            } else {
+                alert(`⚠️ Este prospecto fue activado antes de la nueva actualización y no tiene ID de comercio guardado.`);
+            }
+        } catch (error) {
+            console.error("Error suspendiendo", error);
+            alert("Hubo un error al suspender.");
+        }
     };
 
     const handleSaveEdit = async (e: React.FormEvent) => {
@@ -262,26 +297,43 @@ const SurveyManagementPage: React.FC = () => {
                                             </button>
                                         </>
                                     ) : (
-                                        <>
+                                        <div className="grid grid-cols-5 w-full">
                                             <button 
                                                 onClick={() => { playNeonClick(); setViewingLead(lead); }}
-                                                className="flex-1 py-3 flex items-center justify-center gap-1.5 text-white/40 hover:text-yellow-400 transition-colors text-[9px] font-black uppercase tracking-widest border-r border-white/5"
+                                                className="py-3 flex items-center justify-center text-white/40 hover:text-yellow-400 transition-colors border-r border-white/5"
+                                                title="Ver Datos"
                                             >
-                                                <Eye size={12} /> Ver Datos
+                                                <Eye size={16} />
                                             </button>
                                             <button 
                                                 onClick={() => { playNeonClick(); setEditingLead(lead); }}
-                                                className="flex-1 py-3 flex items-center justify-center gap-1.5 text-white/40 hover:text-cyan-400 transition-colors text-[9px] font-black uppercase tracking-widest border-r border-white/5"
+                                                className="py-3 flex items-center justify-center text-white/40 hover:text-cyan-400 transition-colors border-r border-white/5"
+                                                title="Editar Prospecto"
                                             >
-                                                <Edit3 size={12} /> Editar
+                                                <Edit3 size={16} />
                                             </button>
                                             <button 
                                                 onClick={() => handleSendWelcomeMessage(lead, { slug: lead.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'), category: categoryMap[lead.category] || 'servicios' })}
-                                                className="flex-[2] bg-zinc-800 text-white py-3 flex items-center justify-center gap-2 font-[1000] uppercase tracking-widest text-[9px] hover:bg-zinc-700 transition-colors"
+                                                className="py-3 flex items-center justify-center text-white/40 hover:text-green-400 transition-colors border-r border-white/5 bg-zinc-800 hover:bg-zinc-700"
+                                                title="Reenviar Bienvenida"
                                             >
-                                                <Send size={12} /> Reenviar Bienvenida
+                                                <Send size={16} />
                                             </button>
-                                        </>
+                                            <button 
+                                                onClick={() => handleSuspendActivatedLead(lead)}
+                                                className="py-3 flex items-center justify-center text-white/40 hover:text-orange-400 transition-colors border-r border-white/5"
+                                                title="Suspender Comercio"
+                                            >
+                                                <PauseCircle size={16} />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDeleteActivatedLead(lead)}
+                                                className="py-3 flex items-center justify-center text-white/40 hover:text-red-400 transition-colors rounded-br-[2.5rem]"
+                                                title="Eliminar Todo"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
