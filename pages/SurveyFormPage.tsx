@@ -7,14 +7,11 @@ import {
 } from 'lucide-react';
 import { guardarRelevamiento } from '../firebase';
 import { playNeonClick } from '../utils/audio';
+import { CATEGORIES } from '../constants';
 
 // Constantes Locales para el formulario
 const ZONAS = [
     "Monte Grande Centro", "El Jagüel", "Luis Guillón", "Canning", "Ezeiza Centro", "Tristán Suárez", "Otra"
-];
-
-const RUBROS = [
-    "Barbería/Peluquería", "Gastronomía", "Indumentaria", "Vehículos/Motos", "Servicios Profesionales", "Salud/Estética", "Otro"
 ];
 
 const SurveyFormPage: React.FC = () => {
@@ -23,7 +20,7 @@ const SurveyFormPage: React.FC = () => {
 
     const [formData, setFormData] = useState({
         name: '',
-        category: RUBROS[0],
+        category: CATEGORIES[0].id,
         address: '',
         zone: ZONAS[0],
         contactName: '',
@@ -173,7 +170,7 @@ const SurveyFormPage: React.FC = () => {
                                     onChange={handleChange}
                                     className="w-full bg-black/50 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:outline-none focus:border-yellow-400 appearance-none text-center"
                                 >
-                                    {RUBROS.map(r => <option key={r} value={r}>{r}</option>)}
+                                    {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                 </select>
                             </div>
                         </div>

@@ -8,6 +8,7 @@ import {
 import { Lead } from '../types';
 import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio, eliminarComercio, actualizarComercio } from '../firebase';
 import { playNeonClick } from '../utils/audio';
+import { CATEGORIES } from '../constants';
 
 const categoryMap: Record<string, string> = {
     "Barbería/Peluquería": "barber",
@@ -27,6 +28,11 @@ const zoneMap: Record<string, string> = {
     "Ezeiza Centro": "Ezeiza",
     "Tristán Suárez": "Tristán Suárez",
     "Otra": "Otra"
+};
+
+const getCategoryName = (catIdOrName: string) => {
+    const found = CATEGORIES.find(c => c.id === catIdOrName);
+    return found ? found.name : catIdOrName;
 };
 
 const SurveyManagementPage: React.FC = () => {
@@ -77,7 +83,7 @@ const SurveyManagementPage: React.FC = () => {
                 id: newShopId,
                 slug: slugBase,
                 name: lead.name,
-                category: categoryMap[lead.category] || "servicios",
+                category: categoryMap[lead.category] || lead.category,
                 zone: zoneMap[lead.zone] || lead.zone,
                 address: lead.address,
                 phone: lead.phone,
@@ -253,7 +259,7 @@ const SurveyManagementPage: React.FC = () => {
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="pr-4">
                                         <h3 className="text-[16px] font-[1000] text-white uppercase tracking-wider leading-tight">{lead.name}</h3>
-                                        <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mt-1">{lead.category}</p>
+                                        <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mt-1">{getCategoryName(lead.category)}</p>
                                     </div>
                                     <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${lead.digitalDiagnosis.interestLevel === 'high' ? 'bg-green-500 text-black' : lead.digitalDiagnosis.interestLevel === 'medium' ? 'bg-yellow-500 text-black' : 'bg-red-500 text-white'}`}>
                                         <Zap size={14} className={lead.digitalDiagnosis.interestLevel === 'high' ? 'animate-pulse' : ''} />
@@ -363,13 +369,19 @@ const SurveyManagementPage: React.FC = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">WhatsApp</label>
-                                        <input 
-                                            type="text" 
-                                            value={editingLead.phone}
-                                            onChange={e => setEditingLead({...editingLead, phone: e.target.value})}
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50"
-                                        />
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">Rubro</label>
+                                        <select 
+                                            value={editingLead.category}
+                                            onChange={e => setEditingLead({...editingLead, category: e.target.value})}
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50 appearance-none"
+                                        >
+                                            <optgroup label="Rubros del Relevamiento Viejo">
+                                                {Object.keys(categoryMap).map(k => <option key={k} value={k}>{k}</option>)}
+                                            </optgroup>
+                                            <optgroup label="Rubros de la App">
+                                                {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            </optgroup>
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">Zona</label>
@@ -380,6 +392,15 @@ const SurveyManagementPage: React.FC = () => {
                                             className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50"
                                         />
                                     </div>
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">WhatsApp</label>
+                                    <input 
+                                        type="text" 
+                                        value={editingLead.phone}
+                                        onChange={e => setEditingLead({...editingLead, phone: e.target.value})}
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50"
+                                    />
                                 </div>
                                 <div>
                                     <label className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">Diagnóstico de Dolor</label>
