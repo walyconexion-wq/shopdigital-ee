@@ -9,6 +9,26 @@ import { Lead } from '../types';
 import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio } from '../firebase';
 import { playNeonClick } from '../utils/audio';
 
+const categoryMap: Record<string, string> = {
+    "Barbería/Peluquería": "barber",
+    "Gastronomía": "gastro",
+    "Indumentaria": "fashion",
+    "Vehículos/Motos": "auto",
+    "Servicios Profesionales": "servicios",
+    "Salud/Estética": "beauty",
+    "Otro": "servicios"
+};
+
+const zoneMap: Record<string, string> = {
+    "Monte Grande Centro": "Monte Grande",
+    "El Jagüel": "El Jagüel",
+    "Luis Guillón": "Luis Guillón",
+    "Canning": "Canning",
+    "Ezeiza Centro": "Ezeiza",
+    "Tristán Suárez": "Tristán Suárez",
+    "Otra": "Otra"
+};
+
 const SurveyManagementPage: React.FC = () => {
     const navigate = useNavigate();
     const [leads, setLeads] = useState<Lead[]>([]);
@@ -57,7 +77,8 @@ const SurveyManagementPage: React.FC = () => {
                 id: newShopId,
                 slug: slugBase,
                 name: lead.name,
-                category: "restaurantes-bares", // Default fallback if no match
+                category: categoryMap[lead.category] || "servicios",
+                zone: zoneMap[lead.zone] || lead.zone,
                 address: lead.address,
                 phone: lead.phone,
                 rating: 5.0,
@@ -249,7 +270,13 @@ const SurveyManagementPage: React.FC = () => {
                                                 <Eye size={12} /> Ver Datos
                                             </button>
                                             <button 
-                                                onClick={() => handleSendWelcomeMessage(lead, { slug: lead.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'), category: 'restaurantes-bares' })}
+                                                onClick={() => { playNeonClick(); setEditingLead(lead); }}
+                                                className="flex-1 py-3 flex items-center justify-center gap-1.5 text-white/40 hover:text-cyan-400 transition-colors text-[9px] font-black uppercase tracking-widest border-r border-white/5"
+                                            >
+                                                <Edit3 size={12} /> Editar
+                                            </button>
+                                            <button 
+                                                onClick={() => handleSendWelcomeMessage(lead, { slug: lead.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'), category: categoryMap[lead.category] || 'servicios' })}
                                                 className="flex-[2] bg-zinc-800 text-white py-3 flex items-center justify-center gap-2 font-[1000] uppercase tracking-widest text-[9px] hover:bg-zinc-700 transition-colors"
                                             >
                                                 <Send size={12} /> Reenviar Bienvenida
