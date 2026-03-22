@@ -4,6 +4,7 @@ import { Shop, Client, Offer } from './types';
 import { suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas } from './firebase';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
 import ShopDetailPage from './pages/ShopDetailPage';
@@ -16,6 +17,9 @@ import MasterPanelPage from './pages/MasterPanelPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
+import AmbassadorRecruitPage1 from './pages/AmbassadorRecruitPage1';
+import AmbassadorRecruitPage2 from './pages/AmbassadorRecruitPage2';
+import AmbassadorRecruitmentAdminPage from './pages/AmbassadorRecruitmentAdminPage';
 import ClientSubscriptionPage from './pages/ClientSubscriptionPage';
 import ClientsDatabasePage from './pages/ClientsDatabasePage';
 import ClientOffersPage from './pages/ClientOffersPage';
@@ -92,23 +96,26 @@ const App: React.FC = () => {
           <Route path="negocios" element={<BusinessLandingPage />} />
           <Route path="descubrir" element={<ClientLandingPage />} />
           <Route path="subscripcion" element={<SubscriptionPage />} />
-          <Route path="embajador" element={<AmbassadorPanelPage allShops={allShops} />} />
-          <Route path="embajador/gestion" element={<ShopManagementPage allShops={allShops} />} />
-          <Route path="embajador/clientes" element={<ClientManagementPage allShops={allShops} allClients={allClients} />} />
-          <Route path="embajador/ofertas/:target" element={<OfferManagementPage allOffers={allOffers} />} />
-          <Route path="embajador/ofertas/crear/:target" element={<OfferFormPage />} />
-          <Route path="embajador/ofertas/editar/:offerId" element={<OfferFormPage allOffers={allOffers} />} />
-          <Route path="base-clientes" element={<ClientsDatabasePage />} />
+          <Route path="reclutamiento" element={<AmbassadorRecruitPage1 />} />
+          <Route path="reclutamiento/alta/:id" element={<AmbassadorRecruitPage2 />} />
+          <Route path="embajador" element={<ProtectedRoute roles={['admin', 'ambassador']}><AmbassadorPanelPage allShops={allShops} /></ProtectedRoute>} />
+          <Route path="embajador/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopManagementPage allShops={allShops} /></ProtectedRoute>} />
+          <Route path="embajador/clientes" element={<ProtectedRoute roles={['admin', 'ambassador']}><ClientManagementPage allShops={allShops} allClients={allClients} /></ProtectedRoute>} />
+          <Route path="embajador/ofertas/:target" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferManagementPage allOffers={allOffers} /></ProtectedRoute>} />
+          <Route path="embajador/ofertas/crear/:target" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferFormPage /></ProtectedRoute>} />
+          <Route path="embajador/ofertas/editar/:offerId" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferFormPage allOffers={allOffers} /></ProtectedRoute>} />
+          <Route path="base-clientes" element={<ProtectedRoute roles={['admin', 'ambassador']}><ClientsDatabasePage /></ProtectedRoute>} />
           <Route path="nosotros" element={<AboutPage />} />
           <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
           <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
-          <Route path="tablero-maestro" element={<MasterPanelPage />} />
-          <Route path="embajador/facturacion" element={<BillingManagementPage allShops={allShops} />} />
+          <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
+          <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
+          <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
           <Route path="factura/:invoiceId" element={<InvoiceViewerPage />} />
           <Route path="terminos" element={<TermsPage />} />
-          <Route path="embajador/relevamiento/nuevo" element={<SurveyFormPage />} />
-          <Route path="embajador/relevamiento/gestion" element={<SurveyManagementPage />} />
+          <Route path="embajador/relevamiento/nuevo" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyFormPage /></ProtectedRoute>} />
+          <Route path="embajador/relevamiento/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyManagementPage /></ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

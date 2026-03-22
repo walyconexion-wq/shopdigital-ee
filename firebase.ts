@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
@@ -15,6 +16,94 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+
+export const loginConGoogle = async () => {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        return result.user;
+    } catch (error) {
+        console.error("Error al iniciar sesión con Google:", error);
+        throw error;
+    }
+};
+
+export const logout = async () => {
+    try {
+        await signOut(auth);
+    } catch (error) {
+        console.error("Error al cerrar sesión:", error);
+        throw error;
+    }
+};
+
+// --- CONTROL DE ACCESO (ADMIN/EMBAJADORES) ---
+export const checkUserAuthorization = async (email: string) => {
+    try {
+        const q = query(collection(db, "autorizados"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            const docData = querySnapshot.docs[0].data();
+            return {
+                id: querySnapshot.docs[0].id,
+                email: docData.email,
+                role: docData.role, // 'admin' | 'ambassador'
+                status: docData.status, // 'active' | 'inactive' | 'pending'
+                name: docData.name
+            };
+        }
+        return null;
+    } catch (e) {
+        console.error("Error validando autorización:", e);
+        return null;
+    }
+};
+
+export const crearAspirante = async (aspiranteData: any) => {
+    try {
+        const id = aspiranteData.id || `asp-${Date.now()}`;
+        await setDoc(doc(db, "autorizados", id), { ...aspiranteData, id, status: 'pending', role: 'ambassador' });
+        return id;
+    } catch (e) {
+        console.error("Error al crear aspirante:", e);
+        throw e;
+    }
+};
+
+export const suscribirseAAutorizados = (callback: (usuarios: any[]) => void) => {
+    const colRef = collection(db, "autorizados");
+    return onSnapshot(colRef, (snapshot) => {
+        const usuarios = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+        callback(usuarios);
+    }, (error) => {
+        console.error("Error en suscripción de autorizados:", error);
+    });
+};
+
+export const actualizarAutorizado = async (id: string, updateData: any) => {
+    try {
+        const docRef = doc(db, "autorizados", id);
+        await updateDoc(docRef, updateData);
+        return true;
+    } catch (error) {
+        console.error("Error al actualizar autorizado:", error);
+        throw error;
+    }
+};
+
+export const eliminarAutorizado = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "autorizados", id));
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar autorizado:", error);
+        throw error;
+    }
+};
 
 // Optimización: Habilitar persistencia de datos local (Ahorro Máximo de Lecturas)
 // Esto permite que la app use datos en caché y solo descargue cambios, reduciendo el consumo de cuota.

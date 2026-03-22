@@ -8,22 +8,7 @@ import { playNeonClick } from '../utils/audio';
 
 const MasterPanelPage: React.FC = () => {
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [password, setPassword] = useState('');
-    const [loginError, setLoginError] = useState(false);
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
-
-    const handleLogin = () => {
-        playNeonClick();
-        // Master password
-        if (password === 'waly2026' || password === 'admin123') {
-            setIsAuthenticated(true);
-            setLoginError(false);
-        } else {
-            setLoginError(true);
-            setTimeout(() => setLoginError(false), 2000);
-        }
-    };
 
     const handleShare = async (path: string, title: string, desc: string) => {
         playNeonClick();
@@ -54,43 +39,6 @@ const MasterPanelPage: React.FC = () => {
         }
     };
 
-    if (!isAuthenticated) {
-        return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
-                <div className="w-full max-w-sm bg-zinc-900/50 border border-cyan-500/20 rounded-[2rem] p-10 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(34,211,238,0.1)]">
-                    <button onClick={() => navigate(-1)} className="absolute top-6 left-6 text-white/40 hover:text-cyan-400 transition-colors">
-                        <ChevronLeft size={24} />
-                    </button>
-                    <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-8 mx-auto border border-cyan-400/30">
-                        <Terminal size={24} className="text-cyan-400" />
-                    </div>
-                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 text-center text-shadow-premium">Panel Central</h2>
-                    <p className="text-[10px] font-bold text-cyan-400/60 uppercase tracking-widest mb-8 text-center">Gestión Maestra Encriptada</p>
-
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                        className="w-full bg-black/50 border-2 border-cyan-500/20 rounded-2xl py-4 px-6 text-cyan-400 text-center text-2xl tracking-[0.3em] font-mono focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all mb-6 placeholder:text-white/10"
-                        placeholder="••••••••"
-                        autoFocus
-                    />
-
-                    <button
-                        onClick={handleLogin}
-                        className="w-full btn-cyan-neon py-4 rounded-2xl active:scale-95 transition-all font-black uppercase tracking-[0.2em] text-[12px] flex items-center justify-center gap-2"
-                    >
-                        <Lock size={16} /> Desbloquear
-                    </button>
-
-                    {loginError && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest text-center mt-4">Acceso Denegado</p>}
-                </div>
-            </div>
-        );
-    }
-
     const publicPages = [
         { title: 'Landing Nosotros', desc: 'Presentación de la empresa', path: '/nosotros', icon: <Globe size={18} /> },
         { title: 'Landing Unirse', desc: 'Registro para comercios / Embajador', path: '/unirse', icon: <Store size={18} /> },
@@ -100,6 +48,7 @@ const MasterPanelPage: React.FC = () => {
     ];
 
     const managementPages = [
+        { title: 'Reclutamiento Admin', desc: 'Aprobar o rechazar aspirantes a Embajadores', path: '/tablero-maestro/reclutamiento' },
         { title: 'Panel de Embajador', desc: 'Autenticación para dar de alta comercios', path: '/embajador' },
         { title: 'Facturación y Avisos', desc: 'Suscripciones B2C y B2B', path: '/embajador/facturacion' },
         { title: 'Relevamiento Táctico', desc: 'Carga Express Mobile de prospectos en calle', path: '/embajador/relevamiento/nuevo' },

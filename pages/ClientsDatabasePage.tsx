@@ -7,6 +7,7 @@ import {
     Database,
     Lock,
     Users,
+    User,
     Phone,
     Store,
     Calendar,
@@ -47,28 +48,24 @@ const getSortTime = (val: any): number => {
 
 const ClientsDatabasePage: React.FC = () => {
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [password, setPassword] = useState('');
-    const [loginError, setLoginError] = useState(false);
     
     const [clients, setClients] = useState<Client[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (isAuthenticated) {
-            setLoading(true);
-            obtenerClientes().then(data => {
-                // Sort by date descending safely
-                const sorted = data.sort((a, b) => {
-                    const dateA = getSortTime(a.createdAt);
-                    const dateB = getSortTime(b.createdAt);
-                    return dateB - dateA;
-                });
-                setClients(sorted as Client[]);
-                setLoading(false);
+        setLoading(true);
+        obtenerClientes().then(data => {
+            const clientsData = data as Client[];
+            // Sort by date descending safely
+            const sorted = clientsData.sort((a, b) => {
+                const dateA = getSortTime(a.createdAt);
+                const dateB = getSortTime(b.createdAt);
+                return dateB - dateA;
             });
-        }
-    }, [isAuthenticated]);
+            setClients(sorted);
+            setLoading(false);
+        });
+    }, []);
 
     // Group clients by sourceShopName for analytics
     const groupedClients = useMemo(() => {
@@ -91,24 +88,12 @@ const ClientsDatabasePage: React.FC = () => {
             .sort((a, b) => b.count - a.count);
     }, [clients]);
 
-    const handleLogin = () => {
-        playNeonClick();
-        if (password === 'waly123') { // Clave secreta Waly
-            setIsAuthenticated(true);
-            setLoginError(false);
-            playSuccessSound();
-        } else {
-            setLoginError(true);
-            setTimeout(() => setLoginError(false), 2000);
-        }
-    };
-
     const handleExportCSV = () => {
         playNeonClick();
         const headers = ['Nombre', 'WhatsApp', 'Comercio Origen', 'Fecha de Alta'];
         const csvContent = [
             headers.join(','),
-            ...clients.map(c => `"${safeString(c.name)}","${safeString(c.phone)}","${safeString(c.sourceShopName)}","${safeDate(c.createdAt)}"`)
+            ...clients.map(c => `"${safeString(c.name)}","${safeString(c.phone)}","${safeString(c.sourceShopName)}","${safeDate(c.createdAt)}")`)
         ].join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -121,41 +106,6 @@ const ClientsDatabasePage: React.FC = () => {
         link.click();
         document.body.removeChild(link);
     };
-
-    if (!isAuthenticated) {
-        return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse pointer-events-none" />
-                <div className="w-full max-w-sm glass-card-3d border border-cyan-500/30 rounded-[2rem] p-10 backdrop-blur-xl z-10 relative">
-                    <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-8 border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.3)] mx-auto">
-                        <Database size={32} className="text-cyan-400" />
-                    </div>
-                    <h2 className="text-2xl font-[1000] text-white uppercase tracking-tighter mb-2 text-shadow-premium text-center">Data Hub</h2>
-                    <p className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest mb-8 text-center">Acceso Nivel Director</p>
-
-                    <div className="relative mb-6">
-                        <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400/50" />
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-black/50 border border-cyan-500/30 rounded-2xl py-4 pl-12 pr-6 text-cyan-100 text-lg focus:outline-none focus:border-cyan-400 transition-all font-mono tracking-widest text-center"
-                            placeholder="••••••••"
-                        />
-                    </div>
-
-                    <button
-                        onClick={handleLogin}
-                        className="w-full glass-action-btn btn-cyan-neon py-4 rounded-2xl font-black uppercase tracking-[0.2em] active:scale-95 transition-all text-[12px] text-white"
-                    >
-                        Acceder
-                    </button>
-
-                    {loginError && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest text-center mt-4">Acceso Denegado</p>}
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">

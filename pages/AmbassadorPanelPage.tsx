@@ -28,27 +28,13 @@ interface AmbassadorPanelPageProps {
 
 const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) => {
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [password, setPassword] = useState('');
-    const [loginError, setLoginError] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [processingId, setProcessingId] = useState<string | null>(null);
 
     // Filtrar comercios que NO están aprobados (isActive !== true)
     const pendingShops = useMemo(() => {
         return allShops.filter(shop => shop.isActive !== true);
     }, [allShops]);
-
-    const handleLogin = () => {
-        playNeonClick();
-        if (password === 'embajador123') { // Clave del embajador
-            setIsAuthenticated(true);
-            setLoginError(false);
-            playSuccessSound();
-        } else {
-            setLoginError(true);
-            setTimeout(() => setLoginError(false), 2000);
-        }
-    };
 
     const handleApprove = async (shop: Shop) => {
         playNeonClick();
@@ -81,47 +67,6 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
             }
         }
     };
-
-    if (!isAuthenticated) {
-        return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden">
-                <button
-                    onClick={() => { playNeonClick(); navigate('/'); }}
-                    className="absolute top-6 left-6 w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all active:scale-95 z-20"
-                >
-                    <ChevronLeft size={20} />
-                </button>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse pointer-events-none" />
-                <div className="w-full max-w-sm bg-zinc-900/80 border border-cyan-500/30 rounded-[2rem] p-8 backdrop-blur-xl z-10 relative shadow-2xl">
-                    <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6 border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.3)]">
-                        <ShieldCheck size={32} className="text-cyan-400" />
-                    </div>
-                    <h2 className="text-2xl font-[1000] text-white uppercase tracking-tighter mb-2 text-shadow-premium">Panel de Embajador</h2>
-                    <p className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest mb-8">Acceso Restringido de Seguridad</p>
-
-                    <div className="relative mb-6">
-                        <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400/50" />
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-black/50 border border-cyan-500/30 rounded-2xl py-4 pl-12 pr-6 text-cyan-100 text-lg focus:outline-none focus:border-cyan-400 transition-all font-mono tracking-widest"
-                            placeholder="••••••••"
-                        />
-                    </div>
-
-                    <button
-                        onClick={handleLogin}
-                        className="w-full glass-action-btn btn-cyan-neon py-4 rounded-2xl font-black uppercase tracking-[0.2em] active:scale-95 transition-all text-[12px] text-white"
-                    >
-                        Verificar Identidad
-                    </button>
-
-                    {loginError && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest text-center mt-4">Acceso Denegado</p>}
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
