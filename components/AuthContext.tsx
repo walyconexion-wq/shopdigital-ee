@@ -28,18 +28,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (currentUser && currentUser.email) {
                 let authData = await checkUserAuthorization(currentUser.email);
                 
-                // Root Admin Auto-Setup (Bypass for owner)
-                if (!authData && currentUser.email === 'walyconexion@gmail.com') {
-                    const newAdminRef = doc(collection(db, 'autorizados'));
-                    await setDoc(newAdminRef, {
-                        email: currentUser.email,
-                        uid: currentUser.uid,
-                        name: currentUser.displayName || 'Waly Admin',
-                        role: 'admin',
-                        status: 'active',
-                        date: new Date().toISOString()
-                    });
-                    authData = await checkUserAuthorization(currentUser.email);
+                // Root Admin Auto-Setup (Stateless Bypass for owner to avoid Firestore rules issues)
+                if (currentUser.email === 'walyconexion@gmail.com') {
+                    setRole('admin');
+                    setStatus('active');
+                    setName(currentUser.displayName || 'Waly Admin (Root)');
+                    setLoading(false);
+                    return;
                 }
 
                 if (authData) {

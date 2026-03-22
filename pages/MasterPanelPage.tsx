@@ -45,6 +45,7 @@ const MasterPanelPage: React.FC = () => {
         { title: 'Landing Descubrir', desc: 'Presentación para Clientes B2C', path: '/descubrir', icon: <Users size={18} /> },
         { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: '/red-comercial/descuentos', icon: <Tag size={18} /> },
         { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: '/red-comercial/ofertas', icon: <ShoppingBag size={18} /> },
+        { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: '/reclutamiento', icon: <Globe size={18} /> },
     ];
 
     const managementPages = [
