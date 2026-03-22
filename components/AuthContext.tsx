@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth, checkUserAuthorization, loginConGoogle, logout } from '../firebase';
+import { auth, checkUserAuthorization, loginConGoogle, logout, db } from '../firebase';
+import { doc, setDoc, collection } from 'firebase/firestore';
 
 interface AuthContextType {
     user: User | null;
@@ -25,7 +26,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
             if (currentUser && currentUser.email) {
-                const authData = await checkUserAuthorization(currentUser.email);
+                let authData = await checkUserAuthorization(currentUser.email);
+                
+                // Root Admin Auto-Setup (Bypass for owner)
+                if (!authData && currentUser.email === 'walyconexion@gmail.com') {
+                    const newAdminRef = doc(collection(db, 'autorizados'));
+                    await setDoc(newAdminRef, {
+                        email: currentUser.email,
+                        uid: currentUser.uid,
+                        name: currentUser.displayName || 'Waly Admin',
+                        role: 'admin',
+                        status: 'active',
+                        date: new Date().toISOString()
+                    });
+                    authData = await checkUserAuthorization(currentUser.email);
+                }
+
                 if (authData) {
                     setRole(authData.role as 'admin' | 'ambassador');
                     setStatus(authData.status as 'active' | 'inactive' | 'pending');
