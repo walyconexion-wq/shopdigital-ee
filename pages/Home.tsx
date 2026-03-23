@@ -128,7 +128,7 @@ const Home: React.FC = () => {
                 ))}
             </div>
 
-            <div className="mt-12 mb-4 px-6 flex flex-col gap-4 justify-center w-full fade-up-item relative z-10" style={{ animationDelay: '700ms' }}>
+            <div className="mt-12 mb-4 px-14 flex flex-col gap-4 justify-center items-center w-full fade-up-item relative z-10" style={{ animationDelay: '700ms' }}>
                 <button
                     onClick={() => {
                         playNeonClick();
