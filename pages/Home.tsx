@@ -150,7 +150,7 @@ const Home: React.FC = () => {
             </div>
 
             <footer className="w-full flex flex-col items-center gap-2 pt-6 pb-6 mt-auto border-t border-white/10 relative z-10">
-                <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.35em] text-center select-none" style={{ textShadow: '0 0 8px rgba(34, 211, 238, 0.2)' }}>
+                <p className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none" style={{ textShadow: '0 0 8px rgba(34, 211, 238, 0.2)' }}>
                     © 2026 · ShopDigital
                 </p>
                 <div className="flex items-center gap-4 mt-1">
@@ -164,7 +164,7 @@ const Home: React.FC = () => {
                     <span className="text-white/20 text-[8px]">|</span>
                     <button 
                         onClick={() => { playNeonClick(); navigate('/terminos'); }}
-                        className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-white/40 hover:text-white transition-colors"
+                        className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-white hover:text-cyan-300 transition-colors"
                     >
                         Términos y Condiciones
                     </button>
