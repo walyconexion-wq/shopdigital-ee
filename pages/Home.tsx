@@ -89,7 +89,7 @@ const Home: React.FC = () => {
 
             <div className="flex flex-col items-center mb-10 mt-2 fade-up-item relative z-10">
                 <div className="h-[1px] w-12 bg-cyan-400/30 mb-5"></div>
-                <h2 className="text-[10px] font-black text-white text-shadow-premium uppercase tracking-[0.4em] text-center">
+                <h2 className="text-[14px] font-black text-white text-shadow-premium uppercase tracking-[0.3em] text-center">
                     Seleccionar Categoría
                 </h2>
                 <div className="flex gap-1.5 mt-4">
