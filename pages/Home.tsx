@@ -81,7 +81,7 @@ const Home: React.FC = () => {
             <header className="flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700 bg-transparent pt-0">
                 <div 
                     onClick={handleLogoClick}
-                    className="glass-header rounded-3xl p-2.5 mb-2.5 border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 animate-in fade-in zoom-in duration-1000 cursor-pointer active:scale-95 transition-all"
+                    className="glass-header rounded-3xl p-5 mb-2.5 border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 animate-in fade-in zoom-in duration-1000 cursor-pointer active:scale-95 transition-all"
                 >
                     <Logo />
                 </div>
