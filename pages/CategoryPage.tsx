@@ -193,6 +193,25 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                             }`} />
                                             <span className="break-words line-clamp-2">{shop.address}</span>
                                         </div>
+
+                                        {/* Estrellas de calificación */}
+                                        <div className="flex items-center gap-1 pt-0.5">
+                                            {[1, 2, 3, 4, 5].map(star => (
+                                                <Star key={star} size={11} className={`${
+                                                    star <= Math.round(shop.rating)
+                                                        ? 'fill-yellow-400 text-yellow-400'
+                                                        : 'fill-transparent text-white/20'
+                                                }`} />
+                                            ))}
+                                            <span className="text-[9px] font-bold text-yellow-400/80 ml-1">{shop.rating}</span>
+                                        </div>
+
+                                        {/* Eslogan / Especialidad */}
+                                        {shop.specialty && (
+                                            <p className="text-[8px] font-bold text-white/50 italic tracking-wide leading-tight line-clamp-1">
+                                                "{shop.specialty}"
+                                            </p>
+                                        )}
                                     </div>
 
                                     <button
