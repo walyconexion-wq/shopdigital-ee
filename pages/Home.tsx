@@ -87,30 +87,25 @@ const Home: React.FC = () => {
                 </div>
             </header>
 
-            <div className="flex flex-col items-center mb-12 mt-4 fade-up-item relative z-10 px-6">
-                <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent mb-6"></div>
+            <div className="flex flex-col items-center mb-10 mt-3 fade-up-item relative z-10 px-6">
+                <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent mb-5"></div>
                 
-                <div className="relative group">
-                    {/* Background glow for the title area */}
-                    <div className="absolute -inset-4 bg-cyan-500/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                    
-                    <h2 className="text-[18px] sm:text-[22px] font-[1000] text-white text-shadow-glow uppercase tracking-[0.4em] text-center leading-none">
-                        Seleccionar Categoría
-                    </h2>
-                </div>
+                <h2 className="text-[12px] font-[1000] text-white/90 text-shadow-premium uppercase tracking-[0.35em] text-center leading-none">
+                    Seleccionar Categoría
+                </h2>
 
-                <div className="flex items-center gap-3 mt-6">
-                    <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-cyan-400/40"></div>
-                    <div className="flex gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400/20"></div>
-                        <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)] animate-pulse"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400/20"></div>
+                <div className="flex items-center gap-3 mt-4">
+                    <div className="h-[1px] w-6 bg-gradient-to-r from-transparent to-cyan-400/30"></div>
+                    <div className="flex gap-1.5">
+                        <div className="w-1 h-1 rounded-full bg-cyan-400/20"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)] animate-pulse"></div>
+                        <div className="w-1 h-1 rounded-full bg-cyan-400/20"></div>
                     </div>
-                    <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-cyan-400/40"></div>
+                    <div className="h-[1px] w-6 bg-gradient-to-l from-transparent to-cyan-400/30"></div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-x-3 gap-y-7 px-6 relative z-10">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-8 px-5 relative z-10">
                 {CATEGORIES.map((cat, index) => (
                     <button
                         key={cat.id}
