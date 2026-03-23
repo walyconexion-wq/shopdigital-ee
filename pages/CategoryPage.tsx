@@ -200,10 +200,10 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                             playNeonClick();
                                             navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
                                         }}
-                                        className={`w-full py-3.5 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all border-t
-                                            ${activeLocation === 'Monte Grande' ? 'border-violet-400/30 bg-violet-600/20 hover:bg-violet-600/30' :
-                                              activeLocation === 'Luis Guillón' ? 'border-green-400/30 bg-green-600/20 hover:bg-green-600/30' :
-                                              'border-rose-400/30 bg-rose-600/20 hover:bg-rose-600/30'}
+                                        className={`w-full py-4 px-3 text-[11px] text-white font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all border-t
+                                            ${activeLocation === 'Monte Grande' ? 'border-violet-400/30 bg-violet-600/30 hover:bg-violet-600/40' :
+                                              activeLocation === 'Luis Guillón' ? 'border-green-400/30 bg-green-600/30 hover:bg-green-600/40' :
+                                              'border-rose-400/30 bg-rose-600/30 hover:bg-rose-600/40'}
                                         `}
                                     >
                                         <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
