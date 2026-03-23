@@ -180,8 +180,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                     </div>
                                 </div>
 
-                                <div className="flex-1 flex flex-col justify-between p-4 text-left min-w-0 bg-white/[0.04]">
-                                    <div className="space-y-1.5 overflow-hidden">
+                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-white/[0.04]">
+                                    <div className="space-y-1.5 overflow-hidden p-4 pb-2">
                                         <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">
                                             {shop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                                         </h3>
@@ -195,22 +195,20 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 flex flex-col gap-3">
-                                        <button
-                                            onClick={() => {
-                                                playNeonClick();
-                                                navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
-                                            }}
-                                            className={`glass-action-btn pulse-3d-btn w-full shop-btn-mobile py-4 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-2xl
-                                                ${activeLocation === 'Monte Grande' ? 'border-violet-400/50 bg-violet-600/30' :
-                                                  activeLocation === 'Luis Guillón' ? 'border-green-400/50 bg-green-600/30' :
-                                                  'border-rose-400/50 bg-rose-600/30'}
-                                            `}
-                                        >
-                                            <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
-                                            VER CATÁLOGO
-                                        </button>
-                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            playNeonClick();
+                                            navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
+                                        }}
+                                        className={`w-full py-3.5 px-3 text-[11px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all border-t
+                                            ${activeLocation === 'Monte Grande' ? 'border-violet-400/30 bg-violet-600/20 hover:bg-violet-600/30' :
+                                              activeLocation === 'Luis Guillón' ? 'border-green-400/30 bg-green-600/20 hover:bg-green-600/30' :
+                                              'border-rose-400/30 bg-rose-600/20 hover:bg-rose-600/30'}
+                                        `}
+                                    >
+                                        <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
+                                        VER CATÁLOGO
+                                    </button>
                                 </div>
                             </div>
                         ))
