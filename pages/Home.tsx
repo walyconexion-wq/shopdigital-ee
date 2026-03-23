@@ -134,9 +134,9 @@ const Home: React.FC = () => {
                         playNeonClick();
                         navigate('/subscripcion');
                     }}
-                    className="glass-action-btn bg-green-500/10 hover:bg-green-500/20 w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-[0_0_20px_rgba(74,222,128,0.2)] border-green-400/50 flex items-center justify-center gap-3 transition-all"
+                    className="glass-action-btn btn-cyan-neon luminous-glow w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-cyan-400/60 flex items-center justify-center gap-3 transition-all"
                 >
-                    <Store size={18} strokeWidth={3} className="text-green-400" />
+                    <Store size={18} strokeWidth={3} className="text-cyan-300" />
                     <span className="text-white text-shadow-premium">Suscribir Comercio</span>
                 </button>
 
