@@ -81,19 +81,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
 
             <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
                 <div className="w-full px-6 flex flex-col pb-4">
-                    <div className="flex items-center justify-between mb-4">
-                        <button
-                            onClick={() => {
-                                playNeonClick();
-                                navigate('/');
-                            }}
-                            className="btn-cyan-neon px-5 py-2.5 rounded-full flex items-center gap-2 border-cyan-400/50 active:scale-95 transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] bg-cyan-500/10"
-                        >
-                            <ChevronLeft size={18} strokeWidth={4} className="text-cyan-400" />
-                            <span className="text-[10px] font-[1000] text-white uppercase tracking-[0.2em] text-shadow-premium">Regresar</span>
-                        </button>
-                    </div>
-
                     <div className="flex justify-center w-full px-2">
                         <div 
                             onClick={handleTitleClick}
@@ -106,6 +93,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                             <p className="text-[9.5px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-8">
                                 Seleccioná tu comercio y descubrí ofertas magníficas
                             </p>
+
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    playNeonClick();
+                                    navigate('/');
+                                }}
+                                className="mt-4 flex items-center gap-1.5 text-[8px] font-bold text-white/50 uppercase tracking-[0.2em] hover:text-cyan-400 transition-colors"
+                            >
+                                <ChevronLeft size={12} strokeWidth={3} />
+                                Atrás
+                            </button>
                         </div>
                     </div>
                 </div>
