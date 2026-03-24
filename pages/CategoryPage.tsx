@@ -84,7 +84,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                     <div className="flex justify-center w-full px-2">
                         <div 
                             onClick={handleTitleClick}
-                            className="glass-header rounded-3xl w-full py-6 flex flex-col items-center border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 cursor-pointer select-none active:scale-95 transition-all"
+                            className="glass-header rounded-3xl w-full py-4 px-6 flex flex-col items-center border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 cursor-pointer select-none active:scale-95 transition-all"
                         >
                             <h2 className="text-[24px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] mb-3 transition-transform active:scale-95">
                                 {selectedCategory.name}
