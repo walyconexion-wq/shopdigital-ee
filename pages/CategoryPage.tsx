@@ -253,18 +253,16 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                     )}
                 </div>
 
-                <div className="pt-10 flex justify-center w-full">
+                <div className="pt-8 flex justify-center w-full">
                     <button
                         onClick={() => {
                             playNeonClick();
                             navigate('/');
                         }}
-                        className="glass-action-btn btn-cyan-neon w-max py-3 px-8 uppercase tracking-[0.2em] flex items-center justify-center gap-3 mx-auto active:scale-95 transition-all group shadow-[0_0_30px_rgba(34,211,238,0.2)] border-cyan-400/40"
+                        className="flex items-center gap-1.5 text-[8px] font-bold text-white/40 uppercase tracking-[0.2em] hover:text-cyan-400 transition-colors active:scale-95"
                     >
-                        <div className="bg-cyan-500/10 p-1.5 rounded-full group-hover:scale-110 transition-transform">
-                            <ArrowLeft size={18} strokeWidth={3} className="text-cyan-400" />
-                        </div>
-                        <span className="text-[11px] font-black text-white">Regresar al Inicio</span>
+                        <ChevronLeft size={12} strokeWidth={3} />
+                        Regresar al Inicio
                     </button>
                 </div>
             </div>
