@@ -2,8 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CATEGORIES } from '../constants';
 import { Shop } from '../types';
-import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { incrementarVisitas } from '../firebase';
 
 interface CategoryPageProps {
     allShops: Shop[];
@@ -212,11 +213,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                                 "{shop.specialty}"
                                             </p>
                                         )}
+
+                                        {/* Contador de Visitas */}
+                                        <div className="flex items-center gap-1 pt-0.5">
+                                            <Eye size={10} className="text-cyan-400/60" />
+                                            <span className="text-[8px] font-bold text-cyan-400/60">{shop.visits || 0} visitas</span>
+                                        </div>
                                     </div>
 
                                     <button
                                         onClick={() => {
                                             playNeonClick();
+                                            incrementarVisitas(shop.id);
                                             navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
                                         }}
                                         className={`w-full py-4 px-3 text-[11px] text-white font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all border-t animate-pulse

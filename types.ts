@@ -122,4 +122,5 @@ export interface Shop {
   // Billing Fields
   billingStatus?: 'active' | 'pending' | 'suspended';
   billingAmount?: number;
+  visits?: number;
 }

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where, increment } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
@@ -159,6 +159,16 @@ export const guardarComercio = async (comercioData: any) => {
     } catch (error) {
         console.error("Error al guardar en Firestore:", error);
         throw error;
+    }
+};
+
+// Incrementar visitas de un comercio (contador atómico)
+export const incrementarVisitas = async (comercioId: string) => {
+    try {
+        const ref = doc(db, "comercios", comercioId);
+        await updateDoc(ref, { visits: increment(1) });
+    } catch (error) {
+        console.error("Error incrementando visitas:", error);
     }
 };
 
