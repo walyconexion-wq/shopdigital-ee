@@ -85,13 +85,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                     <div className="flex justify-center w-full px-2">
                         <div 
                             onClick={handleTitleClick}
-                            className="glass-header rounded-3xl w-full py-4 px-6 flex flex-col items-center border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 cursor-pointer select-none active:scale-95 transition-all"
+                            className="glass-header rounded-3xl w-full py-3 px-5 flex flex-col items-center border-cyan-400/50 shadow-[0_15px_40px_rgba(34,211,238,0.4)] bg-gradient-to-br from-cyan-500/20 to-slate-900/60 cursor-pointer select-none active:scale-95 transition-all"
                         >
-                            <h2 className="text-[24px] font-[900] text-white uppercase tracking-[0.3em] leading-none text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] mb-3 transition-transform active:scale-95">
+                            <h2 className="text-[20px] font-[900] text-white uppercase tracking-[0.25em] leading-none text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] mb-2 transition-transform active:scale-95">
                                 {selectedCategory.name}
                             </h2>
-                            <div className="h-[1px] w-20 bg-cyan-400/60 mb-3 shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
-                            <p className="text-[9.5px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-8">
+                            <div className="h-[1px] w-16 bg-cyan-400/60 mb-2 shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
+                            <p className="text-[8.5px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-6">
                                 Seleccioná tu comercio y descubrí ofertas magníficas
                             </p>
 
@@ -101,7 +101,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                     playNeonClick();
                                     navigate('/');
                                 }}
-                                className="mt-4 flex items-center gap-1.5 text-[8px] font-bold text-white/50 uppercase tracking-[0.2em] hover:text-cyan-400 transition-colors"
+                                className="mt-3 flex items-center gap-1.5 text-[8px] font-bold text-cyan-400 uppercase tracking-[0.2em] hover:text-cyan-300 transition-colors"
                             >
                                 <ChevronLeft size={12} strokeWidth={3} />
                                 Atrás
@@ -268,7 +268,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                             playNeonClick();
                             navigate('/');
                         }}
-                        className="flex items-center gap-1.5 text-[8px] font-bold text-white/40 uppercase tracking-[0.2em] hover:text-cyan-400 transition-colors active:scale-95"
+                        className="flex items-center gap-1.5 text-[8px] font-bold text-cyan-400 uppercase tracking-[0.2em] hover:text-cyan-300 transition-colors active:scale-95"
                     >
                         <ChevronLeft size={12} strokeWidth={3} />
                         Regresar al Inicio
