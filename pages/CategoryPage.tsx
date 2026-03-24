@@ -173,12 +173,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                             >
                                 <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-white/20">
                                     <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                                    
-                                    {/* Contador de Visitas */}
-                                    <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-full border border-cyan-400/30 shadow-lg flex items-center gap-1.5">
-                                        <Eye size={13} className="text-cyan-400" />
-                                        <span className="text-[10px] font-black text-cyan-400">{shop.visits || 0} visitas</span>
-                                    </div>
                                 </div>
 
                                 <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-white/[0.04]">
@@ -213,6 +207,12 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                                 "{shop.specialty}"
                                             </p>
                                         )}
+
+                                        {/* Contador de Visitas */}
+                                        <div className="flex items-center gap-1.5 pt-1">
+                                            <Eye size={12} className="text-cyan-400/70" />
+                                            <span className="text-[9px] font-bold text-cyan-400/70">{shop.visits || 0} visitas</span>
+                                        </div>
                                     </div>
 
                                     <button
