@@ -177,14 +177,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                     {/* Contador de Visitas */}
                                     <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-full border border-cyan-400/30 shadow-lg flex items-center gap-1.5">
                                         <Eye size={13} className="text-cyan-400" />
-                                        <span className="text-[10px] font-black text-cyan-400">{shop.visits || 0}</span>
-                                    </div>
-
-                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-full border border-white/20 shadow-xl">
-                                        <div className="flex items-center gap-1">
-                                            <Star className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
-                                            <span className="text-[10px] font-black text-white">{shop.rating}</span>
-                                        </div>
+                                        <span className="text-[10px] font-black text-cyan-400">{shop.visits || 0} visitas</span>
                                     </div>
                                 </div>
 
