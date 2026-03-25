@@ -144,17 +144,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <div className="w-12 h-[1px] bg-white/40 mx-auto mt-2.5 shadow-[0_0_10px_rgba(255,255,255,0.6)]"></div>
                 </div>
 
-                <div className="absolute inset-0 flex flex-col justify-end pb-6 px-6">
-                    <div className="flex justify-center w-full">
-                        <button
-                            onClick={scrollToCatalog}
-                            className="glass-action-btn btn-offers-glow luminous-glow px-4 py-2 rounded-2xl flex items-center justify-center gap-2.5 z-40 shadow-xl active:scale-95 group"
-                        >
-                            <BookOpen size={14} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Ver catálogo</span>
-                        </button>
-                    </div>
-                </div>
+
             </div>
 
             <div className="relative z-10 flex flex-col items-center">
@@ -189,7 +179,22 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </div>
                 </div>
 
-                {/* B2C Client Fidelity Subscription Trigger */}
+                {/* Botón Ver Catálogo Reubicado */}
+                {selectedShop.catalog && (
+                    <div className="w-full px-6 mb-8 mt-2">
+                        <button
+                            onClick={() => {
+                                playNeonClick();
+                                window.open(selectedShop.catalog, '_blank', 'noopener,noreferrer');
+                            }}
+                            className="w-full glass-action-btn btn-offers-glow luminous-glow py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(34,211,238,0.2)] active:scale-95 group relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <BookOpen size={16} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Ver Catálogo Completo</span>
+                        </button>
+                    </div>
+                )}
                 <div className="w-full px-6 mb-12">
                     <button
                         onClick={() => {
