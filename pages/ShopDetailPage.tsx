@@ -208,19 +208,20 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         </button>
                     </div>
                 )}
-                <div className="w-full px-6 mb-12">
+                {/* B2C Client Fidelity Subscription Trigger */}
+                <div className="w-full px-6 mb-12 flex flex-col items-center">
                     <button
                         onClick={() => {
                             playNeonClick();
                             navigate(`/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
-                        className="w-full glass-action-btn btn-cyan-neon py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[12px] shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95 transition-all text-white overflow-hidden relative group"
+                        className="glass-action-btn bg-gradient-to-b from-cyan-400 to-cyan-600 border border-cyan-300 px-8 py-3 rounded-full flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white overflow-hidden relative group shadow-[0_6px_0_rgba(8,145,178,1),0_15px_20px_rgba(34,211,238,0.4)] active:translate-y-[6px] active:shadow-[0_0px_0_rgba(8,145,178,1),0_5px_10px_rgba(34,211,238,0.3)] transition-all duration-75"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/20 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                        <Gift size={20} className="text-white drop-shadow-md group-hover:scale-110 transition-transform" />
-                        SUSCRIBIRSE PARA OFERTAS
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/30 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <Gift size={16} className="text-white drop-shadow-md group-hover:scale-110 transition-transform" />
+                        Obtener Ofertas VIP
                     </button>
-                    <p className="text-[8px] text-center text-white/50 uppercase tracking-widest mt-3">Sumate a nuestra red VIP de beneficios locales</p>
+                    <p className="text-[8px] text-center text-white/50 uppercase tracking-widest mt-4">Sumate a nuestra red de beneficios locales</p>
                 </div>
 
                 {/* Action Buttons */}
