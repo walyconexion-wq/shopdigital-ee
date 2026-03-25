@@ -11,7 +11,6 @@ const Logo: React.FC = () => {
         setClickCount(prev => {
             const newCount = prev + 1;
             if (newCount >= 5) {
-                localStorage.setItem('shopdigital_admin_bypass', 'true');
                 navigate('/tablero-maestro');
                 return 0;
             }
