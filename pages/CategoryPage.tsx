@@ -189,29 +189,33 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                             <span className="break-words line-clamp-2">{shop.address}</span>
                                         </div>
 
-                                        {/* Estrellas de calificación */}
-                                        <div className="flex items-center gap-1 pt-0.5">
-                                            {[1, 2, 3, 4, 5].map(star => (
-                                                <Star key={star} size={11} className={`${
-                                                    star <= Math.round(shop.rating)
-                                                        ? 'fill-yellow-400 text-yellow-400'
-                                                        : 'fill-transparent text-white/20'
-                                                }`} />
-                                            ))}
-                                            <span className="text-[9px] font-bold text-yellow-400/80 ml-1">{shop.rating}</span>
-                                        </div>
+                                        <div className="flex justify-between items-end mt-auto pt-1">
+                                            <div className="flex flex-col gap-0.5 min-w-0 pr-2">
+                                                {/* Estrellas de calificación */}
+                                                <div className="flex items-center gap-1">
+                                                    {[1, 2, 3, 4, 5].map(star => (
+                                                        <Star key={star} size={11} className={`${
+                                                            star <= Math.round(shop.rating)
+                                                                ? 'fill-yellow-400 text-yellow-400'
+                                                                : 'fill-transparent text-white/20'
+                                                        }`} />
+                                                    ))}
+                                                    <span className="text-[9px] font-bold text-yellow-400/80 ml-1">{shop.rating}</span>
+                                                </div>
 
-                                        {/* Eslogan / Especialidad */}
-                                        {shop.specialty && (
-                                            <p className="text-[8px] font-bold text-white/50 italic tracking-wide leading-tight line-clamp-1">
-                                                "{shop.specialty}"
-                                            </p>
-                                        )}
+                                                {/* Eslogan / Especialidad */}
+                                                {shop.specialty && (
+                                                    <p className="text-[8px] font-bold text-white/50 italic tracking-wide leading-tight line-clamp-1">
+                                                        "{shop.specialty}"
+                                                    </p>
+                                                )}
+                                            </div>
 
-                                        {/* Contador de Visitas */}
-                                        <div className="flex items-center gap-1.5 pt-1">
-                                            <Eye size={12} className="text-cyan-400/70" />
-                                            <span className="text-[9px] font-bold text-cyan-400/70">{shop.visits || 0} visitas</span>
+                                            {/* Contador de Visitas alineado a la derecha */}
+                                            <div className="flex items-center gap-1 flex-shrink-0 bg-cyan-950/40 px-2 py-1 rounded-md border border-cyan-500/20 shadow-inner">
+                                                <Eye size={12} className="text-cyan-400" />
+                                                <span className="text-[9px] font-black text-cyan-400">{shop.visits || 0} visitas</span>
+                                            </div>
                                         </div>
                                     </div>
 
