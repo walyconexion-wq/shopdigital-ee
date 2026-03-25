@@ -225,18 +225,18 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="w-full px-4 mb-12 grid grid-cols-3 gap-3">
-                    <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="glass-action-btn btn-py py-5 flex flex-col items-center justify-center gap-1.5 font-black text-white">
-                        <span className="italic text-[22px] text-red-500">P</span>
-                        <span className="text-[9px] tracking-wider uppercase">PedidosYa</span>
+                <div className="w-full px-5 mb-12 grid grid-cols-3 gap-4">
+                    <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="glass-action-btn btn-py py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 font-black text-white shadow-[0_4px_0_rgba(239,68,68,0.5),0_10px_15px_rgba(239,68,68,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(239,68,68,0.5),0_5px_10px_rgba(239,68,68,0.1)] transition-all duration-75">
+                        <span className="italic text-[18px] text-red-500">P</span>
+                        <span className="text-[8px] tracking-wider uppercase">PedidosYa</span>
                     </button>
-                    <button onClick={() => selectedShop.phone && handleOpenLink(`https://wa.me/549${selectedShop.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="glass-action-btn btn-wa py-5 flex flex-col items-center justify-center gap-1.5 font-black text-white">
-                        <MessageCircle size={20} className="text-[#25D366]" fill="currentColor" strokeWidth={0} />
-                        <span className="text-[9px] tracking-wider uppercase">WhatsApp</span>
+                    <button onClick={() => selectedShop.phone && handleOpenLink(`https://wa.me/549${selectedShop.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="glass-action-btn btn-wa py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 font-black text-white shadow-[0_4px_0_rgba(37,211,102,0.5),0_10px_15px_rgba(37,211,102,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(37,211,102,0.5),0_5px_10px_rgba(37,211,102,0.1)] transition-all duration-75">
+                        <MessageCircle size={18} className="text-[#25D366]" fill="currentColor" strokeWidth={0} />
+                        <span className="text-[8px] tracking-wider uppercase">WhatsApp</span>
                     </button>
-                    <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="glass-action-btn btn-mp py-5 flex flex-col items-center justify-center gap-1.5 font-black text-white">
-                        <Handshake size={20} className="text-[#009EE3]" strokeWidth={3} />
-                        <span className="text-[9px] tracking-wider uppercase">M. Pago</span>
+                    <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="glass-action-btn btn-mp py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 font-black text-white shadow-[0_4px_0_rgba(0,158,227,0.5),0_10px_15px_rgba(0,158,227,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(0,158,227,0.5),0_5px_10px_rgba(0,158,227,0.1)] transition-all duration-75">
+                        <Handshake size={18} className="text-[#009EE3]" strokeWidth={3} />
+                        <span className="text-[8px] tracking-wider uppercase">M. Pago</span>
                     </button>
                 </div>
 
