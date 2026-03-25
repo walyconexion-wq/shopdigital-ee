@@ -265,9 +265,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                             playNeonClick();
                             navigate('/');
                         }}
-                        className="flex items-center gap-1.5 text-[8px] font-bold text-cyan-400 uppercase tracking-[0.2em] hover:text-cyan-300 transition-colors active:scale-95"
+                        className="glass-header bg-gradient-to-br from-cyan-500/20 to-slate-900/60 border border-cyan-400/50 shadow-[0_5px_15px_rgba(34,211,238,0.3)] rounded-full px-5 py-2.5 flex items-center gap-2 text-[8px] font-bold text-cyan-400 uppercase tracking-[0.2em] hover:from-cyan-500/30 hover:text-white transition-all active:scale-95"
                     >
-                        <ChevronLeft size={12} strokeWidth={3} />
+                        <ChevronLeft size={12} strokeWidth={3} className="text-cyan-400" />
                         Regresar al Inicio
                     </button>
                 </div>
