@@ -15,7 +15,8 @@ import {
     Instagram,
     Music,
     ArrowLeft,
-    Gift
+    Gift,
+    Eye
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
@@ -144,6 +145,11 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <div className="w-12 h-[1px] bg-white/40 mx-auto mt-2.5 shadow-[0_0_10px_rgba(255,255,255,0.6)]"></div>
                 </div>
 
+                {/* Contador de Visitas Portada (Esquina Inferior Izquierda) */}
+                <div className="absolute bottom-5 left-5 z-40 flex items-center gap-1.5 bg-cyan-950/40 px-3 py-1.5 rounded-lg border border-cyan-500/20 shadow-inner backdrop-blur-sm">
+                    <Eye size={12} className="text-cyan-400" />
+                    <span className="text-[10px] font-black text-cyan-400 tracking-widest uppercase">{selectedShop.visits || 0} visitas</span>
+                </div>
 
             </div>
 
