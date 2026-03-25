@@ -215,13 +215,13 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                             playNeonClick();
                             navigate(`/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
-                        className="glass-action-btn bg-gradient-to-b from-cyan-400 to-cyan-600 border border-cyan-300 px-8 py-3 rounded-full flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white overflow-hidden relative group shadow-[0_6px_0_rgba(8,145,178,1),0_15px_20px_rgba(34,211,238,0.4)] active:translate-y-[6px] active:shadow-[0_0px_0_rgba(8,145,178,1),0_5px_10px_rgba(34,211,238,0.3)] transition-all duration-75"
+                        className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/50 px-8 py-3 rounded-full flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white overflow-hidden relative group shadow-[0_3px_0_rgba(34,211,238,0.3),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[3px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/30 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                         <Gift size={16} className="text-white drop-shadow-md group-hover:scale-110 transition-transform" />
                         Obtener Ofertas VIP
                     </button>
-                    <p className="text-[8px] text-center text-white/50 uppercase tracking-widest mt-4">Sumate a nuestra red de beneficios locales</p>
+                    <p className="text-[8px] text-center font-bold text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] uppercase tracking-widest mt-4">Sumate a nuestra red de beneficios locales</p>
                 </div>
 
                 {/* Action Buttons */}
