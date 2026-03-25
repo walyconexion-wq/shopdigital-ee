@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { playNeonClick } from '../utils/audio';
 
 const Logo: React.FC = () => {
+    const [clickCount, setClickCount] = useState(0);
+    const navigate = useNavigate();
+
+    const handleLogoClick = () => {
+        playNeonClick();
+        setClickCount(prev => {
+            const newCount = prev + 1;
+            if (newCount >= 5) {
+                navigate('/tablero-maestro');
+                return 0;
+            }
+            return newCount;
+        });
+    };
+
   return (
-    <div className="flex flex-col items-center justify-center pt-1 pb-1 px-5 select-none text-center relative">
+    <div 
+      onClick={handleLogoClick}
+      className="flex flex-col items-center justify-center pt-1 pb-1 px-5 select-none text-center relative cursor-pointer"
+    >
       {/* Luz Ambiental de Fondo del Logo */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-12 bg-cyan-500/10 blur-xl rounded-full pointer-events-none" />
 
