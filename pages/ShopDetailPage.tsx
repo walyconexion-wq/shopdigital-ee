@@ -162,12 +162,19 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
             <div className="relative z-10 flex flex-col items-center">
                 <div ref={catalogRef} className="w-full mb-10 mt-8">
-                    <div className="flex flex-col items-center mb-8 px-6">
-                        <div className="flex items-center gap-2">
-                            <ShoppingBag size={14} className="text-cyan-400" />
-                            <h3 className="neon-text-cyan font-black text-[10px] uppercase tracking-[0.4em]">Catálogo de Ofertas</h3>
-                        </div>
-                        <div className="h-[1px] w-6 bg-white/10 mt-3"></div>
+                    <div className="w-full px-6 mb-8 flex flex-col items-center">
+                        <button
+                            onClick={() => {
+                                playNeonClick();
+                                // TODO: Navigate to full catalog/menu page when created
+                                console.log("Navegando al menú completo del comercio...");
+                            }}
+                            className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/50 px-8 py-3 rounded-full flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white overflow-hidden relative group shadow-[0_3px_0_rgba(34,211,238,0.3),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[3px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <ShoppingBag size={16} className="text-cyan-400 drop-shadow-md group-hover:scale-110 transition-transform" />
+                            Catálogo de Ofertas
+                        </button>
                     </div>
 
                     <div className="overflow-hidden w-full relative">
