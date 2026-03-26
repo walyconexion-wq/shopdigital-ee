@@ -14,9 +14,7 @@ const ShopMenuPage: React.FC<ShopMenuPageProps> = ({ allShops }) => {
     const navigate = useNavigate();
 
     const selectedShop = allShops.find(
-        (s) =>
-            s.name.toLowerCase().replace(/\s+/g, '-') === shopSlug &&
-            s.category.toLowerCase().replace(/\s+/g, '-') === categorySlug
+        (s) => (s.slug || s.id) === shopSlug
     );
 
     useEffect(() => {
