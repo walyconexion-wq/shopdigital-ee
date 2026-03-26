@@ -1,7 +1,13 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import ShopBot from './ShopBot';
+import { Shop } from '../types';
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+    allShops?: Shop[];
+}
+
+const Layout: React.FC<LayoutProps> = ({ allShops = [] }) => {
     return (
         <div className="w-full max-w-md mx-auto h-screen flex flex-col bg-gray-900 overflow-hidden relative shadow-2xl">
             {/* Background Effect */}
@@ -20,6 +26,9 @@ const Layout: React.FC = () => {
             <main className="flex-grow overflow-y-auto no-scrollbar relative z-10">
                 <Outlet />
             </main>
+
+            {/* ShopBot Floating Assistant */}
+            <ShopBot allShops={allShops} />
         </div>
     );
 };

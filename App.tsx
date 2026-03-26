@@ -84,7 +84,7 @@ const App: React.FC = () => {
       )}
 
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Layout allShops={allShops} />}>
           <Route index element={<Home />} />
           <Route path=":categorySlug" element={<CategoryPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
