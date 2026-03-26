@@ -249,7 +249,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                 {/* Map Section */}
                 <div className="w-full px-6 mb-12">
-                    <div className="map-glow-container w-full h-80 overflow-hidden bg-black/20 relative mb-8 shadow-[0_0_30px_rgba(34,211,238,0.15)] rounded-[2rem] border border-cyan-500/30 p-1">
+                    <div className="map-glow-container w-full h-80 overflow-hidden bg-cyan-950/40 backdrop-blur-md relative mb-8 shadow-[0_0_30px_rgba(34,211,238,0.15)] rounded-[2rem] border border-cyan-400/50 p-1">
                         <iframe
                             title="Ubicación"
                             src={selectedShop.mapUrl}
@@ -262,7 +262,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         ></iframe>
                     </div>
                     <div className="mt-2 text-center px-4 mb-10">
-                        <p className="neon-text-white text-[11px] font-[1000] uppercase tracking-[0.35em] text-white">
+                        <p className="text-[8px] text-center font-bold text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] uppercase tracking-widest">
                             {selectedShop.address}
                         </p>
                     </div>
