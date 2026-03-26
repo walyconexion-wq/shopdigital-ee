@@ -268,29 +268,38 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </div>
 
                     <div className="flex flex-col gap-4 w-full">
-                        <div className="grid grid-cols-3 gap-3">
-                            <button onClick={() => selectedShop.facebook && handleOpenLink(selectedShop.facebook)} className="glass-action-btn btn-fb py-4 flex flex-col items-center justify-center gap-1.5 text-white">
-                                <Facebook size={20} className="text-[#1877F2]" fill="currentColor" strokeWidth={0} />
+                        <div className="grid grid-cols-3 gap-4 mb-4">
+                            <button onClick={() => selectedShop.facebook && handleOpenLink(selectedShop.facebook)} className="glass-action-btn btn-fb py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 text-white shadow-[0_4px_0_rgba(24,119,242,0.5),0_10px_15px_rgba(24,119,242,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(24,119,242,0.5),0_5px_10px_rgba(24,119,242,0.1)] transition-all duration-75">
+                                <Facebook size={18} className="text-[#1877F2]" fill="currentColor" strokeWidth={0} />
                                 <span className="text-[8px] font-black uppercase tracking-tighter">Facebook</span>
                             </button>
-                            <button onClick={() => selectedShop.instagram && handleOpenLink(selectedShop.instagram)} className="glass-action-btn btn-ig py-4 flex flex-col items-center justify-center gap-1.5 text-white">
-                                <Instagram size={20} className="text-[#E4405F]" strokeWidth={2.5} />
+                            <button onClick={() => selectedShop.instagram && handleOpenLink(selectedShop.instagram)} className="glass-action-btn btn-ig py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 text-white shadow-[0_4px_0_rgba(228,64,95,0.5),0_10px_15px_rgba(228,64,95,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(228,64,95,0.5),0_5px_10px_rgba(228,64,95,0.1)] transition-all duration-75">
+                                <Instagram size={18} className="text-[#E4405F]" strokeWidth={2.5} />
                                 <span className="text-[8px] font-black uppercase tracking-tighter">Instagram</span>
                             </button>
-                            <button onClick={() => selectedShop.tiktok && handleOpenLink(selectedShop.tiktok)} className="glass-action-btn btn-tk py-4 flex flex-col items-center justify-center gap-1.5 text-white">
-                                <Music size={20} className="text-white" strokeWidth={2.5} />
+                            <button onClick={() => selectedShop.tiktok && handleOpenLink(selectedShop.tiktok)} className="glass-action-btn btn-tk py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 text-white shadow-[0_4px_0_rgba(255,255,255,0.3),0_10px_15px_rgba(255,255,255,0.1)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(255,255,255,0.3),0_5px_10px_rgba(255,255,255,0.05)] transition-all duration-75">
+                                <Music size={18} className="text-white" strokeWidth={2.5} />
                                 <span className="text-[8px] font-black uppercase tracking-tighter">TikTok</span>
                             </button>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => handleOpenLink(selectedShop.mapSheetUrl || '#')} className="glass-action-btn btn-violet py-4 flex items-center justify-center gap-3 text-white"><Navigation size={18} /><span className="text-[10px] font-black uppercase">Cómo llegar</span></button>
-                            <button onClick={() => handleOpenLink('https://m.uber.com/ul/')} className="glass-action-btn bg-black/60 py-4 flex items-center justify-center gap-3 text-white"><Car size={18} /><span className="text-[10px] font-black uppercase">Uber</span></button>
+                            <button onClick={() => handleOpenLink(selectedShop.mapSheetUrl || '#')} className="glass-action-btn btn-violet py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(139,92,246,0.5),0_10px_15px_rgba(139,92,246,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(139,92,246,0.5),0_5px_10px_rgba(139,92,246,0.1)] transition-all duration-75">
+                                <Navigation size={16} className="text-violet-400" />
+                                <span className="text-[9px] font-black uppercase">Cómo llegar</span>
+                            </button>
+                            <button onClick={() => handleOpenLink('https://m.uber.com/ul/')} className="glass-action-btn bg-black/60 border border-white/20 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(255,255,255,0.3),0_10px_15px_rgba(255,255,255,0.1)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(255,255,255,0.3),0_5px_10px_rgba(255,255,255,0.05)] transition-all duration-75">
+                                <Car size={16} className="text-white" />
+                                <span className="text-[9px] font-black uppercase">Uber</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-4 w-full px-8 pb-12">
-                    <button onClick={handleShare} className="glass-action-btn btn-green py-4 flex items-center justify-center gap-3 text-white"><Share2 size={20} /><span className="text-[10px] font-black uppercase">Compartir Catálogo</span></button>
+                    <button onClick={handleShare} className="glass-action-btn btn-green py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,197,94,0.5),0_10px_15px_rgba(34,197,94,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,197,94,0.5),0_5px_10px_rgba(34,197,94,0.1)] transition-all duration-75">
+                        <Share2 size={16} className="text-green-400" />
+                        <span className="text-[10px] font-black uppercase">Compartir Catálogo</span>
+                    </button>
                     <button onClick={() => {
                         playNeonClick();
                         navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
