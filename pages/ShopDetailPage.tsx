@@ -17,7 +17,9 @@ import {
     ArrowLeft,
     Gift,
     Eye,
-    Users
+    Users,
+    MessageSquare,
+    Star
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
@@ -305,6 +307,51 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
                     }} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
                 </div>
+
+                {/* ---------- REVIEWS AND RATING SECTION ---------- */}
+                <div className="w-full px-5 mb-14 flex flex-col items-center">
+                    <div className="flex items-center gap-2 mb-6">
+                        <MessageSquare size={16} className="text-cyan-400" />
+                        <h3 className="neon-text-cyan font-black text-[11px] uppercase tracking-[0.3em]">Opiniones de Clientes</h3>
+                    </div>
+
+                    {/* Review List */}
+                    <div className="flex flex-col gap-3 w-full mb-6 relative">
+                        {/* Decorative glow behind reviews */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-cyan-500/5 blur-3xl rounded-full pointer-events-none" />
+                        
+                        {(selectedShop.reviews || [
+                            { id: '1', authorName: 'Carlos M.', rating: 5, text: 'Excelente atención y los productos de primera calidad. Vuelvo seguro. Recomendado al 100%.', date: 'Hace 2 días' },
+                            { id: '2', authorName: 'Laura G.', rating: 5, text: 'Muy buen servicio, llegó todo rapidísimo y caliente. Un lujo tener algo así en la zona.', date: 'Hace 1 semana' },
+                            { id: '3', authorName: 'Diego F.', rating: 4, text: '¡Increíble la calidad! Se nota que le ponen mucha dedicación a lo que hacen.', date: 'Hace 2 semanas' }
+                        ]).slice(0, 5).map((review) => (
+                            <div key={review.id} className="glass-card-3d bg-cyan-950/20 backdrop-blur-sm border border-cyan-500/20 rounded-[1.25rem] p-4 flex flex-col gap-2 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 blur-2xl rounded-full" />
+                                <div className="flex justify-between items-center w-full relative z-10">
+                                    <span className="text-[10px] font-black text-white uppercase tracking-wider">{review.authorName}</span>
+                                    <div className="flex gap-0.5">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} size={10} className={i < review.rating ? "text-yellow-400 fill-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)]" : "text-white/10 fill-white/5"} />
+                                        ))}
+                                    </div>
+                                </div>
+                                <p className="text-[9.5px] text-white/70 italic leading-relaxed relative z-10">"{review.text}"</p>
+                                <span className="text-[7.5px] text-cyan-500/60 font-black uppercase tracking-[0.2em] mt-1 relative z-10">{review.date}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Actions: View All / Leave Review */}
+                    <div className="grid grid-cols-2 gap-3 w-full">
+                        <button className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/50 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_3px_0_rgba(34,211,238,0.2)] active:translate-y-[3px] active:shadow-none transition-all duration-75">
+                            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-400">Ver Todas</span>
+                        </button>
+                        <button className="glass-action-btn bg-gradient-to-br from-cyan-400 to-cyan-600 py-3 rounded-[1.25rem] border border-cyan-300 flex items-center justify-center gap-2 shadow-[0_4px_0_rgba(8,145,178,1),0_10px_20px_rgba(34,211,238,0.3)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(8,145,178,1),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75">
+                            <span className="text-[8px] font-black uppercase tracking-widest text-white drop-shadow-md">Dejar Reseña</span>
+                        </button>
+                    </div>
+                </div>
+                {/* ----------------------------------------------- */}
 
                 <button onClick={() => {
                     playNeonClick();
