@@ -14,7 +14,7 @@ interface ChatMessage {
     sender: 'user' | 'bot';
 }
 
-const WELCOME_MESSAGE = '¡Hola! 👋 Soy **ShopBot**, tu asistente de ShopDigital. Preguntame lo que necesites:\n\n🔍 Buscá un comercio\n🏷️ Consultá ofertas\n📍 Cómo llegar\n💬 Contactar por WhatsApp\n🎁 Suscribirte a beneficios';
+const WELCOME_MESSAGE = '¡Hola! 👋 Soy **Shop IA**, tu asistente inteligente de ShopDigital. Preguntame lo que necesites:\n\n🔍 Buscá un comercio\n🏷️ Consultá ofertas\n📍 Cómo llegar\n💬 Contactar por WhatsApp\n🎁 Suscribirte a beneficios';
 
 const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -38,18 +38,14 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
         }
     }, [isOpen]);
 
-    // Hide tooltip after 8 seconds
-    useEffect(() => {
-        const timer = setTimeout(() => setShowTooltip(false), 8000);
-        return () => clearTimeout(timer);
-    }, []);
+    // Tooltip always visible (no timer needed)
 
     const generateResponse = (userMessage: string): { text: string; action?: () => void } => {
         const msg = userMessage.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
         // Greetings
         if (/^(hola|buenas|hey|que tal|buen dia|buenos dias|buenas tardes|buenas noches)/.test(msg)) {
-            return { text: '¡Hola! 😄 Soy tu asistente ShopBot. ¿En qué te puedo ayudar hoy?\n\n🔍 Buscá un comercio\n🏷️ "Ofertas" para ver promos\n📍 "Cómo llegar" a un local\n🎁 "Suscribirme" a beneficios' };
+            return { text: '¡Hola! 😄 Soy tu asistente Shop IA. ¿En qué te puedo ayudar hoy?\n\n🔍 Buscá un comercio\n🏷️ "Ofertas" para ver promos\n📍 "Cómo llegar" a un local\n🎁 "Suscribirme" a beneficios' };
         }
 
         // Search by category keywords
@@ -165,25 +161,22 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
         <>
             {/* Floating Bubble */}
             {!isOpen && (
-                <div className="fixed bottom-24 right-4 z-[9999] flex items-end gap-2">
-                    {/* Tooltip Speech Bubble */}
-                    {showTooltip && (
-                        <div className="animate-in fade-in slide-in-from-right duration-500 bg-cyan-950/80 backdrop-blur-md border border-cyan-400/40 rounded-2xl rounded-br-sm px-4 py-2.5 shadow-[0_0_20px_rgba(34,211,238,0.2)] max-w-[180px]">
-                            <p className="text-[9.5px] font-bold text-cyan-300 leading-snug">
-                                ¿Necesitás saber algo? 🤖 ¡Preguntame!
-                            </p>
-                        </div>
-                    )}
+                <div className="fixed top-[40%] right-3 z-[9999] flex items-center gap-2">
+                    {/* Tooltip Speech Bubble - Always visible */}
+                    <div className="bg-white rounded-2xl rounded-br-sm px-3 py-2 shadow-[0_4px_15px_rgba(0,0,0,0.2)] max-w-[140px]">
+                        <p className="text-[8.5px] font-bold text-gray-700 leading-snug">
+                            ¿Necesitás que te ayude? 🤖
+                        </p>
+                    </div>
 
                     <button
                         onClick={() => {
                             playNeonClick();
                             setIsOpen(true);
-                            setShowTooltip(false);
                         }}
-                        className="w-16 h-16 rounded-full overflow-hidden border-2 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.5)] animate-bounce hover:scale-110 active:scale-95 transition-all bg-black/80 p-1"
+                        className="w-14 h-14 rounded-full overflow-hidden border-2 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.5)] hover:scale-110 active:scale-95 transition-all bg-black/80 p-1 flex-shrink-0"
                     >
-                        <img src="/shopbot-avatar.png" alt="ShopBot" className="w-full h-full object-cover rounded-full" />
+                        <img src="/shopbot-avatar.png" alt="Shop IA" className="w-full h-full object-cover rounded-full" />
                     </button>
                 </div>
             )}
@@ -199,7 +192,7 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
                                 <img src="/shopbot-avatar.png" alt="ShopBot" className="w-full h-full object-cover rounded-full" />
                             </div>
                             <div className="flex-grow">
-                                <h3 className="text-[11px] font-black text-white uppercase tracking-widest">ShopBot</h3>
+                                <h3 className="text-[11px] font-black text-white uppercase tracking-widest">Shop IA</h3>
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)] animate-pulse" />
                                     <span className="text-[8px] text-green-400 font-bold uppercase tracking-widest">En línea</span>
@@ -254,7 +247,7 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Preguntale al ShopBot..."
+                                    placeholder="Preguntale a Shop IA..."
                                     className="flex-grow bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-[10px] text-white placeholder-white/30 outline-none focus:border-cyan-400/50 transition-colors"
                                 />
                                 <button
