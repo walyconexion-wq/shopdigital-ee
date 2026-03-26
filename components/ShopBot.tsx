@@ -161,8 +161,8 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
         <>
             {/* Floating Bubble */}
             {!isOpen && (
-                <div className="fixed top-[40%] right-3 z-[9999] flex items-center gap-2">
-                    {/* Tooltip Speech Bubble - Always visible */}
+                <div className="fixed bottom-6 right-3 z-[9999] flex items-center gap-2">
+                    {/* Tooltip Speech Bubble - Always visible, stays still */}
                     <div className="bg-white rounded-2xl rounded-br-sm px-3 py-2 shadow-[0_4px_15px_rgba(0,0,0,0.2)] max-w-[140px]">
                         <p className="text-[8.5px] font-bold text-gray-700 leading-snug">
                             ¿Necesitás que te ayude? 🤖
@@ -174,7 +174,7 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
                             playNeonClick();
                             setIsOpen(true);
                         }}
-                        className="w-14 h-14 rounded-full overflow-hidden border-2 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.5)] hover:scale-110 active:scale-95 transition-all bg-black/80 p-1 flex-shrink-0"
+                        className="w-14 h-14 rounded-full overflow-hidden border-2 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.5)] animate-bounce hover:scale-110 active:scale-95 transition-all bg-black/80 p-1 flex-shrink-0"
                     >
                         <img src="/shopbot-avatar.png" alt="Shop IA" className="w-full h-full object-cover rounded-full" />
                     </button>
