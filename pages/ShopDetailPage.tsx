@@ -168,8 +168,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         <button
                             onClick={() => {
                                 playNeonClick();
-                                // TODO: Navigate to full catalog/menu page when created
-                                console.log("Navegando al menú completo del comercio...");
+                                navigate(`/${categorySlug}/${shopSlug}/menu`);
                             }}
                             className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/50 px-8 py-3 rounded-full flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white overflow-hidden relative group shadow-[0_3px_0_rgba(34,211,238,0.3),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[3px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
                         >

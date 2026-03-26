@@ -36,6 +36,7 @@ import InvoiceViewerPage from './pages/InvoiceViewerPage';
 import TermsPage from './pages/TermsPage';
 import SurveyFormPage from './pages/SurveyFormPage';
 import SurveyManagementPage from './pages/SurveyManagementPage';
+import ShopMenuPage from './pages/ShopMenuPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -87,6 +88,7 @@ const App: React.FC = () => {
           <Route index element={<Home />} />
           <Route path=":categorySlug" element={<CategoryPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
+          <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/panel-autogestion" element={<AdminPanelPage allShops={allShops} allClients={allClients} />} />
           <Route path=":categorySlug/:shopSlug/validar" element={<ValidationPage allShops={allShops} />} />
