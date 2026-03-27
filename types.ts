@@ -48,6 +48,14 @@ export interface Lead {
     createdShopId?: string;
 }
 
+export interface Review {
+  id: string;
+  authorName: string;
+  rating: number;
+  text: string;
+  date: string;
+}
+
 export interface ProductOffer {
   id: string;
   name: string;
@@ -123,4 +131,7 @@ export interface Shop {
   billingStatus?: 'active' | 'pending' | 'suspended';
   billingAmount?: number;
   visits?: number;
+  subscribers?: number;
+  reviews?: Review[];
+  authorizedEmail?: string;
 }

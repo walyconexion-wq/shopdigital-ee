@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
+import { useAuth } from '../components/AuthContext';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
@@ -33,6 +34,24 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
     const navigate = useNavigate();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const catalogRef = useRef<HTMLDivElement>(null);
+    const { user, login } = useAuth();
+
+    const ROOT_EMAIL = 'walyconexion@gmail.com';
+
+    const handleMerchantAccess = async (destination: string) => {
+        playNeonClick();
+        if (!user) {
+            await login();
+            return;
+        }
+        const userEmail = user.email?.trim().toLowerCase();
+        const shopEmail = selectedShop?.authorizedEmail?.trim().toLowerCase();
+        if (userEmail === ROOT_EMAIL || (shopEmail && userEmail === shopEmail)) {
+            navigate(destination);
+        } else {
+            alert('🔒 Acceso denegado. Este acceso es exclusivo para el comerciante autorizado. Contactá al administrador.');
+        }
+    };
 
     const selectedShop = useMemo(() =>
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
@@ -359,24 +378,21 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                 {/* Secret Merchant Cable */}
                 <div 
-                    onClick={() => {
-                        playNeonClick();
-                        navigate('/red-comercial/descuentos');
-                    }}
+                    onClick={() => handleMerchantAccess('/red-comercial/descuentos')}
                     className="mb-12 cursor-pointer group active:scale-95 transition-all"
                 >
-                    <p className="text-[8px] font-black uppercase tracking-[0.5em] text-cyan-500/30 group-hover:text-cyan-400 transition-colors text-center neon-flicker-slow">
-                        Catálogo exclusivo para comerciantes
-                    </p>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                        <Lock size={10} className="text-cyan-500/30 group-hover:text-cyan-400 transition-colors" />
+                        <p className="text-[8px] font-black uppercase tracking-[0.5em] text-cyan-500/30 group-hover:text-cyan-400 transition-colors text-center neon-flicker-slow">
+                            Catálogo exclusivo para comerciantes
+                        </p>
+                    </div>
                 </div>
 
                 {/* Merchant Access Link */}
                 <div className="w-full flex justify-center pb-8 opacity-40 hover:opacity-100 transition-opacity">
                     <button
-                        onClick={() => {
-                            playNeonClick();
-                            navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
-                        }}
+                        onClick={() => handleMerchantAccess(`/${categorySlug}/${shopSlug}/panel-autogestion`)}
                         className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-white"
                     >
                         <Lock size={12} /> Acceso Comercio
