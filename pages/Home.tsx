@@ -116,7 +116,7 @@ const Home: React.FC = () => {
                         style={{
                             animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms both`
                         }}
-                        className="glass-button-3d category-btn btn-neon-active aspect-square group"
+                        className="glass-button-3d category-btn btn-neon-active aspect-square group bg-cyan-950/30 backdrop-blur-md border border-cyan-400/20 rounded-[1.25rem] shadow-[0_0_15px_rgba(34,211,238,0.08)] hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] transition-all duration-300"
                     >
                         <div className="mb-1.5 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out text-cyan-400">
                             {cat.icon}
