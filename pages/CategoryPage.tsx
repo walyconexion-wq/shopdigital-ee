@@ -219,33 +219,23 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                                         </div>
                                     </div>
 
-                                    <button
-                                        onClick={() => {
-                                            playNeonClick();
-                                            incrementarVisitas(shop.id);
-                                            navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
-                                        }}
-                                        className={`w-full py-4 px-3 text-[11px] text-white font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 active:scale-95 transition-all border-t animate-pulse
-                                            ${activeLocation === 'Monte Grande' ? 'border-violet-400/30 bg-violet-600/30 hover:bg-violet-600/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' :
-                                              activeLocation === 'Luis Guillón' ? 'border-green-400/30 bg-green-600/30 hover:bg-green-600/40 shadow-[0_0_15px_rgba(34,197,94,0.3)]' :
-                                              'border-rose-400/30 bg-rose-600/30 hover:bg-rose-600/40 shadow-[0_0_15px_rgba(244,63,94,0.3)]'}
-                                        `}
-                                    >
-                                        <span className={`relative flex h-2 w-2 mr-1`}>
-                                            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                                                activeLocation === 'Monte Grande' ? 'bg-violet-400' :
-                                                activeLocation === 'Luis Guillón' ? 'bg-green-400' :
-                                                'bg-rose-400'
-                                            }`}></span>
-                                            <span className={`relative inline-flex rounded-full h-2 w-2 ${
-                                                activeLocation === 'Monte Grande' ? 'bg-violet-400' :
-                                                activeLocation === 'Luis Guillón' ? 'bg-green-400' :
-                                                'bg-rose-400'
-                                            }`}></span>
-                                        </span>
-                                        <BookOpen size={16} strokeWidth={4} className="text-white drop-shadow-md" />
-                                        VER CATÁLOGO
-                                    </button>
+                                    <div className="w-full flex justify-center py-3 px-4">
+                                        <button
+                                            onClick={() => {
+                                                playNeonClick();
+                                                incrementarVisitas(shop.id);
+                                                navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`);
+                                            }}
+                                            className={`py-2.5 px-6 text-[9px] text-white font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all duration-75 rounded-full border
+                                                ${activeLocation === 'Monte Grande' ? 'border-violet-400/50 bg-violet-600/30 backdrop-blur-md shadow-[0_4px_0_rgba(139,92,246,0.5),0_8px_15px_rgba(139,92,246,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(139,92,246,0.5),0_4px_8px_rgba(139,92,246,0.1)]' :
+                                                  activeLocation === 'Luis Guillón' ? 'border-green-400/50 bg-green-600/30 backdrop-blur-md shadow-[0_4px_0_rgba(34,197,94,0.5),0_8px_15px_rgba(34,197,94,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,197,94,0.5),0_4px_8px_rgba(34,197,94,0.1)]' :
+                                                  'border-rose-400/50 bg-rose-600/30 backdrop-blur-md shadow-[0_4px_0_rgba(244,63,94,0.5),0_8px_15px_rgba(244,63,94,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(244,63,94,0.5),0_4px_8px_rgba(244,63,94,0.1)]'}
+                                            `}
+                                        >
+                                            <BookOpen size={14} strokeWidth={3} className="text-white drop-shadow-md" />
+                                            VER CATÁLOGO
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))
