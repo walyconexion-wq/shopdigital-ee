@@ -4,7 +4,8 @@ import Logo from '../components/Logo';
 import { Share2, Store } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
-import { guardarComercio } from '../firebase';
+import { guardarComercio, guardarOferta } from '../firebase';
+import { Offer } from '../types';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
@@ -18,18 +19,18 @@ const Home: React.FC = () => {
                     id: "macondo-restaurante",
                     slug: "macondo",
                     name: "Macondo",
-                    category: "restaurantes",  // Exact ID from CATEGORIES constant
-                    zone: "Luis Guillón",    // Exact string from LOCALITIES constant
+                    category: "restaurantes",
+                    zone: "Luis Guillón",
                     address: "Luis Guillón",
                     mapUrl: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.333639195138!2d-58.50213166152844!3d-34.81334119999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1669b1d6949%3A0xfa8f1cd3207ae1a1!2sMacondo!5e1!3m2!1ses-419!2sar!4v1774709334693!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
                     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
                     bannerImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=400&fit=crop",
-                    description: "El mejor ambiente y la mejor comida para disfrutar en familia.", // Wait, description wasn't in Shop interface?
+                    description: "El mejor ambiente y la mejor comida para disfrutar en familia.",
                     specialty: "Restaurante",
                     ownerName: "Admin",
                     phone: "5491100000000",
                     rating: 5.0,
-                    isActive: false, // Changed to false to pass new-user security rules just in case! You can approve them from the dashboard!
+                    isActive: true, // Auto-activate since user is admin!
                     offers: [
                         {
                             id: "promo-macondo-1",
@@ -60,7 +61,7 @@ const Home: React.FC = () => {
                     ownerName: "Admin",
                     phone: "5491100000000",
                     rating: 5.0,
-                    isActive: false,
+                    isActive: true,
                     offers: [
                         {
                             id: "promo-carlina-1",
@@ -91,7 +92,7 @@ const Home: React.FC = () => {
                     ownerName: "Admin",
                     phone: "5491100000000",
                     rating: 5.0,
-                    isActive: false,
+                    isActive: true,
                     offers: [
                         {
                             id: "promo-bodegon-1",
@@ -110,11 +111,65 @@ const Home: React.FC = () => {
                 }
             ];
             
-            alert("Iniciando subida a Firebase... Esperá unos segundos.");
+            const b2bOffers: Offer[] = [
+                {
+                    id: "b2b-macondo-1",
+                    target: 'B2B',
+                    title: "20% OFF Cenas Comerciales",
+                    description: "Descuento en cenas para eventos de empresas locales de Esteban Echeverría.",
+                    price: "A convenir",
+                    discountLabel: "20% OFF",
+                    image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=800&h=600&fit=crop",
+                    merchantName: "Macondo",
+                    merchantZone: "Luis Guillón",
+                    category: "restaurantes",
+                    validFrom: new Date().toISOString().split('T')[0],
+                    validUntil: "2026-12-31",
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: "b2b-carlina-1",
+                    target: 'B2B',
+                    title: "Parrillada Corporativa VIP",
+                    description: "Bebidas liberadas contratando mesa para más de 10 personas.",
+                    price: "$21,000 / persona",
+                    discountLabel: "Bebidas Libre",
+                    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop",
+                    merchantName: "Parrilla La Carlina",
+                    merchantZone: "Monte Grande",
+                    category: "restaurantes",
+                    validFrom: new Date().toISOString().split('T')[0],
+                    validUntil: "2026-12-31",
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: "b2b-bodegon-1",
+                    target: 'B2B',
+                    title: "Viandas para Personal",
+                    description: "Precios mayoristas en viandas diarias para empresas de la red ShopDigital.",
+                    price: "$6,500 / un.",
+                    discountLabel: "Mayoreo",
+                    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop",
+                    merchantName: "El Bodegón De Canning",
+                    merchantZone: "El Jagüel",
+                    category: "restaurantes",
+                    validFrom: new Date().toISOString().split('T')[0],
+                    validUntil: "2026-12-31",
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                }
+            ];
+
+            alert("Iniciando subida a Firebase (Comercios + Catálogos B2B)... Esperá unos segundos.");
             for (const shop of shops) {
                  await guardarComercio(shop);
             }
-            alert("¡ÉXITO! Restaurantes subidos a Firebase correctamente.");
+            for (const offer of b2bOffers) {
+                 await guardarOferta(offer);
+            }
+            alert("¡ÉXITO! Restaurantes y Ofertas B2B inyectados correctamente.");
         } catch (error: any) {
             console.error("Error injetando datos:", error);
             alert("ERROR AL SUBIR: " + (error.message || "Fallo de permisos en Firebase. ¿Estás logueado como Admin?"));
