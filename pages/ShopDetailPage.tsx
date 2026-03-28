@@ -257,7 +257,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                         <Gift size={16} className="text-white drop-shadow-md group-hover:scale-110 transition-transform" />
-                        Obtener Ofertas VIP
+                        Obtener Credencial VIP
                     </button>
                     <p className="text-[8px] text-center font-bold text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] uppercase tracking-widest mt-4">Sumate a nuestra red de beneficios locales</p>
                 </div>
