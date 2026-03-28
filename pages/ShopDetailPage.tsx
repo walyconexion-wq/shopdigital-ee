@@ -372,20 +372,24 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                     {/* Actions: View All / Leave Review */}
                     <div className="grid grid-cols-2 gap-3 w-full">
-                        <button className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/50 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_3px_0_rgba(34,211,238,0.2)] active:translate-y-[3px] active:shadow-none transition-all duration-75">
+                        <button className="glass-action-btn bg-cyan-950/30 backdrop-blur-md border border-cyan-400/30 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.2),0_8px_15px_rgba(34,211,238,0.1)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.2),0_4px_8px_rgba(34,211,238,0.05)] transition-all duration-75">
                             <span className="text-[8px] font-black uppercase tracking-widest text-cyan-400">Ver Todas</span>
                         </button>
-                        <button className="glass-action-btn bg-gradient-to-br from-cyan-400 to-cyan-600 py-3 rounded-[1.25rem] border border-cyan-300 flex items-center justify-center gap-2 shadow-[0_4px_0_rgba(8,145,178,1),0_10px_20px_rgba(34,211,238,0.3)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(8,145,178,1),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75">
-                            <span className="text-[8px] font-black uppercase tracking-widest text-white drop-shadow-md">Dejar Reseña</span>
+                        <button className="glass-action-btn bg-cyan-600/30 backdrop-blur-md border border-cyan-400/50 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75">
+                            <span className="text-[8px] font-[1100] uppercase tracking-widest text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Dejar Reseña</span>
                         </button>
                     </div>
                 </div>
                 {/* ----------------------------------------------- */}
 
-                <button onClick={() => {
-                    playNeonClick();
-                    navigate(`/${categorySlug}`);
-                }} className="glass-action-btn btn-neon-delicate w-max py-2 px-5 mb-8 flex items-center gap-2 text-white"><ArrowLeft size={16} /><span className="text-[10px] font-black">Regresar</span></button>
+                <div className="w-full flex justify-center mb-8">
+                    <button onClick={() => {
+                        playNeonClick();
+                        navigate(`/${categorySlug}`);
+                    }} className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/40 w-max py-2.5 px-6 rounded-full flex items-center gap-2 text-cyan-400 shadow-[0_4px_0_rgba(34,211,238,0.3),0_8px_15px_rgba(34,211,238,0.15)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_4px_8px_rgba(34,211,238,0.05)] transition-all duration-75">
+                        <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
+                    </button>
+                </div>
 
                 {/* Secret Merchant Cable */}
                 <div 
