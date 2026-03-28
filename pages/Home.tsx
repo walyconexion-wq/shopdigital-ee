@@ -73,7 +73,7 @@ const Home: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col pt-8 pb-12 animate-in fade-in duration-700 relative overflow-hidden min-h-screen bg-black">
+        <div className="flex flex-col pt-8 pb-12 animate-in fade-in duration-700 relative overflow-hidden min-h-screen bg-transparent">
             {/* HUD Decorative Elements */}
             <div className="absolute top-20 left-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />

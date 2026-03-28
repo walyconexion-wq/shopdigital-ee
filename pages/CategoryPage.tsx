@@ -75,7 +75,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
     }
 
     return (
-        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-black">
+        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-transparent">
             {/* HUD Decorative Elements */}
             <div className="absolute top-40 right-[-10%] w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-40 left-[-10%] w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />

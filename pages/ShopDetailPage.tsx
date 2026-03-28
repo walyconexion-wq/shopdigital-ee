@@ -124,7 +124,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
 
     return (
-        <div className="pb-24 animate-in fade-in duration-700 bg-black min-h-screen">
+        <div className="pb-24 animate-in fade-in duration-700 bg-transparent min-h-screen">
             <Helmet>
                 <title>{selectedShop.name} - Catálogo de Ofertas</title>
                 <meta name="description" content={`Mirá nuestro menú digital de ${selectedShop.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
