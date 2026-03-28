@@ -13,14 +13,12 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [] }) => {
             {/* Background Effect */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 <div
-                    className="absolute inset-0 bg-cover"
+                    className="absolute inset-0"
                     style={{
-                        backgroundImage: 'url("https://img.freepik.com/fotos-premium/fondo-tecnologia-red-digital-azul_939148-135.jpg")',
-                        backgroundPosition: 'center center',
-                        opacity: 1
+                        background: 'radial-gradient(ellipse at 50% 30%, rgba(34,211,238,0.04) 0%, transparent 60%), linear-gradient(180deg, #1a1a2e 0%, #16161a 50%, #0f0f12 100%)',
                     }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
             </div>
 
             <main className="flex-grow overflow-y-auto no-scrollbar relative z-10">
