@@ -5,10 +5,221 @@ import {
     Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { guardarComercio, guardarOferta } from '../firebase';
+import { Offer } from '../types';
 
 const MasterPanelPage: React.FC = () => {
     const navigate = useNavigate();
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
+
+    const injectTestShops = async () => {
+        try {
+            const shops: any[] = [
+                {
+                    id: "macondo-restaurante",
+                    slug: "macondo",
+                    name: "Macondo",
+                    category: "restaurantes",
+                    zone: "Luis Guillón",
+                    address: "Luis Guillón",
+                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.333639195138!2d-58.50213166152844!3d-34.81334119999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1669b1d6949%3A0xfa8f1cd3207ae1a1!2sMacondo!5e1!3m2!1ses-419!2sar!4v1774709334693!5m2!1ses-419!2sar",
+                    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
+                    bannerImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=400&fit=crop",
+                    description: "El mejor ambiente y la mejor comida para disfrutar en familia.",
+                    specialty: "Restaurante",
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 5.0,
+                    isActive: true, // Auto-activate since user is admin!
+                    offers: [
+                        {
+                            id: "promo-macondo-1",
+                            name: "Menú Ejecutivo Base",
+                            price: 6500,
+                            image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-macondo-2",
+                            name: "Bife de Chorizo Premium",
+                            price: 18500,
+                            image: "https://images.unsplash.com/photo-1558030006-450675393462?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-macondo-3",
+                            name: "Ravioles Caseros",
+                            price: 9800,
+                            image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-macondo-4",
+                            name: "Cerveza Artesanal Pinta",
+                            price: 3200,
+                            image: "https://images.unsplash.com/photo-1566633641473-ebbeaef6c7f4?w=400&h=300&fit=crop"
+                        }
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
+                },
+                {
+                    id: "parrilla-la-carlina",
+                    slug: "parrilla-la-carlina",
+                    name: "Parrilla La Carlina",
+                    category: "restaurantes",
+                    zone: "Monte Grande",
+                    address: "Monte Grande",
+                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.36092038479!2d-58.50213168184711!3d-34.813269452061654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd180c730bb3d%3A0x2e5c48a961c30e14!2sParrilla%20-%20Restaurante%20La%20Carlina!5e1!3m2!1ses-419!2sar!4v1774709403317!5m2!1ses-419!2sar",
+                    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop",
+                    bannerImage: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=400&fit=crop",
+                    specialty: "Parrilla",
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 5.0,
+                    isActive: true, // Auto-activate
+                    offers: [
+                        {
+                            id: "promo-carlina-1",
+                            name: "Parrillada V.I.P (2 Pers)",
+                            price: 21000,
+                            image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-carlina-2",
+                            name: "Matambre a la Pizza",
+                            price: 14500,
+                            image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-carlina-3",
+                            name: "Bondiola Braseada",
+                            price: 16000,
+                            image: "https://images.unsplash.com/photo-1628268909376-e8c5dfdc3130?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-carlina-4",
+                            name: "Flan Mixto Casero",
+                            price: 4500,
+                            image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=400&h=300&fit=crop"
+                        }
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
+                },
+                {
+                    id: "bodegon-de-canning",
+                    slug: "bodegon-de-canning",
+                    name: "El Bodegón De Canning",
+                    category: "restaurantes",
+                    zone: "El Jagüel",
+                    address: "El Jagüel",
+                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31315.31353599826!2d-58.53928356152844!3d-34.85282359999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd7ed0d8beecd%3A0x539414616272bd17!2sEl%20Bodegon%20De%20Canning!5e1!3m2!1ses-419!2sar!4v1774709476315!5m2!1ses-419!2sar",
+                    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop",
+                    bannerImage: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=400&fit=crop",
+                    specialty: "Bodegón",
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 5.0,
+                    isActive: true, // Auto-activate
+                    offers: [
+                        {
+                            id: "promo-bodegon-1",
+                            name: "Milanesa Napolitana XXL",
+                            price: 9500,
+                            image: "https://images.unsplash.com/photo-1599921841143-819065a55cc6?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-bodegon-2",
+                            name: "Sorrentinos de Jamón y Queso",
+                            price: 8500,
+                            image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-bodegon-3",
+                            name: "Cazuela de Mariscos",
+                            price: 22000,
+                            image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-bodegon-4",
+                            name: "Tabla Picada Bodegón (3 Pers)",
+                            price: 24000,
+                            image: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400&h=300&fit=crop"
+                        }
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
+                }
+            ];
+            
+            const b2bOffers: Offer[] = [
+                {
+                    id: "b2b-macondo-1",
+                    target: 'B2B',
+                    title: "20% OFF Cenas Comerciales",
+                    description: "Descuento en cenas para eventos de empresas locales de Esteban Echeverría.",
+                    price: "A convenir",
+                    discountLabel: "20% OFF",
+                    image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=800&h=600&fit=crop",
+                    merchantName: "Macondo",
+                    merchantZone: "Luis Guillón",
+                    category: "restaurantes",
+                    validFrom: new Date().toISOString().split('T')[0],
+                    validUntil: "2026-12-31",
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: "b2b-carlina-1",
+                    target: 'B2B',
+                    title: "Parrillada Corporativa VIP",
+                    description: "Bebidas liberadas contratando mesa para más de 10 personas.",
+                    price: "$21,000 / persona",
+                    discountLabel: "Bebidas Libre",
+                    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop",
+                    merchantName: "Parrilla La Carlina",
+                    merchantZone: "Monte Grande",
+                    category: "restaurantes",
+                    validFrom: new Date().toISOString().split('T')[0],
+                    validUntil: "2026-12-31",
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: "b2b-bodegon-1",
+                    target: 'B2B',
+                    title: "Viandas para Personal",
+                    description: "Precios mayoristas en viandas diarias para empresas de la red ShopDigital.",
+                    price: "$6,500 / un.",
+                    discountLabel: "Mayoreo",
+                    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop",
+                    merchantName: "El Bodegón De Canning",
+                    merchantZone: "El Jagüel",
+                    category: "restaurantes",
+                    validFrom: new Date().toISOString().split('T')[0],
+                    validUntil: "2026-12-31",
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                }
+            ];
+
+            alert("🛡️ INICIO DE INYECCIÓN DE SISTEMA MAESTRO...");
+            for (const shop of shops) {
+                 await guardarComercio(shop);
+            }
+            for (const offer of b2bOffers) {
+                 await guardarOferta(offer);
+            }
+            alert("✅ ¡ÉXITO! Base de Datos de Muestra Cargada Correctamente.");
+        } catch (error: any) {
+            console.error("Error injetando datos:", error);
+            alert("❌ ERROR AL SUBIR: " + (error.message || "Fallo de permisos."));
+        }
+    };
 
     const handleShare = async (path: string, title: string, desc: string) => {
         playNeonClick();
@@ -79,6 +290,17 @@ const MasterPanelPage: React.FC = () => {
             </div>
 
             <div className="px-6 mt-8 space-y-10 relative z-10 pb-20 max-w-lg mx-auto">
+                <button 
+                    onClick={injectTestShops} 
+                    className="w-full bg-red-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.3)] border border-red-500/50 hover:bg-red-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5"
+                >
+                    <div className="flex items-center gap-2">
+                        <Terminal size={14} className="text-white/80" />
+                        <span className="text-[14px]">INJECT DATA</span>
+                        <Lock size={14} className="text-white/80" />
+                    </div>
+                    <span className="text-[8px] text-red-200">INYECCIÓN MAESTRA A FIREBASE (USO ROOT)</span>
+                </button>
                 
                 {/* Public Landings & Sections */}
                 <section>
