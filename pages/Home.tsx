@@ -13,21 +13,23 @@ const Home: React.FC = () => {
 
     const injectTestShops = async () => {
         try {
-            const shops = [
+            const shops: any[] = [
                 {
                     id: "macondo-restaurante",
+                    slug: "macondo",
                     name: "Macondo",
-                    verified: true,
-                    whatsapp: "5491100000000",
+                    category: "restaurantes",  // Exact ID from CATEGORIES constant
+                    zone: "Luis Guillón",    // Exact string from LOCALITIES constant
                     address: "Luis Guillón",
-                    mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.333639195138!2d-58.50213166152844!3d-34.81334119999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1669b1d6949%3A0xfa8f1cd3207ae1a1!2sMacondo!5e1!3m2!1ses-419!2sar!4v1774709334693!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
-                    categories: ["restaurantes"],  
-                    locality: "luis_guillon",
+                    mapUrl: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.333639195138!2d-58.50213166152844!3d-34.81334119999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1669b1d6949%3A0xfa8f1cd3207ae1a1!2sMacondo!5e1!3m2!1ses-419!2sar!4v1774709334693!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
                     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
                     bannerImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=400&fit=crop",
-                    description: "El mejor ambiente y la mejor comida para disfrutar en familia.",
+                    description: "El mejor ambiente y la mejor comida para disfrutar en familia.", // Wait, description wasn't in Shop interface?
                     specialty: "Restaurante",
-                    isActive: true,
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 5.0,
+                    isActive: false, // Changed to false to pass new-user security rules just in case! You can approve them from the dashboard!
                     offers: [
                         {
                             id: "promo-macondo-1",
@@ -38,22 +40,27 @@ const Home: React.FC = () => {
                             discount: 23,
                             image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop"
                         }
-                    ]
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
                 },
                 {
                     id: "parrilla-la-carlina",
+                    slug: "parrilla-la-carlina",
                     name: "Parrilla La Carlina",
-                    verified: true,
-                    whatsapp: "5491100000000",
+                    category: "restaurantes",
+                    zone: "Monte Grande",
                     address: "Monte Grande",
-                    mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.36092038479!2d-58.50213168184711!3d-34.813269452061654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd180c730bb3d%3A0x2e5c48a961c30e14!2sParrilla%20-%20Restaurante%20La%20Carlina!5e1!3m2!1ses-419!2sar!4v1774709403317!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
-                    categories: ["restaurantes"],
-                    locality: "monte_grande",
+                    mapUrl: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.36092038479!2d-58.50213168184711!3d-34.813269452061654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd180c730bb3d%3A0x2e5c48a961c30e14!2sParrilla%20-%20Restaurante%20La%20Carlina!5e1!3m2!1ses-419!2sar!4v1774709403317!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
                     image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop",
                     bannerImage: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=400&fit=crop",
-                    description: "La mejor parrilla de la zona. Carnes seleccionadas.",
                     specialty: "Parrilla",
-                    isActive: true,
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 5.0,
+                    isActive: false,
                     offers: [
                         {
                             id: "promo-carlina-1",
@@ -64,22 +71,27 @@ const Home: React.FC = () => {
                             discount: 16,
                             image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop"
                         }
-                    ]
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
                 },
                 {
                     id: "bodegon-de-canning",
+                    slug: "bodegon-de-canning",
                     name: "El Bodegón De Canning",
-                    verified: true,
-                    whatsapp: "5491100000000",
+                    category: "restaurantes",
+                    zone: "El Jagüel",
                     address: "El Jagüel",
-                    mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31315.31353599826!2d-58.53928356152844!3d-34.85282359999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd7ed0d8beecd%3A0x539414616272bd17!2sEl%20Bodegon%20De%20Canning!5e1!3m2!1ses-419!2sar!4v1774709476315!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
-                    categories: ["restaurantes"],
-                    locality: "el_jaguel",
+                    mapUrl: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31315.31353599826!2d-58.53928356152844!3d-34.85282359999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd7ed0d8beecd%3A0x539414616272bd17!2sEl%20Bodegon%20De%20Canning!5e1!3m2!1ses-419!2sar!4v1774709476315!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
                     image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop",
                     bannerImage: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=400&fit=crop",
-                    description: "Platos abundantes y sabores como los de antes.",
                     specialty: "Bodegón",
-                    isActive: true,
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 5.0,
+                    isActive: false,
                     offers: [
                         {
                             id: "promo-bodegon-1",
@@ -90,7 +102,11 @@ const Home: React.FC = () => {
                             discount: 20,
                             image: "https://images.unsplash.com/photo-1599921841143-819065a55cc6?w=400&h=300&fit=crop"
                         }
-                    ]
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
                 }
             ];
             
