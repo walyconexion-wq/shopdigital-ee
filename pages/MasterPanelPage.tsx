@@ -153,6 +153,144 @@ const MasterPanelPage: React.FC = () => {
                     instagram: '',
                     facebook: '',
                     tiktok: ''
+                },
+                {
+                    id: "mr-tasty-monte-grande",
+                    slug: "mr-tasty-monte-grande",
+                    name: "Mr Tasty",
+                    category: "comida-rapida",
+                    zone: "Monte Grande",
+                    address: "Monte Grande",
+                    mapUrl: "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d22814.031406935814!2d-58.4754765!3d-34.7977637!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd14b53c1b6f3%3A0x91ef24a15ef7cb98!2sMr%20Tasty%20Monte%20Grande!5e1!3m2!1ses-419!2sar!4v1774740877510!5m2!1ses-419!2sar",
+                    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop",
+                    bannerImage: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=400&fit=crop",
+                    specialty: "Hamburguesas & Fast Food",
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 4.8,
+                    isActive: true, // Auto-activate
+                    offers: [
+                        {
+                            id: "promo-tasty-1",
+                            name: "Combo Tasty Doble Cheddar",
+                            price: 7500,
+                            image: "https://images.unsplash.com/photo-1586816001966-79b736744398?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-tasty-2",
+                            name: "Papas Fritas con Bacon",
+                            price: 4500,
+                            image: "https://images.unsplash.com/photo-1576107248873-1d0b3a31c19b?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-tasty-3",
+                            name: "Nuggets de Pollo x10",
+                            price: 5200,
+                            image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-tasty-4",
+                            name: "Milkshake Vainilla & Oreo",
+                            price: 3800,
+                            image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop"
+                        }
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
+                },
+                {
+                    id: "burger-mat-luis-guillon",
+                    slug: "burger-mat-luis-guillon",
+                    name: "Burger Mat",
+                    category: "comida-rapida",
+                    zone: "Luis Guillón",
+                    address: "Luis Guillón",
+                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22815.061778173727!2d-58.48918582682876!3d-34.794039999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd39bdc8c9ff3%3A0x118244d60db4d933!2sBURGUER%20MAT!5e1!3m2!1ses-419!2sar!4v1774741379189!5m2!1ses-419!2sar",
+                    image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=400&h=300&fit=crop",
+                    bannerImage: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&h=400&fit=crop",
+                    specialty: "Hamburguesas Smash",
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 4.9,
+                    isActive: true, // Auto-activate
+                    offers: [
+                        {
+                            id: "promo-burgermat-1",
+                            name: "Smash Burger Doble",
+                            price: 6500,
+                            image: "https://images.unsplash.com/photo-1594212691516-436f5efa9a4d?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-burgermat-2",
+                            name: "Hamburguesa BBQ Crispy",
+                            price: 7200,
+                            image: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-burgermat-3",
+                            name: "Super Pancho con Papas",
+                            price: 3500,
+                            image: "https://images.unsplash.com/photo-1585848206001-f0932c0d83ad?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-burgermat-4",
+                            name: "Aros de Cebolla Rebozados",
+                            price: 3200,
+                            image: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=400&h=300&fit=crop"
+                        }
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
+                },
+                {
+                    id: "sabores-express-el-jaguel",
+                    slug: "sabores-express-el-jaguel",
+                    name: "Sabores Express",
+                    category: "comida-rapida",
+                    zone: "El Jagüel",
+                    address: "El Jagüel",
+                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22803.99859432698!2d-58.52188422682876!3d-34.834003499999994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd100487efa8b%3A0x33c68573928f7921!2sSabores%20Express%20EL%20JAGUEL!5e1!3m2!1ses-419!2sar!4v1774741501606!5m2!1ses-419!2sar",
+                    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop",
+                    bannerImage: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&h=400&fit=crop",
+                    specialty: "Pizzas & Empanadas",
+                    ownerName: "Admin",
+                    phone: "5491100000000",
+                    rating: 4.6,
+                    isActive: true, // Auto-activate
+                    offers: [
+                        {
+                            id: "promo-sabores-1",
+                            name: "Promoción: 2 Pizzas Muzzarella",
+                            price: 11000,
+                            image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-sabores-2",
+                            name: "Docena de Empanadas Premium",
+                            price: 8500,
+                            image: "https://images.unsplash.com/photo-1627447470659-1e3df6a165b4?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-sabores-3",
+                            name: "Pizza Especial Jamón y Morrones",
+                            price: 7500,
+                            image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop"
+                        },
+                        {
+                            id: "promo-sabores-4",
+                            name: "Media Docena Emp. Carne Cortada",
+                            price: 4500,
+                            image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&h=300&fit=crop"
+                        }
+                    ],
+                    mapSheetUrl: '',
+                    instagram: '',
+                    facebook: '',
+                    tiktok: ''
                 }
             ];
             
