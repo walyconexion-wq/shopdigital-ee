@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [] }) => {
                 <div
                     className="absolute inset-0"
                     style={{
-                        background: 'radial-gradient(ellipse at 50% 30%, rgba(34,211,238,0.08) 0%, transparent 60%), linear-gradient(180deg, #15161A 0%, #0F1014 50%, #08080A 100%)',
+                        background: 'radial-gradient(ellipse at 50% 30%, rgba(34,211,238,0.08) 0%, transparent 60%), linear-gradient(180deg, #0D0E12 0%, #090A0D 50%, #050507 100%)',
                     }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
