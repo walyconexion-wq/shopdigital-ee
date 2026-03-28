@@ -34,11 +34,8 @@ const Home: React.FC = () => {
                     offers: [
                         {
                             id: "promo-macondo-1",
-                            title: "Menú Ejecutivo",
-                            description: "Plato principal + Bebida + Postre.",
-                            originalPrice: 8500,
-                            discountedPrice: 6500,
-                            discount: 23,
+                            name: "Menú Ejecutivo",
+                            price: 6500,
                             image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop"
                         }
                     ],
@@ -65,11 +62,8 @@ const Home: React.FC = () => {
                     offers: [
                         {
                             id: "promo-carlina-1",
-                            title: "Parrillada V.I.P",
-                            description: "Asado, vacío, chorizos, morcilla, chinchulines y papas fritas.",
-                            originalPrice: 25000,
-                            discountedPrice: 21000,
-                            discount: 16,
+                            name: "Parrillada V.I.P",
+                            price: 21000,
                             image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop"
                         }
                     ],
@@ -96,11 +90,8 @@ const Home: React.FC = () => {
                     offers: [
                         {
                             id: "promo-bodegon-1",
-                            title: "Milanesa Napolitana XXL",
-                            description: "Milanesa gigante con guarnición para compartir.",
-                            originalPrice: 12000,
-                            discountedPrice: 9500,
-                            discount: 20,
+                            name: "Milanesa Napolitana XXL",
+                            price: 9500,
                             image: "https://images.unsplash.com/photo-1599921841143-819065a55cc6?w=400&h=300&fit=crop"
                         }
                     ],
