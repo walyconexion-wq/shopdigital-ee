@@ -143,6 +143,17 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
             </Helmet>
 
             <div className="relative w-full h-[260px] bg-black overflow-hidden">
+                {/* Back Button Overlay */}
+                <button
+                    onClick={() => {
+                        playNeonClick();
+                        navigate(`/${categorySlug}`);
+                    }}
+                    className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                >
+                    <ArrowLeft size={22} className="text-white drop-shadow-md pr-0.5" />
+                </button>
+
                 {gallery.map((img, idx) => (
                     <img
                         key={idx}
