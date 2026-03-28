@@ -48,6 +48,11 @@ const App: React.FC = () => {
   const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
   useEffect(() => {
+    // Fallback: force loading to finish after 8 seconds purely to avoid infinite freeze
+    const fallbackTimer = setTimeout(() => {
+      setLoading(false);
+    }, 8000);
+
     const unsubscribe = suscribirseAComercios((fbShops) => {
       const cleanedShops = fbShops
         .filter(shop => shop.name && shop.name.trim() !== "")
@@ -60,6 +65,11 @@ const App: React.FC = () => {
 
       setAllShops(cleanedShops);
       setLoading(false);
+      clearTimeout(fallbackTimer);
+    }, (error) => {
+      console.error("Critical: failed to get shops. Passing loader anyway to prevent freeze.", error);
+      setLoading(false);
+      clearTimeout(fallbackTimer);
     });
 
     const unsubscribeClients = suscribirseAClientes((fbClients) => {

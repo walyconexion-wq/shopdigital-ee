@@ -134,7 +134,7 @@ export const obtenerComercios = async () => {
 };
 
 // 1b. Suscribirse a los comercios en tiempo real
-export const suscribirseAComercios = (callback: (comercios: any[]) => void) => {
+export const suscribirseAComercios = (callback: (comercios: any[]) => void, onError?: (error: any) => void) => {
     const colRef = collection(db, "comercios");
     return onSnapshot(colRef, (snapshot) => {
         const comercios = snapshot.docs.map(docSnap => ({
@@ -144,6 +144,7 @@ export const suscribirseAComercios = (callback: (comercios: any[]) => void) => {
         callback(comercios);
     }, (error) => {
         console.error("Error en la suscripción de comercios:", error);
+        if (onError) onError(error);
     });
 };
 
