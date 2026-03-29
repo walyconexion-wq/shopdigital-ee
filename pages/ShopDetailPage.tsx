@@ -20,11 +20,14 @@ import {
     MessageSquare,
     Star,
     Settings,
-    Eye
+    Eye,
+    Heart,
+    Image as ImageIcon
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
 import { useAuth } from '../components/AuthContext';
+import { incrementarLikesFeed } from '../firebase';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
@@ -58,8 +61,31 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
         [shopSlug, allShops]);
 
+    const [hasLikedFeed, setHasLikedFeed] = useState(false);
+    const [feedLikesCount, setFeedLikesCount] = useState(0);
+
+    const feedGallery = useMemo(() => {
+        if (!selectedShop) return [];
+        if (selectedShop.feedImages && selectedShop.feedImages.length > 0) {
+            return selectedShop.feedImages;
+        }
+        if (selectedShop.bannerImage) return [selectedShop.bannerImage];
+        if (selectedShop.image) return [selectedShop.image];
+        return [];
+    }, [selectedShop]);
+
+    const handleLikeFeed = async () => {
+        if (hasLikedFeed || !selectedShop) return;
+        playNeonClick();
+        setHasLikedFeed(true);
+        setFeedLikesCount(prev => prev + 1);
+        await incrementarLikesFeed(selectedShop.id);
+    };
+
     useEffect(() => {
         if (selectedShop) {
+            setFeedLikesCount(selectedShop.feedLikes || 0);
+
             const gallery = selectedShop.galleryImages && selectedShop.galleryImages.length > 0
                 ? selectedShop.galleryImages
                 : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
@@ -336,6 +362,58 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         playNeonClick();
                         navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
                     }} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
+                </div>
+
+                {/* ---------- MURO DE NOVEDADES (FEED) ---------- */}
+                <div className="w-full px-5 mb-14 flex flex-col items-center">
+                    <div className="flex items-center gap-2 mb-6">
+                        <ImageIcon size={16} className="text-cyan-400" />
+                        <h3 className="neon-text-cyan font-black text-[11px] uppercase tracking-[0.3em]">Muro de Novedades</h3>
+                    </div>
+
+                    <div className="w-full aspect-square md:aspect-video rounded-[1.7rem] overflow-hidden relative shadow-[0_0_30px_rgba(34,211,238,0.1)] border border-cyan-500/20 isolate bg-zinc-900 group">
+                        
+                        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full">
+                            {feedGallery.length > 0 ? (
+                                feedGallery.map((img, i) => (
+                                    <img key={i} src={img} className="w-full h-full object-cover shrink-0 snap-center" alt={`Novedad ${i + 1}`} loading="lazy" />
+                                ))
+                            ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center bg-black/50 text-white/40 relative">
+                                    <div className="absolute inset-0 bg-cyan-500/5 blur-3xl pointer-events-none" />
+                                    <ImageIcon size={32} className="mb-2 opacity-50" />
+                                    <p className="text-[10px] uppercase font-black tracking-widest text-center px-4">Próximamente nuevas publicidades</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Pagination Dots */}
+                        {feedGallery.length > 1 && (
+                            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10">
+                                {feedGallery.map((_, i) => (
+                                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/50 backdrop-blur-md shadow-[0_0_5px_rgba(0,0,0,0.5)]"></div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Like Button */}
+                        <div className="absolute top-3 right-3 z-20">
+                            <button
+                                onClick={handleLikeFeed}
+                                disabled={hasLikedFeed}
+                                className={`glass-action-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full border backdrop-blur-md transition-all duration-300 ${
+                                    hasLikedFeed 
+                                    ? 'bg-rose-500/30 border-rose-400/50 shadow-[0_0_15px_rgba(244,63,94,0.4)]' 
+                                    : 'bg-black/40 border-white/20 hover:bg-black/60 hover:border-white/40'
+                                }`}
+                            >
+                                <Heart size={14} className={`${hasLikedFeed ? 'fill-rose-400 text-rose-400' : 'text-white'} transition-colors duration-300`} />
+                                <span className={`text-[10px] font-black tracking-widest ${hasLikedFeed ? 'text-rose-400 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]' : 'text-white'}`}>
+                                    {feedLikesCount}
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* ---------- REVIEWS AND RATING SECTION ---------- */}

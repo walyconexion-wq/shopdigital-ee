@@ -184,6 +184,16 @@ export const incrementarVisitas = async (comercioId: string) => {
     }
 };
 
+// Incrementar likes del muro de novedades (contador atómico)
+export const incrementarLikesFeed = async (comercioId: string) => {
+    try {
+        const ref = doc(db, "comercios", comercioId);
+        await updateDoc(ref, { feedLikes: increment(1) });
+    } catch (error) {
+        console.error("Error incrementando likes del muro:", error);
+    }
+};
+
 // 3. Eliminar un comercio de la colección "comercios"
 export const eliminarComercio = async (id: string) => {
     try {

@@ -137,4 +137,6 @@ export interface Shop {
   subscribers?: number;
   reviews?: Review[];
   authorizedEmail?: string;
+  feedImages?: string[];
+  feedLikes?: number;
 }

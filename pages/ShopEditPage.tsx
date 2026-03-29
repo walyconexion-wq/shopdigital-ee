@@ -20,6 +20,7 @@ const TABS = [
   { id: 'identidad', label: 'Identidad Visual', icon: <Palette size={14} /> },
   { id: 'contacto', label: 'Contacto & Mapa', icon: <MapPin size={14} /> },
   { id: 'ofertas', label: 'Catálogo Ofertas', icon: <ShoppingCart size={14} /> },
+  { id: 'novedades', label: 'Muro Novedades', icon: <ImageIcon size={14} /> },
   { id: 'enlaces', label: 'Enlaces Exteriores', icon: <ExternalLink size={14} /> },
 ];
 
@@ -250,6 +251,74 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                 />
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'novedades' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="flex justify-between items-end mb-2">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-cyan-400 flex items-center gap-2">
+                <ImageIcon size={14} /> Muro de Novedades
+              </h2>
+              <button 
+                onClick={() => {
+                  playNeonClick();
+                  const newFeed = [...(shop.feedImages || []), ''];
+                  handleInputChange('feedImages', newFeed);
+                }}
+                className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-cyan-500/40 transition-colors flex items-center gap-1"
+              >
+                <Plus size={12} /> Agregar Foto
+              </button>
+            </div>
+
+            {(!shop.feedImages || shop.feedImages.length === 0) ? (
+              <div className="bg-zinc-900/40 border border-dashed border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
+                <p className="text-[10px] text-white/50 uppercase">El muro está vacío. Subí publicidades o eventos.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {shop.feedImages.map((imgUrl, index) => (
+                  <div key={index} className="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 relative group hover:border-cyan-500/30 transition-colors">
+                    <button 
+                      onClick={() => {
+                        const confirm = window.confirm('¿Eliminar esta imagen del muro?');
+                        if (confirm) {
+                          playNeonClick();
+                          const newFeed = shop.feedImages!.filter((_, i) => i !== index);
+                          handleInputChange('feedImages', newFeed);
+                        }
+                      }}
+                      className="absolute top-4 right-4 text-red-400/50 hover:text-red-400 transition-colors z-10"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    
+                    <div className="space-y-3 mt-2 block">
+                      <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">URL Imagen publicitaria #{index + 1}</label>
+                      <input 
+                        type="text" 
+                        value={imgUrl || ''}
+                        onChange={(e) => {
+                          const newFeed = [...shop.feedImages!];
+                          newFeed[index] = e.target.value;
+                          handleInputChange('feedImages', newFeed);
+                        }}
+                        placeholder="https://...jpg"
+                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                      />
+                      {imgUrl && (
+                         <div className="mt-3 aspect-video rounded-xl overflow-hidden border border-white/10">
+                            <img src={imgUrl} alt="Feed Preview" className="w-full h-full object-cover" />
+                         </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="h-6"></div> {/* Spacer for scroll */}
           </div>
         )}
 
