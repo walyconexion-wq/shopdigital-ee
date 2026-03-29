@@ -16,10 +16,11 @@ import {
     Music,
     ArrowLeft,
     Gift,
-    Eye,
     Users,
     MessageSquare,
-    Star
+    Star,
+    Settings,
+    Eye
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
@@ -142,6 +143,19 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <meta name="twitter:image" content={selectedShop.bannerImage || selectedShop.image} />
             </Helmet>
 
+            {/* Admin Floating Edit Button */}
+            {user?.email?.trim().toLowerCase() === ROOT_EMAIL && (
+                <button
+                    onClick={() => {
+                        playNeonClick();
+                        navigate(`/embajador/editar/${selectedShop.id}`);
+                    }}
+                    className="fixed bottom-32 right-6 z-[100] bg-black/80 backdrop-blur-md border border-cyan-400 text-cyan-400 p-4 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.5)] hover:scale-110 hover:bg-cyan-500/20 active:scale-95 transition-all flex items-center justify-center animate-bounce"
+                >
+                    <Settings className="w-6 h-6 animate-pulse" />
+                </button>
+            )}
+
             <div className="relative w-full h-[260px] bg-black overflow-hidden">
                 {/* Back Button Overlay */}
                 <button
@@ -230,19 +244,19 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </div>
                 </div>
 
-                {/* Botón Ver Catálogo Reubicado */}
-                {selectedShop.catalog && (
+                {/* Botón Integración PedidoYa */}
+                {selectedShop.pedidoYaUrl && (
                     <div className="w-full px-6 mb-8 mt-2">
                         <button
                             onClick={() => {
                                 playNeonClick();
-                                window.open(selectedShop.catalog, '_blank', 'noopener,noreferrer');
+                                window.open(selectedShop.pedidoYaUrl, '_blank', 'noopener,noreferrer');
                             }}
-                            className="w-full glass-action-btn btn-offers-glow luminous-glow py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(34,211,238,0.2)] active:scale-95 group relative overflow-hidden"
+                            className="w-full bg-[#EA044E]/10 border border-[#EA044E]/50 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(234,4,78,0.2)] hover:bg-[#EA044E]/20 active:scale-95 group relative overflow-hidden transition-all"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <BookOpen size={16} strokeWidth={3} className="text-white group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Ver Catálogo Completo</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#EA044E]/0 via-white/10 to-[#EA044E]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <ShoppingBag size={16} strokeWidth={3} className="text-[#EA044E] group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#EA044E] drop-shadow-md">Pedir por PedidoYa</span>
                         </button>
                     </div>
                 )}

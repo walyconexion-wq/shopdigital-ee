@@ -37,6 +37,7 @@ import TermsPage from './pages/TermsPage';
 import SurveyFormPage from './pages/SurveyFormPage';
 import SurveyManagementPage from './pages/SurveyManagementPage';
 import ShopMenuPage from './pages/ShopMenuPage';
+import ShopEditPage from './pages/ShopEditPage';
 
 const App: React.FC = () => {
   const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -112,6 +113,7 @@ const App: React.FC = () => {
           <Route path="reclutamiento/alta/:id" element={<AmbassadorRecruitPage2 />} />
           <Route path="embajador" element={<ProtectedRoute roles={['admin', 'ambassador']}><AmbassadorPanelPage allShops={allShops} /></ProtectedRoute>} />
           <Route path="embajador/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopManagementPage allShops={allShops} /></ProtectedRoute>} />
+          <Route path="embajador/editar/:shopId" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopEditPage allShops={allShops} /></ProtectedRoute>} />
           <Route path="embajador/clientes" element={<ProtectedRoute roles={['admin', 'ambassador']}><ClientManagementPage allShops={allShops} allClients={allClients} /></ProtectedRoute>} />
           <Route path="embajador/ofertas/:target" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferManagementPage allOffers={allOffers} /></ProtectedRoute>} />
           <Route path="embajador/ofertas/crear/:target" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferFormPage /></ProtectedRoute>} />

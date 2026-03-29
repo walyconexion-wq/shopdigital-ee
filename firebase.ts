@@ -163,6 +163,17 @@ export const guardarComercio = async (comercioData: any) => {
     }
 };
 
+export const updateComercio = async (id: string, updates: any) => {
+    try {
+        const docRef = doc(db, "comercios", id);
+        await updateDoc(docRef, updates);
+        return true;
+    } catch (error) {
+        console.error("Error al actualizar comercio:", error);
+        throw error;
+    }
+};
+
 // Incrementar visitas de un comercio (contador atómico)
 export const incrementarVisitas = async (comercioId: string) => {
     try {

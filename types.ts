@@ -121,6 +121,9 @@ export interface Shop {
   instagram?: string;
   facebook?: string;
   tiktok?: string;
+  pedidoYaUrl?: string;
+  mercadoPagoUrl?: string;
+  themeColor?: string;
   // Personal Validation Fields (Master Play)
   ownerName?: string;
   ownerPhoto?: string;

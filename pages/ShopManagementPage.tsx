@@ -13,7 +13,8 @@ import {
     Phone,
     MapPin,
     Image as ImageIcon,
-    ArrowLeft
+    ArrowLeft,
+    Edit3
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -268,6 +269,17 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
 
                                 {/* Action Buttons */}
                                 <div className="flex gap-2 pt-2 border-t border-white/5">
+                                    {/* Edit */}
+                                    <button
+                                        onClick={() => {
+                                            playNeonClick();
+                                            navigate(`/embajador/editar/${shop.id}`);
+                                        }}
+                                        className="flex-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
+                                    >
+                                        <Edit3 size={14} /> Editar
+                                    </button>
+
                                     {/* Delete */}
                                     <button
                                         disabled={processingId === shop.id}
