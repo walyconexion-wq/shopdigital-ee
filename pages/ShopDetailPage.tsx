@@ -418,13 +418,19 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </div>
                 </div>
 
-                {/* Merchant Access Link */}
-                <div className="w-full flex justify-center pb-8 opacity-40 hover:opacity-100 transition-opacity">
+                {/* Merchant Access Links */}
+                <div className="w-full flex flex-col items-center gap-4 pb-12 opacity-40 hover:opacity-100 transition-opacity">
                     <button
                         onClick={() => handleMerchantAccess(`/${categorySlug}/${shopSlug}/panel-autogestion`)}
-                        className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-white"
+                        className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-white hover:text-cyan-400 transition-colors"
                     >
                         <Lock size={12} /> Acceso Comercio
+                    </button>
+                    <button
+                        onClick={() => handleMerchantAccess(`/${categorySlug}/${shopSlug}/editar`)}
+                        className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-black text-cyan-500/80 hover:text-cyan-400 transition-colors"
+                    >
+                        <Lock size={10} /> Panel de Edición
                     </button>
                 </div>
             </div>

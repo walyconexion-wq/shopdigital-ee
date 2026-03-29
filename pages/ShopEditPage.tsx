@@ -9,6 +9,7 @@ import {
   Instagram, Facebook, LayoutDashboard,
   ShoppingCart, Palette, PenTool, ExternalLink
 } from 'lucide-react';
+import { useAuth } from '../components/AuthContext';
 import { CATEGORIES } from '../constants';
 
 interface ShopEditPageProps {
@@ -31,21 +32,34 @@ const THEME_COLORS = [
 ];
 
 const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
-  const { shopId } = useParams<{ shopId: string }>();
+  const { shopId, shopSlug } = useParams<{ shopId?: string; shopSlug?: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const ROOT_EMAIL = 'walyconexion@gmail.com';
 
   const [shop, setShop] = useState<Shop | null>(null);
   const [activeTab, setActiveTab] = useState('identidad');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (shopId && allShops.length > 0) {
-      const found = allShops.find(s => s.id === shopId);
+    if ((shopId || shopSlug) && allShops.length > 0) {
+      const found = allShops.find(s => s.id === shopId || (s.slug && s.slug === shopSlug) || s.id === shopSlug);
+      
       if (found) {
-        setShop(JSON.parse(JSON.stringify(found))); // deep copy to avoid mutations
+        // Validación de Seguridad Híbrida: si entra por la ruta del comerciante, exigimos match de Gmail
+        if (shopSlug) {
+           const userEmail = user?.email?.trim().toLowerCase();
+           const authEmail = found.authorizedEmail?.trim().toLowerCase();
+           if (!userEmail || (userEmail !== ROOT_EMAIL && userEmail !== authEmail)) {
+              alert('🔒 Acceso Denegado. Solo el comerciante autorizado puede editar este perfil.');
+              navigate(-1);
+              return;
+           }
+        }
+        setShop(JSON.parse(JSON.stringify(found))); // Eliminamos mutaciones de memoria
       }
     }
-  }, [shopId, allShops]);
+  }, [shopId, shopSlug, allShops, user, navigate]);
 
   const handleSave = async () => {
     if (!shop) return;
