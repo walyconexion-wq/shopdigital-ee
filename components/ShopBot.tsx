@@ -162,10 +162,11 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
             {/* Floating Bubble */}
             {!isOpen && (
                 <div className="fixed bottom-6 right-3 z-[9999] flex items-center gap-2">
-                    {/* Tooltip Speech Bubble - Always visible, stays still */}
-                    <div className="bg-white rounded-2xl rounded-br-sm px-3 py-2 shadow-[0_4px_15px_rgba(0,0,0,0.2)] max-w-[140px]">
-                        <p className="text-[8.5px] font-bold text-gray-700 leading-snug">
-                            ¿Necesitás que te ayude? 🤖
+                    {/* Tooltip Speech Bubble - Glassmorphism */}
+                    <div className="bg-black/40 backdrop-blur-md border border-cyan-400/30 rounded-2xl rounded-br-sm px-3 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(34,211,238,0.15)] max-w-[140px] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-transparent pointer-events-none"></div>
+                        <p className="text-[9px] font-black text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] relative z-10 tracking-wide text-center">
+                            ¿Necesitás ayuda? 🤖
                         </p>
                     </div>
 
@@ -212,13 +213,14 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
                                             <img src="/shopbot-avatar.png" alt="Bot" className="w-full h-full object-cover rounded-full" />
                                         </div>
                                     )}
-                                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-[10px] leading-relaxed ${
+                                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-[10px] leading-relaxed relative overflow-hidden ${
                                         msg.sender === 'user'
-                                            ? 'bg-cyan-500/30 border border-cyan-400/40 text-white rounded-br-sm'
-                                            : 'bg-white/5 border border-white/10 text-white/90 rounded-bl-sm'
-                                    }`}
-                                        dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }}
-                                    />
+                                            ? 'bg-cyan-500/20 backdrop-blur-md border border-cyan-400/30 text-white rounded-br-sm shadow-[0_4px_15px_rgba(34,211,238,0.15)] drop-shadow-sm'
+                                            : 'bg-white/10 backdrop-blur-md border border-white/20 text-white/95 rounded-bl-sm shadow-[0_4px_15px_rgba(255,255,255,0.05)] drop-shadow-sm'
+                                    }`}>
+                                        <div className={`absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none ${msg.sender === 'user' ? 'opacity-30' : 'opacity-10'}`}></div>
+                                        <div className="relative z-10" dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }} />
+                                    </div>
                                 </div>
                             ))}
 
@@ -228,10 +230,13 @@ const ShopBot: React.FC<ShopBotProps> = ({ allShops }) => {
                                     <div className="w-6 h-6 rounded-full overflow-hidden border border-cyan-400/40 flex-shrink-0 mr-2 mt-1 bg-black p-0.5">
                                         <img src="/shopbot-avatar.png" alt="Bot" className="w-full h-full object-cover rounded-full" />
                                     </div>
-                                    <div className="bg-white/5 border border-white/10 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    <div className="bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_4px_15px_rgba(255,255,255,0.05)] rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1 relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none opacity-10"></div>
+                                        <div className="relative z-10 flex gap-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        </div>
                                     </div>
                                 </div>
                             )}

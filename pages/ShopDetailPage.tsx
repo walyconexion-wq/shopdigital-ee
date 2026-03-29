@@ -143,19 +143,6 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <meta name="twitter:image" content={selectedShop.bannerImage || selectedShop.image} />
             </Helmet>
 
-            {/* Admin Floating Edit Button */}
-            {user?.email?.trim().toLowerCase() === ROOT_EMAIL && (
-                <button
-                    onClick={() => {
-                        playNeonClick();
-                        navigate(`/embajador/editar/${selectedShop.id}`);
-                    }}
-                    className="fixed bottom-32 right-6 z-[100] bg-black/80 backdrop-blur-md border border-cyan-400 text-cyan-400 p-4 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.5)] hover:scale-110 hover:bg-cyan-500/20 active:scale-95 transition-all flex items-center justify-center animate-bounce"
-                >
-                    <Settings className="w-6 h-6 animate-pulse" />
-                </button>
-            )}
-
             <div className="relative w-full h-[260px] bg-black overflow-hidden">
                 {/* Back Button Overlay */}
                 <button
