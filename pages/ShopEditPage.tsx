@@ -79,6 +79,15 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
 
   const handleInputChange = (field: keyof Shop, value: any) => {
     if (!shop) return;
+    
+    // Extractor Inteligente de SRC para Mapas (Si pegan el Iframe completo)
+    if (field === 'mapUrl' && typeof value === 'string' && value.includes('<iframe')) {
+      const srcMatch = value.match(/src=["']([^"']+)["']/);
+      if (srcMatch && srcMatch[1]) {
+        value = srcMatch[1];
+      }
+    }
+
     setShop({ ...shop, [field]: value });
   };
 
