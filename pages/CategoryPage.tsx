@@ -82,6 +82,17 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
 
             <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
                 <div className="w-full px-6 flex flex-col pb-4">
+                    {/* Back Button Overlay */}
+                    <button
+                        onClick={() => {
+                            playNeonClick();
+                            navigate('/');
+                        }}
+                        className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                    >
+                        <ArrowLeft size={22} className="text-white drop-shadow-md pr-0.5" />
+                    </button>
+
                     <div className="flex justify-center w-full px-2">
                         <div 
                             onClick={handleTitleClick}
@@ -94,18 +105,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                             <p className="text-[8.5px] font-bold text-white/90 uppercase tracking-[0.15em] leading-tight text-center px-6">
                                 Seleccioná tu comercio y descubrí ofertas magníficas
                             </p>
-
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    playNeonClick();
-                                    navigate('/');
-                                }}
-                                className="mt-3 flex items-center gap-1.5 text-[8px] font-bold text-cyan-400 uppercase tracking-[0.2em] hover:text-cyan-300 transition-colors"
-                            >
-                                <ChevronLeft size={12} strokeWidth={3} />
-                                Atrás
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -249,16 +248,12 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops }) => {
                     )}
                 </div>
 
-                <div className="pt-8 flex justify-center w-full">
-                    <button
-                        onClick={() => {
-                            playNeonClick();
-                            navigate('/');
-                        }}
-                        className="glass-header bg-gradient-to-br from-cyan-500/20 to-slate-900/60 border border-cyan-400/50 shadow-[0_5px_15px_rgba(34,211,238,0.3)] rounded-full px-5 py-2.5 flex items-center gap-2 text-[8px] font-bold text-cyan-400 uppercase tracking-[0.2em] hover:from-cyan-500/30 hover:text-white transition-all active:scale-95"
-                    >
-                        <ChevronLeft size={12} strokeWidth={3} className="text-cyan-400" />
-                        Regresar al Inicio
+                <div className="w-full flex justify-center mb-8">
+                    <button onClick={() => {
+                        playNeonClick();
+                        navigate('/');
+                    }} className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/40 w-max py-2.5 px-6 rounded-full flex items-center gap-2 text-cyan-400 shadow-[0_4px_0_rgba(34,211,238,0.3),0_8px_15px_rgba(34,211,238,0.15)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_4px_8px_rgba(34,211,238,0.05)] transition-all duration-75">
+                        <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
                     </button>
                 </div>
             </div>
