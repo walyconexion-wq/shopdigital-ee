@@ -227,11 +227,10 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                                 playNeonClick();
                                 navigate(`/${categorySlug}/${shopSlug}/menu`);
                             }}
-                            className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/50 px-8 py-3 rounded-full flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white overflow-hidden relative group shadow-[0_3px_0_rgba(34,211,238,0.3),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[3px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
+                            className="glass-action-btn bg-cyan-600/35 backdrop-blur-md border border-cyan-400/50 px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_12px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <ShoppingBag size={16} className="text-cyan-400 drop-shadow-md group-hover:scale-110 transition-transform" />
-                            Catálogo de Ofertas
+                            <ShoppingBag size={16} className="text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                            <span className="drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Catálogo de Ofertas</span>
                         </button>
                     </div>
 
@@ -280,11 +279,10 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                             playNeonClick();
                             navigate(`/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
-                        className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/50 px-8 py-3 rounded-full flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white overflow-hidden relative group shadow-[0_3px_0_rgba(34,211,238,0.3),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[3px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
+                        className="glass-action-btn bg-cyan-600/35 backdrop-blur-md border border-cyan-400/50 px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_12px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                        <Gift size={16} className="text-white drop-shadow-md group-hover:scale-110 transition-transform" />
-                        Obtener Credencial VIP
+                        <Gift size={16} className="text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                        <span className="drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Obtener Credencial VIP</span>
                     </button>
                     <p className="text-[8px] text-center font-bold text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] uppercase tracking-widest mt-4">Sumate a nuestra red de beneficios locales</p>
                 </div>
@@ -451,8 +449,8 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                     {/* Actions: View All / Leave Review */}
                     <div className="grid grid-cols-2 gap-3 w-full">
-                        <button className="glass-action-btn bg-cyan-950/30 backdrop-blur-md border border-cyan-400/30 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.2),0_8px_15px_rgba(34,211,238,0.1)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.2),0_4px_8px_rgba(34,211,238,0.05)] transition-all duration-75">
-                            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-400">Ver Todas</span>
+                        <button className="glass-action-btn bg-cyan-950/30 backdrop-blur-md border border-cyan-400/30 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.3),0_8px_15px_rgba(34,211,238,0.15)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_4px_8px_rgba(34,211,238,0.05)] transition-all duration-75">
+                            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Ver Todas</span>
                         </button>
                         <button className="glass-action-btn bg-cyan-600/30 backdrop-blur-md border border-cyan-400/50 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75">
                             <span className="text-[8px] font-[1100] uppercase tracking-widest text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Dejar Reseña</span>
@@ -465,8 +463,9 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <button onClick={() => {
                         playNeonClick();
                         navigate(`/${categorySlug}`);
-                    }} className="glass-action-btn bg-cyan-950/40 backdrop-blur-md border border-cyan-400/40 w-max py-2.5 px-6 rounded-full flex items-center gap-2 text-cyan-400 shadow-[0_4px_0_rgba(34,211,238,0.3),0_8px_15px_rgba(34,211,238,0.15)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_4px_8px_rgba(34,211,238,0.05)] transition-all duration-75">
-                        <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
+                    }} className="glass-action-btn bg-cyan-600/35 backdrop-blur-md border border-cyan-400/50 w-max py-2.5 px-8 rounded-full flex items-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75">
+                        <ArrowLeft size={16} className="text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                        <span className="text-[10px] font-[1100] uppercase tracking-widest text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Regresar</span>
                     </button>
                 </div>
 
