@@ -61,6 +61,14 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
         [shopSlug, allShops]);
 
+    const themeColor = selectedShop?.themeColor || '#22d3ee';
+    const hexToRgba = (hex: string, alpha: number) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
     const [hasLikedFeed, setHasLikedFeed] = useState(false);
     const [feedLikesCount, setFeedLikesCount] = useState(0);
 
@@ -206,15 +214,15 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 </div>
 
                 {/* Contador de Visitas Portada (Esquina Inferior Izquierda) */}
-                <div className="absolute bottom-5 left-5 z-40 flex items-center gap-1.5 bg-cyan-950/40 px-3 py-1.5 rounded-lg border border-cyan-500/20 shadow-inner backdrop-blur-sm">
-                    <Eye size={12} className="text-cyan-400" />
-                    <span className="text-[10px] font-black text-cyan-400 tracking-widest uppercase">{selectedShop.visits || 0} visitas</span>
+                <div className="absolute bottom-5 left-5 z-40 flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-lg border shadow-inner backdrop-blur-sm" style={{ borderColor: hexToRgba(themeColor, 0.2) }}>
+                    <Eye size={12} style={{ color: themeColor }} />
+                    <span className="text-[10px] font-black tracking-widest uppercase" style={{ color: themeColor }}>{selectedShop.visits || 0} visitas</span>
                 </div>
 
                 {/* Contador de Suscriptores Portada (Esquina Inferior Derecha) */}
-                <div className="absolute bottom-5 right-5 z-40 flex items-center gap-1.5 bg-cyan-950/40 px-3 py-1.5 rounded-lg border border-cyan-500/20 shadow-inner backdrop-blur-sm">
-                    <Users size={12} className="text-cyan-400" />
-                    <span className="text-[10px] font-black text-cyan-400 tracking-widest uppercase">{selectedShop.subscribers || 0} suscriptores</span>
+                <div className="absolute bottom-5 right-5 z-40 flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-lg border shadow-inner backdrop-blur-sm" style={{ borderColor: hexToRgba(themeColor, 0.2) }}>
+                    <Users size={12} style={{ color: themeColor }} />
+                    <span className="text-[10px] font-black tracking-widest uppercase" style={{ color: themeColor }}>{selectedShop.subscribers || 0} suscriptores</span>
                 </div>
 
             </div>
@@ -227,10 +235,15 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                                 playNeonClick();
                                 navigate(`/${categorySlug}/${shopSlug}/menu`);
                             }}
-                            className="glass-action-btn bg-cyan-600/35 backdrop-blur-md border border-cyan-400/50 px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_12px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
+                            className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px]"
+                            style={{ 
+                                backgroundColor: hexToRgba(themeColor, 0.35),
+                                borderColor: hexToRgba(themeColor, 0.5),
+                                boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 12px 20px ${hexToRgba(themeColor, 0.2)}`
+                            }}
                         >
-                            <ShoppingBag size={16} className="text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-                            <span className="drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Catálogo de Ofertas</span>
+                            <ShoppingBag size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
+                            <span style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Catálogo de Ofertas</span>
                         </button>
                     </div>
 
@@ -279,12 +292,17 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                             playNeonClick();
                             navigate(`/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
-                        className="glass-action-btn bg-cyan-600/35 backdrop-blur-md border border-cyan-400/50 px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_12px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75"
+                        className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px]"
+                        style={{ 
+                            backgroundColor: hexToRgba(themeColor, 0.35),
+                            borderColor: hexToRgba(themeColor, 0.5),
+                            boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 12px 20px ${hexToRgba(themeColor, 0.2)}`
+                        }}
                     >
-                        <Gift size={16} className="text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-                        <span className="drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Obtener Credencial VIP</span>
+                        <Gift size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
+                        <span style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Obtener Credencial VIP</span>
                     </button>
-                    <p className="text-[8px] text-center font-bold text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] uppercase tracking-widest mt-4">Sumate a nuestra red de beneficios locales</p>
+                    <p className="text-[8px] text-center font-bold uppercase tracking-widest mt-4" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>Sumate a nuestra red de beneficios locales</p>
                 </div>
 
                 {/* Action Buttons */}
@@ -305,7 +323,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                 {/* Map Section */}
                 <div className="w-full px-6 mb-12">
-                    <div className="map-glow-container w-full h-80 overflow-hidden bg-cyan-950/40 backdrop-blur-md relative mb-8 shadow-[0_0_30px_rgba(34,211,238,0.15)] rounded-[2rem] border border-cyan-400/50 p-1">
+                    <div className="map-glow-container w-full h-80 overflow-hidden bg-black/40 backdrop-blur-md relative mb-8 rounded-[2rem] border p-1" style={{ borderColor: hexToRgba(themeColor, 0.5), boxShadow: `0 0 30px ${hexToRgba(themeColor, 0.15)}` }}>
                         <iframe
                             title="Ubicación"
                             src={selectedShop.mapUrl}
@@ -318,7 +336,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         ></iframe>
                     </div>
                     <div className="mt-2 text-center px-4 mb-10">
-                        <p className="text-[8px] text-center font-bold text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] uppercase tracking-widest">
+                        <p className="text-[8px] text-center font-bold uppercase tracking-widest" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>
                             {selectedShop.address}
                         </p>
                     </div>
@@ -365,11 +383,11 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 {/* ---------- MURO DE NOVEDADES (FEED) ---------- */}
                 <div className="w-full px-5 mb-14 flex flex-col items-center">
                     <div className="flex items-center gap-2 mb-6">
-                        <ImageIcon size={16} className="text-cyan-400" />
-                        <h3 className="neon-text-cyan font-black text-[11px] uppercase tracking-[0.3em]">Muro de Novedades</h3>
+                        <ImageIcon size={16} style={{ color: themeColor }} />
+                        <h3 className="font-black text-[11px] uppercase tracking-[0.3em]" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor,0.6)})` }}>Muro de Novedades</h3>
                     </div>
 
-                    <div className="w-full aspect-square md:aspect-video rounded-[1.7rem] overflow-hidden relative shadow-[0_0_30px_rgba(34,211,238,0.1)] border border-cyan-500/20 isolate bg-zinc-900 group">
+                    <div className="w-full aspect-square md:aspect-video rounded-[1.7rem] overflow-hidden relative border isolate bg-zinc-900 group" style={{ borderColor: hexToRgba(themeColor, 0.2), boxShadow: `0 0 30px ${hexToRgba(themeColor, 0.1)}` }}>
                         
                         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full">
                             {feedGallery.length > 0 ? (
@@ -417,21 +435,21 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 {/* ---------- REVIEWS AND RATING SECTION ---------- */}
                 <div className="w-full px-5 mb-14 flex flex-col items-center">
                     <div className="flex items-center gap-2 mb-6">
-                        <MessageSquare size={16} className="text-cyan-400" />
-                        <h3 className="neon-text-cyan font-black text-[11px] uppercase tracking-[0.3em]">Opiniones de Clientes</h3>
+                        <MessageSquare size={16} style={{ color: themeColor }} />
+                        <h3 className="font-black text-[11px] uppercase tracking-[0.3em]" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor,0.6)})` }}>Opiniones de Clientes</h3>
                     </div>
 
                     {/* Review List */}
                     <div className="flex flex-col gap-3 w-full mb-6 relative">
                         {/* Decorative glow behind reviews */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-cyan-500/5 blur-3xl rounded-full pointer-events-none" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 blur-3xl rounded-full pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.05) }} />
                         
                         {(selectedShop.reviews || [
                             { id: '1', authorName: 'Carlos M.', rating: 5, text: 'Excelente atención y los productos de primera calidad. Vuelvo seguro. Recomendado al 100%.', date: 'Hace 2 días' },
                             { id: '2', authorName: 'Laura G.', rating: 5, text: 'Muy buen servicio, llegó todo rapidísimo y caliente. Un lujo tener algo así en la zona.', date: 'Hace 1 semana' },
                             { id: '3', authorName: 'Diego F.', rating: 4, text: '¡Increíble la calidad! Se nota que le ponen mucha dedicación a lo que hacen.', date: 'Hace 2 semanas' }
                         ]).slice(0, 5).map((review) => (
-                            <div key={review.id} className="glass-card-3d bg-cyan-950/20 backdrop-blur-sm border border-cyan-500/20 rounded-[1.25rem] p-4 flex flex-col gap-2 relative overflow-hidden">
+                            <div key={review.id} className="glass-card-3d backdrop-blur-sm border rounded-[1.25rem] p-4 flex flex-col gap-2 relative overflow-hidden" style={{ backgroundColor: hexToRgba(themeColor, 0.05), borderColor: hexToRgba(themeColor, 0.2) }}>
                                 <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 blur-2xl rounded-full" />
                                 <div className="flex justify-between items-center w-full relative z-10">
                                     <span className="text-[10px] font-black text-white uppercase tracking-wider">{review.authorName}</span>
@@ -449,11 +467,25 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                     {/* Actions: View All / Leave Review */}
                     <div className="grid grid-cols-2 gap-3 w-full">
-                        <button className="glass-action-btn bg-cyan-950/30 backdrop-blur-md border border-cyan-400/30 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.3),0_8px_15px_rgba(34,211,238,0.15)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.3),0_4px_8px_rgba(34,211,238,0.05)] transition-all duration-75">
-                            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Ver Todas</span>
+                        <button 
+                            className="glass-action-btn backdrop-blur-md border py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white transition-all duration-75 active:translate-y-[4px]"
+                            style={{ 
+                                backgroundColor: hexToRgba(themeColor, 0.2), 
+                                borderColor: hexToRgba(themeColor, 0.3),
+                                boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.3)}, 0 8px 15px ${hexToRgba(themeColor, 0.15)}`
+                            }}
+                        >
+                            <span className="text-[8px] font-black uppercase tracking-widest" style={{ color: themeColor, filter: `drop-shadow(0 0 5px ${hexToRgba(themeColor, 0.5)})` }}>Ver Todas</span>
                         </button>
-                        <button className="glass-action-btn bg-cyan-600/30 backdrop-blur-md border border-cyan-400/50 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75">
-                            <span className="text-[8px] font-[1100] uppercase tracking-widest text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Dejar Reseña</span>
+                        <button 
+                            className="glass-action-btn backdrop-blur-md border py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white transition-all duration-75 active:translate-y-[4px]"
+                            style={{ 
+                                backgroundColor: hexToRgba(themeColor, 0.3), 
+                                borderColor: hexToRgba(themeColor, 0.5),
+                                boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 10px 20px ${hexToRgba(themeColor, 0.2)}`
+                            }}
+                        >
+                            <span className="text-[8px] font-[1100] uppercase tracking-widest text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Dejar Reseña</span>
                         </button>
                     </div>
                 </div>
@@ -463,9 +495,16 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <button onClick={() => {
                         playNeonClick();
                         navigate(`/${categorySlug}`);
-                    }} className="glass-action-btn bg-cyan-600/35 backdrop-blur-md border border-cyan-400/50 w-max py-2.5 px-8 rounded-full flex items-center gap-2 text-white shadow-[0_4px_0_rgba(34,211,238,0.5),0_10px_20px_rgba(34,211,238,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,211,238,0.5),0_5px_10px_rgba(34,211,238,0.1)] transition-all duration-75">
-                        <ArrowLeft size={16} className="text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-                        <span className="text-[10px] font-[1100] uppercase tracking-widest text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">Regresar</span>
+                    }} 
+                        className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-8 rounded-full flex items-center gap-2 text-white transition-all duration-75 active:translate-y-[4px]"
+                        style={{ 
+                            backgroundColor: hexToRgba(themeColor, 0.35), 
+                            borderColor: hexToRgba(themeColor, 0.5),
+                            boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 10px 20px ${hexToRgba(themeColor, 0.2)}`
+                        }}
+                    >
+                        <ArrowLeft size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
+                        <span className="text-[10px] font-[1100] uppercase tracking-widest text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Regresar</span>
                     </button>
                 </div>
 

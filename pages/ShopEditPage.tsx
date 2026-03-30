@@ -109,19 +109,26 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
 
-      <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-white/10 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl">
-        <button onClick={() => { playNeonClick(); navigate(-1); }} className="absolute top-10 left-6 text-white/50 hover:text-white transition-colors">
+      <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-white/10 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl flex items-center justify-between">
+        <button onClick={() => { playNeonClick(); navigate(-1); }} className="text-white/50 hover:text-white transition-colors">
           <ChevronLeft size={24} />
         </button>
-        <div className="flex flex-col items-center">
-          <Edit3 size={28} className="mb-2" style={{ color: shop.themeColor || '#22d3ee' }} />
-          <h1 className="text-xl font-[1000] uppercase tracking-[0.1em] text-white text-center leading-tight">
+        <div className="flex flex-col items-center flex-1">
+          <Edit3 size={24} className="mb-1" style={{ color: shop.themeColor || '#22d3ee' }} />
+          <h1 className="text-sm font-[1000] uppercase tracking-[0.1em] text-white text-center leading-tight">
             Panel de Edición
           </h1>
-          <p className="text-[10px] font-bold uppercase tracking-widest mt-1" style={{ color: shop.themeColor || '#22d3ee' }}>
+          <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: shop.themeColor || '#22d3ee' }}>
             {shop.name}
           </p>
         </div>
+        <button 
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-white text-black px-4 py-2 rounded-xl text-[9px] font-[1000] uppercase tracking-widest shadow-lg active:scale-90 transition-all flex items-center gap-1.5"
+        >
+          {saving ? <span className="animate-pulse">...</span> : <><Save size={14} /> Guardar</>}
+        </button>
       </div>
 
       {/* TABS 3D REVOLUTION */}
@@ -597,25 +604,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
         )}
       </div>
 
-      {/* Floating Save Button */}
-      <div className="fixed bottom-6 left-0 right-0 px-6 z-50 pointer-events-none">
-        <div className="max-w-lg mx-auto pointer-events-auto">
-          <button 
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full bg-white text-black py-4 rounded-2xl font-[1000] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(255,255,255,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
-          >
-            {saving ? (
-              <span className="animate-pulse">Guardando...</span>
-            ) : (
-              <>
-                <Save size={18} />
-                Guardar Cambios
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+      {/* Floating Save Button Removed (Moved to Header) */}
 
     </div>
   );
