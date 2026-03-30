@@ -7,7 +7,8 @@ import {
   ChevronLeft, Save, Image as ImageIcon,
   MapPin, Phone, Edit3, Trash2, Plus,
   Instagram, Facebook, LayoutDashboard,
-  ShoppingCart, Palette, PenTool, ExternalLink
+  ShoppingCart, Palette, PenTool, ExternalLink,
+  MessageSquare, Star
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { CATEGORIES } from '../constants';
@@ -21,6 +22,7 @@ const TABS = [
   { id: 'contacto', label: 'Contacto & Mapa', icon: <MapPin size={14} /> },
   { id: 'ofertas', label: 'Catálogo Ofertas', icon: <ShoppingCart size={14} /> },
   { id: 'novedades', label: 'Muro Novedades', icon: <ImageIcon size={14} /> },
+  { id: 'resenas', label: 'Gestión Reseñas', icon: <MessageSquare size={14} /> },
   { id: 'enlaces', label: 'Enlaces Exteriores', icon: <ExternalLink size={14} /> },
 ];
 
@@ -122,23 +124,26 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
         </div>
       </div>
 
-      {/* TABS */}
-      <div className="px-4 mt-6 relative z-10">
-        <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
-          {TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => { playNeonClick(); setActiveTab(tab.id); }}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
-                activeTab === tab.id
-                  ? 'bg-white/10 border-white/30 text-white shadow-lg'
-                  : 'bg-zinc-900/50 border-white/5 text-white/40 hover:bg-white/5 hover:text-white/80'
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
+      {/* TABS 3D REVOLUTION */}
+      <div className="px-5 mt-8 relative z-10">
+        <div className="grid grid-cols-2 gap-3 pb-4">
+          {TABS.map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => { playNeonClick(); setActiveTab(tab.id); }}
+                className={`glass-action-btn flex items-center justify-center gap-2 py-3.5 px-2 rounded-[1.25rem] border text-[9px] font-[1000] uppercase tracking-widest transition-all duration-75
+                  ${isActive 
+                    ? 'bg-white/15 border-white/50 text-white shadow-[0_4px_0_rgba(255,255,255,0.3),0_10px_20px_rgba(255,255,255,0.1)] translate-y-[2px]' 
+                    : 'bg-zinc-900/60 border-white/10 text-white/40 shadow-[0_4px_0_rgba(0,0,0,0.5)] active:translate-y-[4px] active:shadow-none'
+                  }`}
+              >
+                <span className={isActive ? 'text-white' : 'text-white/30'}>{tab.icon}</span>
+                <span className={isActive ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]' : ''}>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -394,6 +399,102 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                 />
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'resenas' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="flex justify-between items-end mb-2">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-cyan-400 flex items-center gap-2">
+                <MessageSquare size={14} /> Gestión de Reseñas
+              </h2>
+              <button 
+                onClick={() => {
+                  playNeonClick();
+                  const newReview = {
+                    id: `rev-${Date.now()}`,
+                    authorName: 'Nombre del Cliente',
+                    rating: 5,
+                    text: 'Escribí aquí el comentario...',
+                    date: 'Reciente'
+                  };
+                  handleInputChange('reviews', [...(shop.reviews || []), newReview]);
+                }}
+                className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-cyan-500/40 transition-colors flex items-center gap-1"
+              >
+                <Plus size={12} /> Nueva Reseña
+              </button>
+            </div>
+
+            {(!shop.reviews || shop.reviews.length === 0) ? (
+              <div className="bg-zinc-900/40 border border-dashed border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
+                <p className="text-[10px] text-white/50 uppercase">No hay reseñas cargadas aún.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {shop.reviews.map((review, index) => (
+                  <div key={review.id} className="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 relative group hover:border-cyan-500/30 transition-colors">
+                    <button 
+                      onClick={() => {
+                        const confirm = window.confirm('¿Eliminar esta reseña?');
+                        if (confirm) {playNeonClick(); handleInputChange('reviews', shop.reviews!.filter(r => r.id !== review.id));}
+                      }}
+                      className="absolute top-4 right-4 text-red-400/50 hover:text-red-400 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    
+                    <div className="space-y-3 mt-2">
+                      <div className="flex gap-3">
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Cliente</label>
+                          <input 
+                            type="text" 
+                            value={review.authorName}
+                            onChange={(e) => {
+                              const newReviews = [...shop.reviews!];
+                              newReviews[index].authorName = e.target.value;
+                              handleInputChange('reviews', newReviews);
+                            }}
+                            className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                          />
+                        </div>
+                        <div className="w-20 space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Estrellas</label>
+                          <select 
+                            value={review.rating}
+                            onChange={(e) => {
+                              const newReviews = [...shop.reviews!];
+                              newReviews[index].rating = parseInt(e.target.value);
+                              handleInputChange('reviews', newReviews);
+                            }}
+                            className="w-full bg-black/50 border border-white/10 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                          >
+                            {[1,2,3,4,5].map(v => <option key={v} value={v}>{v} ★</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Comentario</label>
+                        <textarea 
+                          value={review.text}
+                          onChange={(e) => {
+                            const newReviews = [...shop.reviews!];
+                            newReviews[index].text = e.target.value;
+                            handleInputChange('reviews', newReviews);
+                          }}
+                          rows={2}
+                          className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white focus:outline-none focus:border-cyan-500/50"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="h-6"></div>
           </div>
         )}
 
