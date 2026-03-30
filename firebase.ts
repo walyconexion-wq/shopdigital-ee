@@ -466,3 +466,54 @@ export const suscribirseARelevamientos = (callback: (leads: any[]) => void) => {
         console.error("Error en la suscripción de relevamientos:", error);
     });
 };
+
+// --- GLOBAL CONFIGURATION (TOWN THEMES & TITLES) ---
+
+export const getGlobalConfig = async (townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data();
+        }
+        // Default config if not exists
+        return {
+            mainTitle: "ShopDigital",
+            mainSubtitle: "Tu guía de ofertas locales",
+            theme: 'default',
+            primaryColor: '#22d3ee',
+            townName: "Esteban Echeverría"
+        };
+    } catch (error) {
+        console.error("Error getting global config:", error);
+        return null;
+    }
+};
+
+export const subscribeToGlobalConfig = (onUpdate: (config: any) => void, townId: string = 'esteban-echeverria') => {
+    const docRef = doc(db, 'appConfig', townId);
+    return onSnapshot(docRef, (doc) => {
+        if (doc.exists()) {
+            onUpdate(doc.data());
+        } else {
+            onUpdate({
+                mainTitle: "ShopDigital",
+                mainSubtitle: "Tu guía de ofertas locales",
+                theme: 'default',
+                primaryColor: '#22d3ee',
+                townName: "Esteban Echeverría"
+            });
+        }
+    });
+};
+
+export const saveGlobalConfig = async (config: any, townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        await setDoc(docRef, { ...config, updatedAt: new Date().toISOString() }, { merge: true });
+        return true;
+    } catch (error) {
+        console.error("Error saving global config:", error);
+        throw error;
+    }
+};

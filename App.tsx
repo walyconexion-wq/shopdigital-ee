@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Shop, Client, Offer } from './types';
-import { suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas } from './firebase';
+import { suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas, subscribeToGlobalConfig } from './firebase';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -38,13 +38,22 @@ import SurveyFormPage from './pages/SurveyFormPage';
 import SurveyManagementPage from './pages/SurveyManagementPage';
 import ShopMenuPage from './pages/ShopMenuPage';
 import ShopEditPage from './pages/ShopEditPage';
+import GlobalConfigPage from './pages/GlobalConfigPage';
 
 const App: React.FC = () => {
+  console.log("🧬 ROOT_CAMALEON_ACTIVE: El motor está en marcha!");
   const [allShops, setAllShops] = useState<Shop[]>([]);
   const [allClients, setAllClients] = useState<Client[]>([]);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoader, setShowLoader] = useState(true);
+  const [globalConfig, setGlobalConfig] = useState<any>({
+    mainTitle: "ShopDigital",
+    mainSubtitle: "Tu guía de ofertas locales",
+    theme: 'default',
+    primaryColor: '#22d3ee',
+    townName: "Esteban Echeverría"
+  });
 
   const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -81,10 +90,15 @@ const App: React.FC = () => {
       setAllOffers(fbOffers as Offer[]);
     });
 
+    const unsubscribeGlobal = subscribeToGlobalConfig((config: any) => {
+      if (config) setGlobalConfig(config);
+    });
+
     return () => {
       unsubscribe();
       unsubscribeClients();
       unsubscribeOffers();
+      unsubscribeGlobal();
     };
   }, []);
 
@@ -95,9 +109,9 @@ const App: React.FC = () => {
       )}
 
       <Routes>
-        <Route path="/" element={<Layout allShops={allShops} />}>
-          <Route index element={<Home />} />
-          <Route path=":categorySlug" element={<CategoryPage allShops={allShops} />} />
+        <Route path="/" element={<Layout allShops={allShops} globalConfig={globalConfig} />}>
+          <Route index element={<Home globalConfig={globalConfig} />} />
+          <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={globalConfig} />} />
           <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
           <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
@@ -125,6 +139,7 @@ const App: React.FC = () => {
           <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
           <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
+          <Route path="tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
           <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
           <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
           <Route path="factura/:invoiceId" element={<InvoiceViewerPage />} />

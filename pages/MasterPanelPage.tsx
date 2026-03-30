@@ -2,15 +2,35 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
-import { guardarComercio, guardarOferta } from '../firebase';
+import { 
+    guardarComercio, guardarOferta, saveGlobalConfig 
+} from '../firebase';
 import { Offer } from '../types';
 
 const MasterPanelPage: React.FC = () => {
     const navigate = useNavigate();
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
+
+    const initializeGlobalConfig = async () => {
+        try {
+            playNeonClick();
+            const defaultConfig = {
+                mainTitle: "ShopDigital",
+                mainSubtitle: "Tu guía de ofertas locales",
+                primaryColor: "#22d3ee",
+                theme: "winter", 
+                townName: "Esteban Echeverría"
+            };
+            await saveGlobalConfig(defaultConfig);
+            alert("¡Modo Camaleón Activado! 🎨❄️ Mirá la nieve en la Home.");
+        } catch (error) {
+            console.error("Error init config:", error);
+            alert("Error al inicializar");
+        }
+    };
 
     const injectTestShops = async () => {
         try {
@@ -406,6 +426,7 @@ const MasterPanelPage: React.FC = () => {
         { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: '/subscripcion' },
         { title: 'Base de Clientes', desc: 'Para ver todos los clientes registrados', path: '/base-clientes' },
         { title: 'Gestión Comercial', desc: 'Ruta directa a listado de comercios', path: '/embajador/gestion' },
+        { title: 'Configuración Global', desc: 'Temas estacionales e identidad de App', path: '/tablero-maestro/configuracion' },
     ];
 
     return (
@@ -438,6 +459,29 @@ const MasterPanelPage: React.FC = () => {
                         <Lock size={14} className="text-white/80" />
                     </div>
                     <span className="text-[8px] text-red-200">INYECCIÓN MAESTRA A FIREBASE (USO ROOT)</span>
+                </button>
+
+                <button 
+                    onClick={initializeGlobalConfig} 
+                    className="w-full bg-cyan-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.3)] border border-cyan-500/50 hover:bg-cyan-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5"
+                >
+                    <div className="flex items-center gap-2">
+                        <Globe size={14} className="text-white/80" />
+                        <span className="text-[14px]">ACTIVAR MODO CAMALEÓN</span>
+                        <Check size={14} className="text-white/80" />
+                    </div>
+                    <span className="text-[8px] text-cyan-200">INICIALIZAR CONFIGURACIÓN GLOBAL (RESET MAESTRO)</span>
+                </button>
+
+                <button 
+                    onClick={() => { playNeonClick(); navigate('/tablero-maestro/configuracion'); }} 
+                    className="w-full bg-violet-600/80 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-violet-500/50 hover:bg-violet-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5"
+                >
+                    <div className="flex items-center gap-2">
+                        <Palette size={14} className="text-white/80" />
+                        <span className="text-[14px]">🎨 SINFONÍA DE ESTACIONES</span>
+                    </div>
+                    <span className="text-[8px] text-violet-200">CAMBIAR TEMA · COLORES · TÍTULOS DE INTERFAZ 1 y 2</span>
                 </button>
                 
                 {/* Public Landings & Sections */}
