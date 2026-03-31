@@ -57,16 +57,12 @@ const App: React.FC = () => {
   });
 
   const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
-  const [activeTownId, setActiveTownId] = useState('esteban-echeverria');
+  const [activeTownId, setActiveTownId] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('z') || 'esteban-echeverria';
+  });
 
   useEffect(() => {
-    // Detect town from URL ?z=town-id
-    const params = new URLSearchParams(window.location.search);
-    const townFromUrl = params.get('z');
-    if (townFromUrl) {
-        setActiveTownId(townFromUrl);
-    }
-
     // Fallback: force loading to finish after 8 seconds purely to avoid infinite freeze
     const fallbackTimer = setTimeout(() => {
       setLoading(false);

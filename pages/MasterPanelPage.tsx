@@ -447,7 +447,7 @@ const MasterPanelPage: React.FC = () => {
                 </button>
                 <div className="flex flex-col items-center">
                     <Terminal size={32} className="text-cyan-400 mb-2 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
-                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Tablero Maestro</h1>
+                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Tablero Maestro V2</h1>
                     <p className="text-[9px] font-bold text-cyan-400/80 uppercase tracking-widest mt-1">Control General de Waly</p>
                 </div>
             </div>
