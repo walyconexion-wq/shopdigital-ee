@@ -312,6 +312,19 @@ export const actualizarComercio = async (id: string, updateData: any) => {
 
 // --- SERVICIOS BASE CLIENTES (B2C) ---
 
+export const obtenerClientes = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "clientes"));
+        return querySnapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+    } catch (error) {
+        console.error("Error obteniendo clientes:", error);
+        return [];
+    }
+};
+
 export const suscribirseAClientes = (callback: (clientes: any[]) => void, townId?: string) => {
     const colRef = collection(db, "clientes");
     const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
@@ -523,6 +536,26 @@ export const guardarRelevamiento = async (leadData: any, townId: string = 'esteb
         return id;
     } catch (error) {
         console.error("Error saving relevamiento:", error);
+        throw error;
+    }
+};
+
+export const eliminarRelevamiento = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "relevamientos", id));
+        return true;
+    } catch (error) {
+        console.error("Error eliminando relevamiento:", error);
+        throw error;
+    }
+};
+
+export const actualizarRelevamiento = async (id: string, data: any) => {
+    try {
+        await updateDoc(doc(db, "relevamientos", id), data);
+        return true;
+    } catch (error) {
+        console.error("Error actualizando relevamiento:", error);
         throw error;
     }
 };
