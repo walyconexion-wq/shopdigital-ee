@@ -4,6 +4,7 @@ import Logo from '../components/Logo';
 import { Share2, Store } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
+import { resolveIcon } from '../utils/iconResolver';
 
 interface HomeProps {
     globalConfig?: any;
@@ -151,7 +152,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             </div>
 
             <div className="grid grid-cols-3 gap-x-4 gap-y-8 px-5 relative z-10">
-                {CATEGORIES.map((cat, index) => (
+                {(globalConfig?.categories || CATEGORIES).filter((c: any) => c.isActive !== false).map((cat: any, index: number) => (
                     <button
                         key={cat.id}
                         onClick={() => { playNeonClick(); navigate(`/${cat.slug}`); }}
@@ -164,7 +165,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                         }}
                     >
                         <div className="mb-1.5 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out" style={{ color: themeColor }}>
-                            {cat.icon}
+                            {cat.iconKey ? resolveIcon(cat.iconKey) : cat.icon}
                         </div>
                         <span className="text-[8.5px] text-center font-black uppercase leading-[1.1] tracking-[0.01em] px-0.5 text-white/90 group-hover:text-white transition-colors">
                             {cat.name}

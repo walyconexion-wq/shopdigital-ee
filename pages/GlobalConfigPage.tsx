@@ -6,7 +6,9 @@ import {
     Check, AlertCircle
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
-import { subscribeToGlobalConfig, saveGlobalConfig } from '../firebase';
+import { subscribeToGlobalConfig, saveGlobalConfig, ALL_CATEGORIES_MASTER, saveCategoriesConfig } from '../firebase';
+import { resolveIcon, AVAILABLE_ICONS_FOR_PICKER } from '../utils/iconResolver';
+import { Trash2, Plus, PowerOff, Power } from 'lucide-react';
 
 const GlobalConfigPage: React.FC = () => {
     const navigate = useNavigate();
@@ -15,8 +17,11 @@ const GlobalConfigPage: React.FC = () => {
         mainSubtitle: "Tu guía de ofertas locales",
         theme: 'default',
         primaryColor: '#22d3ee',
-        townName: "Esteban Echeverría"
+        townName: "Esteban Echeverría",
+        categories: []
     });
+    const [newCat, setNewCat] = useState({ name: '', iconKey: 'Star' });
+    const [showAddForm, setShowAddForm] = useState(false);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -42,6 +47,42 @@ const GlobalConfigPage: React.FC = () => {
         } finally {
             setSaving(false);
         }
+    };
+
+    const toggleCategory = (catId: string) => {
+        playNeonClick();
+        const updatedCats = config.categories.map((c: any) => 
+            c.id === catId ? { ...c, isActive: !c.isActive } : c
+        );
+        setConfig({ ...config, categories: updatedCats });
+    };
+
+    const addCategory = () => {
+        if (!newCat.name) return;
+        playNeonClick();
+        const slug = newCat.name.toLowerCase().trim().replace(/\s+/g, '-');
+        const newItem = {
+            id: slug,
+            slug,
+            name: newCat.name,
+            iconKey: newCat.iconKey,
+            isActive: true,
+            isSystem: false
+        };
+        setConfig({
+            ...config,
+            categories: [...(config.categories || []), newItem]
+        });
+        setNewCat({ name: '', iconKey: 'Star' });
+        setShowAddForm(false);
+    };
+
+    const removeCategory = (catId: string) => {
+        playNeonClick();
+        setConfig({
+            ...config,
+            categories: config.categories.filter((c: any) => c.id !== catId)
+        });
     };
 
     const themes = [
@@ -213,6 +254,109 @@ const GlobalConfigPage: React.FC = () => {
                             <p className="text-[11px] font-black uppercase tracking-widest text-white">{config.primaryColor}</p>
                             <p className="text-[9px] text-white/40 uppercase tracking-widest mt-1">Este color bañará todos los brillos, botones y sombras de la Home y Categorías.</p>
                         </div>
+                    </div>
+                </section>
+
+                {/* Section: Gestión de Rubros */}
+                <section className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 flex items-center gap-2">
+                            <Layout size={14} /> Gestión de Rubros
+                        </h2>
+                        <button 
+                            onClick={() => { playNeonClick(); setShowAddForm(!showAddForm); }}
+                            className="text-[9px] font-black uppercase tracking-wider bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/20 transition-all flex items-center gap-1.5"
+                        >
+                            <Plus size={12} /> {showAddForm ? 'Cancelar' : 'Agregar Rubro'}
+                        </button>
+                    </div>
+
+                    {showAddForm && (
+                        <div className="bg-zinc-900 border border-white/20 p-5 rounded-3xl space-y-4 animate-in slide-in-from-top-4 duration-500">
+                            <div className="space-y-2">
+                                <label className="text-[8px] font-black uppercase tracking-widest text-white/40">Nombre del Rubro</label>
+                                <input 
+                                    type="text"
+                                    value={newCat.name}
+                                    onChange={(e) => setNewCat({ ...newCat, name: e.target.value })}
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl py-3 px-4 text-xs font-bold focus:border-white/30 outline-none"
+                                    placeholder="Ej: Lavanderías"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[8px] font-black uppercase tracking-widest text-white/40">Elegir Ícono</label>
+                                <div className="grid grid-cols-6 gap-2 bg-black/30 p-3 rounded-xl max-h-40 overflow-y-auto custom-scrollbar">
+                                    {AVAILABLE_ICONS_FOR_PICKER.map((icon) => (
+                                        <button
+                                            key={icon.key}
+                                            onClick={() => setNewCat({ ...newCat, iconKey: icon.key })}
+                                            className={`aspect-square rounded-lg flex items-center justify-center transition-all ${newCat.iconKey === icon.key ? 'bg-white text-black scale-110 shadow-lg' : 'bg-white/5 text-white/40 hover:bg-white/10'}`}
+                                            title={icon.label}
+                                        >
+                                            <div className="scale-75">
+                                                {resolveIcon(icon.key)}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <button 
+                                onClick={addCategory}
+                                className="w-full bg-white text-black py-3 rounded-xl font-black uppercase tracking-widest text-[10px] active:scale-95 transition-all"
+                            >
+                                Confirmar y Agregar
+                            </button>
+                        </div>
+                    )}
+
+                    <div className="space-y-3">
+                        {(config.categories || []).map((cat: any) => (
+                            <div 
+                                key={cat.id}
+                                className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${cat.isActive ? 'bg-zinc-900/60 border-white/10' : 'bg-red-950/10 border-red-900/20 opacity-60'}`}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${cat.isActive ? 'bg-white/5 border-white/10 text-white' : 'bg-black/40 border-white/5 text-white/20'}`} style={cat.isActive ? { color: config.primaryColor, borderColor: `${config.primaryColor}30` } : {}}>
+                                        <div className="scale-75">
+                                            {resolveIcon(cat.iconKey)}
+                                        </div>
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className={`text-[12px] font-black uppercase tracking-wider ${cat.isActive ? 'text-white' : 'text-white/40'}`}>
+                                            {cat.name}
+                                        </h3>
+                                        <p className="text-[8px] text-white/20 uppercase tracking-widest">
+                                            {cat.isSystem ? 'Sistema' : 'Personalizado'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {!cat.isSystem && (
+                                        <button 
+                                            onClick={() => removeCategory(cat.id)}
+                                            className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-500/20 active:scale-90 transition-all"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
+                                    <button 
+                                        onClick={() => toggleCategory(cat.id)}
+                                        className={`w-12 h-6 rounded-full relative transition-all duration-300 border ${cat.isActive ? 'bg-green-500 border-green-400' : 'bg-zinc-800 border-zinc-700'}`}
+                                    >
+                                        <div className={`absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full transition-all duration-300 flex items-center justify-center shadow-md ${cat.isActive ? 'left-6.5' : 'left-0.5'}`}>
+                                            {cat.isActive ? <Power size={8} className="text-green-600" /> : <PowerOff size={8} className="text-zinc-400" />}
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        {config.categories?.length === 0 && (
+                            <div className="p-8 border border-dashed border-white/10 rounded-3xl text-center">
+                                <PowerOff size={24} className="mx-auto text-white/10 mb-2" />
+                                <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Sin rubros configurados</p>
+                                <p className="text-[8px] text-white/10 uppercase tracking-widest mt-1">Haga clic en Reset Maestro para inicializar</p>
+                            </div>
+                        )}
                     </div>
                 </section>
 

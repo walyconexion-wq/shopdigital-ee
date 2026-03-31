@@ -39,6 +39,7 @@ import SurveyManagementPage from './pages/SurveyManagementPage';
 import ShopMenuPage from './pages/ShopMenuPage';
 import ShopEditPage from './pages/ShopEditPage';
 import GlobalConfigPage from './pages/GlobalConfigPage';
+import FactoryPanelPage from './pages/FactoryPanelPage';
 
 const App: React.FC = () => {
   console.log("🧬 ROOT_CAMALEON_ACTIVE: El motor está en marcha!");
@@ -56,8 +57,16 @@ const App: React.FC = () => {
   });
 
   const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
+  const [activeTownId, setActiveTownId] = useState('esteban-echeverria');
 
   useEffect(() => {
+    // Detect town from URL ?z=town-id
+    const params = new URLSearchParams(window.location.search);
+    const townFromUrl = params.get('z');
+    if (townFromUrl) {
+        setActiveTownId(townFromUrl);
+    }
+
     // Fallback: force loading to finish after 8 seconds purely to avoid infinite freeze
     const fallbackTimer = setTimeout(() => {
       setLoading(false);
@@ -76,7 +85,7 @@ const App: React.FC = () => {
       setAllShops(cleanedShops);
       setLoading(false);
       clearTimeout(fallbackTimer);
-    }, (error) => {
+    }, activeTownId, (error) => {
       console.error("Critical: failed to get shops. Passing loader anyway to prevent freeze.", error);
       setLoading(false);
       clearTimeout(fallbackTimer);
@@ -84,15 +93,15 @@ const App: React.FC = () => {
 
     const unsubscribeClients = suscribirseAClientes((fbClients) => {
       setAllClients(fbClients as Client[]);
-    });
+    }, activeTownId);
 
     const unsubscribeOffers = suscribirseAOfertas((fbOffers) => {
       setAllOffers(fbOffers as Offer[]);
-    });
+    }, activeTownId);
 
     const unsubscribeGlobal = subscribeToGlobalConfig((config: any) => {
       if (config) setGlobalConfig(config);
-    });
+    }, activeTownId);
 
     return () => {
       unsubscribe();
@@ -100,7 +109,7 @@ const App: React.FC = () => {
       unsubscribeOffers();
       unsubscribeGlobal();
     };
-  }, []);
+  }, [activeTownId]);
 
   return (
     <BrowserRouter>
@@ -139,6 +148,7 @@ const App: React.FC = () => {
           <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
           <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
           <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
+          <Route path="tablero-maestro/fabrica" element={<ProtectedRoute roles={['admin']}><FactoryPanelPage /></ProtectedRoute>} />
           <Route path="tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
           <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
           <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />

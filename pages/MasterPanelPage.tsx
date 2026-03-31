@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { 
-    guardarComercio, guardarOferta, saveGlobalConfig 
+    guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, saveCategoriesConfig 
 } from '../firebase';
 import { Offer } from '../types';
 
@@ -25,6 +25,10 @@ const MasterPanelPage: React.FC = () => {
                 townName: "Esteban Echeverría"
             };
             await saveGlobalConfig(defaultConfig);
+            
+            // Inyectar rubros iniciales
+            await saveCategoriesConfig(DEFAULT_CATEGORIES_CONFIG);
+
             alert("¡Modo Camaleón Activado! 🎨❄️ Mirá la nieve en la Home.");
         } catch (error) {
             console.error("Error init config:", error);
@@ -482,6 +486,18 @@ const MasterPanelPage: React.FC = () => {
                         <span className="text-[14px]">🎨 SINFONÍA DE ESTACIONES</span>
                     </div>
                     <span className="text-[8px] text-violet-200">CAMBIAR TEMA · COLORES · TÍTULOS DE INTERFAZ 1 y 2</span>
+                </button>
+
+                <button 
+                    onClick={() => { playNeonClick(); navigate('/tablero-maestro/fabrica'); }} 
+                    className="w-full bg-gradient-to-r from-amber-600/90 to-yellow-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.3)] border border-yellow-500/50 hover:from-amber-500 hover:to-yellow-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                    <div className="flex items-center gap-2">
+                        <Factory size={14} className="text-white/80" />
+                        <span className="text-[14px]">🏭 LA FÁBRICA DE SHOPDIGITAL</span>
+                    </div>
+                    <span className="text-[8px] text-yellow-100 italic">MÓDULO DE EXPANSIÓN MULTI-ZONA (FORJAR CIUDADES)</span>
                 </button>
                 
                 {/* Public Landings & Sections */}

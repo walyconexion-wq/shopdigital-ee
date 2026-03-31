@@ -105,6 +105,60 @@ export const eliminarAutorizado = async (id: string) => {
     }
 };
 
+// --- MULTI-TOWN MANAGEMENT (LA FÁBRICA) ---
+
+export const getTowns = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "towns"));
+        return querySnapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+    } catch (error) {
+        console.error("Error getting towns:", error);
+        return [];
+    }
+};
+
+export const subscribeToTowns = (callback: (towns: any[]) => void) => {
+    const colRef = collection(db, "towns");
+    return onSnapshot(colRef, (snapshot) => {
+        const towns = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+        callback(towns);
+    });
+};
+
+export const saveTown = async (townData: any) => {
+    try {
+        const id = townData.id;
+        if (!id) throw new Error("ID de zona es requerido.");
+        await setDoc(doc(db, "towns", id), { ...townData, updatedAt: new Date().toISOString() }, { merge: true });
+        
+        // Initialize basic config for the house if it doesn't exist
+        const configRef = doc(db, 'appConfig', id);
+        const configSnap = await getDoc(configRef);
+        if (!configSnap.exists()) {
+            await setDoc(configRef, {
+                mainTitle: "ShopDigital",
+                mainSubtitle: `Tu guía de ofertas en ${townData.name}`,
+                theme: 'default',
+                primaryColor: '#22d3ee',
+                townName: townData.name,
+                categories: DEFAULT_CATEGORIES_CONFIG,
+                updatedAt: new Date().toISOString()
+            });
+        }
+        return id;
+    } catch (error) {
+        console.error("Error saving town:", error);
+        throw error;
+    }
+};
+
+
 // Optimización: Habilitar persistencia de datos local (Ahorro Máximo de Lecturas)
 // Esto permite que la app use datos en caché y solo descargue cambios, reduciendo el consumo de cuota.
 import { enableIndexedDbPersistence } from "firebase/firestore";
@@ -133,10 +187,13 @@ export const obtenerComercios = async () => {
     }
 };
 
-// 1b. Suscribirse a los comercios en tiempo real
-export const suscribirseAComercios = (callback: (comercios: any[]) => void, onError?: (error: any) => void) => {
+// 1b. Suscribirse a los comercios en tiempo real (Filtrado por Zona)
+export const suscribirseAComercios = (callback: (comercios: any[]) => void, townId?: string, onError?: (error: any) => void) => {
     const colRef = collection(db, "comercios");
-    return onSnapshot(colRef, (snapshot) => {
+    // If townId is provided, filter. If not (root mode), get all.
+    const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
+    
+    return onSnapshot(q, (snapshot) => {
         const comercios = snapshot.docs.map(docSnap => ({
             id: docSnap.id,
             ...docSnap.data()
@@ -149,13 +206,15 @@ export const suscribirseAComercios = (callback: (comercios: any[]) => void, onEr
 };
 
 // 2. Guardar o actualizar un comercio en la colección "comercios"
-export const guardarComercio = async (comercioData: any) => {
+export const guardarComercio = async (comercioData: any, townId: string = 'esteban-echeverria') => {
     try {
         const id = comercioData.id;
         if (!id) throw new Error("ID de comercio es requerido para guardar.");
 
-        await setDoc(doc(db, "comercios", id), comercioData);
-        console.log("Comercio guardado con éxito. ID:", id);
+        // Inyectar townId si no lo tiene
+        const finalData = { ...comercioData, townId: comercioData.townId || townId };
+        await setDoc(doc(db, "comercios", id), finalData);
+        console.log("Comercio guardado con éxito. ID:", id, "Zona:", finalData.townId);
         return id;
     } catch (error) {
         console.error("Error al guardar en Firestore:", error);
@@ -221,36 +280,11 @@ export const actualizarComercio = async (id: string, updateData: any) => {
 
 // --- SERVICIOS BASE CLIENTES (B2C) ---
 
-export const guardarCliente = async (clienteData: any) => {
-    try {
-        const id = clienteData.id;
-        if (!id) throw new Error("ID de cliente es requerido para guardar.");
-
-        await setDoc(doc(db, "clientes", id), clienteData);
-        console.log("Cliente guardado con éxito. ID:", id);
-        return id;
-    } catch (error) {
-        console.error("Error al guardar cliente en Firestore:", error);
-        throw error;
-    }
-};
-
-export const obtenerClientes = async () => {
-    try {
-        const querySnapshot = await getDocs(collection(db, "clientes"));
-        return querySnapshot.docs.map(docSnap => ({
-            id: docSnap.id,
-            ...docSnap.data()
-        }));
-    } catch (error) {
-        console.error("Error obteniendo clientes:", error);
-        return [];
-    }
-};
-
-export const suscribirseAClientes = (callback: (clientes: any[]) => void) => {
+export const suscribirseAClientes = (callback: (clientes: any[]) => void, townId?: string) => {
     const colRef = collection(db, "clientes");
-    return onSnapshot(colRef, (snapshot) => {
+    const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
+    
+    return onSnapshot(q, (snapshot) => {
         const clientes = snapshot.docs.map(docSnap => ({
             id: docSnap.id,
             ...docSnap.data()
@@ -259,6 +293,19 @@ export const suscribirseAClientes = (callback: (clientes: any[]) => void) => {
     }, (error) => {
         console.error("Error en la suscripción de clientes:", error);
     });
+};
+
+export const guardarCliente = async (clienteData: any, townId: string = 'esteban-echeverria') => {
+    try {
+        const id = clienteData.id;
+        if (!id) throw new Error("ID de cliente es requerido.");
+        const finalData = { ...clienteData, townId: clienteData.townId || townId };
+        await setDoc(doc(db, "clientes", id), finalData);
+        return id;
+    } catch (error) {
+        console.error("Error saving client:", error);
+        throw error;
+    }
 };
 
 export const eliminarCliente = async (id: string) => {
@@ -310,9 +357,11 @@ export const actualizarPuntosCliente = async (clientId: string, pointsDelta: num
 
 // --- SERVICIOS OFERTAS (B2B & B2C) ---
 
-export const suscribirseAOfertas = (callback: (ofertas: any[]) => void) => {
+export const suscribirseAOfertas = (callback: (ofertas: any[]) => void, townId?: string) => {
     const colRef = collection(db, "ofertas");
-    return onSnapshot(colRef, (snapshot) => {
+    const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
+    
+    return onSnapshot(q, (snapshot) => {
         const ofertas = snapshot.docs.map(docSnap => ({
             id: docSnap.id,
             ...docSnap.data()
@@ -323,15 +372,15 @@ export const suscribirseAOfertas = (callback: (ofertas: any[]) => void) => {
     });
 };
 
-export const guardarOferta = async (ofertaData: any) => {
+export const guardarOferta = async (ofertaData: any, townId: string = 'esteban-echeverria') => {
     try {
         const id = ofertaData.id;
-        if (!id) throw new Error("ID de oferta es requerido para guardar.");
-        await setDoc(doc(db, "ofertas", id), ofertaData);
-        console.log("Oferta guardada con éxito. ID:", id);
+        if (!id) throw new Error("ID de oferta es requerido.");
+        const finalData = { ...ofertaData, townId: ofertaData.townId || townId };
+        await setDoc(doc(db, "ofertas", id), finalData);
         return id;
     } catch (error) {
-        console.error("Error al guardar oferta en Firestore:", error);
+        console.error("Error saving offer:", error);
         throw error;
     }
 };
@@ -419,44 +468,11 @@ export const actualizarFactura = async (id: string, updateData: any) => {
 
 // --- MÓDULO DE RELEVAMIENTO TÁCTICO (Prospectos/Leads) ---
 
-export const guardarRelevamiento = async (leadData: any) => {
-    try {
-        const id = leadData.id || `lead-${Date.now()}`;
-        await setDoc(doc(db, "relevamientos", id), { ...leadData, id });
-        console.log("Relevamiento guardado con éxito. ID:", id);
-        return id;
-    } catch (error) {
-        console.error("Error al guardar relevamiento en Firestore:", error);
-        throw error;
-    }
-};
-
-export const eliminarRelevamiento = async (id: string) => {
-    try {
-        await deleteDoc(doc(db, "relevamientos", id));
-        console.log("Relevamiento eliminado con éxito. ID:", id);
-        return true;
-    } catch (error) {
-        console.error("Error al eliminar relevamiento de Firestore:", error);
-        throw error;
-    }
-};
-
-export const actualizarRelevamiento = async (id: string, updateData: any) => {
-    try {
-        const docRef = doc(db, "relevamientos", id);
-        await updateDoc(docRef, updateData);
-        console.log(`Relevamiento ${id} actualizado con éxito.`);
-        return true;
-    } catch (error) {
-        console.error(`Error al actualizar relevamiento ${id}:`, error);
-        throw error;
-    }
-};
-
-export const suscribirseARelevamientos = (callback: (leads: any[]) => void) => {
+export const suscribirseARelevamientos = (callback: (leads: any[]) => void, townId?: string) => {
     const colRef = collection(db, "relevamientos");
-    return onSnapshot(colRef, (snapshot) => {
+    const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
+    
+    return onSnapshot(q, (snapshot) => {
         const leads = snapshot.docs.map(docSnap => ({
             id: docSnap.id,
             ...docSnap.data()
@@ -465,6 +481,18 @@ export const suscribirseARelevamientos = (callback: (leads: any[]) => void) => {
     }, (error) => {
         console.error("Error en la suscripción de relevamientos:", error);
     });
+};
+
+export const guardarRelevamiento = async (leadData: any, townId: string = 'esteban-echeverria') => {
+    try {
+        const id = leadData.id || `lead-${Date.now()}`;
+        const finalData = { ...leadData, id, townId: leadData.townId || townId };
+        await setDoc(doc(db, "relevamientos", id), finalData);
+        return id;
+    } catch (error) {
+        console.error("Error saving relevamiento:", error);
+        throw error;
+    }
 };
 
 // --- GLOBAL CONFIGURATION (TOWN THEMES & TITLES) ---
@@ -517,3 +545,52 @@ export const saveGlobalConfig = async (config: any, townId: string = 'esteban-ec
         throw error;
     }
 };
+
+// --- CATEGORY (RUBROS) CONFIG ---
+
+// Master list of all available categories (with lucide icon key for rendering)
+export const ALL_CATEGORIES_MASTER = [
+    { id: 'pizzerias', slug: 'pizzerias', name: 'Pizzerías', iconKey: 'Pizza', isSystem: true },
+    { id: 'restaurantes', slug: 'restaurantes', name: 'Restaurantes', iconKey: 'UtensilsCrossed', isSystem: true },
+    { id: 'fastfood', slug: 'fastfood', name: 'Comida Rápida', iconKey: 'Beef', isSystem: true },
+    { id: 'beer', slug: 'beer', name: 'Cervecerías', iconKey: 'Beer', isSystem: true },
+    { id: 'icecream', slug: 'icecream', name: 'Heladerías', iconKey: 'IceCream', isSystem: true },
+    { id: 'gastro', slug: 'gastro', name: 'Gastronomías', iconKey: 'Utensils', isSystem: true },
+    { id: 'markets', slug: 'markets', name: 'Mercados', iconKey: 'ShoppingCart', isSystem: true },
+    { id: 'fashion', slug: 'fashion', name: 'Indumentarias', iconKey: 'Shirt', isSystem: true },
+    { id: 'tech', slug: 'tech', name: 'Tecnología', iconKey: 'Smartphone', isSystem: true },
+    { id: 'home', slug: 'home', name: 'Hogar', iconKey: 'Home', isSystem: true },
+    { id: 'barber', slug: 'barber', name: 'Barberías', iconKey: 'Scissors', isSystem: true },
+    { id: 'hair', slug: 'hair', name: 'Peluquerías', iconKey: 'UserCircle', isSystem: true },
+    { id: 'gym', slug: 'gym', name: 'Gimnasios', iconKey: 'Dumbbell', isSystem: true },
+    { id: 'hardware', slug: 'hardware', name: 'Ferreterías', iconKey: 'Hammer', isSystem: true },
+    { id: 'pets', slug: 'pets', name: 'Mascotas', iconKey: 'PawPrint', isSystem: true },
+    { id: 'tattoo', slug: 'tattoo', name: 'Tatuajes', iconKey: 'PenTool', isSystem: true },
+    { id: 'beauty', slug: 'beauty', name: 'Estéticas', iconKey: 'Sparkles', isSystem: true },
+    { id: 'inmo', slug: 'inmo', name: 'Inmobiliarias', iconKey: 'Building2', isSystem: true },
+    { id: 'auto', slug: 'auto', name: 'Automotor', iconKey: 'Car', isSystem: true },
+    { id: 'gifts', slug: 'gifts', name: 'Regalería', iconKey: 'Gift', isSystem: true },
+    { id: 'finance', slug: 'finance', name: 'Finanzas', iconKey: 'DollarSign', isSystem: true },
+    { id: 'servicios', slug: 'servicios', name: 'Servicios y Profesionales', iconKey: 'Briefcase', isSystem: true },
+    { id: 'automotormotos', slug: 'automotormotos', name: 'Automotor y Motos', iconKey: 'Wrench', isSystem: true },
+    { id: 'farmacias', slug: 'farmacias', name: 'Farmacias', iconKey: 'PlusSquare', isSystem: true },
+];
+
+// Default active categories (all system categories active by default)
+export const DEFAULT_CATEGORIES_CONFIG = ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true }));
+
+export const saveCategoriesConfig = async (categories: any[], townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        // Strip React elements (icons) before saving — only save serializable data
+        const serializable = categories.map(({ id, slug, name, iconKey, isActive, isSystem }) => ({
+            id, slug, name, iconKey, isActive: !!isActive, isSystem: !!isSystem
+        }));
+        await setDoc(docRef, { categories: serializable, updatedAt: new Date().toISOString() }, { merge: true });
+        return true;
+    } catch (error) {
+        console.error("Error saving categories config:", error);
+        throw error;
+    }
+};
+
