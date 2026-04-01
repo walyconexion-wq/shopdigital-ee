@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { guardarComercio } from '../firebase';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
@@ -21,6 +21,7 @@ import { playNeonClick, playSuccessSound } from '../utils/audio';
 const LOCALITIES = ['Monte Grande', 'Luis Guillón', 'El Jagüel'];
 
 const SubscriptionPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -151,7 +152,7 @@ const SubscriptionPage: React.FC = () => {
                     <button
                         onClick={() => {
                             playNeonClick();
-                            navigate('/');
+                            navigate(`/${townId}/home`);
                         }}
                         className="w-full glass-action-btn btn-cyan-neon py-4 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] active:scale-95 transition-all"
                     >

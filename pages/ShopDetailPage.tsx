@@ -34,7 +34,7 @@ interface ShopDetailPageProps {
 }
 
 const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
-    const { categorySlug, shopSlug } = useParams<{ categorySlug: string; shopSlug: string }>();
+    const { townId = 'esteban-echeverria', categorySlug, shopSlug } = useParams<{ townId: string; categorySlug: string; shopSlug: string }>();
     const navigate = useNavigate();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const catalogRef = useRef<HTMLDivElement>(null);
@@ -148,7 +148,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <p>Comercio no encontrado</p>
                 <button onClick={() => {
                     playNeonClick();
-                    navigate('/');
+                    navigate(`/${townId}/home`);
                 }} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
             </div>
         );
@@ -182,7 +182,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <button
                     onClick={() => {
                         playNeonClick();
-                        navigate(`/${categorySlug}`);
+                        navigate(`/${townId}/${categorySlug}`);
                     }}
                     className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
                 >
@@ -233,7 +233,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         <button
                             onClick={() => {
                                 playNeonClick();
-                                navigate(`/${categorySlug}/${shopSlug}/menu`);
+                                navigate(`/${townId}/${categorySlug}/${shopSlug}/menu`);
                             }}
                             className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px]"
                             style={{ 
@@ -290,7 +290,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <button
                         onClick={() => {
                             playNeonClick();
-                            navigate(`/${categorySlug}/${shopSlug}/cliente-subscripcion`);
+                            navigate(`/${townId}/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
                         className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px]"
                         style={{ 
@@ -376,7 +376,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </button>
                     <button onClick={() => {
                         playNeonClick();
-                        navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
+                        navigate(`/${townId}/${categorySlug}/${shopSlug}/panel-autogestion`);
                     }} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
                 </div>
 
@@ -510,7 +510,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
                 {/* Secret Merchant Cable */}
                 <div 
-                    onClick={() => handleMerchantAccess('/red-comercial/descuentos')}
+                    onClick={() => handleMerchantAccess(`/${townId}/red-comercial/descuentos`)}
                     className="mb-12 cursor-pointer group active:scale-95 transition-all"
                 >
                     <div className="flex items-center justify-center gap-2 mb-1">
@@ -524,13 +524,13 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 {/* Merchant Access Links */}
                 <div className="w-full flex flex-col items-center gap-4 pb-12 opacity-40 hover:opacity-100 transition-opacity">
                     <button
-                        onClick={() => handleMerchantAccess(`/${categorySlug}/${shopSlug}/panel-autogestion`)}
+                        onClick={() => handleMerchantAccess(`/${townId}/${categorySlug}/${shopSlug}/panel-autogestion`)}
                         className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-white hover:text-cyan-400 transition-colors"
                     >
                         <Lock size={12} /> Acceso Comercio
                     </button>
                     <button
-                        onClick={() => handleMerchantAccess(`/${categorySlug}/${shopSlug}/editar`)}
+                        onClick={() => handleMerchantAccess(`/${townId}/${categorySlug}/${shopSlug}/editar`)}
                         className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-black text-cyan-500/80 hover:text-cyan-400 transition-colors"
                     >
                         <Lock size={10} /> Panel de Edición

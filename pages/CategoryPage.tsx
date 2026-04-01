@@ -14,7 +14,7 @@ interface CategoryPageProps {
 const LOCALITIES = ['Luis Guillón', 'Monte Grande', 'El Jagüel'];
 
 const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) => {
-    const { categorySlug } = useParams<{ categorySlug: string }>();
+    const { townId = 'esteban-echeverria', categorySlug } = useParams<{ townId: string, categorySlug: string }>();
     const navigate = useNavigate();
     const [activeLocation, setActiveLocation] = useState<string>('Monte Grande');
     const [titleClicks, setTitleClicks] = React.useState(0);
@@ -38,13 +38,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     const handleTitleClick = () => {
         playNeonClick();
         const nextClicks = titleClicks + 1;
-        if (nextClicks >= 5) { setTitleClicks(0); navigate('/embajador'); }
+        if (nextClicks >= 5) { setTitleClicks(0); navigate(`/${townId}/embajador`); }
         else setTitleClicks(nextClicks);
     };
 
     const handleWalyClick = () => {
         playNeonClick();
-        navigate('/tablero-maestro');
+        navigate(`/${townId}/tablero-maestro`);
     };
 
     const selectedCategory = useMemo(() =>
@@ -85,7 +85,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
         return (
             <div className="flex flex-col items-center justify-center h-full text-white">
                 <p>Categoría no encontrada</p>
-                <button onClick={() => { playNeonClick(); navigate('/'); }} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
+                <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
             </div>
         );
     }
@@ -98,7 +98,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
             <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
                 <div className="w-full px-6 flex flex-col pb-4">
                     <button
-                        onClick={() => { playNeonClick(); navigate('/'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
                         className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
                     >
                         <ArrowLeft size={22} className="text-white drop-shadow-md pr-0.5" />
@@ -182,7 +182,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                         </div>
                                     </div>
                                     <div className="w-full flex justify-center py-3 px-4">
-                                        <button onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${selectedCategory.slug}/${shop.slug || shop.id}`); }} 
+                                        <button onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${townId}/${selectedCategory.slug}/${shop.slug || shop.id}`); }} 
                                             className={`py-2.5 px-6 text-[9px] text-white font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all duration-75 rounded-full border
                                                 ${activeLocation === 'Monte Grande' ? 'border-violet-400/50 bg-violet-600/30 backdrop-blur-md shadow-[0_4px_0_rgba(139,92,246,0.5)] active:translate-y-[4px]' :
                                                   activeLocation === 'Luis Guillón' ? 'border-green-400/50 bg-green-600/30 backdrop-blur-md shadow-[0_4px_0_rgba(34,197,94,0.5)] active:translate-y-[4px]' :
@@ -202,7 +202,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 </div>
 
                 <div className="w-full flex justify-center mb-8">
-                    <button onClick={() => { playNeonClick(); navigate('/'); }} className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-full flex items-center gap-2 shadow-lg active:translate-y-[4px] transition-all duration-75" style={{ backgroundColor: hexToRgba(themeColor, 0.2), borderColor: hexToRgba(themeColor, 0.4), color: themeColor }}>
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-full flex items-center gap-2 shadow-lg active:translate-y-[4px] transition-all duration-75" style={{ backgroundColor: hexToRgba(themeColor, 0.2), borderColor: hexToRgba(themeColor, 0.4), color: themeColor }}>
                         <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
                     </button>
                 </div>
@@ -216,7 +216,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                         {townName}
                     </p>
                     <span className="text-white/20 text-[8px]">|</span>
-                    <button onClick={() => { playNeonClick(); navigate('/terminos'); }} className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-white hover:text-cyan-300 transition-colors">Términos y Condiciones</button>
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }} className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-white hover:text-cyan-300 transition-colors">Términos y Condiciones</button>
                 </div>
             </footer>
         </div>

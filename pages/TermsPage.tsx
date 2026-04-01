@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { ChevronLeft, ScrollText } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 
 const TermsPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -102,7 +103,7 @@ const TermsPage: React.FC = () => {
                 </div>
                 
                 <button 
-                    onClick={() => { playNeonClick(); navigate('/'); }}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
                     className="w-full mt-8 bg-cyan-500 text-black py-4 rounded-xl font-black uppercase tracking-widest text-[10px] active:scale-95 transition-transform"
                 >
                     Aceptar y Volver al Inicio

@@ -10,7 +10,7 @@ interface ShopMenuPageProps {
 }
 
 const ShopMenuPage: React.FC<ShopMenuPageProps> = ({ allShops }) => {
-    const { categorySlug, shopSlug } = useParams<{ categorySlug: string; shopSlug: string }>();
+    const { townId = 'esteban-echeverria', categorySlug, shopSlug } = useParams<{ townId: string; categorySlug: string; shopSlug: string }>();
     const navigate = useNavigate();
 
     const selectedShop = allShops.find(

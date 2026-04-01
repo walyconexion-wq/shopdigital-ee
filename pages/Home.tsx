@@ -2,7 +2,7 @@ import React from 'react';
 import { CATEGORIES } from '../constants';
 import Logo from '../components/Logo';
 import { Share2, Store } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 import { resolveIcon } from '../utils/iconResolver';
 
@@ -11,6 +11,7 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ globalConfig }) => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
     const activeTheme = globalConfig?.theme || 'default';
@@ -81,14 +82,14 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const handleLogoClick = () => {
         playNeonClick();
         const nextClicks = logoClicks + 1;
-        if (nextClicks >= 3) { navigate('/nosotros'); setLogoClicks(0); }
+        if (nextClicks >= 3) { navigate(`/${townId}/nosotros`); setLogoClicks(0); }
         else setLogoClicks(nextClicks);
     };
 
     const handleWalyClick = () => {
         playNeonClick();
         const nextClicks = walyClicks + 1;
-        if (nextClicks >= 5) { navigate('/tablero-maestro'); setWalyClicks(0); }
+        if (nextClicks >= 5) { navigate(`/${townId}/tablero-maestro`); setWalyClicks(0); }
         else setWalyClicks(nextClicks);
     };
 
@@ -155,7 +156,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                 {(globalConfig?.categories || CATEGORIES).filter((c: any) => c.isActive !== false).map((cat: any, index: number) => (
                     <button
                         key={cat.id}
-                        onClick={() => { playNeonClick(); navigate(`/${cat.slug}`); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/${cat.slug}`); }}
                         className="glass-button-3d category-btn btn-neon-active aspect-square group backdrop-blur-md border rounded-[1.25rem] transition-all duration-300"
                         style={{
                             animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms both`,
@@ -176,7 +177,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
 
             <div className="mt-12 mb-4 px-14 flex flex-col gap-4 justify-center items-center w-full fade-up-item relative z-10" style={{ animationDelay: '700ms' }}>
                 <button
-                    onClick={() => { playNeonClick(); navigate('/subscripcion'); }}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
                     className="glass-action-btn w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 border flex items-center justify-center gap-3 transition-all"
                     style={{ 
                         backgroundColor: hexToRgba(themeColor, 0.3),
@@ -216,7 +217,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     </p>
                     <span className="text-white/20 text-[8px]">|</span>
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/terminos'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
                         className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-white hover:text-cyan-300 transition-colors"
                     >
                         Términos y Condiciones

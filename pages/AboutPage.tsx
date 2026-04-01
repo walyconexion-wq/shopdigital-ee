@@ -10,11 +10,12 @@ import {
     Smartphone,
     UserCheck
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Logo from '../components/Logo';
 import { playNeonClick } from '../utils/audio';
 
 const AboutPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -55,7 +56,7 @@ const AboutPage: React.FC = () => {
                         <Logo />
                     </div>
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
                         className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 group shrink-0"
                     >
                         <span className="text-[9px] font-black uppercase tracking-[0.15em] text-cyan-400">Entrar App</span>
@@ -97,7 +98,7 @@ const AboutPage: React.FC = () => {
                             Digitalización local con tecnología de última generación e identidad verificada.
                         </p>
                         <button 
-                            onClick={() => { playNeonClick(); navigate('/unirse'); }}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
                             className="w-full glass-action-btn btn-cyan-neon bg-cyan-600/30 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.4)] py-4 px-6 rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-all"
                         >
                             <Shield size={16} className="text-cyan-100" />
@@ -209,7 +210,7 @@ const AboutPage: React.FC = () => {
                             </h2>
 
                             <button
-                                onClick={() => { playNeonClick(); navigate('/'); }}
+                                onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
                                 className="w-full glass-action-btn btn-cyan-neon bg-cyan-500/20 border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.3)] py-4 px-5 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all"
                             >
                                 <Smartphone size={16} className="text-cyan-100" />
@@ -225,7 +226,7 @@ const AboutPage: React.FC = () => {
                             </button>
 
                             <button
-                                onClick={() => { playNeonClick(); navigate('/unirse'); }}
+                                onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
                                 className="w-full glass-action-btn bg-green-600/20 border border-green-400/50 shadow-[0_0_20px_rgba(34,197,94,0.3)] py-4 px-5 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-green-600/30"
                             >
                                 <UserCheck size={16} className="text-green-300" />
@@ -243,7 +244,7 @@ const AboutPage: React.FC = () => {
             {/* Futuristic Footer */}
             <footer className="relative z-10 pt-10 pb-14 px-5 border-t border-white/10 bg-black/60 backdrop-blur-sm">
                 <div className="max-w-lg mx-auto flex flex-col items-center gap-6">
-                    <div className="scale-75 cursor-pointer hover:opacity-100 opacity-60 transition-opacity" onClick={() => navigate('/')}>
+                    <div className="scale-75 cursor-pointer hover:opacity-100 opacity-60 transition-opacity" onClick={() => navigate(`/${townId}/home`)}>
                         <Logo />
                     </div>
                     
