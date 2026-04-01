@@ -222,8 +222,10 @@ export const obtenerComercios = async () => {
 // 1b. Suscribirse a los comercios en tiempo real (Filtrado por Zona)
 export const suscribirseAComercios = (callback: (comercios: any[]) => void, townId?: string, onError?: (error: any) => void) => {
     const colRef = collection(db, "comercios");
-    // If townId is provided, filter. If not (root mode), get all.
-    const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
+    // Si es la zona por defecto ('esteban-echeverria' o vacío), mostramos todo el legado
+    const q = (townId && townId !== 'esteban-echeverria') 
+        ? query(colRef, where("townId", "==", townId)) 
+        : colRef;
     
     return onSnapshot(q, (snapshot) => {
         const comercios = snapshot.docs.map(docSnap => ({
@@ -404,7 +406,9 @@ export const actualizarPuntosCliente = async (clientId: string, pointsDelta: num
 
 export const suscribirseAOfertas = (callback: (ofertas: any[]) => void, townId?: string) => {
     const colRef = collection(db, "ofertas");
-    const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
+    const q = (townId && townId !== 'esteban-echeverria') 
+        ? query(colRef, where("townId", "==", townId)) 
+        : colRef;
     
     return onSnapshot(q, (snapshot) => {
         const ofertas = snapshot.docs.map(docSnap => ({
@@ -585,9 +589,28 @@ export const getGlobalConfig = async (townId: string = 'esteban-echeverria') => 
 
 export const subscribeToGlobalConfig = (onUpdate: (config: any) => void, townId: string = 'esteban-echeverria') => {
     const docRef = doc(db, 'appConfig', townId);
-    return onSnapshot(docRef, (doc) => {
-        if (doc.exists()) {
-            onUpdate(doc.data());
+    return onSnapshot(docRef, async (snap) => {
+        if (snap.exists()) {
+            const data = snap.data();
+            // Si el documento existe pero no tiene categorías (o están vacías), inyectamos los defaults
+            if (!data.categories || data.categories.length === 0) {
+                onUpdate({
+                    ...data,
+                    categories: ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true, isSystem: true }))
+                });
+            } else {
+                onUpdate(data);
+            }
+        } else if (townId === 'esteban-echeverria') {
+            // Si es la zona por defecto y no existe el doc, intentamos usar el legado o el default maestro
+            onUpdate({
+                mainTitle: "ShopDigital",
+                mainSubtitle: "Tu guía de ofertas locales",
+                theme: 'winter',
+                primaryColor: '#22d3ee',
+                townName: "Esteban Echeverría",
+                categories: ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true, isSystem: true }))
+            });
         } else {
             onUpdate({
                 mainTitle: "ShopDigital",
@@ -626,6 +649,86 @@ export const saveCategoriesConfig = async (categories: any[], townId: string = '
         return true;
     } catch (error) {
         console.error("Error saving categories config:", error);
+        throw error;
+    }
+};
+
+// --- MÓDULO DE MANTENIMIENTO Y MIGRACIÓN ---
+
+/**
+ * Inicializa la configuración de una zona si no existe.
+ * Útil para asegurar que una zona tenga los rubros maestros por defecto.
+ */
+export const inicializarZonaPredeterminada = async (townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        const docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists() || !docSnap.data().categories) {
+            console.log(`Inicializando configuración base para: ${townId}`);
+            const serializable = ALL_CATEGORIES_MASTER.map(cat => ({
+                ...cat,
+                isActive: true,
+                isSystem: true
+            }));
+            await setDoc(docRef, {
+                mainTitle: "ShopDigital",
+                mainSubtitle: "Tu guía de ofertas locales",
+                theme: 'default',
+                primaryColor: '#22d3ee',
+                townName: townId === 'esteban-echeverria' ? "Esteban Echeverría" : townId,
+                categories: serializable,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+        }
+        return true;
+    } catch (error) {
+        console.error("Error inicializando zona:", error);
+        throw error;
+    }
+};
+
+/**
+ * Migra todos los registros (comercios, clientes, ofertas) que no tengan townId 
+ * asignándoles la zona especificada.
+ */
+export const migrarDatosLegados = async (targetTownId: string = 'esteban-echeverria') => {
+    try {
+        console.log("Iniciando migración de datos legados a:", targetTownId);
+        
+        // 1. Migrar Comercios
+        const shopsSnap = await getDocs(collection(db, "comercios"));
+        const shopsToUpdate = shopsSnap.docs.filter(d => !d.data().townId);
+        for (const d of shopsToUpdate) {
+            await updateDoc(doc(db, "comercios", d.id), { townId: targetTownId });
+        }
+        
+        // 2. Migrar Clientes
+        const clientsSnap = await getDocs(collection(db, "clientes"));
+        const clientsToUpdate = clientsSnap.docs.filter(d => !d.data().townId);
+        for (const d of clientsToUpdate) {
+            await updateDoc(doc(db, "clientes", d.id), { townId: targetTownId });
+        }
+
+        // 3. Migrar Ofertas
+        const offersSnap = await getDocs(collection(db, "ofertas"));
+        const offersToUpdate = offersSnap.docs.filter(d => !d.data().townId);
+        for (const d of offersToUpdate) {
+            await updateDoc(doc(db, "ofertas", d.id), { townId: targetTownId });
+        }
+
+        console.log(`Migración completada. Actualizados: ${shopsToUpdate.length} comercios, ${clientsToUpdate.length} clientes, ${offersToUpdate.length} ofertas.`);
+        
+        // 4. Asegurar que la zona destino tenga rubros
+        await inicializarZonaPredeterminada(targetTownId);
+        
+        return {
+            shops: shopsToUpdate.length,
+            clients: clientsToUpdate.length,
+            offers: offersToUpdate.length
+        };
+    } catch (error) {
+        console.error("Error en migración:", error);
         throw error;
     }
 };

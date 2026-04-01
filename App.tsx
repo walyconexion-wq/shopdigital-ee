@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Shop, Client, Offer } from './types';
-import { suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas, subscribeToGlobalConfig } from './firebase';
+import { 
+  suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas, 
+  subscribeToGlobalConfig, migrarDatosLegados 
+} from './firebase';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -61,6 +64,25 @@ const App: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     return params.get('z') || 'esteban-echeverria';
   });
+
+  // --- REPAIR TRIGGER VIA URL (?repair=true) ---
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('repair') === 'true') {
+      console.log("🛠️ ACTIVADOR MAESTRO DETECTADO: Iniciando reparación de emergencia...");
+      migrarDatosLegados('esteban-echeverria')
+        .then(result => {
+          console.log("✅ REPARACIÓN EXITOSA:", result);
+          alert("¡SISTEMA REESTABLECIDO! Los datos han sido resucitados.");
+          // Limpiar la URL para evitar bucles de alerta
+          window.history.replaceState({}, '', window.location.pathname);
+        })
+        .catch(err => {
+          console.error("❌ ERROR EN REPARACIÓN:", err);
+          alert("Fallo en el rescate: " + err.message);
+        });
+    }
+  }, []);
 
   useEffect(() => {
     // Fallback: force loading to finish after 8 seconds purely to avoid infinite freeze

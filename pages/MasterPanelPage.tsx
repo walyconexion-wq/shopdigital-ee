@@ -6,13 +6,32 @@ import {
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { 
-    guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, saveCategoriesConfig 
+    guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, 
+    saveCategoriesConfig, migrarDatosLegados 
 } from '../firebase';
 import { Offer } from '../types';
 
 const MasterPanelPage: React.FC = () => {
     const navigate = useNavigate();
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
+    const [isMigrating, setIsMigrating] = useState(false);
+    const [migrationResult, setMigrationResult] = useState<any>(null);
+
+    const handleMigration = async () => {
+        if (!window.confirm("¿Confirmas iniciar la migración de datos legados a Esteban Echeverría?")) return;
+        
+        setIsMigrating(true);
+        try {
+            const result = await migrarDatosLegados('esteban-echeverria');
+            setMigrationResult(result);
+            alert("¡Migración completada con éxito! Revisa la Interfaz 1.");
+        } catch (error) {
+            console.error("Error en migración:", error);
+            alert("Error durante la migración. Revisa la consola.");
+        } finally {
+            setIsMigrating(false);
+        }
+    };
 
     const initializeGlobalConfig = async () => {
         try {
@@ -590,6 +609,61 @@ const MasterPanelPage: React.FC = () => {
                         >
                             Ir a buscar comercio
                         </button>
+                    </div>
+
+                    {/* SECCIÓN DE MANTENIMIENTO */}
+                    <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl p-5 mt-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-2 opacity-20">
+                            <Database size={40} className="text-cyan-400" />
+                        </div>
+                        <h3 className="text-[11px] font-black text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-cyan-500/20 pb-2">
+                            <RefreshCw size={14} className={isMigrating ? "animate-spin" : ""} /> Mantenimiento del Sistema
+                        </h3>
+                        
+                        {!migrationResult ? (
+                            <>
+                                <p className="text-[10px] text-white/70 leading-relaxed mb-4">
+                                    Si no ves tus comercios o categorías antiguas en la Interfaz 1, usa este botón para re-conectarlos a la zona de <strong>Esteban Echeverría</strong>.
+                                </p>
+                                <button 
+                                    onClick={handleMigration}
+                                    disabled={isMigrating}
+                                    className={`w-full py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 transition-all ${isMigrating ? 'bg-cyan-900/50 text-cyan-500 cursor-not-allowed' : 'bg-cyan-500 text-black active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)]'}`}
+                                >
+                                    {isMigrating ? (
+                                        <>Procesando ADN...</>
+                                    ) : (
+                                        <>
+                                            <Zap size={14} /> Migrar Datos Legados
+                                        </>
+                                    )}
+                                </button>
+                            </>
+                        ) : (
+                            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+                                <p className="text-[10px] text-green-400 font-bold mb-2">¡MIGRACIÓN COMPLETADA!</p>
+                                <div className="grid grid-cols-3 gap-2 text-center text-[9px] uppercase tracking-tighter">
+                                    <div className="bg-white/5 p-2 rounded-lg">
+                                        <div className="text-white font-black text-xs">{migrationResult.shops}</div>
+                                        <div className="text-white/40">Comercios</div>
+                                    </div>
+                                    <div className="bg-white/5 p-2 rounded-lg">
+                                        <div className="text-white font-black text-xs">{migrationResult.clients}</div>
+                                        <div className="text-white/40">Clientes</div>
+                                    </div>
+                                    <div className="bg-white/5 p-2 rounded-lg">
+                                        <div className="text-white font-black text-xs">{migrationResult.offers}</div>
+                                        <div className="text-white/40">Ofertas</div>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setMigrationResult(null)}
+                                    className="w-full mt-4 text-[9px] text-cyan-400/60 hover:text-cyan-400 uppercase font-black"
+                                >
+                                    Cerrar Reporte
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </section>
             </div>

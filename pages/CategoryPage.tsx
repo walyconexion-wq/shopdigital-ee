@@ -57,10 +57,26 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
         const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         LOCALITIES.forEach(loc => {
             const normalizedLoc = normalize(loc);
-            grouped[loc] = allShops.filter(shop =>
-                shop && shop.isActive === true && shop.category === selectedCategory.id &&
-                ((shop.zone === loc) || (shop.address && normalize(shop.address || "").includes(normalizedLoc)))
-            );
+            grouped[loc] = allShops.filter(shop => {
+                if (!shop) return false;
+                
+                // 1. Estado Activo (Tolerante con el legado)
+                const isActive = shop.isActive !== false;
+                
+                // 2. Coincidencia de Categoría (Triple verificación: ID, Slug o Nombre)
+                const categoryMatch = 
+                    shop.category === selectedCategory.id || 
+                    shop.category === selectedCategory.slug || 
+                    shop.category?.toLowerCase() === selectedCategory.name.toLowerCase();
+
+                // 3. Localidad (Inclusivo para la zona global)
+                const zoneMatch = 
+                    townName !== 'Esteban Echeverría' ? 
+                    ((shop.zone === loc) || (shop.address && normalize(shop.address || "").includes(normalizedLoc))) :
+                    ((shop.zone === loc) || !shop.zone || (shop.address && normalize(shop.address || "").includes(normalizedLoc)));
+
+                return isActive && categoryMatch && zoneMatch;
+            });
         });
         return grouped;
     }, [selectedCategory, allShops]);
