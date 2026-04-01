@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 
 const Logo: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const [clickCount, setClickCount] = useState(0);
     const navigate = useNavigate();
 
@@ -11,7 +12,7 @@ const Logo: React.FC = () => {
         setClickCount(prev => {
             const newCount = prev + 1;
             if (newCount >= 5) {
-                navigate('/tablero-maestro');
+                navigate(`/${townId}/tablero-maestro`);
                 return 0;
             }
             return newCount;
@@ -36,10 +37,10 @@ const Logo: React.FC = () => {
       {/* Identificación de Zona */}
       <div className="flex flex-col items-center gap-0.5 relative z-10">
         <span className="text-[12px] font-black tracking-[0.2em] uppercase bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
-          Esteban Echeverría
+          {townId === 'esteban-echeverria' ? "Esteban Echeverría" : townId.charAt(0).toUpperCase() + townId.slice(1).replace(/-/g, ' ')}
         </span>
         <p className="text-[7px] font-black text-white/50 tracking-[0.3em] uppercase drop-shadow-md">
-          RED COMERCIAL DIGITAL
+          {townId === 'esteban-echeverria' ? "RED COMERCIAL DIGITAL" : "EXPANSIÓN MULTI-ZONA"}
         </p>
       </div>
     </div>

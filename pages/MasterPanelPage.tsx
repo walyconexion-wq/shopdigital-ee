@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { 
@@ -12,6 +12,7 @@ import {
 import { Offer } from '../types';
 
 const MasterPanelPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const [isMigrating, setIsMigrating] = useState(false);
@@ -22,7 +23,7 @@ const MasterPanelPage: React.FC = () => {
         
         setIsMigrating(true);
         try {
-            const result = await migrarDatosLegados('esteban-echeverria');
+            const result = await migrarDatosLegados(townId);
             setMigrationResult(result);
             alert("¡Migración completada con éxito! Revisa la Interfaz 1.");
         } catch (error) {
@@ -43,10 +44,10 @@ const MasterPanelPage: React.FC = () => {
                 theme: "winter", 
                 townName: "Esteban Echeverría"
             };
-            await saveGlobalConfig(defaultConfig);
+            await saveGlobalConfig(defaultConfig, townId);
             
             // Inyectar rubros iniciales
-            await saveCategoriesConfig(DEFAULT_CATEGORIES_CONFIG);
+            await saveCategoriesConfig(DEFAULT_CATEGORIES_CONFIG, townId);
 
             alert("¡Modo Camaleón Activado! 🎨❄️ Mirá la nieve en la Home.");
         } catch (error) {
@@ -390,10 +391,10 @@ const MasterPanelPage: React.FC = () => {
 
             alert("🛡️ INICIO DE INYECCIÓN DE SISTEMA MAESTRO...");
             for (const shop of shops) {
-                 await guardarComercio(shop);
+                 await guardarComercio(shop, townId);
             }
             for (const offer of b2bOffers) {
-                 await guardarOferta(offer);
+                 await guardarOferta(offer, townId);
             }
             alert("✅ ¡ÉXITO! Base de Datos de Muestra Cargada Correctamente.");
         } catch (error: any) {
@@ -432,24 +433,24 @@ const MasterPanelPage: React.FC = () => {
     };
 
     const publicPages = [
-        { title: 'Landing Nosotros', desc: 'Presentación de la empresa', path: '/nosotros', icon: <Globe size={18} /> },
-        { title: 'Landing Unirse', desc: 'Registro para comercios / Embajador', path: '/unirse', icon: <Store size={18} /> },
-        { title: 'Landing Descubrir', desc: 'Presentación para Clientes B2C', path: '/descubrir', icon: <Users size={18} /> },
-        { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: '/red-comercial/descuentos', icon: <Tag size={18} /> },
-        { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: '/red-comercial/ofertas', icon: <ShoppingBag size={18} /> },
-        { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: '/reclutamiento', icon: <Globe size={18} /> },
+        { title: 'Landing Nosotros', desc: 'Presentación de la empresa', path: `/${townId}/nosotros`, icon: <Globe size={18} /> },
+        { title: 'Landing Unirse', desc: 'Registro para comercios / Embajador', path: `/${townId}/unirse`, icon: <Store size={18} /> },
+        { title: 'Landing Descubrir', desc: 'Presentación para Clientes B2C', path: `/${townId}/descubrir`, icon: <Users size={18} /> },
+        { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={18} /> },
+        { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={18} /> },
+        { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: `/${townId}/reclutamiento`, icon: <Globe size={18} /> },
     ];
 
     const managementPages = [
-        { title: 'Reclutamiento Admin', desc: 'Aprobar o rechazar aspirantes a Embajadores', path: '/tablero-maestro/reclutamiento' },
-        { title: 'Panel de Embajador', desc: 'Autenticación para dar de alta comercios', path: '/embajador' },
-        { title: 'Facturación y Avisos', desc: 'Suscripciones B2C y B2B', path: '/embajador/facturacion' },
-        { title: 'Relevamiento Táctico', desc: 'Carga Express Mobile de prospectos en calle', path: '/embajador/relevamiento/nuevo' },
-        { title: 'Gestión de Prospectos', desc: 'Ver, revisar, y activar leads de relevamiento', path: '/embajador/relevamiento/gestion' },
-        { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: '/subscripcion' },
-        { title: 'Base de Clientes', desc: 'Para ver todos los clientes registrados', path: '/base-clientes' },
-        { title: 'Gestión Comercial', desc: 'Ruta directa a listado de comercios', path: '/embajador/gestion' },
-        { title: 'Configuración Global', desc: 'Temas estacionales e identidad de App', path: '/tablero-maestro/configuracion' },
+        { title: 'Reclutamiento Admin', desc: 'Aprobar o rechazar aspirantes a Embajadores', path: `/${townId}/tablero-maestro/reclutamiento` },
+        { title: 'Panel de Embajador', desc: 'Autenticación para dar de alta comercios', path: `/${townId}/embajador` },
+        { title: 'Facturación y Avisos', desc: 'Suscripciones B2C y B2B', path: `/${townId}/embajador/facturacion` },
+        { title: 'Relevamiento Táctico', desc: 'Carga Express Mobile de prospectos en calle', path: `/${townId}/embajador/relevamiento/nuevo` },
+        { title: 'Gestión de Prospectos', desc: 'Ver, revisar, y activar leads de relevamiento', path: `/${townId}/embajador/relevamiento/gestion` },
+        { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: `/${townId}/subscripcion` },
+        { title: 'Base de Clientes', desc: 'Para ver todos los clientes registrados', path: `/${townId}/base-clientes` },
+        { title: 'Gestión Comercial', desc: 'Ruta directa a listado de comercios', path: `/${townId}/embajador/gestion` },
+        { title: 'Configuración Global', desc: 'Temas estacionales e identidad de App', path: `/${townId}/tablero-maestro/configuracion` },
     ];
 
     return (
@@ -497,7 +498,7 @@ const MasterPanelPage: React.FC = () => {
                 </button>
 
                 <button 
-                    onClick={() => { playNeonClick(); navigate('/tablero-maestro/configuracion'); }} 
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/configuracion`); }} 
                     className="w-full bg-violet-600/80 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-violet-500/50 hover:bg-violet-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5"
                 >
                     <div className="flex items-center gap-2">
@@ -508,7 +509,7 @@ const MasterPanelPage: React.FC = () => {
                 </button>
 
                 <button 
-                    onClick={() => { playNeonClick(); navigate('/tablero-maestro/fabrica'); }} 
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/fabrica`); }} 
                     className="w-full bg-gradient-to-r from-amber-600/90 to-yellow-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.3)] border border-yellow-500/50 hover:from-amber-500 hover:to-yellow-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
@@ -604,7 +605,7 @@ const MasterPanelPage: React.FC = () => {
                             Debe buscar el comercio específico en <strong>Gestión Comercial</strong> y usar los botones de acceso directo que figuran para ese local.
                         </p>
                         <button 
-                            onClick={() => { playNeonClick(); navigate('/embajador/gestion'); }}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/gestion`); }}
                             className="w-full mt-4 bg-yellow-500 text-black py-3 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-transform"
                         >
                             Ir a buscar comercio

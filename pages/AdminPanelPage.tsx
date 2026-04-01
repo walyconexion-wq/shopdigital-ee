@@ -31,7 +31,7 @@ interface AdminPanelPageProps {
 }
 
 const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = [] }) => {
-    const { shopSlug } = useParams<{ shopSlug: string }>();
+    const { townId = 'esteban-echeverria', shopSlug } = useParams<{ townId: string, shopSlug: string }>();
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
@@ -355,7 +355,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                                         <button 
                                             onClick={() => {
                                                 playNeonClick();
-                                                window.open(`/factura/${inv.id}`, '_blank');
+                                                window.open(`/${townId}/factura/${inv.id}`, '_blank');
                                             }}
                                             className="bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 rounded-xl py-2 px-3 flex items-center gap-2 text-[9px] uppercase font-black tracking-widest transition-all"
                                         >
@@ -376,7 +376,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                         const category = editableShop.category || (existingShop ? existingShop.category : '');
                         const slug = editableShop.slug || shopSlug;
                         if (category && slug) {
-                            navigate(`/${category}/${slug}/credencial`);
+                            navigate(`/${townId}/${category}/${slug}/credencial`);
                         } else {
                             alert('Faltan datos para generar la ruta de la credencial');
                         }
