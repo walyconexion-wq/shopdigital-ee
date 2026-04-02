@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, Save, Palette, Type, Globe, 
     Snowflake, Sun, Flower2, TreePine, Layout,
@@ -11,6 +11,7 @@ import { resolveIcon, AVAILABLE_ICONS_FOR_PICKER } from '../utils/iconResolver';
 import { Trash2, Plus, PowerOff, Power } from 'lucide-react';
 
 const GlobalConfigPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [config, setConfig] = useState<any>({
         mainTitle: "ShopDigital",
@@ -30,17 +31,17 @@ const GlobalConfigPage: React.FC = () => {
             if (updatedConfig) {
                 setConfig(updatedConfig);
             }
-        });
+        }, townId);
         return () => unsubscribe();
-    }, []);
+    }, [townId]);
 
     const handleSave = async () => {
         setSaving(true);
         setMessage(null);
         playNeonClick();
         try {
-            await saveGlobalConfig(config);
-            setMessage({ type: 'success', text: 'Configuración global actualizada con éxito' });
+            await saveGlobalConfig(config, townId);
+            setMessage({ type: 'success', text: `Configuración de ${config.townName || townId} actualizada con éxito` });
             setTimeout(() => setMessage(null), 3000);
         } catch (error) {
             setMessage({ type: 'error', text: 'Error al guardar la configuración' });
@@ -111,16 +112,16 @@ const GlobalConfigPage: React.FC = () => {
 
             {/* Header Sticky */}
             <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-white/10 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl flex items-center justify-between">
-                <button onClick={() => { playNeonClick(); navigate(-1); }} className="text-white/50 hover:text-white transition-colors">
+                <button onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro`); }} className="text-white/50 hover:text-white transition-colors">
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center flex-1">
                     <Palette size={24} className="mb-1" style={{ color: config.primaryColor }} />
                     <h1 className="text-sm font-[1000] uppercase tracking-[0.1em] text-white text-center leading-tight">
-                        Temas Globales
+                        Config · {config.townName || townId}
                     </h1>
                     <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: config.primaryColor }}>
-                        Interfaz 1 y 2
+                        Zona {config.townName || townId}
                     </p>
                 </div>
                 <button 

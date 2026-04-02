@@ -84,6 +84,10 @@ const TownController: React.FC = () => {
     }, [location.search, townId]);
 
     useEffect(() => {
+        // 🧹 LIMPIEZA DE CACHÉ: resetear estado al cambiar de zona para evitar mezcla de datos
+        setAllShops([]);
+        setAllClients([]);
+        setAllOffers([]);
         setLoading(true);
         const fallbackTimer = setTimeout(() => setLoading(false), 8000);
 

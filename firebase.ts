@@ -169,19 +169,24 @@ export const saveTown = async (townData: any) => {
         if (!id) throw new Error("ID de zona es requerido.");
         await setDoc(doc(db, "towns", id), { ...townData, updatedAt: new Date().toISOString() }, { merge: true });
         
-        // Initialize basic config for the house if it doesn't exist
+        // Initialize appConfig for the new town if it doesn't already exist
         const configRef = doc(db, 'appConfig', id);
         const configSnap = await getDoc(configRef);
         if (!configSnap.exists()) {
+            // Use serializable categories (no React icon elements)
+            const serializableCategories = ALL_CATEGORIES_MASTER.map(({ id: cId, slug, name, iconKey, isSystem }) => ({
+                id: cId, slug, name, iconKey, isActive: true, isSystem: !!isSystem
+            }));
             await setDoc(configRef, {
                 mainTitle: "ShopDigital",
                 mainSubtitle: `Tu guía de ofertas en ${townData.name}`,
                 theme: 'default',
                 primaryColor: '#22d3ee',
                 townName: townData.name,
-                categories: DEFAULT_CATEGORIES_CONFIG,
+                categories: serializableCategories,
                 updatedAt: new Date().toISOString()
             });
+            console.log(`✅ Config base inicializada para zona: ${id}`);
         }
         return id;
     } catch (error) {
@@ -612,12 +617,18 @@ export const subscribeToGlobalConfig = (onUpdate: (config: any) => void, townId:
                 categories: ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true, isSystem: true }))
             });
         } else {
+            // Nueva zona sin configuración aún: generar default dinámico usando el nombre real de la zona
+            const displayName = townId
+                .split('-')
+                .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+                .join(' ');
             onUpdate({
                 mainTitle: "ShopDigital",
-                mainSubtitle: "Tu guía de ofertas locales",
+                mainSubtitle: `Tu guía de ofertas en ${displayName}`,
                 theme: 'default',
                 primaryColor: '#22d3ee',
-                townName: "Esteban Echeverría"
+                townName: displayName,
+                categories: ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true, isSystem: true }))
             });
         }
     });

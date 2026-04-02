@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
@@ -7,7 +7,7 @@ import {
 import { playNeonClick } from '../utils/audio';
 import { 
     guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, 
-    saveCategoriesConfig, migrarDatosLegados 
+    saveCategoriesConfig, migrarDatosLegados, subscribeToGlobalConfig
 } from '../firebase';
 import { Offer } from '../types';
 
@@ -17,6 +17,26 @@ const MasterPanelPage: React.FC = () => {
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const [isMigrating, setIsMigrating] = useState(false);
     const [migrationResult, setMigrationResult] = useState<any>(null);
+    // Modo Camaleón: leer config de zona para identidad visual del panel
+    const [zoneConfig, setZoneConfig] = useState<any>({ primaryColor: '#22d3ee', townName: '' });
+
+    useEffect(() => {
+        const unsub = subscribeToGlobalConfig((cfg) => {
+            if (cfg) setZoneConfig(cfg);
+        }, townId);
+        return () => unsub();
+    }, [townId]);
+
+    const zoneColor = zoneConfig?.primaryColor || '#22d3ee';
+    const zoneName = zoneConfig?.townName || townId;
+    const hexToRgba = (hex: string, alpha: number) => {
+        try {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        } catch { return `rgba(34, 211, 238, ${alpha})`; }
+    };
 
     const handleMigration = async () => {
         if (!window.confirm("¿Confirmas iniciar la migración de datos legados a Esteban Echeverría?")) return;
@@ -455,20 +475,34 @@ const MasterPanelPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-cyan-500/30">
-            {/* Background elements */}
+            {/* Background — Modo Camaleón: responde al color de la zona */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                <div 
+                    className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[100px]"
+                    style={{ backgroundColor: hexToRgba(zoneColor, 0.1) }}
+                />
+                <div 
+                    className="absolute inset-0"
+                    style={{ backgroundImage: `linear-gradient(${hexToRgba(zoneColor, 0.03)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(zoneColor, 0.03)} 1px, transparent 1px)`, backgroundSize: '40px 40px' }}
+                />
             </div>
 
-            <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-cyan-500/30 pt-10 pb-6 px-6 relative z-10 sticky top-0 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <button onClick={() => navigate(-1)} className="absolute top-10 left-6 text-cyan-400 hover:text-cyan-300">
+            <div 
+                className="backdrop-blur-xl border-b pt-10 pb-6 px-6 relative z-10 sticky top-0 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                style={{ 
+                    background: 'rgba(24,24,27,0.80)',
+                    borderBottomColor: hexToRgba(zoneColor, 0.3)
+                }}
+            >
+                <button onClick={() => navigate(-1)} className="absolute top-10 left-6 hover:opacity-70" style={{ color: zoneColor }}>
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center">
-                    <Terminal size={32} className="text-cyan-400 mb-2 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
-                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Tablero Maestro V2</h1>
-                    <p className="text-[9px] font-bold text-cyan-400/80 uppercase tracking-widest mt-1">Control General de Waly</p>
+                    <Terminal size={32} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 15px ${hexToRgba(zoneColor, 0.5)})` }} />
+                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Tablero Maestro</h1>
+                    <p className="text-[9px] font-bold uppercase tracking-widest mt-1" style={{ color: zoneColor }}>
+                        {zoneName} · Control General
+                    </p>
                 </div>
             </div>
 
