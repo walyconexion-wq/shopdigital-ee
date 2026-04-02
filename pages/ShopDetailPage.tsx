@@ -207,7 +207,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <div className="flex items-center gap-1.5 mt-1 opacity-90">
                         <MapPin size={10} className="text-red-400" strokeWidth={3} />
                         <span className="text-[8.5px] font-black uppercase tracking-[0.3em] text-white/80 text-shadow-premium">
-                            {selectedShop.zone || 'Esteban Echeverría'}
+                            {selectedShop.zone || globalConfig?.townName || 'Tu zona'}
                         </span>
                     </div>
                     <div className="w-12 h-[1px] bg-white/40 mx-auto mt-2.5 shadow-[0_0_10px_rgba(255,255,255,0.6)]"></div>

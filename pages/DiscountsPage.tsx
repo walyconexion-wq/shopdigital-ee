@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Offer } from '../types';
 import {
     ArrowLeft,
@@ -22,6 +22,12 @@ interface DiscountsPageProps {
 
 const DiscountsPage: React.FC<DiscountsPageProps> = ({ allOffers }) => {
     const navigate = useNavigate();
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
+    // Derivar nombre visual de ciudad a partir del townId
+    const townDisplayName = townId
+        .split('-')
+        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
 
     const activeOffers = allOffers.filter(o => o.target === 'B2B' && o.isActive);
 
@@ -80,7 +86,7 @@ const DiscountsPage: React.FC<DiscountsPageProps> = ({ allOffers }) => {
                         <div>
                             <h3 className="text-[11px] font-black text-white uppercase tracking-widest mb-1">¿Cómo obtener tu descuento?</h3>
                             <p className="text-[9px] font-medium text-white/50 leading-relaxed">
-                                Presentá tu <span className="text-cyan-400 font-bold">Credencial Electrónica</span> en cualquiera de los locales adheridos a nuestra red comercial de Esteban Echeverría.
+                                Preséntala {{' '}}<span className="text-cyan-400 font-bold">Credencial Electrónica</span> en cualquiera de los locales adheridos a nuestra red comercial de <span className="text-white font-bold">{townDisplayName}</span>.
                             </p>
                         </div>
                     </div>

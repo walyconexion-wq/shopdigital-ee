@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
 import { guardarComercio, eliminarComercio } from '../firebase';
+import { useTownLocalities } from '../hooks/useTownLocalities';
 import {
     ChevronLeft,
     ShieldCheck,
@@ -18,17 +19,26 @@ import {
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
-const LOCALITIES = ['Luis Guillón', 'Monte Grande', 'El Jagüel'];
+// Las localidades se cargan dinámicamente desde Firebase (ver useTownLocalities)
 
 interface ShopManagementPageProps {
     allShops: Shop[];
 }
 
 const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { localities } = useTownLocalities(townId);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-    const [activeLocation, setActiveLocation] = useState('Monte Grande');
+    const [activeLocation, setActiveLocation] = useState('');
     const [processingId, setProcessingId] = useState<string | null>(null);
+
+    // Setear primera localidad como activa cuando carguen
+    React.useEffect(() => {
+        if (localities.length > 0 && !activeLocation) {
+            setActiveLocation(localities[0]);
+        }
+    }, [localities]);
 
     const selectedCategory = CATEGORIES.find(c => c.id === selectedCategoryId);
 
@@ -164,11 +174,14 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
     // =========================================================
     // VIEW 2: Location Tabs + Shop Cards with Controls
     // =========================================================
-    const LOCALITY_COLORS: Record<string, { border: string; bg: string; text: string; shadow: string; glow: string }> = {
-        'Luis Guillón': { border: 'border-green-400', bg: 'bg-green-500/20', text: 'text-green-300', shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.4)]', glow: 'shadow-[0_0_0_rgba(34,197,94,0)]' },
-        'Monte Grande': { border: 'border-cyan-400', bg: 'bg-cyan-500/20', text: 'text-cyan-300', shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.4)]', glow: 'shadow-[0_0_0_rgba(34,211,238,0)]' },
-        'El Jagüel': { border: 'border-violet-400', bg: 'bg-violet-500/20', text: 'text-violet-300', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.4)]', glow: 'shadow-[0_0_0_rgba(139,92,246,0)]' },
-    };
+    // Paleta cíclica por índice (no por nombre hardcodeado)
+    const CYCLIC_COLORS = [
+        { border: 'border-cyan-400',   bg: 'bg-cyan-500/20',   text: 'text-cyan-300',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.4)]'  },
+        { border: 'border-violet-400', bg: 'bg-violet-500/20', text: 'text-violet-300', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.4)]'  },
+        { border: 'border-rose-400',   bg: 'bg-rose-500/20',   text: 'text-rose-300',   shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.4)]'   },
+        { border: 'border-green-400',  bg: 'bg-green-500/20',  text: 'text-green-300',  shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.4)]'   },
+        { border: 'border-amber-400',  bg: 'bg-amber-500/20',  text: 'text-amber-300',  shadow: 'shadow-[0_0_20px_rgba(245,158,11,0.4)]'  },
+    ];
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
@@ -195,16 +208,16 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                 </p>
             </div>
 
-            {/* Location Tabs */}
-            <div className="flex justify-center gap-3 px-5 mb-6 relative z-10">
-                {LOCALITIES.map(loc => {
+            {/* Location Tabs — dinámicas por zona */}
+            <div className="flex justify-center gap-3 px-5 mb-6 relative z-10 overflow-x-auto no-scrollbar">
+                {localities.map((loc, idx) => {
                     const isActive = activeLocation === loc;
-                    const colors = LOCALITY_COLORS[loc];
+                    const colors = CYCLIC_COLORS[idx % CYCLIC_COLORS.length];
                     return (
                         <button
                             key={loc}
                             onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300
+                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300 whitespace-nowrap
                                 ${isActive
                                     ? `${colors.bg} ${colors.border} ${colors.text} ${colors.shadow} scale-110`
                                     : `bg-white/[0.03] border-white/10 text-white/40 hover:text-white/60 hover:border-white/20`

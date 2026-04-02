@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Offer } from '../types';
 import { CATEGORIES } from '../constants';
 import { guardarOferta } from '../firebase';
+import { useTownLocalities } from '../hooks/useTownLocalities';
 import {
     ChevronLeft,
     Save,
@@ -19,7 +20,7 @@ import {
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
-const LOCALITIES = ['Luis Guillón', 'Monte Grande', 'El Jagüel'];
+// Las localidades se cargan dinámicamente desde Firebase según el townId (ver useTownLocalities)
 
 interface OfferFormPageProps {
     allOffers?: Offer[];
@@ -27,7 +28,8 @@ interface OfferFormPageProps {
 
 const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
     const navigate = useNavigate();
-    const { target, offerId } = useParams<{ target?: string; offerId?: string }>();
+    const { townId = 'esteban-echeverria', target, offerId } = useParams<{ townId?: string; target?: string; offerId?: string }>();
+    const { localities } = useTownLocalities(townId);
 
     const isEditing = !!offerId;
     const offerTarget = (target?.toUpperCase() || 'B2B') as 'B2B' | 'B2C';
@@ -43,13 +45,20 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
         discountLabel: '',
         image: '',
         merchantName: '',
-        merchantZone: LOCALITIES[1],
+        merchantZone: '',  // se setea con la primera localidad al cargar
         category: CATEGORIES[0].id,
         validFrom: new Date().toISOString().split('T')[0],
         validUntil: '',
         stockLimit: '',
         pointsPrice: '',
     });
+    // Setear zona por defecto cuando carguen las localidades
+    useEffect(() => {
+        if (localities.length > 0 && !formData.merchantZone) {
+            setFormData(prev => ({ ...prev, merchantZone: localities[0] }));
+        }
+    }, [localities]);
+
     const [saved, setSaved] = useState(false);
 
     useEffect(() => {
@@ -208,7 +217,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                     <div>
                         <label className={LABEL_CLASS}><MapPin size={10} /> Zona</label>
                         <select name="merchantZone" value={formData.merchantZone} onChange={handleChange} className={INPUT_CLASS}>
-                            {LOCALITIES.map(l => <option key={l} value={l}>{l}</option>)}
+                            {localities.map(l => <option key={l} value={l}>{l}</option>)}
                         </select>
                     </div>
                     <div>

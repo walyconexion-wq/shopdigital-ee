@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { guardarComercio } from '../firebase';
+import { useTownLocalities } from '../hooks/useTownLocalities';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
 import {
@@ -18,23 +19,31 @@ import {
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
-const LOCALITIES = ['Monte Grande', 'Luis Guillón', 'El Jagüel'];
+// Las localidades se cargan dinámicamente desde Firebase según el townId (ver useTownLocalities)
 
 const SubscriptionPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { localities } = useTownLocalities(townId);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
         category: CATEGORIES[0].id,
-        zone: LOCALITIES[0],
+        zone: '',  // se setea cuando cargan las localidades
         address: '',
         bannerImage: '',
         ownerName: '',
         phone: ''
     });
+
+    // Setear la primera localidad como default una vez que carguen
+    useEffect(() => {
+        if (localities.length > 0 && !formData.zone) {
+            setFormData(prev => ({ ...prev, zone: localities[0] }));
+        }
+    }, [localities]);
 
     const generateSlug = (text: string) => {
         return text.toString().toLowerCase()
@@ -118,7 +127,7 @@ const SubscriptionPage: React.FC = () => {
         };
 
         try {
-            await guardarComercio(newShop);
+            await guardarComercio(newShop, townId);
             playSuccessSound();
             setShowSuccess(true);
         } catch (error) {
@@ -228,7 +237,7 @@ const SubscriptionPage: React.FC = () => {
                             onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
                             className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold focus:outline-none focus:border-cyan-400 transition-all"
                         >
-                            {LOCALITIES.map(loc => (
+                            {localities.map(loc => (
                                 <option key={loc} value={loc} className="bg-zinc-900 text-white">{loc}</option>
                             ))}
                         </select>
@@ -245,7 +254,7 @@ const SubscriptionPage: React.FC = () => {
                     </div>
                     <input
                         required
-                        placeholder="Ej: Av. Tomás Guido 1450, Monte Grande"
+                        placeholder={`Ej: Av. Principal 123, ${formData.zone || (localities[0] || 'tu localidad')}`}
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold placeholder:text-white/20 focus:outline-none focus:border-cyan-400 transition-all"

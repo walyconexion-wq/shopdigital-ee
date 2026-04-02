@@ -39,7 +39,7 @@ const MasterPanelPage: React.FC = () => {
     };
 
     const handleMigration = async () => {
-        if (!window.confirm("¿Confirmas iniciar la migración de datos legados a Esteban Echeverría?")) return;
+        if (!window.confirm(`¿Confirmás iniciar la migración de datos legados a ${zoneName}?`)) return;
         
         setIsMigrating(true);
         try {
@@ -62,7 +62,7 @@ const MasterPanelPage: React.FC = () => {
                 mainSubtitle: "Tu guía de ofertas locales",
                 primaryColor: "#22d3ee",
                 theme: "winter", 
-                townName: "Esteban Echeverría"
+                townName: zoneName
             };
             await saveGlobalConfig(defaultConfig, townId);
             
