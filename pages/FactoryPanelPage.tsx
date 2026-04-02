@@ -31,7 +31,25 @@ const FactoryPanelPage: React.FC = () => {
     }, [townId]);
 
     useEffect(() => {
-        const unsubscribe = subscribeToTowns((data) => {
+        const unsubscribe = subscribeToTowns(async (data) => {
+            // Si Esteban Echeverría no está en la colección towns, auto-registrarla
+            // (es la zona original que existía antes del sistema multi-zona)
+            const hasEE = data.some(t => t.id === 'esteban-echeverria');
+            if (!hasEE) {
+                try {
+                    await saveTown({
+                        id: 'esteban-echeverria',
+                        name: 'Esteban Echeverría',
+                        localities: ['Monte Grande', 'El Jagüel', 'Canning', 'Luis Guillón', 'San José'],
+                        description: 'Zona Madre — Origen de ShopDigital',
+                        isActive: true,
+                        createdAt: new Date().toISOString()
+                    });
+                    // subscribeToTowns disparará de nuevo con la lista completa
+                } catch (err) {
+                    console.warn('No se pudo auto-registrar Esteban Echeverría en towns:', err);
+                }
+            }
             setTowns(data);
             setLoading(false);
         });
