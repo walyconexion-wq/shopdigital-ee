@@ -203,7 +203,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-white/5 mb-4 sticky top-0 z-50">
                 <button onClick={() => {
                     playNeonClick();
-                    navigate(-1);
+                    navigate(`/${townId}/home`);
                 }} className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10"><ChevronLeft size={20} /></button>
                 <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] mb-1">Carga de Comercio</h2>
                 <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Panel de Autogestión</p>

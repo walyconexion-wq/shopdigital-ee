@@ -494,7 +494,7 @@ const MasterPanelPage: React.FC = () => {
                     borderBottomColor: hexToRgba(zoneColor, 0.3)
                 }}
             >
-                <button onClick={() => navigate(-1)} className="absolute top-10 left-6 hover:opacity-70" style={{ color: zoneColor }}>
+                <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="absolute top-10 left-6 hover:opacity-70" style={{ color: zoneColor }}>
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center">
@@ -549,9 +549,9 @@ const MasterPanelPage: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                     <div className="flex items-center gap-2">
                         <Factory size={14} className="text-white/80" />
-                        <span className="text-[14px]">🏭 LA FÁBRICA DE SHOPDIGITAL</span>
+                        <span className="text-[14px]">🏭 LA FÁBRICA · VISIóN GLOBAL</span>
                     </div>
-                    <span className="text-[8px] text-yellow-100 italic">MÓDULO DE EXPANSIÓN MULTI-ZONA (FORJAR CIUDADES)</span>
+                    <span className="text-[8px] text-yellow-100 italic">VER Y SALTAR A CUALQUIER ZONA · FORJAR NUEVAS CIUDADES</span>
                 </button>
                 
                 {/* Public Landings & Sections */}
