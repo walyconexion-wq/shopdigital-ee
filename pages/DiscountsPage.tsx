@@ -86,7 +86,7 @@ const DiscountsPage: React.FC<DiscountsPageProps> = ({ allOffers }) => {
                         <div>
                             <h3 className="text-[11px] font-black text-white uppercase tracking-widest mb-1">¿Cómo obtener tu descuento?</h3>
                             <p className="text-[9px] font-medium text-white/50 leading-relaxed">
-                                Preséntala {{' '}}<span className="text-cyan-400 font-bold">Credencial Electrónica</span> en cualquiera de los locales adheridos a nuestra red comercial de <span className="text-white font-bold">{townDisplayName}</span>.
+                                Presentá tu <span className="text-cyan-400 font-bold">Credencial Electrónica</span> en cualquiera de los locales adheridos a nuestra red comercial de <span className="text-white font-bold">{townDisplayName}</span>.
                             </p>
                         </div>
                     </div>
