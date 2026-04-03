@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, Users, CheckCircle, XCircle, Search, Copy, Check, FileText } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { db, eliminarAutorizado } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const AmbassadorRecruitmentAdminPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [aspirantes, setAspirantes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
             const q = query(
                 collection(db, "autorizados"), 
                 where("role", "==", "ambassador"),
+                where("townId", "==", townId) // Filtrar por zona activa
             );
             const querySnapshot = await getDocs(q);
             const data: any[] = [];
@@ -43,7 +45,7 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
 
     const handleCopyLink = async (id: string) => {
         playNeonClick();
-        const url = `${window.location.origin}/reclutamiento/alta/${id}`;
+        const url = `${window.location.origin}/${townId}/reclutamiento/alta/${id}`;
         try {
             await navigator.clipboard.writeText(url);
             setCopiedId(id);
@@ -110,6 +112,9 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                                                 </span>
                                                 <span className="text-[9px] text-white/40 uppercase tracking-widest">
                                                     {new Date(aspirante.date).toLocaleDateString()}
+                                                </span>
+                                                <span className="text-[9px] font-bold text-cyan-400/50 uppercase tracking-widest bg-cyan-500/5 px-2 py-0.5 rounded border border-cyan-500/10">
+                                                    ZONA: {aspirante.townId || 'N/A'}
                                                 </span>
                                             </div>
                                         </div>

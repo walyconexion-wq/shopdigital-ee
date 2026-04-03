@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, Send, Share2, User, Phone, MapPin, Calendar, CheckCircle } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { crearAspirante } from '../firebase';
 
 const AmbassadorRecruitPage1: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -29,6 +30,7 @@ const AmbassadorRecruitPage1: React.FC = () => {
         try {
             await crearAspirante({
                 ...formData,
+                townId, // Inyectar zona actual
                 date: new Date().toISOString(),
                 formStep: 1
             });
@@ -76,7 +78,7 @@ const AmbassadorRecruitPage1: React.FC = () => {
                         Tus datos han sido registrados en nuestro sistema de evaluación. Nuestro equipo revisará tu perfil y nos contactaremos a la brevedad para agendar la entrevista.
                     </p>
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
                         className="w-full btn-cyan-neon py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[12px]"
                     >
                         Volver al Inicio

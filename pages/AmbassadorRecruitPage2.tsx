@@ -6,7 +6,7 @@ import { db, loginConGoogle, actualizarAutorizado } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 const AmbassadorRecruitPage2: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { id, townId = 'esteban-echeverria' } = useParams<{ id: string, townId: string }>();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [candidate, setCandidate] = useState<any>(null);
@@ -91,7 +91,7 @@ const AmbassadorRecruitPage2: React.FC = () => {
             
             playSuccessSound();
             alert("¡Felicidades! Tu cuenta de Embajador ha sido activada exitosamente.\nAhora puedes ingresar a los paneles administrativos.");
-            navigate('/embajador');
+            navigate(`/${townId}/embajador`);
         } catch (err) {
             console.error(err);
             alert("Error al guardar los datos.");
@@ -110,7 +110,7 @@ const AmbassadorRecruitPage2: React.FC = () => {
                 <AlertCircle size={48} className="text-red-500 mb-4" />
                 <h2 className="text-xl font-black uppercase tracking-widest text-red-500 mb-2">Acceso Inválido</h2>
                 <p className="text-white/60 text-sm mb-6">{error}</p>
-                <button onClick={() => navigate('/')} className="px-6 py-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all text-xs font-bold uppercase tracking-widest">Volver al Inicio</button>
+                <button onClick={() => navigate(`/${townId}/home`)} className="px-6 py-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all text-xs font-bold uppercase tracking-widest">Volver al Inicio</button>
             </div>
         );
     }
