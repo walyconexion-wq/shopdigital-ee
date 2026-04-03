@@ -55,24 +55,31 @@ const MasterPanelPage: React.FC = () => {
     };
 
     const initializeGlobalConfig = async () => {
+        // ─── Confirm de seguridad con nombre de zona ─────────────────────
+        const confirmed = window.confirm(
+            `⚠️ RESET DE CONFIGURACIÓN ZONAL\n\n¿Estás seguro de resetear la configuración maestra de:\n\n"${zoneName}"\n\nEsto borrará colores, logos y textos de esta zona y los reemplazará con los valores por defecto.\n\nEl resto de las zonas NO serán afectadas.`
+        );
+        if (!confirmed) return;
+
         try {
             playNeonClick();
             const defaultConfig = {
                 mainTitle: "ShopDigital",
                 mainSubtitle: "Tu guía de ofertas locales",
                 primaryColor: "#22d3ee",
-                theme: "winter", 
-                townName: zoneName
+                theme: "winter",
+                townName: zoneName  // Nombre correcto de la zona activa
             };
+            // Guarda SOLO en appConfig/{townId} — no toca otras zonas
             await saveGlobalConfig(defaultConfig, townId);
-            
-            // Inyectar rubros iniciales
+
+            // Inyectar rubros maestros etiquetados para esta zona
             await saveCategoriesConfig(DEFAULT_CATEGORIES_CONFIG, townId);
 
-            alert("¡Modo Camaleón Activado! 🎨❄️ Mirá la nieve en la Home.");
+            alert(`🦎✅ ¡Modo Camaleón activado en "${zoneName}"!\n\nColores y rubros maestros restaurados solo para esta zona.\nEl resto de las ciudades permanecen intactas.`);
         } catch (error) {
             console.error("Error init config:", error);
-            alert("Error al inicializar");
+            alert(`❌ Error al inicializar la configuración de "${zoneName}".`);
         }
     };
 
