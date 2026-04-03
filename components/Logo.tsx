@@ -34,13 +34,13 @@ const Logo: React.FC = () => {
         </span>
       </h1>
 
-      {/* Identificación de Zona */}
+      {/* Identificación de Zona — Derivación dinámica universal */}
       <div className="flex flex-col items-center gap-0.5 relative z-10">
         <span className="text-[12px] font-black tracking-[0.2em] uppercase bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
-          {townId === 'esteban-echeverria' ? "Esteban Echeverría" : townId.charAt(0).toUpperCase() + townId.slice(1).replace(/-/g, ' ')}
+          {townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
         </span>
         <p className="text-[7px] font-black text-white/50 tracking-[0.3em] uppercase drop-shadow-md">
-          {townId === 'esteban-echeverria' ? "RED COMERCIAL DIGITAL" : "EXPANSIÓN MULTI-ZONA"}
+          RED COMERCIAL DIGITAL
         </p>
       </div>
     </div>

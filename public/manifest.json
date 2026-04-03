@@ -1,6 +1,6 @@
 {
   "short_name": "ShopDigital",
-  "name": "ShopDigital - La Red Comercial Premium de Esteban Echeverría",
+  "name": "ShopDigital · Catálogos y Descuentos Exclusivos",
   "icons": [
     {
       "src": "/branding.png",
@@ -14,5 +14,5 @@
   "display": "standalone",
   "scope": "/",
   "theme_color": "#22d3ee",
-  "description": "Accedé a catálogos exclusivos, descuentos y beneficios en los mejores comercios de Monte Grande, Luis Guillón y alrededores."
+  "description": "Accedé a los mejores beneficios en comercios de tu zona. Catálogos exclusivos, descuentos y ofertas."
 }

@@ -13,12 +13,18 @@ import { Trash2, Plus, PowerOff, Power } from 'lucide-react';
 const GlobalConfigPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    // Derivar nombre visual de ciudad (por si Firebase tarda o no tiene config aún)
+    const derivedTownName = townId
+        .split('-')
+        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+
     const [config, setConfig] = useState<any>({
         mainTitle: "ShopDigital",
         mainSubtitle: "Tu guía de ofertas locales",
         theme: 'default',
         primaryColor: '#22d3ee',
-        townName: "Esteban Echeverría",
+        townName: derivedTownName,  // Dinámico desde el townId de la URL
         categories: []
     });
     const [newCat, setNewCat] = useState({ name: '', iconKey: 'Star' });
@@ -36,15 +42,22 @@ const GlobalConfigPage: React.FC = () => {
     }, [townId]);
 
     const handleSave = async () => {
+        // ─── Confirm de seguridad zonal ──────────────────────────────────
+        const confirmed = window.confirm(
+            `¿Conformás los cambios estéticos y de rubros para la zona:\n\n"${config.townName || derivedTownName}"\n\nEstos cambios son exclusivos de esta zona y no afectan al resto de las ciudades.`
+        );
+        if (!confirmed) return;
+
         setSaving(true);
         setMessage(null);
         playNeonClick();
         try {
+            // Guarda SOLO en appConfig/{townId} — aislamiento total
             await saveGlobalConfig(config, townId);
-            setMessage({ type: 'success', text: `Configuración de ${config.townName || townId} actualizada con éxito` });
+            setMessage({ type: 'success', text: `¡Sinfonía guardada para ${config.townName || derivedTownName}! 🎻` });
             setTimeout(() => setMessage(null), 3000);
         } catch (error) {
-            setMessage({ type: 'error', text: 'Error al guardar la configuración' });
+            setMessage({ type: 'error', text: `Error al guardar la configuración de ${config.townName || derivedTownName}` });
         } finally {
             setSaving(false);
         }

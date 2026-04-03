@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ShopDigital - La Red Comercial Premium de Esteban Echeverría</title>
+  <title>ShopDigital · Catálogos y Descuentos Exclusivos</title>
   <meta name="description"
-    content="Accedé a catálogos exclusivos, descuentos y beneficios en los mejores comercios de Monte Grande, Luis Guillón y alrededores.">
+    content="Accedé a los mejores beneficios en comercios de tu zona. Catálogos exclusivos, descuentos y ofertas.">
 
   <!-- Favicon e Iconos de App -->
   <link rel="icon" type="image/png" href="/branding.png">
@@ -15,9 +15,9 @@
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ShopDigital - La Red Comercial Premium de Esteban Echeverría">
+  <meta property="og:title" content="ShopDigital · Catálogos y Descuentos Exclusivos">
   <meta property="og:description"
-    content="Accedé a catálogos exclusivos, descuentos y beneficios en los mejores comercios de Monte Grande, Luis Guillón y alrededores.">
+    content="Accedé a los mejores beneficios en comercios de tu zona. Catálogos exclusivos, descuentos y ofertas.">
   <meta property="og:image"
     content="https://shopdigital.tech/branding.png">
   <meta property="og:image:width" content="1200">
@@ -27,8 +27,8 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ShopDigital - La Red Comercial Premium de Esteban Echeverría">
-  <meta name="twitter:description" content="Accedé a catálogos exclusivos, descuentos y beneficios en los mejores comercios de Monte Grande, Luis Guillón y alrededores.">
+  <meta name="twitter:title" content="ShopDigital · Catálogos y Descuentos Exclusivos">
+  <meta name="twitter:description" content="Accedé a los mejores beneficios en comercios de tu zona. Catálogos exclusivos, descuentos y ofertas.">
   <meta name="twitter:image"
     content="https://shopdigital.tech/branding.png">
 
@@ -842,6 +842,21 @@
 
 <body>
   <div id="root"></div>
+  <!-- Inyección dinámica de título zonal para tab del browser y OG dinámico -->
+  <script>
+    (function() {
+      var parts = window.location.pathname.split('/').filter(Boolean);
+      if (parts.length > 0 && parts[0] !== 'api') {
+        var zone = parts[0].split('-').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+        document.title = 'ShopDigital · ' + zone + ' · Beneficios Exclusivos';
+        // Actualizar OG:title dinámicamente para crawlers que ejecutan JS
+        var ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', 'ShopDigital · ' + zone + ' · Beneficios Exclusivos');
+        var twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute('content', 'ShopDigital · ' + zone + ' · Beneficios Exclusivos');
+      }
+    })();
+  </script>
   <script type="module" src="/index.tsx"></script>
 </body>
 
