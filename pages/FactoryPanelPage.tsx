@@ -66,7 +66,11 @@ const FactoryPanelPage: React.FC = () => {
         try {
             const localitiesArray = newTown.localities.split(',').map(l => l.trim()).filter(l => l);
             await saveTown({
-                id: newTown.id.toLowerCase().trim().replace(/\s+/g, '-'),
+                id: newTown.id.toLowerCase().trim()
+                    .replace(/\s+/g, '-')      // espacios → guiones
+                    .replace(/[^a-z0-9-]/g, '') // solo alfanuméricos y guiones
+                    .replace(/-+/g, '-')         // guiones múltiples → uno solo
+                    .replace(/^-+|-+$/g, ''),    // eliminar guiones al inicio/final
                 name: newTown.name,
                 localities: localitiesArray,
                 description: newTown.description,
@@ -88,21 +92,23 @@ const FactoryPanelPage: React.FC = () => {
 
     const copyZoneUrl = (zoneId: string) => {
         playNeonClick();
-        // Usar la URL correcta con path dinámico
-        const url = `${window.location.origin}/${zoneId}/home`;
+        const cleanId = zoneId.replace(/^-+|-+$/g, '');
+        const url = `${window.location.origin}/${cleanId}/home`;
         navigator.clipboard.writeText(url);
         alert(`¡URL Copiada! Compartí esta zona: ${url}`);
     };
 
     const enterZone = (zoneId: string) => {
         playNeonClick();
-        // Limpiar el estado antes de cambiar de zona (evitar mezcla de datos)
-        navigate(`/${zoneId}/home`);
+        // Sanitizar el ID por si quedó guardado con guion en Firebase
+        const cleanId = zoneId.replace(/^-+|-+$/g, '');
+        navigate(`/${cleanId}/home`);
     };
 
     const openZonePanel = (zoneId: string) => {
         playNeonClick();
-        navigate(`/${zoneId}/tablero-maestro`);
+        const cleanId = zoneId.replace(/^-+|-+$/g, '');
+        navigate(`/${cleanId}/tablero-maestro`);
     };
 
     // Leer el color de la zona actual para el Modo Camaleón
@@ -216,7 +222,17 @@ const FactoryPanelPage: React.FC = () => {
                                     required
                                     placeholder="ej: ezeiza"
                                     value={newTown.id}
-                                    onChange={(e) => setNewTown({ ...newTown, id: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+                                    onChange={(e) => {
+                                        // Sanitizar en tiempo real: solo alfanuméricos y guiones, sin guiones dobles ni al final al tipear
+                                        const raw = e.target.value.toLowerCase();
+                                        const sanitized = raw
+                                            .replace(/\s+/g, '-')
+                                            .replace(/[^a-z0-9-]/g, '')
+                                            .replace(/-{2,}/g, '-');
+                                        // Solo recortar guion final si no es el último carácter que acaba de escribir
+                                        // (para no impedir escribir "ezeiza-" mientras escribe "ezeiza-norte")
+                                        setNewTown({ ...newTown, id: sanitized });
+                                    }}
                                     className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-xs font-bold focus:outline-none transition-colors"
                                     style={{ borderLeftWidth: 4, borderLeftColor: zoneColor }}
                                 />
