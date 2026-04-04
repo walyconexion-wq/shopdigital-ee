@@ -23,6 +23,7 @@ export interface Invoice {
   issueDate: string;
   dueDate: string;
   status: 'pending' | 'paid';
+  townId?: string; // Multi-Zona SaaS Identifier
   concept: string;
   pdfUrl?: string;
   paymentDate?: string;
