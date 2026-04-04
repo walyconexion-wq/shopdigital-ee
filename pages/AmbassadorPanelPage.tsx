@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
-import { guardarComercio, eliminarComercio } from '../firebase';
+import { guardarComercio, eliminarComercio, crearFactura } from '../firebase';
 import {
     ChevronLeft,
     ShieldCheck,
@@ -44,6 +44,20 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
             try {
                 const updatedShop = { ...shop, isActive: true };
                 await guardarComercio(updatedShop);
+                
+                // INYECCIÓN AUTOMÁTICA DE SUSCRIPCIÓN (Cuota Cero) 💸
+                const newInvoice = {
+                    shopId: shop.id,
+                    shopName: shop.name,
+                    townId, // Garantía de Aislamiento Zonal
+                    amount: 5000, // Valor base inicial simulado
+                    issueDate: new Date().toISOString(),
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    status: 'pending',
+                    concept: 'Suscripción Inicial (Cuota Cero)'
+                };
+                await crearFactura(newInvoice);
+                
                 playSuccessSound();
             } catch (error) {
                 console.error("Error al aprobar:", error);

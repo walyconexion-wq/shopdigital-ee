@@ -452,9 +452,10 @@ export const eliminarOferta = async (id: string) => {
 
 // --- SERVICIOS DE SUSCRIPCIÓN Y FACTURACIÓN (FASE 1) ---
 
-export const suscribirseAFacturas = (callback: (facturas: any[]) => void) => {
+export const suscribirseAFacturasPorZona = (townId: string, callback: (facturas: any[]) => void) => {
     const colRef = collection(db, "facturas");
-    return onSnapshot(colRef, (snapshot) => {
+    const q = query(colRef, where("townId", "==", townId));
+    return onSnapshot(q, (snapshot) => {
         const facturas = snapshot.docs.map(docSnap => ({
             id: docSnap.id,
             ...docSnap.data()

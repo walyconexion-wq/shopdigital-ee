@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, FileText, Search, Plus, 
     CheckCircle, Clock, Edit2, Send, Download, 
     Trash2, AlertCircle, RefreshCw
 } from 'lucide-react';
 import { Shop, Invoice } from '../types';
-import { suscribirseAFacturas, crearFactura, actualizarEstadoFactura, actualizarFactura } from '../firebase';
+import { CATEGORIES } from '../constants';
+import { suscribirseAFacturasPorZona, crearFactura, actualizarEstadoFactura, actualizarFactura } from '../firebase';
 import { playNeonClick } from '../utils/audio';
 
 interface BillingManagementPageProps {
@@ -14,10 +15,12 @@ interface BillingManagementPageProps {
 }
 
 const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops }) => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     
     // Modal states
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -31,19 +34,32 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
     const [dueDate, setDueDate] = useState('');
 
     useEffect(() => {
-        const unsubscribe = suscribirseAFacturas((data) => {
+        const unsubscribe = suscribirseAFacturasPorZona(townId, (data) => {
             const sorted = data.sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime());
             setInvoices(sorted as Invoice[]);
             setLoading(false);
         });
         return () => unsubscribe();
-    }, []);
+    }, [townId]);
 
-    const filteredInvoices = invoices.filter(inv => 
-        inv.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.concept.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.status.includes(searchQuery.toLowerCase())
-    );
+    const pendingCount = invoices.filter(i => i.status === 'pending').length;
+
+    const filteredInvoices = invoices.filter(inv => {
+        const matchesSearch = inv.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              inv.concept.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              inv.status.includes(searchQuery.toLowerCase());
+                              
+        if (!matchesSearch) return false;
+        
+        if (selectedCategoryId) {
+            const shop = allShops.find(s => s.id === inv.shopId);
+            const cat = shop?.category || '';
+            const catMatch = cat === selectedCategoryId || cat === CATEGORIES.find(c => c.id === selectedCategoryId)?.slug;
+            if (!catMatch) return false;
+        }
+        
+        return true;
+    });
 
     const handleCreateInvoice = async () => {
         playNeonClick();
@@ -53,6 +69,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
         const newInvoice = {
             shopId: shop.id,
             shopName: shop.name,
+            townId,
             amount: parseFloat(amount),
             issueDate: new Date().toISOString(),
             dueDate: dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -95,7 +112,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
         }
 
         const phone = shop.phone.replace(/\D/g, '');
-        const invoiceUrl = `${window.location.origin}/factura/${inv.id}`;
+        const invoiceUrl = `${window.location.origin}/${townId}/factura/${inv.id}`;
         const message = `¡Hola *${shop.name}*! 👋\n\nTe generamos el comprobante para:\n*${inv.concept}*\n\n👉 *Click aquí para ver tu factura y los datos de pago:*\n${invoiceUrl}\n\nPor favor, enviá el comprobante por este medio una vez realizado el pago. ¡Muchas gracias! 🚀`;
         
         window.open(`https://wa.me/549${phone}?text=${encodeURIComponent(message)}`, '_blank');
@@ -137,19 +154,51 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
 
             {/* Header */}
             <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-green-500/30 pt-10 pb-6 px-6 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <button onClick={() => navigate(-1)} className="absolute top-10 left-6 text-green-400 hover:text-green-300">
+                <button onClick={() => navigate(`/${townId}/embajador`)} className="absolute top-10 left-6 text-green-400 hover:text-green-300">
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center">
                     <div className="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center mb-2 border border-green-400/30">
                         <FileText size={24} className="text-green-400" />
                     </div>
-                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Facturación</h1>
-                    <p className="text-[9px] font-bold text-green-400/80 uppercase tracking-widest mt-1">Control de Avisos de Pago</p>
+                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Facturación · {townId.replace(/-/g, ' ')}</h1>
+                    <p className="text-[9px] font-bold text-green-400/80 uppercase tracking-widest mt-1">
+                        Comprobantes Pendientes: {pendingCount}
+                    </p>
                 </div>
             </div>
 
             <div className="px-5 mt-6 relative z-10 max-w-lg mx-auto">
+                <div className="w-full overflow-x-auto hide-scrollbar mb-6 pb-2">
+                    <div className="flex gap-2 min-w-max px-1">
+                        <button
+                            onClick={() => { playNeonClick(); setSelectedCategoryId(null); }}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                !selectedCategoryId 
+                                ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
+                                : 'bg-white/5 text-white/60 hover:bg-white/10'
+                            }`}
+                        >
+                            Todos
+                        </button>
+                        {CATEGORIES.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                    selectedCategoryId === cat.id 
+                                    ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
+                                    : 'bg-white/5 text-white/60 hover:bg-white/10'
+                                }`}
+                            >
+                                <span className="flex items-center gap-1.5">
+                                    {cat.icon} {cat.name}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="flex gap-3 mb-6">
                     <div className="relative flex-1">
                         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
