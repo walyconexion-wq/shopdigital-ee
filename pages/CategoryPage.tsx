@@ -4,7 +4,8 @@ import { CATEGORIES } from '../constants';
 import { Shop } from '../types';
 import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
-import { incrementarVisitas, getTowns } from '../firebase';
+import { incrementarVisitas } from '../firebase';
+import { useTownLocalities } from '../hooks/useTownLocalities';
 
 interface CategoryPageProps {
     allShops: Shop[];
@@ -23,7 +24,7 @@ const LOCALITY_COLORS = [
 const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) => {
     const { townId = 'esteban-echeverria', categorySlug } = useParams<{ townId: string, categorySlug: string }>();
     const navigate = useNavigate();
-    const [localities, setLocalities] = useState<string[]>([]);
+    const { localities } = useTownLocalities(townId);
     const [activeLocation, setActiveLocation] = useState<string>('');
     const [titleClicks, setTitleClicks] = React.useState(0);
 
@@ -39,25 +40,12 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
         } catch { return `rgba(34, 211, 238, ${alpha})`; }
     };
 
-    // Cargar localidades dinámicamente desde Firebase según el townId actual
+    // Sincronizar activeLocation con las localidades validadas por el hook
     useEffect(() => {
-        getTowns().then((towns) => {
-            const town = towns.find((t: any) => t.id === townId);
-            if (town && Array.isArray(town.localities) && town.localities.length > 0) {
-                setLocalities(town.localities);
-                setActiveLocation(town.localities[0]);
-            } else {
-                // Fallback para zonas sin localidades configuradas
-                const fallback = ['Centro'];
-                setLocalities(fallback);
-                setActiveLocation(fallback[0]);
-            }
-        }).catch(() => {
-            const fallback = ['Centro'];
-            setLocalities(fallback);
-            setActiveLocation(fallback[0]);
-        });
-    }, [townId]);
+        if (localities.length > 0 && (!activeLocation || !localities.includes(activeLocation))) {
+            setActiveLocation(localities[0]);
+        }
+    }, [localities]);
 
     React.useEffect(() => {
         if (titleClicks === 0) return;
