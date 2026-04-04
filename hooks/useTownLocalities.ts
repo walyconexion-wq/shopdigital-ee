@@ -17,9 +17,23 @@ export const useTownLocalities = (townId: string) => {
         getTowns().then((towns: any[]) => {
             if (canceled) return;
             const town = towns.find((t: any) => t.id === townId);
-            const locs = (town && Array.isArray(town.localities) && town.localities.length > 0)
+            let locs = (town && Array.isArray(town.localities) && town.localities.length > 0)
                 ? town.localities
                 : ['Centro'];
+                
+            // SINTONÍA FINA: Filtro estricto post-base de datos para evitar fantasmas
+            if (townId === 'esteban-echeverria') {
+                const allowedEE = ['Monte Grande', 'Luis Guillón', 'El Jagüel'];
+                locs = locs.filter((l: string) => allowedEE.includes(l));
+                if (locs.length === 0) locs = allowedEE;
+            } else if (townId === 'ezeiza') {
+                const allowedEz = ['Ezeiza', 'La Unión', 'Tristán Suárez', 'Spegazzini'];
+                const excludeEz = ['Centro'];
+                locs = locs.filter((l: string) => !excludeEz.includes(l));
+                // Asegurar que si vaciamos todas, cargue el set por default de ezeiza
+                if (locs.length === 0) locs = allowedEz;
+            }
+
             setLocalities(locs);
         }).catch(() => {
             if (!canceled) setLocalities(['Centro']);

@@ -189,7 +189,7 @@ const SubscriptionPage: React.FC = () => {
                 }} className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/10 transition-all"><ChevronLeft size={20} /></button>
                 <div className="flex items-center gap-2 mb-1">
                     <Rocket size={18} className="text-cyan-400" />
-                    <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">Suma Tu Comercio</h2>
+                    <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">Suma Tu Comercio · {townId.replace(/-/g, ' ')}</h2>
                 </div>
                 <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest text-center mt-2 px-4 shadow-black">Completá los datos y ganá visibilidad en la red comercial.</p>
             </div>

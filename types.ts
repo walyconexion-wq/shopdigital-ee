@@ -111,6 +111,7 @@ export interface Shop {
   address: string;
   phone?: string;
   zone?: string;
+  townId?: string; // Inyector de la zona inamovible (SaaS)
   image: string;
   bannerImage: string;
   offers: ProductOffer[];
