@@ -105,9 +105,11 @@ const AmbassadorRecruitPage1: React.FC = () => {
                 </div>
 
                 <div className="text-center mb-10">
-                    <h1 className="text-3xl font-[1000] uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">Sumate al Equipo</h1>
+                    <h1 className="text-3xl font-[1000] uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">
+                        {townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                    </h1>
                     <p className="text-[11px] font-bold text-cyan-400/60 uppercase tracking-widest">Reclutamiento de Embajadores</p>
-                    <p className="text-white/50 text-sm mt-4">Completá este formulario inicial para postularte como Embajador ShopDigital VIP en tu localidad.</p>
+                    <p className="text-white/50 text-sm mt-4">Completá este formulario inicial para postularte como Embajador ShopDigital VIP en esta zona.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4 relative">
