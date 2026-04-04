@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, Search, Plus, UserCheck, 
     MapPin, Trash2, Zap, Send, FileText, CheckCircle,
@@ -36,6 +36,7 @@ const getCategoryName = (catIdOrName: string) => {
 };
 
 const SurveyManagementPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
@@ -231,7 +232,7 @@ const SurveyManagementPage: React.FC = () => {
                         {filteredLeads.length} Relevamientos
                     </p>
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/embajador/relevamiento/nuevo'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/relevamiento/nuevo`); }}
                         className="bg-yellow-500/20 text-yellow-500 border border-yellow-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black flex items-center gap-1 uppercase tracking-wider hover:bg-yellow-500/30 transition-colors"
                     >
                         <Plus size={12} /> Cargar Nuevo

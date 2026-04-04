@@ -196,6 +196,10 @@ const App: React.FC = () => {
                 {/* Fallback inteligente: si no hay zona, redirigir a Esteban Echeverría */}
                 <Route path="/" element={<Navigate to="/esteban-echeverria/home" replace />} />
                 
+                {/* Bloqueo dimensional: Erradicar universo paralelo sin zona */}
+                <Route path="/embajador" element={<Navigate to="/" replace />} />
+                <Route path="/embajador/*" element={<Navigate to="/" replace />} />
+                
                 {/* Ruteo Dinámico Multi-Zona */}
                 <Route path="/:townId/*" element={<TownController />} />
                 

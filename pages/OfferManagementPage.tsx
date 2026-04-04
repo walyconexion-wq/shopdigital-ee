@@ -24,7 +24,7 @@ interface OfferManagementPageProps {
 
 const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) => {
     const navigate = useNavigate();
-    const { target } = useParams<{ target: string }>();
+    const { target, townId = 'esteban-echeverria' } = useParams<{ target: string, townId: string }>();
 
     const offerTarget = (target?.toUpperCase() || 'B2B') as 'B2B' | 'B2C';
     const filteredOffers = allOffers.filter(o => o.target === offerTarget);
@@ -73,7 +73,7 @@ const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) 
 
             {/* Header */}
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-cyan-500/20 mb-6 sticky top-0 z-50">
-                <button onClick={() => { playNeonClick(); navigate('/embajador'); }}
+                <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }}
                     className="self-start mb-4 w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                     <ChevronLeft size={20} />
                 </button>

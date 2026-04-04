@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Shop, Client } from '../types';
 import { CATEGORIES } from '../constants';
 import {
@@ -25,6 +25,7 @@ interface ClientManagementPageProps {
 }
 
 const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, allClients }) => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [activeLocation, setActiveLocation] = useState('Monte Grande');
@@ -157,7 +158,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                 </div>
 
                 <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-blue-500/20 mb-6 sticky top-0 z-50">
-                    <button onClick={() => { playNeonClick(); navigate('/embajador'); }} 
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
                         className="self-start mb-4 w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-400/30 hover:bg-blue-500/20 transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                         <ChevronLeft size={20} />
                     </button>

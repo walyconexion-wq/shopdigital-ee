@@ -126,7 +126,7 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
 
                 {/* Header */}
                 <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-yellow-500/20 mb-6 sticky top-0 z-50">
-                    <button onClick={() => { playNeonClick(); navigate('/embajador'); }} 
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
                         className="self-start mb-4 w-10 h-10 rounded-2xl bg-yellow-500/10 flex items-center justify-center text-yellow-400 border border-yellow-400/30 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)]">
                         <ChevronLeft size={20} />
                     </button>
