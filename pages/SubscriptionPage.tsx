@@ -107,6 +107,7 @@ const SubscriptionPage: React.FC = () => {
         const newShop: Shop = {
             id: `shop-${Date.now()}`,
             slug: generateSlug(formData.name),
+            townId, // Inyectar id de base para el aislamiento multi-zona
             name: formData.name,
             category: formData.category,
             zone: formData.zone,

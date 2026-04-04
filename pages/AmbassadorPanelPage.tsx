@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
 import { guardarComercio, eliminarComercio } from '../firebase';
@@ -27,14 +27,15 @@ interface AmbassadorPanelPageProps {
 }
 
 const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [processingId, setProcessingId] = useState<string | null>(null);
 
-    // Filtrar comercios que NO están aprobados (isActive !== true)
+    // Filtrar comercios que NO están aprobados (isActive !== true) y pertenecen a la zona
     const pendingShops = useMemo(() => {
-        return allShops.filter(shop => shop.isActive !== true);
-    }, [allShops]);
+        return allShops.filter(shop => shop.isActive !== true && shop.townId === townId);
+    }, [allShops, townId]);
 
     const handleApprove = async (shop: Shop) => {
         playNeonClick();
@@ -80,13 +81,15 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-cyan-500/20 mb-8 sticky top-0 z-50">
                 <button onClick={() => {
                     playNeonClick();
-                    navigate('/');
+                    navigate(`/${townId}/home`);
                 }} className="self-start mb-4 w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                     <ChevronLeft size={20} />
                 </button>
                 <div className="flex items-center gap-2 mb-1">
                     <ShieldCheck size={18} className="text-cyan-400" />
-                    <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">Cuartel Embajador</h2>
+                    <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+                        Cuartel Embajador · {townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                    </h2>
                 </div>
                 <p className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest text-center mt-2 px-4">
                     Comercios Pendientes: {pendingShops.length}
@@ -94,7 +97,7 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                 {/* Botones de Gestión */}
                 <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
                     <button
-                        onClick={() => { playNeonClick(); navigate('/embajador/gestion'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/gestion`); }}
                         className="w-full bg-yellow-500/15 border border-yellow-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-yellow-300 active:scale-95 transition-all hover:bg-yellow-500/25 shadow-[0_0_15px_rgba(234,179,8,0.2)]"
                     >
                         <Settings size={16} />
@@ -102,7 +105,7 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                     </button>
                     
                     <button
-                        onClick={() => { playNeonClick(); navigate('/embajador/clientes'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/clientes`); }}
                         className="w-full bg-blue-500/15 border border-blue-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-blue-300 active:scale-95 transition-all hover:bg-blue-500/25 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
                     >
                         <Users size={16} />
@@ -110,7 +113,7 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                     </button>
                     
                     <button
-                        onClick={() => { playNeonClick(); navigate('/embajador/ofertas/b2b'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/ofertas/b2b`); }}
                         className="w-full bg-cyan-500/15 border border-cyan-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-cyan-300 active:scale-95 transition-all hover:bg-cyan-500/25 shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                     >
                         <Tag size={16} />
@@ -118,7 +121,7 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                     </button>
                     
                     <button
-                        onClick={() => { playNeonClick(); navigate('/embajador/ofertas/b2c'); }}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/ofertas/b2c`); }}
                         className="w-full bg-green-500/15 border border-green-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-green-300 active:scale-95 transition-all hover:bg-green-500/25 shadow-[0_0_15px_rgba(34,197,94,0.2)]"
                     >
                         <Tag size={16} />
