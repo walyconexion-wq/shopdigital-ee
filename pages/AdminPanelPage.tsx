@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop, Client, Invoice } from '../types';
 import { CATEGORIES } from '../constants';
-import { guardarComercio, eliminarComercio, actualizarPuntosCliente, suscribirseAFacturas } from '../firebase';
+import { guardarComercio, eliminarComercio, actualizarPuntosCliente, suscribirseAFacturasPorZona } from '../firebase';
 import {
     ChevronLeft,
     Zap,
@@ -65,14 +65,14 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
 
     React.useEffect(() => {
         if (existingShop?.id) {
-            const unsubscribe = suscribirseAFacturas((facturas) => {
+            const unsubscribe = suscribirseAFacturasPorZona(townId, (facturas) => {
                 const shopFacturas = facturas.filter(f => f.shopId === existingShop.id);
                 // Sort by date descending
                 setShopInvoices(shopFacturas.sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime()));
             });
             return () => unsubscribe();
         }
-    }, [existingShop?.id]);
+    }, [existingShop?.id, townId]);
 
     const handleLogin = () => {
         playNeonClick();
