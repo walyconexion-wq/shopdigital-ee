@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, FileText, Search, Plus, 
     CheckCircle, Clock, Edit2, Send, 
-    Trash2, RefreshCw, XCircle, MapPin, LineChart, ArrowLeft
+    Trash2, RefreshCw, XCircle, MapPin, LineChart, ArrowLeft,
+    ExternalLink
 } from 'lucide-react';
 import { Shop, Invoice } from '../types';
 import { CATEGORIES } from '../constants';
@@ -488,23 +489,29 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-2 relative z-10">
+                                <div className="grid grid-cols-4 gap-1.5 relative z-10">
+                                    <button 
+                                        onClick={() => { playNeonClick(); window.open(invoiceUrl, '_blank'); }}
+                                        className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-cyan-500/20"
+                                    >
+                                        <ExternalLink size={12} /> Ver
+                                    </button>
                                     <button 
                                         onClick={() => handleToggleStatus(inv)}
-                                        className={`py-2 rounded-xl flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest transition-colors ${inv.status === 'pending' ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' : inv.status === 'paid' ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20' : 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/30'}`}
+                                        className={`py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest transition-colors ${inv.status === 'pending' ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' : inv.status === 'paid' ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20' : 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/30'}`}
                                     >
                                         {inv.status === 'pending' ? <CheckCircle size={12} /> : inv.status === 'paid' ? <XCircle size={12} /> : <RefreshCw size={12} />} 
-                                        {inv.status === 'pending' ? 'Cobrar' : inv.status === 'paid' ? 'Anular' : 'Restaurar'}
+                                        {inv.status === 'pending' ? 'Cobrar' : inv.status === 'paid' ? 'Anular' : 'Reversar'}
                                     </button>
                                     <button 
                                         onClick={() => openEditModal(inv)}
-                                        className="bg-white/5 border border-white/10 text-white/80 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-white/10"
+                                        className="bg-white/5 border border-white/10 text-white/80 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-white/10"
                                     >
                                         <Edit2 size={12} /> Editar
                                     </button>
                                     <button 
                                         onClick={() => handleSendWhatsApp(inv)}
-                                        className="bg-violet-500/10 border border-violet-500/30 text-violet-400 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-violet-500/20"
+                                        className="bg-violet-500/10 border border-violet-500/30 text-violet-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-violet-500/20"
                                     >
                                         <Send size={12} /> Enviar
                                     </button>
