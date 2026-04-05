@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, FileText, Search, Plus, 
     CheckCircle, Clock, Edit2, Send, Download, 
-    Trash2, AlertCircle, RefreshCw, XCircle, MapPin
+    Trash2, AlertCircle, RefreshCw, XCircle, MapPin, LineChart
 } from 'lucide-react';
 import { Shop, Invoice } from '../types';
 import { CATEGORIES } from '../constants';
@@ -91,12 +91,17 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
         const shop = allShops.find(s => s.id === selectedShopId);
         if (!shop || !amount) return;
 
+        const issueDateObj = new Date();
+        const periodSello = `${issueDateObj.getFullYear()}-${String(issueDateObj.getMonth() + 1).padStart(2, '0')}`;
+
         const newInvoice = {
             shopId: shop.id,
             shopName: shop.name,
             townId,
+            locality: shop.zone || 'Desconocida',
+            period: periodSello,
             amount: parseFloat(amount),
-            issueDate: new Date().toISOString(),
+            issueDate: issueDateObj.toISOString(),
             dueDate: dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
             status: 'pending',
             concept
@@ -218,6 +223,34 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             </div>
 
             <div className="px-5 mt-6 relative z-10 max-w-lg mx-auto">
+                {/* Resumen Rápido A.I. */}
+                <div className="w-full bg-cyan-900/10 border border-cyan-500/20 rounded-2xl p-4 mb-6">
+                    <h2 className="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <LineChart size={14} /> Resumen Rápido A.I. (Este Mes)
+                    </h2>
+                    <div className="space-y-2">
+                        {localities.map(loc => {
+                            const locInvoices = currentMonthFiltered.filter(inv => {
+                                const shop = allShops.find(s => s.id === inv.shopId);
+                                return shop?.zone === loc;
+                            });
+                            const locTot = locInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+                            const locPag = locInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
+                            if (locTot === 0) return null;
+                            return (
+                                <div key={loc} className="flex justify-between items-center bg-black/40 px-3 py-2 rounded-xl text-[9px] font-bold tracking-widest uppercase border border-white/5">
+                                    <span className="text-white/80">{loc}</span>
+                                    <div className="flex gap-3 text-right">
+                                        <span className="text-green-400">{formatCurrency(locPag)}</span>
+                                        <span className="text-white/40">/</span>
+                                        <span className="text-white">{formatCurrency(locTot)}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
                 {/* Mood Tabs */}
                 <div className="w-full overflow-x-auto hide-scrollbar mb-4 pb-2">
                     <div className="flex gap-2 min-w-max px-1">

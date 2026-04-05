@@ -731,6 +731,201 @@ export const migrarDatosLegados = async (targetTownId: string = 'esteban-echever
 
         console.log(`Migración completada. Actualizados: ${shopsToUpdate.length} comercios, ${clientsToUpdate.length} clientes, ${offersToUpdate.length} ofertas.`);
         
+};
+
+export const guardarRelevamiento = async (leadData: any, townId: string = 'esteban-echeverria') => {
+    try {
+        const id = leadData.id || `lead-${Date.now()}`;
+        const finalData = { ...leadData, id, townId: leadData.townId || townId };
+        await setDoc(doc(db, "relevamientos", id), finalData);
+        return id;
+    } catch (error) {
+        console.error("Error saving relevamiento:", error);
+        throw error;
+    }
+};
+
+export const eliminarRelevamiento = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "relevamientos", id));
+        return true;
+    } catch (error) {
+        console.error("Error eliminando relevamiento:", error);
+        throw error;
+    }
+};
+
+export const actualizarRelevamiento = async (id: string, data: any) => {
+    try {
+        await updateDoc(doc(db, "relevamientos", id), data);
+        return true;
+    } catch (error) {
+        console.error("Error actualizando relevamiento:", error);
+        throw error;
+    }
+};
+
+// --- GLOBAL CONFIGURATION (TOWN THEMES & TITLES) ---
+
+export const getGlobalConfig = async (townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data();
+        }
+        // Default config if not exists
+        return {
+            mainTitle: "ShopDigital",
+            mainSubtitle: "Tu guía de ofertas locales",
+            theme: 'default',
+            primaryColor: '#22d3ee',
+            townName: "Esteban Echeverría"
+        };
+    } catch (error) {
+        console.error("Error getting global config:", error);
+        return null;
+    }
+};
+
+export const subscribeToGlobalConfig = (onUpdate: (config: any) => void, townId: string = 'esteban-echeverria') => {
+    const docRef = doc(db, 'appConfig', townId);
+    return onSnapshot(docRef, async (snap) => {
+        if (snap.exists()) {
+            const data = snap.data();
+            // Si el documento existe pero no tiene categorías (o están vacías), inyectamos los defaults
+            if (!data.categories || data.categories.length === 0) {
+                onUpdate({
+                    ...data,
+                    categories: ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true, isSystem: true }))
+                });
+            } else {
+                onUpdate(data);
+            }
+        } else if (townId === 'esteban-echeverria') {
+            // Si es la zona por defecto y no existe el doc, intentamos usar el legado o el default maestro
+            onUpdate({
+                mainTitle: "ShopDigital",
+                mainSubtitle: "Tu guía de ofertas locales",
+                theme: 'winter',
+                primaryColor: '#22d3ee',
+                townName: "Esteban Echeverría",
+                categories: ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true, isSystem: true }))
+            });
+        } else {
+            // Nueva zona sin configuración aún: generar default dinámico usando el nombre real de la zona
+            const displayName = townId
+                .split('-')
+                .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+                .join(' ');
+            onUpdate({
+                mainTitle: "ShopDigital",
+                mainSubtitle: `Tu guía de ofertas en ${displayName}`,
+                theme: 'default',
+                primaryColor: '#22d3ee',
+                townName: displayName,
+                categories: ALL_CATEGORIES_MASTER.map(c => ({ ...c, isActive: true, isSystem: true }))
+            });
+        }
+    });
+};
+
+export const saveGlobalConfig = async (config: any, townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        await setDoc(docRef, { ...config, updatedAt: new Date().toISOString() }, { merge: true });
+        return true;
+    } catch (error) {
+        console.error("Error saving global config:", error);
+        throw error;
+    }
+};
+
+// --- CATEGORY (RUBROS) CONFIG ---
+
+// Default active categories (all system categories active by default)
+
+export const saveCategoriesConfig = async (categories: any[], townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        // Strip React elements (icons) before saving — only save serializable data
+        const serializable = categories.map(({ id, slug, name, iconKey, isActive, isSystem }) => ({
+            id, slug, name, iconKey, isActive: !!isActive, isSystem: !!isSystem
+        }));
+        await setDoc(docRef, { categories: serializable, updatedAt: new Date().toISOString() }, { merge: true });
+        return true;
+    } catch (error) {
+        console.error("Error saving categories config:", error);
+        throw error;
+    }
+};
+
+// --- MÓDULO DE MANTENIMIENTO Y MIGRACIÓN ---
+
+/**
+ * Inicializa la configuración de una zona si no existe.
+ * Útil para asegurar que una zona tenga los rubros maestros por defecto.
+ */
+export const inicializarZonaPredeterminada = async (townId: string = 'esteban-echeverria') => {
+    try {
+        const docRef = doc(db, 'appConfig', townId);
+        const docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists() || !docSnap.data().categories) {
+            console.log(`Inicializando configuración base para: ${townId}`);
+            const serializable = ALL_CATEGORIES_MASTER.map(cat => ({
+                ...cat,
+                isActive: true,
+                isSystem: true
+            }));
+            await setDoc(docRef, {
+                mainTitle: "ShopDigital",
+                mainSubtitle: "Tu guía de ofertas locales",
+                theme: 'default',
+                primaryColor: '#22d3ee',
+                townName: townId === 'esteban-echeverria' ? "Esteban Echeverría" : townId,
+                categories: serializable,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+        }
+        return true;
+    } catch (error) {
+        console.error("Error inicializando zona:", error);
+        throw error;
+    }
+};
+
+/**
+ * Migra todos los registros (comercios, clientes, ofertas) que no tengan townId 
+ * asignándoles la zona especificada.
+ */
+export const migrarDatosLegados = async (targetTownId: string = 'esteban-echeverria') => {
+    try {
+        console.log("Iniciando migración de datos legados a:", targetTownId);
+        
+        // 1. Migrar Comercios
+        const shopsSnap = await getDocs(collection(db, "comercios"));
+        const shopsToUpdate = shopsSnap.docs.filter(d => !d.data().townId);
+        for (const d of shopsToUpdate) {
+            await updateDoc(doc(db, "comercios", d.id), { townId: targetTownId });
+        }
+        
+        // 2. Migrar Clientes
+        const clientsSnap = await getDocs(collection(db, "clientes"));
+        const clientsToUpdate = clientsSnap.docs.filter(d => !d.data().townId);
+        for (const d of clientsToUpdate) {
+            await updateDoc(doc(db, "clientes", d.id), { townId: targetTownId });
+        }
+
+        // 3. Migrar Ofertas
+        const offersSnap = await getDocs(collection(db, "ofertas"));
+        const offersToUpdate = offersSnap.docs.filter(d => !d.data().townId);
+        for (const d of offersToUpdate) {
+            await updateDoc(doc(db, "ofertas", d.id), { townId: targetTownId });
+        }
+
+        console.log(`Migración completada. Actualizados: ${shopsToUpdate.length} comercios, ${clientsToUpdate.length} clientes, ${offersToUpdate.length} ofertas.`);
+        
         // 4. Asegurar que la zona destino tenga rubros
         await inicializarZonaPredeterminada(targetTownId);
         
@@ -745,3 +940,41 @@ export const migrarDatosLegados = async (targetTownId: string = 'esteban-echever
     }
 };
 
+// --- CEREBRO DE CONSULTAS IA (LA MENTE DE DATOS DEL BOT) ---
+
+export const SumaTotal = async (townId: string, locality?: string, period?: string, status?: string): Promise<number> => {
+    try {
+        const colRef = collection(db, "facturas");
+        let constraints: any[] = [where("townId", "==", townId)];
+        if (status) constraints.push(where("status", "==", status));
+        // Filtramos localidad y periodo localmente
+        const q = query(colRef, ...constraints);
+        const snapshot = await getDocs(q);
+        let facturas = snapshot.docs.map(d => d.data() as any);
+        
+        if (locality) facturas = facturas.filter(f => f.locality === locality);
+        if (period) facturas = facturas.filter(f => f.period === period);
+        
+        return facturas.reduce((sum, inv) => sum + (inv.amount || 0), 0);
+    } catch (error) {
+        console.error("Error en SumaTotal (IA):", error);
+        return 0;
+    }
+};
+
+export const ConteoPendientes = async (townId: string, locality?: string, period?: string): Promise<number> => {
+    try {
+        const colRef = collection(db, "facturas");
+        const q = query(colRef, where("townId", "==", townId), where("status", "==", "pending"));
+        const snapshot = await getDocs(q);
+        let facturas = snapshot.docs.map(d => d.data() as any);
+        
+        if (locality) facturas = facturas.filter(f => f.locality === locality);
+        if (period) facturas = facturas.filter(f => f.period === period);
+        
+        return facturas.length;
+    } catch (error) {
+        console.error("Error en ConteoPendientes (IA):", error);
+        return 0;
+    }
+};

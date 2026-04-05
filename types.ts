@@ -24,6 +24,8 @@ export interface Invoice {
   dueDate: string;
   status: 'pending' | 'paid' | 'uncollectible';
   townId?: string; // Multi-Zona SaaS Identifier
+  locality?: string; // Sello geográfico profundo para consultas IA
+  period?: string; // Franja contable (ej: "2026-04")
   concept: string;
   pdfUrl?: string;
   paymentDate?: string;

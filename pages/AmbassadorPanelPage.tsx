@@ -46,12 +46,17 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                 await guardarComercio(updatedShop);
                 
                 // INYECCIÓN AUTOMÁTICA DE SUSCRIPCIÓN (Cuota Cero) 💸
+                const issueDateObj = new Date();
+                const periodSello = `${issueDateObj.getFullYear()}-${String(issueDateObj.getMonth() + 1).padStart(2, '0')}`;
+                
                 const newInvoice = {
                     shopId: shop.id,
                     shopName: shop.name,
                     townId, // Garantía de Aislamiento Zonal
+                    locality: shop.zone || 'Desconocida', // Sello geográfico IA
+                    period: periodSello, // Sello temporal IA
                     amount: 5000, // Valor base inicial simulado
-                    issueDate: new Date().toISOString(),
+                    issueDate: issueDateObj.toISOString(),
                     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
                     status: 'pending',
                     concept: 'Suscripción Inicial (Cuota Cero)'
