@@ -5,6 +5,7 @@ import {
   suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas, 
   subscribeToGlobalConfig, migrarDatosLegados 
 } from './firebase';
+import { populateInvoices } from './dbFix';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -79,6 +80,18 @@ const TownController: React.FC = () => {
                 .catch(err => {
                     console.error("❌ ERROR EN REPARACIÓN:", err);
                     alert("Fallo en el rescate: " + err.message);
+                });
+        }
+        
+        if (params.get('inject') === 'true') {
+            console.log("🔥 INYECCIÓN DE DATOS MAESTRA INICIADA...");
+            populateInvoices()
+                .then(() => {
+                    alert("✅ INYECCIÓN COMPLETADA. Bóveda Pizzeería El Tano y E.Echeverría listas.");
+                    window.history.replaceState({}, '', window.location.pathname);
+                })
+                .catch(err => {
+                    alert("Fallo inyección: " + err.message);
                 });
         }
     }, [location.search, townId]);
