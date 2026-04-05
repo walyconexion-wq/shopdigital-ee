@@ -22,7 +22,7 @@ export interface Invoice {
   amount: number;
   issueDate: string;
   dueDate: string;
-  status: 'pending' | 'paid';
+  status: 'pending' | 'paid' | 'uncollectible';
   townId?: string; // Multi-Zona SaaS Identifier
   concept: string;
   pdfUrl?: string;

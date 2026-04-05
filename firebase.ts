@@ -493,7 +493,7 @@ export const crearFactura = async (facturaData: any) => {
     }
 };
 
-export const actualizarEstadoFactura = async (id: string, status: 'pending' | 'paid') => {
+export const actualizarEstadoFactura = async (id: string, status: 'pending' | 'paid' | 'uncollectible') => {
     try {
         const docRef = doc(db, "facturas", id);
         const updateData: any = { status };
