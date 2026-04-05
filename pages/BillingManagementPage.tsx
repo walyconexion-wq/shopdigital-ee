@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, FileText, Search, Plus, 
-    CheckCircle, Clock, Edit2, Send, Download, 
-    Trash2, AlertCircle, RefreshCw, XCircle, MapPin, LineChart
+    CheckCircle, Clock, Edit2, Send, 
+    Trash2, RefreshCw, XCircle, MapPin, LineChart, ArrowLeft
 } from 'lucide-react';
 import { Shop, Invoice } from '../types';
 import { CATEGORIES } from '../constants';
@@ -21,9 +21,11 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
+    
+    // UI Navigation State
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const { localities } = useTownLocalities(townId);
-    const [selectedLocality, setSelectedLocality] = useState<string | null>(null);
+    const [activeLocation, setActiveLocation] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'paid' | 'uncollectible'>('all');
     
     // Modal states
@@ -46,46 +48,80 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
         return () => unsubscribe();
     }, [townId]);
 
+    // Setear primera localidad como activa cuando carguen en el nivel 2
+    useEffect(() => {
+        if (localities.length > 0 && !activeLocation) {
+            setActiveLocation(localities[0]);
+        }
+    }, [localities, activeLocation]);
+
+    // -------------------------------------------------------------
+    // DATA COMPUTATION
+    // -------------------------------------------------------------
     const isCurrentMonth = (dateString: string) => {
         const d = new Date(dateString);
         const now = new Date();
         return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     };
 
-    const filteredInvoices = invoices.filter(inv => {
-        const matchesSearch = inv.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              inv.concept.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              inv.status.includes(searchQuery.toLowerCase());
-                              
-        if (!matchesSearch) return false;
-        
-        if (statusFilter !== 'all' && inv.status !== statusFilter) return false;
-
-        const shop = allShops.find(s => s.id === inv.shopId);
-        
-        if (selectedCategoryId) {
-            const cat = shop?.category || '';
-            const catMatch = cat === selectedCategoryId || cat === CATEGORIES.find(c => c.id === selectedCategoryId)?.slug;
-            if (!catMatch) return false;
-        }
-
-        if (selectedLocality && shop?.zone !== selectedLocality) {
-            return false;
-        }
-        
-        return true;
-    });
-
-    // Contadores Dinámicos (Radar Dashboard) del mes actual
-    const currentMonthFiltered = filteredInvoices; // Opcional: .filter(inv => isCurrentMonth(inv.issueDate)) si el radar es solo del mes
-    const totalFacturado = currentMonthFiltered.reduce((sum, inv) => sum + inv.amount, 0);
-    const totalCobrado = currentMonthFiltered.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
-    const totalPendiente = currentMonthFiltered.filter(i => i.status === 'pending').reduce((sum, inv) => sum + inv.amount, 0);
+    // Dashboard computations (All zone scale)
+    const currentMonthInvoices = invoices; // Si queremos que el radar sea histórico, quitamos el filtro de mes. Según directriz "Radar", es el global de esa vista o mensual.
+    const totalFacturado = currentMonthInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+    const totalCobrado = currentMonthInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
+    const totalPendiente = currentMonthInvoices.filter(i => i.status === 'pending').reduce((sum, inv) => sum + inv.amount, 0);
     
+    const invoiceCountByCategory = useMemo(() => {
+        const counts: Record<string, number> = {};
+        CATEGORIES.forEach(cat => {
+            counts[cat.id] = invoices.filter(inv => {
+                const shop = allShops.find(s => s.id === inv.shopId);
+                return shop && (shop.category === cat.id || shop.category === cat.slug);
+            }).length;
+        });
+        return counts;
+    }, [invoices, allShops]);
+
+    // View 2 (Detail) computations
+    const filteredInvoices = useMemo(() => {
+        if (!selectedCategoryId) return [];
+        return invoices.filter(inv => {
+            const shop = allShops.find(s => s.id === inv.shopId);
+            if (!shop) return false;
+            
+            // 1. Filtrar por Rubro
+            const catMatch = shop.category === selectedCategoryId || shop.category === CATEGORIES.find(c => c.id === selectedCategoryId)?.slug;
+            if (!catMatch) return false;
+            
+            // 2. Filtrar por Localidad Activa
+            const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            const normalizedLoc = normalize(activeLocation);
+            const isLocal = shop.zone === activeLocation || (shop.address && normalize(shop.address).includes(normalizedLoc));
+            if (!isLocal) return false;
+
+            // 3. Filtrar por Mood
+            if (statusFilter !== 'all' && inv.status !== statusFilter) return false;
+
+            // 4. Filtrar por Buscador
+            const strSearch = searchQuery.toLowerCase();
+            if (strSearch && !(
+                inv.shopName.toLowerCase().includes(strSearch) ||
+                inv.concept.toLowerCase().includes(strSearch) ||
+                inv.id.toLowerCase().includes(strSearch)
+            )) {
+                return false;
+            }
+
+            return true;
+        });
+    }, [invoices, allShops, selectedCategoryId, activeLocation, statusFilter, searchQuery]);
+
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(amount);
     };
 
+    // -------------------------------------------------------------
+    // HANDLERS
+    // -------------------------------------------------------------
     const handleCreateInvoice = async () => {
         playNeonClick();
         const shop = allShops.find(s => s.id === selectedShopId);
@@ -157,7 +193,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             if (!confirm) return;
             newStatus = 'paid';
         } else if (inv.status === 'paid') {
-            const confirm = window.confirm(`¿Deseas marcar esta factura como INCOBRABLE? (La factura dejará de contar en cobrados)`);
+            const confirm = window.confirm(`¿Deseas marcar esta factura como INCOBRABLE? (Dejará de contar en cobrados)`);
             if (!confirm) return;
             newStatus = 'uncollectible';
         } else {
@@ -186,157 +222,203 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
         setShowEditModal(true);
     };
 
-    return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden">
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/10 rounded-full blur-[120px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
-            </div>
+    // Paleta cíclica para solapas nivel 2
+    const CYCLIC_COLORS = [
+        { border: 'border-violet-400',  bg: 'bg-violet-500/20',  text: 'text-violet-300',  shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.4)]'  },
+        { border: 'border-cyan-400',    bg: 'bg-cyan-500/20',    text: 'text-cyan-300',    shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.4)]'  },
+        { border: 'border-rose-400',    bg: 'bg-rose-500/20',    text: 'text-rose-300',    shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.4)]'   },
+        { border: 'border-green-400',   bg: 'bg-green-500/20',   text: 'text-green-300',   shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.4)]'   },
+        { border: 'border-amber-400',   bg: 'bg-amber-500/20',   text: 'text-amber-300',   shadow: 'shadow-[0_0_20px_rgba(245,158,11,0.4)]'  },
+    ];
 
-            {/* Header */}
-            <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-green-500/30 pt-10 pb-6 px-4 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <button onClick={() => navigate(`/${townId}/embajador`)} className="absolute top-10 left-6 text-green-400 hover:text-green-300">
-                    <ChevronLeft size={24} />
-                </button>
-                <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center mb-2 border border-green-400/30 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                        <FileText size={24} className="text-green-400" />
-                    </div>
-                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Facturación · {townId.replace(/-/g, ' ')}</h1>
-                    
-                    {/* Radar Dashboard */}
-                    <div className="w-full max-w-sm mt-4 grid grid-cols-3 gap-2 text-center bg-black/40 p-3 rounded-2xl border border-white/5">
-                        <div className="flex flex-col">
-                            <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Cobrado</span>
-                            <span className="text-xs font-black text-green-400">{formatCurrency(totalCobrado)}</span>
+    // =========================================================
+    // VIEW 1: Category Selection Grid
+    // =========================================================
+    if (!selectedCategoryId) {
+        return (
+            <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-violet-500/30">
+                <div className="fixed inset-0 pointer-events-none z-0">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[120px] animate-pulse" />
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                </div>
+
+                <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-violet-500/30 pt-10 pb-6 px-4 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
+                            className="absolute top-10 left-6 text-violet-400 hover:text-violet-300">
+                        <ChevronLeft size={24} />
+                    </button>
+                    <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 bg-violet-500/10 rounded-2xl flex items-center justify-center mb-2 border border-violet-400/30 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+                            <FileText size={24} className="text-violet-400" />
                         </div>
-                        <div className="flex flex-col border-x border-white/5">
-                            <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Pendiente</span>
-                            <span className="text-xs font-black text-yellow-400">{formatCurrency(totalPendiente)}</span>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Total</span>
-                            <span className="text-xs font-black text-white">{formatCurrency(totalFacturado)}</span>
+                        <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Facturación</h1>
+                        <p className="text-[10px] font-bold text-violet-400/80 uppercase tracking-widest text-center mt-1">
+                            Radar de Tesorería · {townId.replace(/-/g, ' ')}
+                        </p>
+                        
+                        {/* Radar Dashboard */}
+                        <div className="w-full max-w-sm mt-4 grid grid-cols-3 gap-2 text-center bg-black/40 p-3 rounded-2xl border border-white/5">
+                            <div className="flex flex-col">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Cobrado</span>
+                                <span className="text-xs font-black text-green-400">{formatCurrency(totalCobrado)}</span>
+                            </div>
+                            <div className="flex flex-col border-x border-white/5">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Pendiente</span>
+                                <span className="text-xs font-black text-yellow-400">{formatCurrency(totalPendiente)}</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Total</span>
+                                <span className="text-xs font-black text-white">{formatCurrency(totalFacturado)}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="px-5 mt-6 relative z-10 max-w-lg mx-auto">
-                {/* Resumen Rápido A.I. */}
-                <div className="w-full bg-cyan-900/10 border border-cyan-500/20 rounded-2xl p-4 mb-6">
-                    <h2 className="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <LineChart size={14} /> Resumen Rápido A.I. (Este Mes)
-                    </h2>
-                    <div className="space-y-2">
-                        {localities.map(loc => {
-                            const locInvoices = currentMonthFiltered.filter(inv => {
-                                const shop = allShops.find(s => s.id === inv.shopId);
-                                return shop?.zone === loc;
-                            });
-                            const locTot = locInvoices.reduce((sum, inv) => sum + inv.amount, 0);
-                            const locPag = locInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
-                            if (locTot === 0) return null;
-                            return (
-                                <div key={loc} className="flex justify-between items-center bg-black/40 px-3 py-2 rounded-xl text-[9px] font-bold tracking-widest uppercase border border-white/5">
-                                    <span className="text-white/80">{loc}</span>
-                                    <div className="flex gap-3 text-right">
-                                        <span className="text-green-400">{formatCurrency(locPag)}</span>
-                                        <span className="text-white/40">/</span>
-                                        <span className="text-white">{formatCurrency(locTot)}</span>
+                <div className="px-5 mt-6 relative z-10 max-w-lg mx-auto">
+                    {/* Resumen Rápido A.I. */}
+                    <div className="w-full bg-violet-900/10 border border-violet-500/20 rounded-2xl p-4 mb-6 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-32 h-32 bg-violet-500/10 rounded-full blur-[40px] pointer-events-none" />
+                        <h2 className="text-[10px] font-black text-violet-400 uppercase tracking-widest mb-3 flex items-center gap-2 relative z-10">
+                            <LineChart size={14} /> Desglose Zonal (A.I.)
+                        </h2>
+                        <div className="space-y-2 relative z-10">
+                            {localities.map(loc => {
+                                const locInvoices = currentMonthInvoices.filter(inv => {
+                                    const shop = allShops.find(s => s.id === inv.shopId);
+                                    return shop?.zone === loc;
+                                });
+                                const locTot = locInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+                                const locPag = locInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
+                                if (locTot === 0) return null;
+                                return (
+                                    <div key={loc} className="flex justify-between items-center bg-black/40 px-3 py-2 rounded-xl text-[9px] font-bold tracking-widest uppercase border border-white/5">
+                                        <span className="text-white/80">{loc}</span>
+                                        <div className="flex gap-3 text-right">
+                                            <span className="text-green-400">{formatCurrency(locPag)}</span>
+                                            <span className="text-white/40">/</span>
+                                            <span className="text-white">{formatCurrency(locTot)}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
+                    
+                    {loading ? (
+                        <div className="flex justify-center mt-10"><RefreshCw className="animate-spin text-violet-400" /></div>
+                    ) : (
+                        <>
+                            <h2 className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-2 mb-3 mt-8">Navegación por Rubro</h2>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {CATEGORIES.map(cat => {
+                                    const count = invoiceCountByCategory[cat.id] || 0;
+                                    return (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
+                                            className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-violet-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden"
+                                        >
+                                            <div className="absolute top-0 right-0 w-16 h-16 bg-violet-500/5 rounded-full blur-[20px] pointer-events-none" />
+                                            <div className="text-violet-400 group-hover:scale-110 transition-transform">
+                                                {cat.icon}
+                                            </div>
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
+                                                {cat.name}
+                                            </span>
+                                            {count > 0 && (
+                                                <span className="absolute top-2 right-2 bg-violet-500/20 border border-violet-400/30 text-violet-300 text-[7px] font-black px-1.5 py-0.5 rounded-full">
+                                                    {count}
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
                 </div>
+            </div>
+        );
+    }
 
-                {/* Mood Tabs */}
-                <div className="w-full overflow-x-auto hide-scrollbar mb-4 pb-2">
-                    <div className="flex gap-2 min-w-max px-1">
-                        {[
-                            { id: 'all', label: 'Todas las Órdenes' },
-                            { id: 'pending', label: 'Pendientes' },
-                            { id: 'paid', label: 'Pagadas' },
-                            { id: 'uncollectible', label: 'Incobrables' }
-                        ].map(mood => (
-                            <button
-                                key={mood.id}
-                                onClick={() => { playNeonClick(); setStatusFilter(mood.id as any); }}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                    statusFilter === mood.id 
-                                    ? mood.id === 'paid' ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-                                      : mood.id === 'pending' ? 'bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.3)]'
-                                      : mood.id === 'uncollectible' ? 'bg-red-500 text-black shadow-[0_0_15px_rgba(239,68,68,0.3)]'
-                                      : 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]'
-                                    : 'bg-white/5 text-white/60 hover:bg-white/10'
-                                }`}
-                            >
-                                {mood.label}
-                            </button>
-                        ))}
-                    </div>
+    // =========================================================
+    // VIEW 2: Location Tabs + Mood Filters + Invoice List
+    // =========================================================
+    const selectedCategory = CATEGORIES.find(c => c.id === selectedCategoryId);
+    
+    return (
+        <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-violet-500/30">
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[120px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+            </div>
+
+            {/* Header Nivel 2 */}
+            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-4 px-6 flex flex-col items-center border-b border-violet-500/20 mb-4 sticky top-0 z-40">
+                <button onClick={() => { playNeonClick(); setSelectedCategoryId(null); }}
+                    className="self-start mb-3 w-10 h-10 rounded-2xl bg-violet-500/10 flex items-center justify-center text-violet-400 border border-violet-400/30 hover:bg-violet-500/20 transition-all shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+                    <ArrowLeft size={20} />
+                </button>
+                <div className="flex items-center gap-2 mb-1">
+                    <FileText size={18} className="text-violet-400" />
+                    <h2 className="text-[15px] font-black text-white uppercase tracking-[0.15em] drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]">
+                        {selectedCategory?.name || 'Facturación'}
+                    </h2>
                 </div>
+                <p className="text-[8px] font-bold text-violet-400/60 uppercase tracking-widest text-center mt-1">
+                    Auditoría de Tesorería · Filtrado Zonal
+                </p>
+            </div>
 
-                {/* Localities & Categories (Double Row) */}
-                <div className="w-full overflow-x-auto hide-scrollbar mb-4 pb-2">
-                    <div className="flex gap-2 min-w-max px-1">
+            {/* Location Tabs */}
+            <div className="flex justify-center gap-3 px-5 mb-5 relative z-10 overflow-x-auto no-scrollbar">
+                {localities.map((loc, idx) => {
+                    const isActive = activeLocation === loc;
+                    const colors = CYCLIC_COLORS[idx % CYCLIC_COLORS.length];
+                    return (
                         <button
-                            onClick={() => { playNeonClick(); setSelectedLocality(null); }}
+                            key={loc}
+                            onClick={() => { playNeonClick(); setActiveLocation(loc); }}
+                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300 whitespace-nowrap
+                                ${isActive
+                                    ? `${colors.bg} ${colors.border} ${colors.text} ${colors.shadow} scale-110`
+                                    : `bg-white/[0.03] border-white/10 text-white/40 hover:text-white/60 hover:border-white/20`
+                                }`}
+                        >
+                            {loc}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* Mood Tabs */}
+            <div className="w-full overflow-x-auto hide-scrollbar mb-4 pb-2 z-10 relative px-4">
+                <div className="flex gap-2 min-w-max px-1">
+                    {[
+                        { id: 'all', label: 'Todas las Órdenes' },
+                        { id: 'pending', label: 'Pendientes' },
+                        { id: 'paid', label: 'Pagadas' },
+                        { id: 'uncollectible', label: 'Incobrables' }
+                    ].map(mood => (
+                        <button
+                            key={mood.id}
+                            onClick={() => { playNeonClick(); setStatusFilter(mood.id as any); }}
                             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                !selectedLocality 
-                                ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(34,211,238,0.3)]' 
-                                : 'bg-white/5 text-cyan-400/60 hover:bg-white/10'
+                                statusFilter === mood.id 
+                                ? mood.id === 'paid' ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                                  : mood.id === 'pending' ? 'bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.3)]'
+                                  : mood.id === 'uncollectible' ? 'bg-red-500 text-black shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                                  : 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                                : 'bg-white/5 text-white/60 hover:bg-white/10 border border-white/5'
                             }`}
                         >
-                            Todo {townId.split('-')[0]}
+                            {mood.label}
                         </button>
-                        {localities.map(loc => (
-                            <button
-                                key={loc}
-                                onClick={() => { playNeonClick(); setSelectedLocality(loc); }}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                    selectedLocality === loc 
-                                    ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(34,211,238,0.3)]' 
-                                    : 'bg-white/5 text-cyan-400/60 hover:bg-white/10'
-                                }`}
-                            >
-                                {loc}
-                            </button>
-                        ))}
-                    </div>
+                    ))}
                 </div>
+            </div>
 
-                <div className="w-full overflow-x-auto hide-scrollbar mb-6 pb-2">
-                    <div className="flex gap-2 min-w-max px-1">
-                        <button
-                            onClick={() => { playNeonClick(); setSelectedCategoryId(null); }}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                !selectedCategoryId 
-                                ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
-                                : 'bg-white/5 text-white/60 hover:bg-white/10'
-                            }`}
-                        >
-                            Todos los Rubros
-                        </button>
-                        {CATEGORIES.map(cat => (
-                            <button
-                                key={cat.id}
-                                onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                    selectedCategoryId === cat.id 
-                                    ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
-                                    : 'bg-white/5 text-white/60 hover:bg-white/10'
-                                }`}
-                            >
-                                <span className="flex items-center gap-1.5">
-                                    {cat.icon} {cat.name}
-                                </span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
+            <div className="px-5 mt-2 relative z-10 max-w-lg mx-auto">
                 <div className="flex gap-3 mb-6">
                     <div className="relative flex-1">
                         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
@@ -345,23 +427,21 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                             placeholder="BUSCAR FACTURA..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-[10px] font-black uppercase tracking-widest text-white placeholder:text-white/30 focus:outline-none focus:border-green-400/50"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-[10px] font-black uppercase tracking-widest text-white placeholder:text-white/30 focus:outline-none focus:border-violet-400/50"
                         />
                     </div>
                     <button 
                         onClick={() => { playNeonClick(); setShowCreateModal(true); }}
-                        className="bg-green-500 text-black px-4 rounded-xl flex items-center justify-center font-black active:scale-95 transition-transform"
+                        className="bg-violet-600 border border-violet-400 text-white px-4 rounded-xl flex items-center justify-center font-black active:scale-95 transition-transform shadow-[0_0_15px_rgba(139,92,246,0.3)]"
                     >
                         <Plus size={20} />
                     </button>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center mt-20"><RefreshCw className="animate-spin text-green-400" /></div>
-                ) : filteredInvoices.length === 0 ? (
-                    <div className="text-center mt-20 opacity-50">
-                        <FileText size={32} className="mx-auto mb-3" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">No hay facturas registradas</p>
+                {filteredInvoices.length === 0 ? (
+                    <div className="text-center mt-10 opacity-50 bg-white/[0.02] border border-violet-500/20 rounded-3xl p-10 flex flex-col items-center">
+                        <FileText size={32} className="mx-auto mb-3 text-violet-400/50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest">No hay facturas registradas aquí</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -370,7 +450,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                             const invoiceUrl = `${window.location.origin}/${townId}/factura/${inv.id}`;
 
                             return (
-                            <div key={inv.id} className="bg-zinc-900/50 border border-white/10 rounded-3xl p-5 relative overflow-hidden group hover:border-green-500/30 transition-colors">
+                            <div key={inv.id} className="bg-zinc-900/50 border border-white/10 rounded-3xl p-5 relative overflow-hidden group hover:border-violet-500/30 transition-colors">
                                 <div className={`absolute top-0 right-0 w-24 h-24 blur-[50px] rounded-full pointer-events-none ${inv.status === 'paid' ? 'bg-green-500/20' : inv.status === 'uncollectible' ? 'bg-red-500/20' : 'bg-yellow-500/20'}`} />
                                 
                                 <div className="flex justify-between items-start mb-3 relative z-10">
@@ -379,8 +459,8 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                             {inv.shopName}
                                         </h3>
                                         <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest mt-0.5">{inv.concept}</p>
-                                        <p className="text-[8px] font-bold text-cyan-400/80 uppercase tracking-widest mt-1 flex items-center gap-1 bg-cyan-500/10 px-1.5 py-0.5 rounded w-max">
-                                            <MapPin size={8} /> ZONA: {shop?.zone || 'Desconocida'}
+                                        <p className="text-[8px] font-bold text-violet-400/80 uppercase tracking-widest mt-1 flex items-center gap-1 bg-violet-500/10 px-1.5 py-0.5 rounded w-max border border-violet-400/20">
+                                            <MapPin size={8} /> ZONA: {shop?.zone || inv.locality || 'Desconocida'}
                                         </p>
                                     </div>
                                     <div className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 ${inv.status === 'paid' ? 'bg-green-500/10 border-green-500/30 text-green-400' : inv.status === 'uncollectible' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'}`}>
@@ -403,8 +483,8 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                         <p className="text-[8px] text-white/40 uppercase tracking-widest">Vence: {new Date(inv.dueDate).toLocaleDateString()}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[8px] text-green-400/60 font-black uppercase tracking-widest mb-0.5">Importe</p>
-                                        <p className="text-lg font-[1000] text-green-400 leading-none">{formatCurrency(inv.amount)}</p>
+                                        <p className="text-[8px] text-violet-400/60 font-black uppercase tracking-widest mb-0.5">Importe</p>
+                                        <p className="text-lg font-[1000] text-violet-400 leading-none">{formatCurrency(inv.amount)}</p>
                                     </div>
                                 </div>
 
@@ -424,7 +504,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                     </button>
                                     <button 
                                         onClick={() => handleSendWhatsApp(inv)}
-                                        className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-cyan-500/20"
+                                        className="bg-violet-500/10 border border-violet-500/30 text-violet-400 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-violet-500/20"
                                     >
                                         <Send size={12} /> Enviar
                                     </button>
@@ -439,11 +519,11 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             {/* Create/Edit Modal */}
             {(showCreateModal || showEditModal) && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-5 animate-in fade-in duration-200">
-                    <div className="bg-zinc-900 border border-white/10 rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
-                        <div className="bg-white/5 p-5 border-b border-white/10 flex justify-between items-center">
+                    <div className="bg-zinc-900 border border-violet-500/20 rounded-3xl w-full max-w-sm overflow-hidden shadow-[0_0_50px_rgba(139,92,246,0.1)]">
+                        <div className="bg-violet-500/10 p-5 border-b border-violet-500/20 flex justify-between items-center">
                             <h3 className="font-black text-white uppercase tracking-widest text-[11px] flex items-center gap-2">
-                                <FileText size={14} className="text-green-400" /> 
-                                {showCreateModal ? 'Generar Nuevo Aviso' : 'Modificar Aviso'}
+                                <FileText size={14} className="text-violet-400" /> 
+                                {showCreateModal ? 'Generar Aviso de Pago' : 'Modificar Aviso'}
                             </h3>
                             <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); resetForm(); }} className="text-white/40 hover:text-white">
                                 <Trash2 size={16} />
@@ -452,14 +532,23 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                         <div className="p-5 space-y-4">
                             {showCreateModal && (
                                 <div>
-                                    <label className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1.5 block">Comercio</label>
+                                    <label className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1.5 block">Comercio del Rubro y Zona</label>
                                     <select 
                                         value={selectedShopId}
                                         onChange={(e) => setSelectedShopId(e.target.value)}
-                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-[11px] font-bold text-white focus:border-green-400/50 focus:outline-none uppercase"
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-[11px] font-bold text-white focus:border-violet-400/50 focus:outline-none uppercase"
                                     >
                                         <option value="">Seleccionar Comercio...</option>
-                                        {allShops.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                        {allShops
+                                            .filter(s => {
+                                                const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                                                const catMatch = s.category === selectedCategoryId || s.category === CATEGORIES.find(c => c.id === selectedCategoryId)?.slug;
+                                                const normalizedLoc = normalize(activeLocation);
+                                                const locMatch = s.zone === activeLocation || (s.address && normalize(s.address).includes(normalizedLoc));
+                                                return catMatch && locMatch;
+                                            })
+                                            .map(s => <option key={s.id} value={s.id}>{s.name}</option>)
+                                        }
                                     </select>
                                 </div>
                             )}
@@ -470,7 +559,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                     type="number"
                                     value={amount}
                                     onChange={(e) => setAmount(e.target.value)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-lg font-black text-green-400 focus:border-green-400/50 focus:outline-none"
+                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-lg font-black text-violet-400 focus:border-violet-400/50 focus:outline-none"
                                     placeholder="Ej: 5000"
                                 />
                             </div>
@@ -481,7 +570,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                     type="text"
                                     value={concept}
                                     onChange={(e) => setConcept(e.target.value)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-[11px] font-bold text-white focus:border-green-400/50 focus:outline-none uppercase"
+                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-[11px] font-bold text-white focus:border-violet-400/50 focus:outline-none uppercase"
                                 />
                             </div>
 
@@ -491,14 +580,14 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                     type="date"
                                     value={dueDate}
                                     onChange={(e) => setDueDate(e.target.value)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-[11px] font-bold text-white focus:border-green-400/50 focus:outline-none"
+                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-[11px] font-bold text-white focus:border-violet-400/50 focus:outline-none"
                                 />
                             </div>
 
                             <button 
                                 onClick={showCreateModal ? handleCreateInvoice : handleEditInvoice}
                                 disabled={!amount || (showCreateModal && !selectedShopId)}
-                                className="w-full mt-2 bg-green-500 text-black py-4 rounded-xl font-black uppercase tracking-widest text-[10px] active:scale-95 disabled:opacity-50 transition-transform"
+                                className="w-full mt-2 bg-violet-600 text-white py-4 rounded-xl font-black uppercase tracking-widest text-[10px] active:scale-95 disabled:opacity-50 transition-transform shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:bg-violet-500"
                             >
                                 {showCreateModal ? 'Generar Aviso' : 'Guardar Cambios'}
                             </button>
