@@ -314,10 +314,12 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                 {CATEGORIES.map(cat => {
                                     const count = invoiceCountByCategory[cat.id] || 0;
                                     return (
-                                        <button
+                                        <div
                                             key={cat.id}
+                                            role="button"
+                                            tabIndex={0}
                                             onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
-                                            className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-violet-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden"
+                                            className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-violet-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden cursor-pointer"
                                         >
                                             <div className="absolute top-0 right-0 w-16 h-16 bg-violet-500/5 rounded-full blur-[20px] pointer-events-none" />
                                             <div className="text-violet-400 group-hover:scale-110 transition-transform">
@@ -331,7 +333,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                                     {count}
                                                 </span>
                                             )}
-                                        </button>
+                                        </div>
                                     );
                                 })}
                             </div>
