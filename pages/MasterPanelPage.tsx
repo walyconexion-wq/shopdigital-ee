@@ -477,9 +477,9 @@ const MasterPanelPage: React.FC = () => {
                     borderBottomColor: hexToRgba(zoneColor, 0.3)
                 }}
             >
-                <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="absolute top-10 left-6 hover:opacity-70" style={{ color: zoneColor }}>
+                <div role="button" tabIndex={0} onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="absolute top-10 left-6 hover:opacity-70 cursor-pointer" style={{ color: zoneColor }}>
                     <ChevronLeft size={24} />
-                </button>
+                </div>
                 <div className="flex flex-col items-center">
                     <Terminal size={32} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 15px ${hexToRgba(zoneColor, 0.5)})` }} />
                     <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Tablero Maestro</h1>
@@ -490,52 +490,56 @@ const MasterPanelPage: React.FC = () => {
             </div>
 
             <div className="px-6 mt-8 space-y-10 relative z-10 pb-20 max-w-lg mx-auto">
-                <button 
+                <div 
+                    role="button" tabIndex={0}
                     onClick={injectTestShops} 
-                    className="w-full bg-red-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.3)] border border-red-500/50 hover:bg-red-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5"
+                    className="w-full bg-red-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.3)] border border-red-500/50 hover:bg-red-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer"
                 >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 pointer-events-none">
                         <Terminal size={14} className="text-white/80" />
                         <span className="text-[14px]">INJECT DATA</span>
                         <Lock size={14} className="text-white/80" />
                     </div>
-                    <span className="text-[8px] text-red-200">INYECCIÓN MAESTRA A FIREBASE (USO ROOT)</span>
-                </button>
+                    <span className="text-[8px] text-red-200 pointer-events-none">INYECCIÓN MAESTRA A FIREBASE (USO ROOT)</span>
+                </div>
 
-                <button 
+                <div 
+                    role="button" tabIndex={0}
                     onClick={initializeGlobalConfig} 
-                    className="w-full bg-cyan-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.3)] border border-cyan-500/50 hover:bg-cyan-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5"
+                    className="w-full bg-cyan-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.3)] border border-cyan-500/50 hover:bg-cyan-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer"
                 >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 pointer-events-none">
                         <Globe size={14} className="text-white/80" />
                         <span className="text-[14px]">ACTIVAR MODO CAMALEÓN</span>
                         <Check size={14} className="text-white/80" />
                     </div>
-                    <span className="text-[8px] text-cyan-200">INICIALIZAR CONFIGURACIÓN GLOBAL (RESET MAESTRO)</span>
-                </button>
+                    <span className="text-[8px] text-cyan-200 pointer-events-none">INICIALIZAR CONFIGURACIÓN GLOBAL (RESET MAESTRO)</span>
+                </div>
 
-                <button 
+                <div 
+                    role="button" tabIndex={0}
                     onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/configuracion`); }} 
-                    className="w-full bg-violet-600/80 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-violet-500/50 hover:bg-violet-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5"
+                    className="w-full bg-violet-600/80 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-violet-500/50 hover:bg-violet-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer"
                 >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 pointer-events-none">
                         <Palette size={14} className="text-white/80" />
                         <span className="text-[14px]">🎨 SINFONÍA DE ESTACIONES</span>
                     </div>
-                    <span className="text-[8px] text-violet-200">CAMBIAR TEMA · COLORES · TÍTULOS DE INTERFAZ 1 y 2</span>
-                </button>
+                    <span className="text-[8px] text-violet-200 pointer-events-none">CAMBIAR TEMA · COLORES · TÍTULOS DE INTERFAZ 1 y 2</span>
+                </div>
 
-                <button 
+                <div 
+                    role="button" tabIndex={0}
                     onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/fabrica`); }} 
-                    className="w-full bg-gradient-to-r from-amber-600/90 to-yellow-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.3)] border border-yellow-500/50 hover:from-amber-500 hover:to-yellow-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group"
+                    className="w-full bg-gradient-to-r from-amber-600/90 to-yellow-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.3)] border border-yellow-500/50 hover:from-amber-500 hover:to-yellow-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                    <div className="flex items-center gap-2">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                    <div className="flex items-center gap-2 pointer-events-none">
                         <Factory size={14} className="text-white/80" />
                         <span className="text-[14px]">🏭 LA FÁBRICA · VISIóN GLOBAL</span>
                     </div>
-                    <span className="text-[8px] text-yellow-100 italic">VER Y SALTAR A CUALQUIER ZONA · FORJAR NUEVAS CIUDADES</span>
-                </button>
+                    <span className="text-[8px] text-yellow-100 italic pointer-events-none">VER Y SALTAR A CUALQUIER ZONA · FORJAR NUEVAS CIUDADES</span>
+                </div>
                 
                 {/* Public Landings & Sections */}
                 <section>
@@ -555,25 +559,28 @@ const MasterPanelPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-3 gap-2 mt-2">
-                                    <button 
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={() => { playNeonClick(); navigate(page.path); }}
-                                        className="bg-white/5 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-white/10 active:scale-95 transition-all text-white/80"
+                                        className="bg-white/5 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-white/10 active:scale-95 transition-all text-white/80 cursor-pointer"
                                     >
                                         <ExternalLink size={12} /> Ver App
-                                    </button>
-                                    <button 
+                                    </div>
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={() => handleShare(page.path, page.title, page.desc)}
-                                        className="bg-cyan-500/10 border border-cyan-500/30 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-cyan-500/20 active:scale-95 transition-all text-cyan-400"
+                                        className="bg-cyan-500/10 border border-cyan-500/30 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-cyan-500/20 active:scale-95 transition-all text-cyan-400 cursor-pointer"
                                     >
                                         <Share2 size={12} /> Compartir
-                                    </button>
-                                    <button 
+                                    </div>
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={() => handleCopy(page.path)}
-                                        className={`${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest active:scale-95 transition-all`}
+                                        className={`${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest active:scale-95 transition-all cursor-pointer`}
                                     >
                                         {copiedPath === page.path ? <Check size={12} /> : <Copy size={12} />} 
                                         {copiedPath === page.path ? 'Copiado' : 'Copiar'}
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -587,27 +594,29 @@ const MasterPanelPage: React.FC = () => {
                     </h2>
                     <div className="grid grid-cols-1 gap-3">
                         {managementPages.map((page, idx) => (
-                            <button
+                            <div
                                 key={idx}
+                                role="button" tabIndex={0}
                                 onClick={() => { playNeonClick(); navigate(page.path); }}
-                                className="bg-gradient-to-r from-red-500/10 to-orange-500/5 border border-red-500/20 rounded-2xl p-4 flex items-center justify-between group hover:border-red-400/40 active:scale-95 transition-all"
+                                className="bg-gradient-to-r from-red-500/10 to-orange-500/5 border border-red-500/20 rounded-2xl p-4 flex items-center justify-between group hover:border-red-400/40 active:scale-95 transition-all cursor-pointer"
                             >
-                                <div className="flex flex-col items-start text-left flex-1">
+                                <div className="flex flex-col items-start text-left flex-1 pointer-events-none">
                                     <h3 className="text-[12px] font-[1000] text-red-400 uppercase tracking-wider group-hover:text-red-300 transition-colors">{page.title}</h3>
                                     <p className="text-[9px] text-white/40 uppercase tracking-widest mt-1">{page.desc}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <button 
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={(e) => { e.stopPropagation(); handleCopy(page.path); }}
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center border transition-colors ${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
                                     >
                                         {copiedPath === page.path ? <Check size={14} /> : <Copy size={14} />}
-                                    </button>
+                                    </div>
                                     <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30 text-red-400 group-hover:bg-red-500/30 transition-colors">
                                         <ExternalLink size={14} />
                                     </div>
                                 </div>
-                            </button>
+                            </div>
                         ))}
                     </div>
 
@@ -621,12 +630,13 @@ const MasterPanelPage: React.FC = () => {
                             <span className="font-bold text-white uppercase ml-1">- Suscripción B2C (Cliente)</span><br/>
                             Debe buscar el comercio específico en <strong>Gestión Comercial</strong> y usar los botones de acceso directo que figuran para ese local.
                         </p>
-                        <button 
+                        <div 
+                            role="button" tabIndex={0}
                             onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/gestion`); }}
-                            className="w-full mt-4 bg-yellow-500 text-black py-3 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-transform"
+                            className="w-full mt-4 bg-yellow-500 text-black py-3 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-transform text-center cursor-pointer"
                         >
                             Ir a buscar comercio
-                        </button>
+                        </div>
                     </div>
 
                     {/* SECCIÓN DE MANTENIMIENTO */}
@@ -643,10 +653,10 @@ const MasterPanelPage: React.FC = () => {
                                 <p className="text-[10px] text-white/70 leading-relaxed mb-4">
                                     Si no ves tus comercios o categorías antiguas en la Interfaz 1, usa este botón para re-conectarlos a la zona de <strong>Esteban Echeverría</strong>.
                                 </p>
-                                <button 
+                                <div 
+                                    role="button" tabIndex={0}
                                     onClick={handleMigration}
-                                    disabled={isMigrating}
-                                    className={`w-full py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 transition-all ${isMigrating ? 'bg-cyan-900/50 text-cyan-500 cursor-not-allowed' : 'bg-cyan-500 text-black active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)]'}`}
+                                    className={`w-full py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 transition-all ${isMigrating ? 'bg-cyan-900/50 text-cyan-500 cursor-not-allowed' : 'bg-cyan-500 text-black active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)] cursor-pointer'}`}
                                 >
                                     {isMigrating ? (
                                         <>Procesando ADN...</>
@@ -655,7 +665,7 @@ const MasterPanelPage: React.FC = () => {
                                             <Zap size={14} /> Migrar Datos Legados
                                         </>
                                     )}
-                                </button>
+                                </div>
                             </>
                         ) : (
                             <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
@@ -674,12 +684,13 @@ const MasterPanelPage: React.FC = () => {
                                         <div className="text-white/40">Ofertas</div>
                                     </div>
                                 </div>
-                                <button 
+                                <div 
+                                    role="button" tabIndex={0}
                                     onClick={() => setMigrationResult(null)}
-                                    className="w-full mt-4 text-[9px] text-cyan-400/60 hover:text-cyan-400 uppercase font-black"
+                                    className="w-full mt-4 text-[9px] text-cyan-400/60 hover:text-cyan-400 uppercase font-black text-center cursor-pointer"
                                 >
                                     Cerrar Reporte
-                                </button>
+                                </div>
                             </div>
                         )}
                     </div>

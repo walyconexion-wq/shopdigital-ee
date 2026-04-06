@@ -244,10 +244,10 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                 </div>
 
                 <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-violet-500/30 pt-10 pb-6 px-4 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
-                            className="absolute top-10 left-6 text-violet-400 hover:text-violet-300">
+                    <div role="button" tabIndex={0} onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
+                            className="absolute top-10 left-6 text-violet-400 hover:text-violet-300 cursor-pointer">
                         <ChevronLeft size={24} />
-                    </button>
+                    </div>
                     <div className="flex flex-col items-center">
                         <div className="w-12 h-12 bg-violet-500/10 rounded-2xl flex items-center justify-center mb-2 border border-violet-400/30 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
                             <FileText size={24} className="text-violet-400" />
@@ -358,10 +358,10 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
 
             {/* Header Nivel 2 */}
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-4 px-6 flex flex-col items-center border-b border-violet-500/20 mb-4 sticky top-0 z-40">
-                <button onClick={() => { playNeonClick(); setSelectedCategoryId(null); }}
-                    className="self-start mb-3 w-10 h-10 rounded-2xl bg-violet-500/10 flex items-center justify-center text-violet-400 border border-violet-400/30 hover:bg-violet-500/20 transition-all shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+                <div role="button" tabIndex={0} onClick={() => { playNeonClick(); setSelectedCategoryId(null); }}
+                    className="self-start mb-3 w-10 h-10 rounded-2xl bg-violet-500/10 flex items-center justify-center text-violet-400 border border-violet-400/30 hover:bg-violet-500/20 transition-all shadow-[0_0_15px_rgba(139,92,246,0.2)] cursor-pointer">
                     <ArrowLeft size={20} />
-                </button>
+                </div>
                 <div className="flex items-center gap-2 mb-1">
                     <FileText size={18} className="text-violet-400" />
                     <h2 className="text-[15px] font-black text-white uppercase tracking-[0.15em] drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]">
@@ -379,17 +379,18 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                     const isActive = activeLocation === loc;
                     const colors = CYCLIC_COLORS[idx % CYCLIC_COLORS.length];
                     return (
-                        <button
+                        <div
+                            role="button" tabIndex={0}
                             key={loc}
                             onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300 whitespace-nowrap
+                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300 whitespace-nowrap cursor-pointer
                                 ${isActive
                                     ? `${colors.bg} ${colors.border} ${colors.text} ${colors.shadow} scale-110`
                                     : `bg-white/[0.03] border-white/10 text-white/40 hover:text-white/60 hover:border-white/20`
                                 }`}
                         >
                             {loc}
-                        </button>
+                        </div>
                     );
                 })}
             </div>
@@ -403,10 +404,11 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                         { id: 'paid', label: 'Pagadas' },
                         { id: 'uncollectible', label: 'Incobrables' }
                     ].map(mood => (
-                        <button
+                        <div
+                            role="button" tabIndex={0}
                             key={mood.id}
                             onClick={() => { playNeonClick(); setStatusFilter(mood.id as any); }}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
                                 statusFilter === mood.id 
                                 ? mood.id === 'paid' ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]'
                                   : mood.id === 'pending' ? 'bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.3)]'
@@ -416,7 +418,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                             }`}
                         >
                             {mood.label}
-                        </button>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -433,12 +435,13 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                             className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-[10px] font-black uppercase tracking-widest text-white placeholder:text-white/30 focus:outline-none focus:border-violet-400/50"
                         />
                     </div>
-                    <button 
+                    <div
+                        role="button" tabIndex={0}
                         onClick={() => { playNeonClick(); setShowCreateModal(true); }}
-                        className="bg-violet-600 border border-violet-400 text-white px-4 rounded-xl flex items-center justify-center font-black active:scale-95 transition-transform shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+                        className="bg-violet-600 border border-violet-400 text-white px-4 rounded-xl flex items-center justify-center font-black active:scale-95 transition-transform shadow-[0_0_15px_rgba(139,92,246,0.3)] cursor-pointer"
                     >
                         <Plus size={20} />
-                    </button>
+                    </div>
                 </div>
 
                 {filteredInvoices.length === 0 ? (
@@ -492,31 +495,35 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                 </div>
 
                                 <div className="grid grid-cols-4 gap-1.5 relative z-10">
-                                    <button 
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={() => { playNeonClick(); window.open(invoiceUrl, '_blank'); }}
-                                        className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-cyan-500/20"
+                                        className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-cyan-500/20 cursor-pointer"
                                     >
                                         <ExternalLink size={12} /> Ver
-                                    </button>
-                                    <button 
+                                    </div>
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={() => handleToggleStatus(inv)}
-                                        className={`py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest transition-colors ${inv.status === 'pending' ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' : inv.status === 'paid' ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20' : 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/30'}`}
+                                        className={`py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest transition-colors cursor-pointer ${inv.status === 'pending' ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' : inv.status === 'paid' ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20' : 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/30'}`}
                                     >
                                         {inv.status === 'pending' ? <CheckCircle size={12} /> : inv.status === 'paid' ? <XCircle size={12} /> : <RefreshCw size={12} />} 
                                         {inv.status === 'pending' ? 'Cobrar' : inv.status === 'paid' ? 'Anular' : 'Reversar'}
-                                    </button>
-                                    <button 
+                                    </div>
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={() => openEditModal(inv)}
-                                        className="bg-white/5 border border-white/10 text-white/80 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-white/10"
+                                        className="bg-white/5 border border-white/10 text-white/80 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-white/10 cursor-pointer"
                                     >
                                         <Edit2 size={12} /> Editar
-                                    </button>
-                                    <button 
+                                    </div>
+                                    <div 
+                                        role="button" tabIndex={0}
                                         onClick={() => handleSendWhatsApp(inv)}
-                                        className="bg-violet-500/10 border border-violet-500/30 text-violet-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-violet-500/20"
+                                        className="bg-violet-500/10 border border-violet-500/30 text-violet-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-violet-500/20 cursor-pointer"
                                     >
                                         <Send size={12} /> Enviar
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
                             );
@@ -534,9 +541,9 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                 <FileText size={14} className="text-violet-400" /> 
                                 {showCreateModal ? 'Generar Aviso de Pago' : 'Modificar Aviso'}
                             </h3>
-                            <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); resetForm(); }} className="text-white/40 hover:text-white">
+                            <div role="button" tabIndex={0} onClick={() => { setShowCreateModal(false); setShowEditModal(false); resetForm(); }} className="text-white/40 hover:text-white cursor-pointer">
                                 <Trash2 size={16} />
-                            </button>
+                            </div>
                         </div>
                         <div className="p-5 space-y-4">
                             {showCreateModal && (
@@ -593,13 +600,17 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                 />
                             </div>
 
-                            <button 
-                                onClick={showCreateModal ? handleCreateInvoice : handleEditInvoice}
-                                disabled={!amount || (showCreateModal && !selectedShopId)}
-                                className="w-full mt-2 bg-violet-600 text-white py-4 rounded-xl font-black uppercase tracking-widest text-[10px] active:scale-95 disabled:opacity-50 transition-transform shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:bg-violet-500"
+                            <div 
+                                role="button" tabIndex={0}
+                                onClick={() => {
+                                    if (!amount || (showCreateModal && !selectedShopId)) return;
+                                    showCreateModal ? handleCreateInvoice() : handleEditInvoice();
+                                }}
+                                className={`w-full mt-2 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] text-center transition-transform shadow-[0_0_20px_rgba(139,92,246,0.3)] 
+                                    ${(!amount || (showCreateModal && !selectedShopId)) ? 'opacity-50 bg-violet-600/50 text-white/50 cursor-not-allowed' : 'bg-violet-600 text-white cursor-pointer hover:bg-violet-500 active:scale-95'}`}
                             >
                                 {showCreateModal ? 'Generar Aviso' : 'Guardar Cambios'}
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
