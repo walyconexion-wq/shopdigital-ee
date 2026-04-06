@@ -50,7 +50,9 @@ const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db
 // --- TOWN CONTROLLER COMPONENT ---
 // Este componente extrae el townId de la URL y maneja toda la lógica de suscripciones
 const TownController: React.FC = () => {
-    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
+    // RESOLUCIÓN DE ZONA BLINDADA: Prioridad absoluta al parámetro de URL
+    const params = useParams<{ townId: string }>();
+    const townId = params.townId || 'esteban-echeverria';
     const location = useLocation();
     
     const [allShops, setAllShops] = useState<Shop[]>([]);
@@ -185,7 +187,7 @@ const TownController: React.FC = () => {
                     <Route path="tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
                     <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
-                    <Route path="factura/:invoiceId" element={<InvoiceViewerPage />} />
+                    <Route path=":categorySlug/:shopSlug/factura" element={<InvoiceViewerPage allShops={allShops} />} />
                     <Route path="terminos" element={<TermsPage />} />
                     <Route path="embajador/relevamiento/nuevo" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyFormPage /></ProtectedRoute>} />
                     <Route path="embajador/relevamiento/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyManagementPage /></ProtectedRoute>} />

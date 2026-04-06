@@ -46,13 +46,14 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
 
         setIsSubmitting(true);
 
-        const newClient: Client = {
+        const newClient: Client & { subscribedTo?: string } = {
             id: `client-${Date.now()}`,
             name: formData.name,
             phone: formData.phone,
             sourceShopId: selectedShop.id,
             sourceShopName: selectedShop.name,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            subscribedTo: selectedShop.id // Trazabilidad Simétrica
         };
 
         try {

@@ -45,7 +45,7 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                 const updatedShop = { ...shop, isActive: true };
                 await guardarComercio(updatedShop);
                 
-                // INYECCIÓN AUTOMÁTICA DE SUSCRIPCIÓN (Cuota Cero) 💸
+                // INYECCIÓN AUTOMÁTICA DE SUSCRIPCIÓN (Modelo Premium $10.000) 💸
                 const issueDateObj = new Date();
                 const periodSello = `${issueDateObj.getFullYear()}-${String(issueDateObj.getMonth() + 1).padStart(2, '0')}`;
                 
@@ -55,11 +55,11 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                     townId, // Garantía de Aislamiento Zonal
                     locality: shop.zone || 'Desconocida', // Sello geográfico IA
                     period: periodSello, // Sello temporal IA
-                    amount: 5000, // Valor base inicial simulado
+                    amount: 10000, 
                     issueDate: issueDateObj.toISOString(),
                     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
                     status: 'pending',
-                    concept: 'Suscripción Inicial (Cuota Cero)'
+                    concept: 'SUSCRIPCIÓN MES EN CURSO' // Coincidente con modelo visual
                 };
                 await crearFactura(newInvoice);
                 

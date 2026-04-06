@@ -22,7 +22,7 @@ export interface Invoice {
   amount: number;
   issueDate: string;
   dueDate: string;
-  status: 'pending' | 'paid' | 'uncollectible';
+  status: 'pending' | 'paid' | 'uncollectible' | 'suspended';
   townId?: string; // Multi-Zona SaaS Identifier
   locality?: string; // Sello geográfico profundo para consultas IA
   period?: string; // Franja contable (ej: "2026-04")

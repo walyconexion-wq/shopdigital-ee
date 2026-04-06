@@ -4,7 +4,7 @@ import {
     ChevronLeft, FileText, Search, Plus, 
     CheckCircle, Clock, Edit2, Send, 
     Trash2, RefreshCw, XCircle, MapPin, LineChart, ArrowLeft,
-    ExternalLink
+    ExternalLink, ShieldAlert
 } from 'lucide-react';
 import { Shop, Invoice } from '../types';
 import { CATEGORIES } from '../constants';
@@ -27,7 +27,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const { localities } = useTownLocalities(townId);
     const [activeLocation, setActiveLocation] = useState('');
-    const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'paid' | 'uncollectible'>('all');
+    const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'paid' | 'uncollectible' | 'suspended'>('all');
     
     // Modal states
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -412,23 +412,24 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                         { id: 'all', label: 'Todas las Órdenes' },
                         { id: 'pending', label: 'Pendientes' },
                         { id: 'paid', label: 'Pagadas' },
-                        { id: 'uncollectible', label: 'Incobrables' }
+                        { id: 'uncollectible', label: 'Incobrables' },
+                        { id: 'suspended', label: 'Suspendidos' }
                     ].map(mood => (
-                        <div
-                            role="button" tabIndex={0}
+                        <button
                             key={mood.id}
-                            onClick={() => { playNeonClick(); setStatusFilter(mood.id as any); }}
+                            onClick={(e) => { e.stopPropagation(); playNeonClick(); setStatusFilter(mood.id as any); }}
                             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
                                 statusFilter === mood.id 
                                 ? mood.id === 'paid' ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]'
                                   : mood.id === 'pending' ? 'bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.3)]'
                                   : mood.id === 'uncollectible' ? 'bg-red-500 text-black shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                                  : mood.id === 'suspended' ? 'bg-orange-500 text-black shadow-[0_0_15px_rgba(249,115,22,0.3)]'
                                   : 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]'
                                 : 'bg-white/5 text-white/60 hover:bg-white/10 border border-white/5'
                             }`}
                         >
                             {mood.label}
-                        </div>
+                        </button>
                     ))}
                 </div>
             </div>
@@ -463,11 +464,12 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                     <div className="space-y-4">
                         {filteredInvoices.map(inv => {
                             const shop = allShops.find(s => s.id === inv.shopId);
-                            const invoiceUrl = `${window.location.origin}/${townId}/factura/${inv.id}`;
+                            const catSlug = CATEGORIES.find(c => c.id === shop?.category || c.slug === shop?.category)?.slug || 'categoria';
+                            const invoiceUrl = shop ? `${window.location.origin}/${townId}/${catSlug}/${shop.slug}/factura` : '#';
 
                             return (
                             <div key={inv.id} className="bg-zinc-900/50 border border-white/10 rounded-3xl p-5 relative overflow-hidden group hover:border-violet-500/30 transition-colors">
-                                <div className={`absolute top-0 right-0 w-24 h-24 blur-[50px] rounded-full pointer-events-none ${inv.status === 'paid' ? 'bg-green-500/20' : inv.status === 'uncollectible' ? 'bg-red-500/20' : 'bg-yellow-500/20'}`} />
+                                <div className={`absolute top-0 right-0 w-24 h-24 blur-[50px] rounded-full pointer-events-none ${inv.status === 'paid' ? 'bg-green-500/20' : inv.status === 'uncollectible' ? 'bg-red-500/20' : inv.status === 'suspended' ? 'bg-orange-500/20' : 'bg-yellow-500/20'}`} />
                                 
                                 <div className="flex justify-between items-start mb-3 relative z-10">
                                     <div>
@@ -479,9 +481,14 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                             <MapPin size={8} /> ZONA: {shop?.zone || inv.locality || 'Desconocida'}
                                         </p>
                                     </div>
-                                    <div className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 ${inv.status === 'paid' ? 'bg-green-500/10 border-green-500/30 text-green-400' : inv.status === 'uncollectible' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'}`}>
-                                        {inv.status === 'paid' ? <CheckCircle size={10} /> : inv.status === 'uncollectible' ? <XCircle size={10} /> : <Clock size={10} />}
-                                        {inv.status === 'paid' ? 'Pagado' : inv.status === 'uncollectible' ? 'Incobrable' : 'Pendiente'}
+                                    <div className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 ${
+                                        inv.status === 'paid' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 
+                                        inv.status === 'uncollectible' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 
+                                        inv.status === 'suspended' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' :
+                                        'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
+                                    }`}>
+                                        {inv.status === 'paid' ? <CheckCircle size={10} /> : inv.status === 'uncollectible' ? <XCircle size={10} /> : inv.status === 'suspended' ? <ShieldAlert size={10} /> : <Clock size={10} />}
+                                        {inv.status === 'paid' ? 'Pagado' : inv.status === 'uncollectible' ? 'Incobrable' : inv.status === 'suspended' ? 'Suspendido' : 'Pendiente'}
                                     </div>
                                 </div>
                                 
@@ -493,46 +500,53 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                     <p className="text-[7.5px] text-white/30 truncate select-all">{invoiceUrl}</p>
                                 </div>
 
-                                <div className="flex items-end justify-between border-t border-white/10 pt-3 mb-4 relative z-10">
+                                <div className="flex items-end justify-between border-t border-white/10 pt-3 mb-5 relative z-10">
                                     <div>
-                                        <p className="text-[8px] text-white/40 uppercase tracking-widest">Emisión: {new Date(inv.issueDate).toLocaleDateString()}</p>
-                                        <p className="text-[8px] text-white/40 uppercase tracking-widest">Vence: {new Date(inv.dueDate).toLocaleDateString()}</p>
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">Emisión: {new Date(inv.issueDate).toLocaleDateString()}</p>
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">Vence: {new Date(inv.dueDate).toLocaleDateString()}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[8px] text-violet-400/60 font-black uppercase tracking-widest mb-0.5">Importe</p>
-                                        <p className="text-lg font-[1000] text-violet-400 leading-none">{formatCurrency(inv.amount)}</p>
+                                        <p className="text-[8px] text-violet-400/60 font-[1000] uppercase tracking-widest mb-0.5">Importe Total</p>
+                                        <p className="text-2xl font-[1000] text-violet-400 leading-none drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]">{formatCurrency(inv.amount)}</p>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-4 gap-1.5 relative z-10">
+                                <div className="grid grid-cols-5 gap-1.5 relative z-10">
                                     <div 
                                         role="button" tabIndex={0}
                                         onClick={() => { playNeonClick(); window.open(invoiceUrl, '_blank'); }}
-                                        className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-cyan-500/20 cursor-pointer"
+                                        className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 h-14 rounded-2xl flex flex-col items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest hover:bg-cyan-500/20 cursor-pointer transition-all active:scale-95"
                                     >
-                                        <ExternalLink size={12} /> Ver
+                                        <ExternalLink size={14} /> Ver
                                     </div>
                                     <div 
                                         role="button" tabIndex={0}
                                         onClick={() => handleToggleStatus(inv)}
-                                        className={`py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest transition-colors cursor-pointer ${inv.status === 'pending' ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' : inv.status === 'paid' ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20' : 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/30'}`}
+                                        className={`h-14 rounded-2xl flex flex-col items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest transition-all cursor-pointer active:scale-95 ${inv.status === 'pending' ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' : inv.status === 'paid' ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20' : 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/30'}`}
                                     >
-                                        {inv.status === 'pending' ? <CheckCircle size={12} /> : inv.status === 'paid' ? <XCircle size={12} /> : <RefreshCw size={12} />} 
+                                        {inv.status === 'pending' ? <CheckCircle size={14} /> : inv.status === 'paid' ? <XCircle size={14} /> : <RefreshCw size={14} />} 
                                         {inv.status === 'pending' ? 'Cobrar' : inv.status === 'paid' ? 'Anular' : 'Reversar'}
                                     </div>
                                     <div 
                                         role="button" tabIndex={0}
                                         onClick={() => openEditModal(inv)}
-                                        className="bg-white/5 border border-white/10 text-white/80 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                                        className="bg-white/5 border border-white/10 text-white/80 h-14 rounded-2xl flex flex-col items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest hover:bg-white/10 cursor-pointer transition-all active:scale-95"
                                     >
-                                        <Edit2 size={12} /> Editar
+                                        <Edit2 size={14} /> Editar
+                                    </div>
+                                    <div 
+                                        role="button" tabIndex={0}
+                                        onClick={() => { playNeonClick(); actualizarEstadoFactura(inv.id, 'suspended'); }}
+                                        className={`h-14 rounded-2xl flex flex-col items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest transition-all cursor-pointer active:scale-95 ${inv.status === 'suspended' ? 'bg-orange-500/40 border border-orange-500/50 text-white shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20'}`}
+                                    >
+                                        <ShieldAlert size={14} /> Suspender
                                     </div>
                                     <div 
                                         role="button" tabIndex={0}
                                         onClick={() => handleSendWhatsApp(inv)}
-                                        className="bg-violet-500/10 border border-violet-500/30 text-violet-400 py-2 rounded-xl flex flex-col items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest hover:bg-violet-500/20 cursor-pointer"
+                                        className="bg-violet-500/10 border border-violet-500/30 text-violet-400 h-14 rounded-2xl flex flex-col items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest hover:bg-violet-500/20 cursor-pointer transition-all active:scale-95"
                                     >
-                                        <Send size={12} /> Enviar
+                                        <Send size={14} /> Enviar
                                     </div>
                                 </div>
                             </div>

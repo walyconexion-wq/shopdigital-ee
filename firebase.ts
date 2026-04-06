@@ -454,7 +454,7 @@ export const eliminarOferta = async (id: string) => {
 
 export const suscribirseAFacturasPorZona = (townId: string, callback: (facturas: any[]) => void) => {
     const colRef = collection(db, "facturas");
-    const q = query(colRef, where("townId", "==", townId));
+    const q = townId ? query(colRef, where("townId", "==", townId)) : colRef;
     return onSnapshot(q, (snapshot) => {
         const facturas = snapshot.docs.map(docSnap => ({
             id: docSnap.id,
@@ -481,6 +481,25 @@ export const obtenerFactura = async (id: string) => {
     }
 };
 
+export const obtenerFacturaPorComercio = async (shopId: string) => {
+    try {
+        const q = query(collection(db, "facturas"), where("shopId", "==", shopId));
+        const snapshot = await getDocs(q);
+        if (snapshot.docs.length > 0) {
+            const facturas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const pendiente = facturas.find((f: any) => f.status === 'pending');
+            if (pendiente) return pendiente;
+            
+            facturas.sort((a: any, b: any) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime());
+            return facturas[0];
+        }
+        return null;
+    } catch (error) {
+        console.error("Error al obtener factura por comercio:", error);
+        return null;
+    }
+};
+
 export const crearFactura = async (facturaData: any) => {
     try {
         const id = facturaData.id || `inv-${Date.now()}`;
@@ -493,7 +512,7 @@ export const crearFactura = async (facturaData: any) => {
     }
 };
 
-export const actualizarEstadoFactura = async (id: string, status: 'pending' | 'paid' | 'uncollectible') => {
+export const actualizarEstadoFactura = async (id: string, status: 'pending' | 'paid' | 'uncollectible' | 'suspended') => {
     try {
         const docRef = doc(db, "facturas", id);
         const updateData: any = { status };
