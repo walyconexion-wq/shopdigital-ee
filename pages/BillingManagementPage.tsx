@@ -70,13 +70,15 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
     const totalFacturado = currentMonthInvoices.reduce((sum, inv) => sum + inv.amount, 0);
     const totalCobrado = currentMonthInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
     const totalPendiente = currentMonthInvoices.filter(i => i.status === 'pending').reduce((sum, inv) => sum + inv.amount, 0);
-    
+    const normalize = (str: string) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+
     const invoiceCountByCategory = useMemo(() => {
         const counts: Record<string, number> = {};
         CATEGORIES.forEach(cat => {
             counts[cat.id] = invoices.filter(inv => {
                 const shop = allShops.find(s => s.id === inv.shopId);
-                return shop && (shop.category === cat.id || shop.category === cat.slug);
+                const shopCat = normalize(shop?.category || "");
+                return (shopCat === normalize(cat.id) || shopCat === normalize(cat.slug));
             }).length;
         });
         return counts;
@@ -89,14 +91,20 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             const shop = allShops.find(s => s.id === inv.shopId);
             if (!shop) return false;
             
-            // 1. Filtrar por Rubro
-            const catMatch = shop.category === selectedCategoryId || shop.category === CATEGORIES.find(c => c.id === selectedCategoryId)?.slug;
+            // 1. Filtrar por Rubro (Case-Insensitive)
+            const shopCat = normalize(shop.category);
+            const catId = normalize(selectedCategoryId);
+            const catSlug = normalize(CATEGORIES.find(c => c.id === selectedCategoryId)?.slug || "");
+            const catMatch = shopCat === catId || shopCat === catSlug;
             if (!catMatch) return false;
             
-            // 2. Filtrar por Localidad Activa
-            const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            // 2. Filtrar por Localidad Activa (Normalizado)
             const normalizedLoc = normalize(activeLocation);
-            const isLocal = shop.zone === activeLocation || (shop.address && normalize(shop.address).includes(normalizedLoc));
+            const invLoc = normalize(inv.locality || "");
+            const shopLoc = normalize(shop.zone || "");
+            const shopAddr = normalize(shop.address || "");
+            
+            const isLocal = invLoc === normalizedLoc || shopLoc === normalizedLoc || shopAddr.includes(normalizedLoc);
             if (!isLocal) return false;
 
             // 3. Filtrar por Mood
@@ -105,9 +113,9 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             // 4. Filtrar por Buscador
             const strSearch = searchQuery.toLowerCase();
             if (strSearch && !(
-                inv.shopName.toLowerCase().includes(strSearch) ||
-                inv.concept.toLowerCase().includes(strSearch) ||
-                inv.id.toLowerCase().includes(strSearch)
+                (inv.shopName || "").toLowerCase().includes(strSearch) ||
+                (inv.concept || "").toLowerCase().includes(strSearch) ||
+                (inv.id || "").toLowerCase().includes(strSearch)
             )) {
                 return false;
             }
@@ -284,9 +292,11 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                         </h2>
                         <div className="space-y-2 relative z-10">
                             {localities.map(loc => {
+                                const normalizedLoc = normalize(loc);
                                 const locInvoices = currentMonthInvoices.filter(inv => {
+                                    if (normalize(inv.locality) === normalizedLoc) return true;
                                     const shop = allShops.find(s => s.id === inv.shopId);
-                                    return shop?.zone === loc;
+                                    return normalize(shop?.zone || "") === normalizedLoc;
                                 });
                                 const locTot = locInvoices.reduce((sum, inv) => sum + inv.amount, 0);
                                 const locPag = locInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);

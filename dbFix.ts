@@ -67,10 +67,9 @@ export async function populateInvoices() {
     // EE Facturas logic
     const eeShops = allShops.filter(s => s.townId === 'esteban-echeverria');
     const targetCategories = [
-        { cat: 'pizzerias', count: 3 },
-        { cat: 'restaurants', count: 3 },
-        { cat: 'hamburgueserias', count: 3 },
-        { cat: 'cervecerias', count: 1 }
+        { cat: 'restaurantes', count: 3 },
+        { cat: 'fastfood', count: 3 },
+        { cat: 'beer', count: 1 }
     ];
 
     let invCounter = 0;

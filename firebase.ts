@@ -757,7 +757,11 @@ export const SumaTotal = async (townId: string, locality?: string, period?: stri
         const snapshot = await getDocs(q);
         let facturas = snapshot.docs.map(d => d.data() as any);
         
-        if (locality) facturas = facturas.filter(f => f.locality === locality);
+        const normalize = (str: string) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+        if (locality) {
+            const normalizedLoc = normalize(locality);
+            facturas = facturas.filter(f => normalize(f.locality) === normalizedLoc);
+        }
         if (period) facturas = facturas.filter(f => f.period === period);
         
         return facturas.reduce((sum, inv) => sum + (inv.amount || 0), 0);
@@ -774,7 +778,11 @@ export const ConteoPendientes = async (townId: string, locality?: string, period
         const snapshot = await getDocs(q);
         let facturas = snapshot.docs.map(d => d.data() as any);
         
-        if (locality) facturas = facturas.filter(f => f.locality === locality);
+        const normalize = (str: string) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+        if (locality) {
+            const normalizedLoc = normalize(locality);
+            facturas = facturas.filter(f => normalize(f.locality) === normalizedLoc);
+        }
         if (period) facturas = facturas.filter(f => f.period === period);
         
         return facturas.length;
