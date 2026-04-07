@@ -181,7 +181,6 @@ const TownController: React.FC = () => {
                     <Route path="embajador/ofertas/:target" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferManagementPage allOffers={allOffers} /></ProtectedRoute>} />
                     <Route path="embajador/ofertas/crear/:target" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferFormPage /></ProtectedRoute>} />
                     <Route path="embajador/ofertas/editar/:offerId" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferFormPage allOffers={allOffers} /></ProtectedRoute>} />
-                    <Route path="base-clientes" element={<ProtectedRoute roles={['admin', 'ambassador']}><ClientsDatabasePage /></ProtectedRoute>} />
                     <Route path="nosotros" element={<AboutPage />} />
                     <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
                     <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />

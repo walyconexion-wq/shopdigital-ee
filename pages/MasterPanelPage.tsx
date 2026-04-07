@@ -451,7 +451,6 @@ const MasterPanelPage: React.FC = () => {
         { title: 'Relevamiento Táctico', desc: 'Carga Express Mobile de prospectos en calle', path: `/${townId}/embajador/relevamiento/nuevo` },
         { title: 'Gestión de Prospectos', desc: 'Ver, revisar, y activar leads de relevamiento', path: `/${townId}/embajador/relevamiento/gestion` },
         { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: `/${townId}/subscripcion` },
-        { title: 'Base de Clientes', desc: 'Para ver todos los clientes registrados', path: `/${townId}/base-clientes` },
         { title: 'Gestión Comercial', desc: 'Ruta directa a listado de comercios', path: `/${townId}/embajador/gestion` },
         { title: 'Configuración Global', desc: 'Temas estacionales e identidad de App', path: `/${townId}/tablero-maestro/configuracion` },
     ];
