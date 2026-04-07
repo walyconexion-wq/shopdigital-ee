@@ -12,11 +12,14 @@ import {
     Phone,
     Send,
     Trash2,
-    Eye
+    Eye,
+    MapPin,
+    Search,
+    User
 } from 'lucide-react';
 import { useTownLocalities } from '../hooks/useTownLocalities';
-
-// Localities will be dynamic via hook
+import { playNeonClick } from '../utils/audio';
+import { eliminarCliente } from '../firebase';
 
 interface ClientManagementPageProps {
     allShops: Shop[];
@@ -27,12 +30,21 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const { localities } = useTownLocalities(townId);
+    
+    // Filtro regional estricto (ADN ShopDigital) 🛡️
+    const clientsInZone = useMemo(() => 
+        allClients.filter(c => c.townId === townId), 
+    [allClients, townId]);
+
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [activeLocation, setActiveLocation] = useState('');
     const [selectedShopId, setSelectedShopId] = useState<string | null>(null);
     const [customMessage, setCustomMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Pre-select first locality when loaded
+    const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+    // Pre-select first locality of the zone
     useMemo(() => {
         if (localities.length > 0 && !activeLocation) {
             setActiveLocation(localities[0]);
@@ -45,55 +57,44 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     // =========================================================
     // HELPER MEMOS
     // =========================================================
-    
-    // Map shop ID to its Category ID
     const shopToCategoryMap = useMemo(() => {
         const map: Record<string, string> = {};
-        allShops.forEach(shop => {
-            map[shop.id] = shop.category;
-        });
+        allShops.forEach(shop => { map[shop.id] = shop.category; });
         return map;
     }, [allShops]);
 
     const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-    // Map shop ID to Locality
     const shopToLocalityMap = useMemo(() => {
         const map: Record<string, string> = {};
         allShops.forEach(shop => {
             const shopLocNormalized = normalize(shop.zone || "");
             const shopAddrNormalized = normalize(shop.address || "");
-            
-            // Buscar coincidencia en la lista dinámica de localidades de la zona
             const matchedLoc = localities.find(loc => {
                 const locNorm = normalize(loc);
                 return shopLocNormalized === locNorm || shopAddrNormalized.includes(locNorm);
             });
-
             map[shop.id] = matchedLoc || (localities.length > 0 ? localities[0] : 'Centro');
         });
         return map;
     }, [allShops, localities]);
 
-    // Count clients per Category
+    // Conteo regionalizado
     const clientCountByCategory = useMemo(() => {
         const counts: Record<string, number> = {};
         CATEGORIES.forEach(cat => counts[cat.id] = 0);
-        
-        allClients.forEach(client => {
+        clientsInZone.forEach(client => {
             const catId = shopToCategoryMap[client.sourceShopId];
             if (catId) counts[catId]++;
         });
         return counts;
-    }, [allClients, shopToCategoryMap]);
+    }, [clientsInZone, shopToCategoryMap]);
 
-    // Shops in selected category & locality that have > 0 clients
+    // Comercios filtrados por Rubro + Localidad
     const shopsWithClients = useMemo(() => {
         if (!selectedCategoryId) return [];
-        
-        // Count clients per shop
         const countsByShop: Record<string, number> = {};
-        allClients.forEach(c => {
+        clientsInZone.forEach(c => {
             countsByShop[c.sourceShopId] = (countsByShop[c.sourceShopId] || 0) + 1;
         });
 
@@ -105,32 +106,34 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             ...shop,
             clientCount: countsByShop[shop.id] || 0
         }));
-    }, [selectedCategoryId, activeLocation, allShops, allClients, shopToLocalityMap]);
+    }, [selectedCategoryId, activeLocation, allShops, clientsInZone, shopToLocalityMap]);
 
-    // Clients for selected shop
-    const shopClients = useMemo(() => {
+    // Clientes del comercio seleccionado con búsqueda táctica
+    const filteredShopClients = useMemo(() => {
         if (!selectedShopId) return [];
-        return allClients.filter(c => c.sourceShopId === selectedShopId);
-    }, [selectedShopId, allClients]);
+        const baseClients = clientsInZone.filter(c => c.sourceShopId === selectedShopId);
+        if (!searchTerm) return baseClients;
+        return baseClients.filter(c => 
+            normalize(c.name || '').includes(normalize(searchTerm)) ||
+            c.phone.includes(searchTerm) ||
+            normalize(c.email || '').includes(normalize(searchTerm))
+        );
+    }, [selectedShopId, clientsInZone, searchTerm]);
 
-    // Set default message when a shop is selected
     useMemo(() => {
         if (selectedShop) {
-            setCustomMessage(`¡Hola! 👋 Bienvenido al grupo VIP de *${selectedShop.name}*. Sumate acá para ver beneficios exclusivos: https://chat.whatsapp.com/IeibPhJcCGDLJklCpywTzn`);
+            setCustomMessage(`¡Hola! 👋 Bienvenido al grupo VIP de *${selectedShop.name}*. Sumate acá para ver beneficios exclusivos: https://shopdigital.tech/${townId}/${selectedCategory?.slug}/${selectedShop.slug}/credencial-vip`);
         }
-    }, [selectedShop]);
+    }, [selectedShop, townId, selectedCategory]);
 
     // =========================================================
     // ACTIONS
     // =========================================================
-
     const openWhatsApp = (client: Client, baseMessage: string) => {
         playNeonClick();
         const formattedPhone = client.phone.replace(/\D/g, '');
         const shop = allShops.find(s => s.id === client.sourceShopId);
         const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
-        
-        // Link Simétrico Regional a la nueva Credencial VIP Personalizada 💎✨
         const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`;
         const fullMessage = baseMessage + credentialLink;
         const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
@@ -139,13 +142,11 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
 
     const handleBulkMessage = () => {
         playNeonClick();
-        if (shopClients.length === 0) return;
-        
-        if (window.confirm(`¿Se intentarán abrir ${shopClients.length} pestañas de WhatsApp. Es posible que tu navegador bloquee las ventanas emergentes (pop-ups). ¿Quieres continuar?`)) {
+        if (filteredShopClients.length === 0) return;
+        if (window.confirm(`Se intentarán abrir ${filteredShopClients.length} pestañas de WhatsApp. ¿Continuar?`)) {
             const shop = allShops.find(s => s.id === selectedShopId);
             const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
-            
-            shopClients.forEach(client => {
+            filteredShopClients.forEach(client => {
                 const formattedPhone = client.phone.replace(/\D/g, '');
                 const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`;
                 const fullMessage = customMessage + credentialLink;
@@ -156,62 +157,58 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     };
 
     const handleDeleteClient = async (client: Client) => {
-        if (window.confirm(`¿Estás seguro de que querés eliminar definitivamente a ${client.name || 'este cliente'} de la red VIP? Esta acción no se puede deshacer.`)) {
+        if (window.confirm(`¿Seguro que querés eliminar a ${client.name}?`)) {
             playNeonClick();
-            try {
-                await eliminarCliente(client.id);
-            } catch (error) {
-                console.error("Error al eliminar cliente:", error);
-                alert("Hubo un error al eliminar el cliente.");
-            }
+            try { await eliminarCliente(client.id); } 
+            catch (error) { alert("Error al eliminar cliente."); }
         }
     };
 
     // =========================================================
-    // VIEW 1: Category Selection Grid
+    // RENDER VIEW 1: CATEGORY GRID
     // =========================================================
     if (!selectedCategoryId) {
         return (
-            <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-blue-500/30">
+            <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
                 <div className="fixed inset-0 pointer-events-none z-0">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] animate-pulse" />
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse" />
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-blue-500/20 mb-6 sticky top-0 z-50">
+                <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-cyan-500/20 mb-6 sticky top-0 z-50">
                     <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
-                        className="self-start mb-4 w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-400/30 hover:bg-blue-500/20 transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                        className="self-start mb-4 w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all shadow-lg active:scale-95">
                         <ChevronLeft size={20} />
                     </button>
                     <div className="flex items-center gap-2 mb-1">
-                        <Users size={18} className="text-blue-400" />
-                        <h2 className="text-[16px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                            Gestión de Clientes
+                        <Users size={18} className="text-cyan-400 drop-shadow-md" />
+                        <h2 className="text-[17px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+                            Gestión Clientes · {formattedTown}
                         </h2>
                     </div>
-                    <p className="text-[9px] font-bold text-blue-400/80 uppercase tracking-widest text-center mt-2 px-4">
-                        Total en BD: {allClients.length} clientes asociados
+                    <p className="text-[9px] font-bold text-cyan-400/80 uppercase tracking-widest text-center mt-2 px-4 shadow-[0_0_10px_rgba(34,211,238,0.1)]">
+                        Red VIP Regional: {clientsInZone.length} socios activos
                     </p>
                 </div>
 
-                <div className="px-5 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-lg mx-auto relative z-10">
+                <div className="px-5 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-lg mx-auto relative z-10 animate-in fade-in duration-700">
                     {CATEGORIES.map(cat => {
                         const count = clientCountByCategory[cat.id] || 0;
                         return (
                             <button
                                 key={cat.id}
                                 onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
-                                className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-blue-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden"
+                                className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-cyan-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden"
                             >
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full blur-[20px] pointer-events-none" />
-                                <div className="text-blue-400 group-hover:scale-110 transition-transform">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/5 rounded-full blur-[20px] pointer-events-none" />
+                                <div className="text-cyan-400 group-hover:scale-110 transition-transform">
                                     {cat.icon}
                                 </div>
                                 <span className="text-[8px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
                                     {cat.name}
                                 </span>
                                 {count > 0 && (
-                                    <span className="absolute top-2 right-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 text-[7px] font-black px-1.5 py-0.5 rounded-full">
+                                    <span className="absolute top-2 right-2 bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-[7px] font-black px-1.5 py-0.5 rounded-full">
                                         {count}
                                     </span>
                                 )}
@@ -224,96 +221,111 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     }
 
     // =========================================================
-    // VIEW 3: Client List & Messaging (Shop Selected)
+    // RENDER VIEW 3: CLIENT LIST (SHOP SELECTED)
     // =========================================================
     if (selectedShopId && selectedShop) {
         return (
-            <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-blue-500/30">
+            <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
                 <div className="fixed inset-0 pointer-events-none z-0">
-                    <div className="absolute top-0 left-0 w-[300px] h-[300px] bg-green-500/5 rounded-full blur-[100px]" />
+                    <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-cyan-500/5 rounded-full blur-[120px]" />
                 </div>
 
-                {/* Header View 3 */}
-                <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-4 px-6 flex flex-col items-center border-b border-blue-500/20 mb-4 sticky top-0 z-50">
-                    <button onClick={() => { playNeonClick(); setSelectedShopId(null); }}
-                        className="self-start mb-3 w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-400/30 hover:bg-blue-500/20 transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-4 px-6 flex flex-col items-center border-b border-cyan-500/20 mb-4 sticky top-0 z-50">
+                    <button onClick={() => { playNeonClick(); setSelectedShopId(null); setSearchTerm(''); }}
+                        className="self-start mb-3 w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all shadow-lg active:scale-95">
                         <ArrowLeft size={20} />
                     </button>
                     <div className="flex flex-col items-center justify-center">
-                        <h2 className="text-[14px] font-black text-white uppercase tracking-widest drop-shadow-[0_0_10px_rgba(59,130,246,0.5)] text-center mb-1">
-                            Clientes de {selectedShop.name}
+                        <p className="text-[8px] font-black text-cyan-400/60 uppercase tracking-widest mb-1 italic">{formattedTown} · {activeLocation}</p>
+                        <h2 className="text-[14px] font-black text-white uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] text-center mb-1">
+                             {selectedShop.name}
                         </h2>
-                        <span className="text-[9px] font-bold text-blue-400 uppercase tracking-[0.2em] bg-blue-500/10 px-3 py-1 rounded-full border border-blue-400/20">
-                            {shopClients.length} Registros Activos
+                        <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-[0.2em] bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-400/20">
+                            {filteredShopClients.length} Socios VIP Encontrados
                         </span>
                     </div>
                 </div>
 
                 <div className="px-5 space-y-6 relative z-10 max-w-lg mx-auto">
+                    {/* Buscador Táctico */}
+                    <div className="relative group">
+                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400/40 group-focus-within:text-cyan-400 transition-colors" />
+                        <input
+                            placeholder="BUSCAR SOCIO POR NOMBRE O WHATSAPP..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-white/[0.02] border border-white/10 p-4 pl-12 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-cyan-400/50 transition-all placeholder:text-white/10"
+                        />
+                    </div>
+
                     {/* Messaging Panel */}
-                    <div className="glass-card-3d bg-white/[0.02] border border-blue-500/30 rounded-3xl p-5 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-green-400" />
+                    <div className="glass-card-3d bg-white/[0.01] border border-cyan-500/20 rounded-3xl p-5 relative overflow-hidden animate-in zoom-in duration-500">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-600 to-blue-500" />
                         <h3 className="text-[10px] font-black text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <MessageSquare size={14} className="text-blue-400" /> Plantilla de Mensaje
+                            <MessageSquare size={14} className="text-cyan-400" /> Plantilla de Invitación
                         </h3>
                         <textarea
                             value={customMessage}
                             onChange={(e) => setCustomMessage(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white/90 placeholder:text-white/20 focus:outline-none focus:border-blue-400/50 transition-all min-h-[100px] resize-y"
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl p-3 text-xs text-white/90 focus:border-cyan-400/40 focus:outline-none transition-all min-h-[80px] font-inter"
                         />
                         <button
                             onClick={handleBulkMessage}
-                            className="mt-4 w-full bg-green-600/20 border border-green-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-green-300 active:scale-95 transition-all hover:bg-green-600/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                            className="mt-4 w-full bg-cyan-600 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] shadow-[0_5px_15px_rgba(34,211,238,0.2)] active:scale-95 transition-all"
                         >
-                            <Send size={14} /> Enviar Múltiple (Abrir Pestañas)
+                            <Send size={14} /> Enviar a Lista Filtrada
                         </button>
-                        <p className="text-[7px] text-white/30 text-center mt-2 uppercase tracking-wide">
-                            Atención: Tu navegador puede bloquear múltiples pestañas. Se recomienda enviar individualmente.
-                        </p>
                     </div>
 
                     {/* Client List */}
-                    <div className="space-y-3">
-                        {shopClients.map((client, idx) => (
-                            <div key={idx} className="glass-card-3d bg-white/[0.01] border hover:border-blue-500/30 border-white/5 rounded-2xl p-4 flex items-center justify-between transition-colors">
-                                <div>
-                                    <p className="text-[12px] font-black text-white/90 uppercase tracking-wide mb-0.5">
-                                        {client.name}
-                                    </p>
-                                    <p className="text-[9px] font-bold text-white/40 flex items-center gap-1">
-                                        <Phone size={10} /> {client.phone}
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => { 
-                                            playNeonClick(); 
-                                            const shop = allShops.find(s => s.id === client.sourceShopId);
-                                            const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
-                                            window.open(`/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`, '_blank'); 
-                                        }}
-                                        className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
-                                        title="Ver Credencial VIP"
-                                    >
-                                        <Eye size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => openWhatsApp(client, customMessage)}
-                                        className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 border border-green-400/30 hover:bg-green-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(34,197,94,0.1)]"
-                                        title="Enviar WhatsApp"
-                                    >
-                                        <Send size={16} className="-ml-1" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteClient(client)}
-                                        className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/30 hover:bg-red-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
-                                        title="Eliminar Cliente"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
+                    <div className="space-y-3 animate-in fade-in duration-700 delay-200">
+                        {filteredShopClients.length === 0 ? (
+                            <div className="bg-zinc-900/40 border border-dashed border-white/10 p-8 rounded-3xl text-center">
+                                <Users size={24} className="text-white/10 mx-auto mb-2" />
+                                <p className="text-[10px] text-white/20 uppercase font-black">No se encontraron socios</p>
                             </div>
-                        ))}
+                        ) : (
+                            filteredShopClients.map((client) => (
+                                <div key={client.id} className="glass-card-3d bg-white/[0.02] border hover:border-cyan-500/30 border-white/5 rounded-2xl p-4 flex items-center justify-between transition-all group active:scale-[0.98]">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-all">
+                                            <User size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[12px] font-[1000] text-white uppercase tracking-tight mb-0.5">{client.name}</p>
+                                            <div className="flex items-center gap-2 text-[9px] font-black text-cyan-400/50 uppercase tracking-widest">
+                                                <Phone size={10} /> {client.phone}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => { 
+                                                playNeonClick(); 
+                                                const shop = allShops.find(s => s.id === client.sourceShopId);
+                                                const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+                                                window.open(`/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`, '_blank'); 
+                                            }}
+                                            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 transition-all active:scale-95"
+                                        >
+                                            <Eye size={18} />
+                                        </button>
+                                        <button
+                                            onClick={() => openWhatsApp(client, customMessage)}
+                                            className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 transition-all active:scale-95"
+                                        >
+                                            <Send size={18} className="-ml-1" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteClient(client)}
+                                            className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 hover:bg-red-500/20 transition-all active:scale-95"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
@@ -321,49 +333,48 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     }
 
     // =========================================================
-    // VIEW 2: Location Tabs + Shop Cards
+    // RENDER VIEW 2: LOCATION TABS + SHOP CARDS
     // =========================================================
     const CYCLIC_COLORS = [
-        { border: 'border-cyan-400',   bg: 'bg-cyan-500/20',   text: 'text-cyan-300',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.4)]'   },
-        { border: 'border-violet-400', bg: 'bg-violet-500/20', text: 'text-violet-300', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.4)]'  },
-        { border: 'border-green-400',  bg: 'bg-green-500/20',  text: 'text-green-300',  shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.4)]'   },
-        { border: 'border-rose-400',   bg: 'bg-rose-500/20',   text: 'text-rose-300',   shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.4)]'   },
+        { border: 'border-cyan-400',   bg: 'bg-cyan-500/20' },
+        { border: 'border-violet-400', bg: 'bg-violet-500/20' },
+        { border: 'border-blue-400',   bg: 'bg-blue-500/20' },
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-blue-500/30">
+        <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse" />
             </div>
 
-            {/* Header View 2 */}
-            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-4 px-6 flex flex-col items-center border-b border-blue-500/20 mb-4 sticky top-0 z-50">
+            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-4 px-6 flex flex-col items-center border-b border-cyan-500/20 mb-4 sticky top-0 z-50">
                 <button onClick={() => { playNeonClick(); setSelectedCategoryId(null); }}
-                    className="self-start mb-3 w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-400/30 hover:bg-blue-500/20 transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                    className="self-start mb-3 w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all shadow-lg">
                     <ArrowLeft size={20} />
                 </button>
-                <div className="flex items-center gap-2 mb-1">
-                    <Users size={18} className="text-blue-400" />
-                    <h2 className="text-[15px] font-black text-white uppercase tracking-[0.15em] drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                        Mina de Clientes · {selectedCategory?.name}
-                    </h2>
+                <div className="flex flex-col items-center justify-center">
+                    <p className="text-[8px] font-black text-cyan-400/60 uppercase tracking-widest mb-1 italic">ADN {formattedTown}</p>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Users size={18} className="text-cyan-400" />
+                        <h2 className="text-[15px] font-[1000] text-white uppercase tracking-[0.15em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+                            {selectedCategory?.name}
+                        </h2>
+                    </div>
                 </div>
             </div>
 
-            {/* Location Tabs */}
-            <div className="flex justify-center gap-3 px-5 mb-6 relative z-10 overflow-x-auto no-scrollbar">
+            <div className="flex justify-center gap-2 px-5 mb-6 relative z-10 overflow-x-auto no-scrollbar scroll-smooth">
                 {localities.map((loc, idx) => {
                     const isActive = activeLocation === loc;
-                    const colors = CYCLIC_COLORS[idx % CYCLIC_COLORS.length];
+                    const color = CYCLIC_COLORS[idx % CYCLIC_COLORS.length];
                     return (
                         <button
                             key={loc}
                             onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300 whitespace-nowrap
+                            className={`px-4 py-3 rounded-2xl font-black uppercase tracking-widest text-[9px] border transition-all duration-300 whitespace-nowrap
                                 ${isActive
-                                    ? `${colors.bg} ${colors.border} ${colors.text} ${colors.shadow} scale-110`
-                                    : `bg-white/[0.03] border-white/10 text-white/40 hover:text-white/60 hover:border-white/20`
+                                    ? `${color.bg} ${color.border} text-white shadow-[0_0_20px_rgba(34,211,238,0.2)] scale-105 z-10`
+                                    : `bg-white/[0.03] border-white/10 text-white/30 hover:border-white/20`
                                 }`}
                         >
                             {loc}
@@ -372,38 +383,37 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                 })}
             </div>
 
-            {/* Shop Cards (Client Summaries) */}
-            <div className="px-5 space-y-4 relative z-10 max-w-lg mx-auto">
+            <div className="px-5 space-y-4 relative z-10 max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
                 {shopsWithClients.length === 0 ? (
-                    <div className="glass-card-3d bg-white/[0.02] border border-blue-500/20 rounded-3xl p-10 flex flex-col items-center justify-center gap-3 text-center">
-                        <Users size={24} className="text-blue-400/30" />
-                        <p className="text-[10px] text-white/40 uppercase tracking-widest leading-relaxed">
-                            No hay clientes asociados a {selectedCategory?.name} en {activeLocation}
+                    <div className="glass-card-3d bg-white/[0.02] border border-dashed border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center gap-4 text-center">
+                        <Users size={24} className="text-white/10" />
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest font-black leading-relaxed">
+                            No se detectaron clientes <br/> VIP en esta zona
                         </p>
                     </div>
                 ) : (
                     shopsWithClients.map(shop => (
-                        <div key={shop.id} className="glass-card-3d bg-white/[0.02] border border-blue-500/20 rounded-3xl p-5 overflow-hidden relative transition-all">
-                            {/* Stats Badge */}
-                            <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-blue-500/20 text-blue-300 border border-blue-400/30 shadow-[0_0_10px_rgba(59,130,246,0.3)]">
-                                {shop.clientCount} Clientes
+                        <div key={shop.id} className="glass-card-3d bg-white/[0.02] border border-cyan-500/20 rounded-3xl p-6 overflow-hidden relative transition-all hover:bg-white/[0.04]">
+                            <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-cyan-500 text-black shadow-lg">
+                                {shop.clientCount} VIP
                             </div>
 
-                            <div className="flex flex-col gap-4 mt-2">
+                            <div className="flex flex-col gap-5">
                                 <div>
-                                    <h3 className="text-lg font-[1000] text-white uppercase tracking-tighter leading-tight pr-20">
+                                    <h3 className="text-xl font-[1000] text-white uppercase tracking-tighter leading-tight pr-12">
                                         {shop.name}
                                     </h3>
-                                    <p className="text-[9px] font-bold text-white/40 mt-1 uppercase tracking-widest flex items-center gap-1">
-                                        <Store size={10} /> Registros de este catálogo
-                                    </p>
+                                    <div className="flex items-center gap-2 mt-2 text-[10px] font-black text-cyan-400/60 uppercase tracking-widest">
+                                        <MapPin size={12} /> {shop.zone || activeLocation}
+                                    </div>
                                 </div>
                                 
                                 <button
                                     onClick={() => { playNeonClick(); setSelectedShopId(shop.id); }}
-                                    className="w-full bg-blue-500/10 border border-blue-500/30 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-blue-300 active:scale-95 transition-all hover:bg-blue-500/20"
+                                    className="w-full bg-white/5 border border-white/10 hover:border-cyan-500/40 py-4 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white active:scale-95 transition-all shadow-inner"
                                 >
-                                    <Users size={14} /> Administrar Clientes VIP
+                                    <Eye size={18} className="text-cyan-400" />
+                                    <span>Ver Tarjetas VIP</span>
                                 </button>
                             </div>
                         </div>
