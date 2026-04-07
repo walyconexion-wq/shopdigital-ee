@@ -130,8 +130,8 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         const shop = allShops.find(s => s.id === client.sourceShopId);
         const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
         
-        // Link Simétrico Regional a la nueva Credencial VIP
-        const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip`;
+        // Link Simétrico Regional a la nueva Credencial VIP Personalizada 💎✨
+        const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`;
         const fullMessage = baseMessage + credentialLink;
         const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
         window.open(url, '_blank');
@@ -147,7 +147,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             
             shopClients.forEach(client => {
                 const formattedPhone = client.phone.replace(/\D/g, '');
-                const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip`;
+                const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`;
                 const fullMessage = customMessage + credentialLink;
                 const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
                 window.open(url, '_blank');
@@ -286,7 +286,12 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button
-                                        onClick={() => { playNeonClick(); window.open(`/cliente/${client.id}/credencial`, '_blank'); }}
+                                        onClick={() => { 
+                                            playNeonClick(); 
+                                            const shop = allShops.find(s => s.id === client.sourceShopId);
+                                            const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+                                            window.open(`/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`, '_blank'); 
+                                        }}
                                         className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all active:scale-95 flex-shrink-0 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
                                         title="Ver Credencial VIP"
                                     >

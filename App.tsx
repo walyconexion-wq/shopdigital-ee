@@ -192,7 +192,8 @@ const TownController: React.FC = () => {
                     <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
                     <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/factura" element={<InvoiceViewerPage allShops={allShops} />} />
-                    <Route path=":categorySlug/:shopSlug/credencial-vip" element={<ClientVipCredentialPage allShops={allShops} />} />
+                    <Route path=":categorySlug/:shopSlug/credencial-vip/:clientId" element={<ClientVipCredentialPage allShops={allShops} allClients={allClients} />} />
+                    <Route path=":categorySlug/:shopSlug/credencial-vip" element={<ClientVipCredentialPage allShops={allShops} allClients={allClients} />} />
                     <Route path="terminos" element={<TermsPage />} />
                     <Route path="embajador/relevamiento/nuevo" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyFormPage /></ProtectedRoute>} />
                     <Route path="embajador/relevamiento/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyManagementPage /></ProtectedRoute>} />
