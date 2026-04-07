@@ -15,11 +15,18 @@ import {
     Eye,
     MapPin,
     Search,
-    User
+    User,
+    Edit2,
+    X,
+    Check,
+    Palette,
+    IdCard,
+    Camera,
+    AlertTriangle
 } from 'lucide-react';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import { playNeonClick } from '../utils/audio';
-import { eliminarCliente } from '../firebase';
+import { eliminarCliente, guardarCliente } from '../firebase';
 
 interface ClientManagementPageProps {
     allShops: Shop[];
@@ -41,6 +48,10 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     const [selectedShopId, setSelectedShopId] = useState<string | null>(null);
     const [customMessage, setCustomMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    
+    // Estado para edición de socio
+    const [editingClient, setEditingClient] = useState<Client | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
@@ -90,7 +101,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         return counts;
     }, [clientsInZone, shopToCategoryMap]);
 
-    // Comercios filtrados por Rubro + Localidad
+    // Comercios filtrados por Rubro + Localidad + TOWNID (BLINDAJE TOTAL 🛡️)
     const shopsWithClients = useMemo(() => {
         if (!selectedCategoryId) return [];
         const countsByShop: Record<string, number> = {};
@@ -99,6 +110,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         });
 
         return allShops.filter(shop => 
+            shop.townId === townId && // SELLO REGIONAL 🛡️
             shop.category === selectedCategoryId &&
             shopToLocalityMap[shop.id] === activeLocation &&
             (countsByShop[shop.id] || 0) > 0
@@ -106,7 +118,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             ...shop,
             clientCount: countsByShop[shop.id] || 0
         }));
-    }, [selectedCategoryId, activeLocation, allShops, clientsInZone, shopToLocalityMap]);
+    }, [selectedCategoryId, activeLocation, allShops, clientsInZone, shopToLocalityMap, townId]);
 
     // Clientes del comercio seleccionado con búsqueda táctica
     const filteredShopClients = useMemo(() => {
@@ -116,15 +128,16 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         return baseClients.filter(c => 
             normalize(c.name || '').includes(normalize(searchTerm)) ||
             c.phone.includes(searchTerm) ||
-            normalize(c.email || '').includes(normalize(searchTerm))
+            (c.dni && c.dni.includes(searchTerm))
         );
     }, [selectedShopId, clientsInZone, searchTerm]);
 
     useMemo(() => {
         if (selectedShop) {
-            setCustomMessage(`¡Hola! 👋 Bienvenido al grupo VIP de *${selectedShop.name}*. Sumate acá para ver beneficios exclusivos: https://shopdigital.tech/${townId}/${selectedCategory?.slug}/${selectedShop.slug}/credencial-vip`);
+            const catSlug = CATEGORIES.find(c => c.id === selectedShop.category)?.slug || 'comercio';
+            setCustomMessage(`¡Hola! 👋 Bienvenido al grupo VIP de *${selectedShop.name}*. Descargá acá tu Credencial VIP personalizada: https://shopdigital.tech/${townId}/${catSlug}/${selectedShop.slug}/credencial-vip`);
         }
-    }, [selectedShop, townId, selectedCategory]);
+    }, [selectedShop, townId]);
 
     // =========================================================
     // ACTIONS
@@ -153,6 +166,20 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                 const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
                 window.open(url, '_blank');
             });
+        }
+    };
+
+    const handleSaveClient = async () => {
+        if (!editingClient) return;
+        setIsSaving(true);
+        try {
+            await guardarCliente(editingClient, townId);
+            playNeonClick();
+            setEditingClient(null);
+        } catch (error) {
+            alert("Error al guardar cambios.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -186,7 +213,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                             Gestión Clientes · {formattedTown}
                         </h2>
                     </div>
-                    <p className="text-[9px] font-bold text-cyan-400/80 uppercase tracking-widest text-center mt-2 px-4 shadow-[0_0_10px_rgba(34,211,238,0.1)]">
+                    <p className="text-[9px] font-bold text-cyan-400/80 uppercase tracking-widest text-center mt-2 px-4">
                         Red VIP Regional: {clientsInZone.length} socios activos
                     </p>
                 </div>
@@ -237,7 +264,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                     </button>
                     <div className="flex flex-col items-center justify-center">
                         <p className="text-[8px] font-black text-cyan-400/60 uppercase tracking-widest mb-1 italic">{formattedTown} · {activeLocation}</p>
-                        <h2 className="text-[14px] font-black text-white uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] text-center mb-1">
+                        <h2 className="text-[14px] font-black text-white uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] text-center mb-1 pr-2">
                              {selectedShop.name}
                         </h2>
                         <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-[0.2em] bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-400/20">
@@ -251,7 +278,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                     <div className="relative group">
                         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400/40 group-focus-within:text-cyan-400 transition-colors" />
                         <input
-                            placeholder="BUSCAR SOCIO POR NOMBRE O WHATSAPP..."
+                            placeholder="BUSCAR POR NOMBRE, DNI O WHATSAPP..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full bg-white/[0.02] border border-white/10 p-4 pl-12 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-cyan-400/50 transition-all placeholder:text-white/10"
@@ -259,7 +286,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                     </div>
 
                     {/* Messaging Panel */}
-                    <div className="glass-card-3d bg-white/[0.01] border border-cyan-500/20 rounded-3xl p-5 relative overflow-hidden animate-in zoom-in duration-500">
+                    <div className="glass-card-3d bg-white/[0.01] border border-cyan-500/20 rounded-3xl p-5 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-600 to-blue-500" />
                         <h3 className="text-[10px] font-black text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
                             <MessageSquare size={14} className="text-cyan-400" /> Plantilla de Invitación
@@ -267,67 +294,161 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                         <textarea
                             value={customMessage}
                             onChange={(e) => setCustomMessage(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-2xl p-3 text-xs text-white/90 focus:border-cyan-400/40 focus:outline-none transition-all min-h-[80px] font-inter"
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl p-3 text-xs text-white/90 focus:border-cyan-400/40 focus:outline-none transition-all min-h-[80px]"
                         />
                         <button
                             onClick={handleBulkMessage}
-                            className="mt-4 w-full bg-cyan-600 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] shadow-[0_5px_15px_rgba(34,211,238,0.2)] active:scale-95 transition-all"
+                            className="mt-4 w-full bg-cyan-600 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] shadow-lg active:scale-95 transition-all"
                         >
-                            <Send size={14} /> Enviar a Lista Filtrada
+                            <Send size={14} /> Enviar invitación VIP
                         </button>
                     </div>
 
                     {/* Client List */}
-                    <div className="space-y-3 animate-in fade-in duration-700 delay-200">
-                        {filteredShopClients.length === 0 ? (
-                            <div className="bg-zinc-900/40 border border-dashed border-white/10 p-8 rounded-3xl text-center">
-                                <Users size={24} className="text-white/10 mx-auto mb-2" />
-                                <p className="text-[10px] text-white/20 uppercase font-black">No se encontraron socios</p>
-                            </div>
-                        ) : (
-                            filteredShopClients.map((client) => (
-                                <div key={client.id} className="glass-card-3d bg-white/[0.02] border hover:border-cyan-500/30 border-white/5 rounded-2xl p-4 flex items-center justify-between transition-all group active:scale-[0.98]">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-all">
-                                            <User size={18} />
+                    <div className="space-y-3">
+                        {filteredShopClients.map((client) => (
+                            <div key={client.id} className="glass-card-3d bg-white/[0.02] border hover:border-cyan-500/30 border-white/5 rounded-2xl p-4 flex items-center justify-between transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 overflow-hidden">
+                                        {client.photo ? <img src={client.photo} className="w-full h-full object-cover" /> : <User size={20} />}
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-[12px] font-[1000] text-white uppercase tracking-tight">{client.name}</p>
+                                            {client.status === 'suspended' && (
+                                                <span className="text-[7px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest">SUSPENDIDO</span>
+                                            )}
                                         </div>
-                                        <div>
-                                            <p className="text-[12px] font-[1000] text-white uppercase tracking-tight mb-0.5">{client.name}</p>
-                                            <div className="flex items-center gap-2 text-[9px] font-black text-cyan-400/50 uppercase tracking-widest">
-                                                <Phone size={10} /> {client.phone}
-                                            </div>
+                                        <div className="flex items-center gap-2 text-[9px] font-black text-cyan-400/50 uppercase tracking-widest mt-0.5">
+                                            <Phone size={10} /> {client.phone}
+                                            {client.dni && <><span className="opacity-30">|</span> <IdCard size={10} /> {client.dni}</>}
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => { 
-                                                playNeonClick(); 
-                                                const shop = allShops.find(s => s.id === client.sourceShopId);
-                                                const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
-                                                window.open(`/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`, '_blank'); 
-                                            }}
-                                            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 transition-all active:scale-95"
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <button
+                                        onClick={() => { playNeonClick(); setEditingClient(client); }}
+                                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white"
+                                        title="Gestionar Identidad"
+                                    >
+                                        <Edit2 size={15} />
+                                    </button>
+                                    <button
+                                        onClick={() => { 
+                                            playNeonClick(); 
+                                            const shop = allShops.find(s => s.id === client.sourceShopId);
+                                            const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+                                            window.open(`/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`, '_blank'); 
+                                        }}
+                                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-cyan-400"
+                                    >
+                                        <Eye size={15} />
+                                    </button>
+                                    <button
+                                        onClick={() => openWhatsApp(client, customMessage)}
+                                        className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400"
+                                    >
+                                        <Send size={15} className="-ml-0.5" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteClient(client)}
+                                        className="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500"
+                                    >
+                                        <Trash2 size={15} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* MODAL DE EDICIÓN VIP 💎 */}
+                {editingClient && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                        <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setEditingClient(null)} />
+                        <div className="relative w-full max-w-sm glass-card-3d bg-zinc-900 border border-cyan-500/30 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-600 to-blue-500" />
+                            
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                    <ShieldCheck size={18} className="text-cyan-400" /> Gestionar Socio VIP
+                                </h3>
+                                <button onClick={() => setEditingClient(null)} className="text-white/20 hover:text-white"><X size={20} /></button>
+                            </div>
+
+                            <div className="space-y-5">
+                                <div>
+                                    <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">Nombre del Titular</label>
+                                    <input 
+                                        value={editingClient.name}
+                                        onChange={(e) => setEditingClient({...editingClient, name: e.target.value})}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-cyan-400 outline-none"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">DNI / ID</label>
+                                        <input 
+                                            placeholder="Ej: 35.888.111"
+                                            value={editingClient.dni || ''}
+                                            onChange={(e) => setEditingClient({...editingClient, dni: e.target.value})}
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-cyan-400 outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">Color Credencial</label>
+                                        <input 
+                                            type="color"
+                                            value={editingClient.cardColor || '#22d3ee'}
+                                            onChange={(e) => setEditingClient({...editingClient, cardColor: e.target.value})}
+                                            className="w-full h-[46px] bg-white/5 border border-white/10 rounded-xl p-1 cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">URL Foto de Perfil</label>
+                                    <div className="relative">
+                                        <Camera size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
+                                        <input 
+                                            placeholder="https://..."
+                                            value={editingClient.photo || ''}
+                                            onChange={(e) => setEditingClient({...editingClient, photo: e.target.value})}
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 pl-10 text-[10px] text-white focus:border-cyan-400 outline-none"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="pt-2">
+                                    <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">Estado de Membresía</label>
+                                    <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => setEditingClient({...editingClient, status: 'active'})}
+                                            className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${editingClient.status !== 'suspended' ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-white/5 border-white/10 text-white/30'}`}
                                         >
-                                            <Eye size={18} />
+                                            Activa
                                         </button>
-                                        <button
-                                            onClick={() => openWhatsApp(client, customMessage)}
-                                            className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 transition-all active:scale-95"
+                                        <button 
+                                            onClick={() => setEditingClient({...editingClient, status: 'suspended'})}
+                                            className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${editingClient.status === 'suspended' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/30'}`}
                                         >
-                                            <Send size={18} className="-ml-1" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteClient(client)}
-                                            className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 hover:bg-red-500/20 transition-all active:scale-95"
-                                        >
-                                            <Trash2 size={18} />
+                                            Suspendida
                                         </button>
                                     </div>
                                 </div>
-                            ))
-                        )}
+
+                                <button 
+                                    disabled={isSaving}
+                                    onClick={handleSaveClient}
+                                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg flex items-center justify-center gap-2 mt-4"
+                                >
+                                    {isSaving ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <><Check size={16}/> Guardar Cambios</>}
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         );
     }
@@ -335,12 +456,6 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     // =========================================================
     // RENDER VIEW 2: LOCATION TABS + SHOP CARDS
     // =========================================================
-    const CYCLIC_COLORS = [
-        { border: 'border-cyan-400',   bg: 'bg-cyan-500/20' },
-        { border: 'border-violet-400', bg: 'bg-violet-500/20' },
-        { border: 'border-blue-400',   bg: 'bg-blue-500/20' },
-    ];
-
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
             <div className="fixed inset-0 pointer-events-none z-0">
@@ -349,7 +464,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
 
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-4 px-6 flex flex-col items-center border-b border-cyan-500/20 mb-4 sticky top-0 z-50">
                 <button onClick={() => { playNeonClick(); setSelectedCategoryId(null); }}
-                    className="self-start mb-3 w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all shadow-lg">
+                    className="self-start mb-3 w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all shadow-lg active:scale-95">
                     <ArrowLeft size={20} />
                 </button>
                 <div className="flex flex-col items-center justify-center">
@@ -364,16 +479,15 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             </div>
 
             <div className="flex justify-center gap-2 px-5 mb-6 relative z-10 overflow-x-auto no-scrollbar scroll-smooth">
-                {localities.map((loc, idx) => {
+                {localities.map((loc) => {
                     const isActive = activeLocation === loc;
-                    const color = CYCLIC_COLORS[idx % CYCLIC_COLORS.length];
                     return (
                         <button
                             key={loc}
                             onClick={() => { playNeonClick(); setActiveLocation(loc); }}
                             className={`px-4 py-3 rounded-2xl font-black uppercase tracking-widest text-[9px] border transition-all duration-300 whitespace-nowrap
                                 ${isActive
-                                    ? `${color.bg} ${color.border} text-white shadow-[0_0_20px_rgba(34,211,238,0.2)] scale-105 z-10`
+                                    ? `bg-cyan-500/20 border-cyan-500 text-white shadow-[0_0_20px_rgba(34,211,238,0.2)] scale-105 z-10`
                                     : `bg-white/[0.03] border-white/10 text-white/30 hover:border-white/20`
                                 }`}
                         >
@@ -383,7 +497,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                 })}
             </div>
 
-            <div className="px-5 space-y-4 relative z-10 max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="px-5 space-y-4 relative z-10 max-w-lg mx-auto">
                 {shopsWithClients.length === 0 ? (
                     <div className="glass-card-3d bg-white/[0.02] border border-dashed border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center gap-4 text-center">
                         <Users size={24} className="text-white/10" />
@@ -403,7 +517,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                                     <h3 className="text-xl font-[1000] text-white uppercase tracking-tighter leading-tight pr-12">
                                         {shop.name}
                                     </h3>
-                                    <div className="flex items-center gap-2 mt-2 text-[10px] font-black text-cyan-400/60 uppercase tracking-widest">
+                                    <div className="flex items-center gap-2 mt-2 text-[10px] font-black text-cyan-400/60 uppercase tracking-widest text-shadow-premium">
                                         <MapPin size={12} /> {shop.zone || activeLocation}
                                     </div>
                                 </div>

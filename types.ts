@@ -82,6 +82,11 @@ export interface Client {
   sourceShopId: string;
   sourceShopName: string;
   createdAt: string;
+  townId?: string; // Sello Regional B2C 🛡️
+  dni?: string;
+  photo?: string;
+  status?: 'active' | 'suspended';
+  cardColor?: string;
   points?: number;
   pointsHistory?: PointsTransaction[];
 }
