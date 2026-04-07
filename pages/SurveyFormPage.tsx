@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, Store, MapPin, Map, 
     Phone, Users, AlertTriangle, 
@@ -8,21 +8,19 @@ import {
 import { guardarRelevamiento } from '../firebase';
 import { playNeonClick } from '../utils/audio';
 import { CATEGORIES } from '../constants';
-
-// Constantes Locales para el formulario
-const ZONAS = [
-    "Monte Grande Centro", "El Jagüel", "Luis Guillón", "Canning", "Ezeiza Centro", "Tristán Suárez", "Otra"
-];
+import { useTownLocalities } from '../hooks/useTownLocalities';
 
 const SurveyFormPage: React.FC = () => {
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { localities, loading: loadingLocs } = useTownLocalities(townId);
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
         category: CATEGORIES[0].id,
         address: '',
-        zone: ZONAS[0],
+        zone: '',
         contactName: '',
         phone: '',
         socialNetworks: '',
@@ -31,8 +29,15 @@ const SurveyFormPage: React.FC = () => {
             interestLevel: 'medium' as 'high' | 'medium' | 'low',
             observations: ''
         },
-        ambassadorName: '' // Debería sacarse del usuario logueado en una versión con Auth
+        ambassadorName: '' 
     });
+
+    // Sincronizar zona inicial cuando carguen las localidades
+    useEffect(() => {
+        if (localities.length > 0 && !formData.zone) {
+            setFormData(prev => ({ ...prev, zone: localities[0] }));
+        }
+    }, [localities, formData.zone]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -71,12 +76,13 @@ const SurveyFormPage: React.FC = () => {
         try {
             const leadData = {
                 ...formData,
+                townId, // SELLO REGIONAL OBLIGATORIO 🛡️
                 date: new Date().toISOString(),
                 status: 'pending'
             };
             
-            await guardarRelevamiento(leadData);
-            alert(`¡Relevamiento de ${formData.name} guardado con éxito! ✅`);
+            await guardarRelevamiento(leadData, townId);
+            alert(`¡Relevamiento de ${formData.name} guardado con éxito en ${townId}! ✅`);
             navigate(-1);
         } catch (error) {
             console.error("Error guardando relevamiento", error);
@@ -104,6 +110,7 @@ const SurveyFormPage: React.FC = () => {
                         <BatteryCharging size={24} className="text-yellow-400 animate-pulse" />
                     </div>
                     <h1 className="text-[16px] font-[1000] uppercase tracking-widest text-white text-center leading-tight">Relevamiento<br/>Táctico</h1>
+                    <p className="text-[9px] font-black text-yellow-500/60 uppercase tracking-widest mt-1">Sede: {townId.replace(/-/g, ' ')}</p>
                 </div>
             </div>
 
@@ -159,7 +166,8 @@ const SurveyFormPage: React.FC = () => {
                                     onChange={handleChange}
                                     className="w-full bg-black/50 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:outline-none focus:border-yellow-400 appearance-none text-center"
                                 >
-                                    {ZONAS.map(z => <option key={z} value={z}>{z}</option>)}
+                                    {loadingLocs ? <option>Cargando...</option> : localities.map(z => <option key={z} value={z}>{z}</option>)}
+                                    <option value="Otra">Otra</option>
                                 </select>
                             </div>
                             <div>

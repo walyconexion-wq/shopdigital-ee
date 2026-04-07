@@ -14,10 +14,9 @@ import {
     Trash2,
     Eye
 } from 'lucide-react';
-import { playNeonClick } from '../utils/audio';
-import { eliminarCliente } from '../firebase';
+import { useTownLocalities } from '../hooks/useTownLocalities';
 
-const LOCALITIES = ['Luis Guillón', 'Monte Grande', 'El Jagüel'];
+// Localities will be dynamic via hook
 
 interface ClientManagementPageProps {
     allShops: Shop[];
@@ -27,10 +26,18 @@ interface ClientManagementPageProps {
 const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, allClients }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { localities } = useTownLocalities(townId);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-    const [activeLocation, setActiveLocation] = useState('Monte Grande');
+    const [activeLocation, setActiveLocation] = useState('');
     const [selectedShopId, setSelectedShopId] = useState<string | null>(null);
     const [customMessage, setCustomMessage] = useState('');
+
+    // Pre-select first locality when loaded
+    useMemo(() => {
+        if (localities.length > 0 && !activeLocation) {
+            setActiveLocation(localities[0]);
+        }
+    }, [localities, activeLocation]);
 
     const selectedCategory = CATEGORIES.find(c => c.id === selectedCategoryId);
     const selectedShop = allShops.find(s => s.id === selectedShopId);
@@ -54,12 +61,19 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     const shopToLocalityMap = useMemo(() => {
         const map: Record<string, string> = {};
         allShops.forEach(shop => {
-            const isLuisGuillon = shop.zone === 'Luis Guillón' || (shop.address && normalize(shop.address).includes('guillon'));
-            const isElJaguel = shop.zone === 'El Jagüel' || (shop.address && normalize(shop.address).includes('jaguel'));
-            map[shop.id] = isLuisGuillon ? 'Luis Guillón' : isElJaguel ? 'El Jagüel' : 'Monte Grande';
+            const shopLocNormalized = normalize(shop.zone || "");
+            const shopAddrNormalized = normalize(shop.address || "");
+            
+            // Buscar coincidencia en la lista dinámica de localidades de la zona
+            const matchedLoc = localities.find(loc => {
+                const locNorm = normalize(loc);
+                return shopLocNormalized === locNorm || shopAddrNormalized.includes(locNorm);
+            });
+
+            map[shop.id] = matchedLoc || (localities.length > 0 ? localities[0] : 'Centro');
         });
         return map;
-    }, [allShops]);
+    }, [allShops, localities]);
 
     // Count clients per Category
     const clientCountByCategory = useMemo(() => {
@@ -113,7 +127,11 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     const openWhatsApp = (client: Client, baseMessage: string) => {
         playNeonClick();
         const formattedPhone = client.phone.replace(/\D/g, '');
-        const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/cliente/${client.id}/credencial`;
+        const shop = allShops.find(s => s.id === client.sourceShopId);
+        const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+        
+        // Link Simétrico Regional a la nueva Credencial VIP
+        const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip`;
         const fullMessage = baseMessage + credentialLink;
         const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
         window.open(url, '_blank');
@@ -124,9 +142,12 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         if (shopClients.length === 0) return;
         
         if (window.confirm(`¿Se intentarán abrir ${shopClients.length} pestañas de WhatsApp. Es posible que tu navegador bloquee las ventanas emergentes (pop-ups). ¿Quieres continuar?`)) {
+            const shop = allShops.find(s => s.id === selectedShopId);
+            const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+            
             shopClients.forEach(client => {
                 const formattedPhone = client.phone.replace(/\D/g, '');
-                const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/cliente/${client.id}/credencial`;
+                const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip`;
                 const fullMessage = customMessage + credentialLink;
                 const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
                 window.open(url, '_blank');
@@ -297,11 +318,12 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     // =========================================================
     // VIEW 2: Location Tabs + Shop Cards
     // =========================================================
-    const LOCALITY_COLORS: Record<string, { border: string; bg: string; text: string; shadow: string }> = {
-        'Luis Guillón': { border: 'border-green-400', bg: 'bg-green-500/20', text: 'text-green-300', shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.4)]' },
-        'Monte Grande': { border: 'border-cyan-400', bg: 'bg-cyan-500/20', text: 'text-cyan-300', shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.4)]' },
-        'El Jagüel': { border: 'border-violet-400', bg: 'bg-violet-500/20', text: 'text-violet-300', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.4)]' },
-    };
+    const CYCLIC_COLORS = [
+        { border: 'border-cyan-400',   bg: 'bg-cyan-500/20',   text: 'text-cyan-300',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.4)]'   },
+        { border: 'border-violet-400', bg: 'bg-violet-500/20', text: 'text-violet-300', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.4)]'  },
+        { border: 'border-green-400',  bg: 'bg-green-500/20',  text: 'text-green-300',  shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.4)]'   },
+        { border: 'border-rose-400',   bg: 'bg-rose-500/20',   text: 'text-rose-300',   shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.4)]'   },
+    ];
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-blue-500/30">
@@ -325,15 +347,15 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             </div>
 
             {/* Location Tabs */}
-            <div className="flex justify-center gap-3 px-5 mb-6 relative z-10">
-                {LOCALITIES.map(loc => {
+            <div className="flex justify-center gap-3 px-5 mb-6 relative z-10 overflow-x-auto no-scrollbar">
+                {localities.map((loc, idx) => {
                     const isActive = activeLocation === loc;
-                    const colors = LOCALITY_COLORS[loc];
+                    const colors = CYCLIC_COLORS[idx % CYCLIC_COLORS.length];
                     return (
                         <button
                             key={loc}
                             onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300
+                            className={`px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] border transition-all duration-300 whitespace-nowrap
                                 ${isActive
                                     ? `${colors.bg} ${colors.border} ${colors.text} ${colors.shadow} scale-110`
                                     : `bg-white/[0.03] border-white/10 text-white/40 hover:text-white/60 hover:border-white/20`

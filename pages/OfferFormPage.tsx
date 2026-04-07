@@ -20,8 +20,6 @@ import {
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
-// Las localidades se cargan dinámicamente desde Firebase según el townId (ver useTownLocalities)
-
 interface OfferFormPageProps {
     allOffers?: Offer[];
 }
@@ -45,19 +43,20 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
         discountLabel: '',
         image: '',
         merchantName: '',
-        merchantZone: '',  // se setea con la primera localidad al cargar
+        merchantZone: '', 
         category: CATEGORIES[0].id,
         validFrom: new Date().toISOString().split('T')[0],
         validUntil: '',
         stockLimit: '',
         pointsPrice: '',
     });
+
     // Setear zona por defecto cuando carguen las localidades
     useEffect(() => {
         if (localities.length > 0 && !formData.merchantZone) {
             setFormData(prev => ({ ...prev, merchantZone: localities[0] }));
         }
-    }, [localities]);
+    }, [localities, formData.merchantZone]);
 
     const [saved, setSaved] = useState(false);
 
@@ -130,10 +129,11 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
             pointsPrice: formData.pointsPrice ? parseInt(formData.pointsPrice) : undefined,
             isActive: false,
             createdAt: isEditing && existingOffer ? existingOffer.createdAt : new Date().toISOString(),
+            townId // SELLO REGIONAL 🛡️
         };
 
         try {
-            await guardarOferta(offerData);
+            await guardarOferta(offerData, townId); // PASAR townId PARA ESTANQUEIDAD 🛡️
             playSuccessSound();
             setSaved(true);
         } catch (err) {
@@ -150,11 +150,12 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                     <h2 className="text-xl font-[1000] text-green-300 uppercase tracking-widest mb-4">
                         {isEditing ? '¡Oferta Actualizada!' : '¡Oferta Creada!'}
                     </h2>
-                    <p className="text-sm text-white/60 mb-8">
-                        Ahora podés publicarla desde el panel de gestión.
+                    <p className="text-sm text-white/60 mb-8 lowercase">
+                        Ahora podés publicarla desde el panel de gestión en {townId.replace(/-/g, ' ')}.
                     </p>
-                    <button onClick={() => { playNeonClick(); navigate(`/embajador/ofertas/${backTarget}`); }}
-                        className="w-full bg-green-500/20 border border-green-400/40 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] text-green-300 active:scale-95 transition-all">
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/ofertas/${backTarget}`); }}
+                        className="w-full bg-green-500/20 border border-green-400/40 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] text-green-300 active:scale-95 transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                    >
                         Ir al Panel de Ofertas
                     </button>
                 </div>
@@ -181,8 +182,8 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                 <h2 className="text-[15px] font-black text-white uppercase tracking-[0.15em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
                     {isEditing ? 'Editar Oferta' : 'Crear Oferta'} {offerTarget}
                 </h2>
-                <span className="text-[8px] font-bold text-cyan-400/70 uppercase tracking-widest mt-1">
-                    {offerTarget === 'B2B' ? 'Red Comercial' : 'Clientes de Calle'}
+                <span className="text-[8px] font-bold text-cyan-400/70 uppercase tracking-widest mt-1 italic">
+                    Región: {townId.toUpperCase().replace(/-/g, ' ')}
                 </span>
             </div>
 
@@ -239,7 +240,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                     </div>
                 </div>
 
-                <div>
+                <div className="grid grid-cols-1">
                     <label className={LABEL_CLASS}><Package size={10} /> Límite de Stock (Opcional)</label>
                     <input type="number" name="stockLimit" value={formData.stockLimit} onChange={handleChange} placeholder="Ej: 100 (dejar vacío = ilimitado)" className={INPUT_CLASS} />
                 </div>
@@ -247,7 +248,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                 <div>
                     <label className={LABEL_CLASS}><ImageIcon size={10} /> Banner / Foto del Producto</label>
                     {formData.image && (
-                        <div className="mb-3 rounded-2xl overflow-hidden border border-white/10">
+                        <div className="mb-3 rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                             <img src={formData.image} alt="Preview" className="w-full h-40 object-cover" />
                         </div>
                     )}

@@ -60,3 +60,58 @@ export async function populateInvoices() {
     
     return true;
 }
+
+export async function rescueEzeizaData() {
+    console.log("🔦 INICIANDO RASTREO DE CLIENTES FANTASMAS EN EZEIZA...");
+    
+    // 1. Rescatar Comercios (Asegurar que El Tano es de Ezeiza)
+    const shopsSnap = await getDocs(collection(db, "comercios"));
+    const batch = writeBatch(db);
+    let shopsFixed = 0;
+
+    for (const d of shopsSnap.docs) {
+        const data = d.data();
+        const normalize = (str: string) => (str || "").toLowerCase();
+        
+        // Si el nombre o el slug sugieren Ezeiza o es el Tano, forzar townId
+        if (normalize(data.name).includes("tano") || normalize(data.slug).includes("tano") || normalize(data.zone).includes("ezeiza")) {
+            if (data.townId !== "ezeiza") {
+                batch.update(d.ref, { townId: "ezeiza" });
+                shopsFixed++;
+            }
+        }
+    }
+
+    // 2. Rescatar Clientes Fantasmas
+    const clientsSnap = await getDocs(collection(db, "clientes"));
+    let clientsFixed = 0;
+
+    for (const d of clientsSnap.docs) {
+        const data = d.data();
+        const normalize = (str: string) => (str || "").toLowerCase();
+
+        // Criterio de Rescate: 
+        // a) Referencia a un comercio de Ezeiza
+        // b) Venir de la landing de Ezeiza
+        // c) Estar huérfano de townId
+        const isFromEzeizaShop = normalize(data.sourceShopId || "").includes("tano") || normalize(data.subscribedTo || "").includes("tano");
+        const isFromEzeizaLanding = normalize(data.sourceShopId || "").includes("ezeiza");
+        const isOrphan = !data.townId;
+
+        if (isFromEzeizaShop || isFromEzeizaLanding || isOrphan) {
+            if (data.townId !== "ezeiza") {
+                batch.update(d.ref, { townId: "ezeiza" });
+                clientsFixed++;
+            }
+        }
+    }
+
+    if (shopsFixed > 0 || clientsFixed > 0) {
+        await batch.commit();
+        console.log(`✅ RESCATE COMPLETADO: ${shopsFixed} comercios y ${clientsFixed} clientes normalizados a 'ezeiza'.`);
+    } else {
+        console.log("✨ NO SE DETECTARON FANTASMAS: El multiverso está en equilibrio.");
+    }
+    
+    return { shopsFixed, clientsFixed };
+}

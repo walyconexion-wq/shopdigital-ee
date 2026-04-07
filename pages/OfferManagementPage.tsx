@@ -32,7 +32,8 @@ const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) 
     const toggleActive = async (offer: Offer) => {
         playNeonClick();
         try {
-            await guardarOferta({ ...offer, isActive: !offer.isActive });
+            // PASAR townId PARA ESTANQUEIDAD 🛡️
+            await guardarOferta({ ...offer, isActive: !offer.isActive }, townId);
             playSuccessSound();
         } catch (err) {
             alert('Error al cambiar el estado.');
@@ -53,10 +54,11 @@ const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) 
 
     const handlePreview = (offer: Offer) => {
         playNeonClick();
+        // LINK REGIONAL 🛡️
         if (offer.target === 'B2B') {
-            navigate('/red-comercial/descuentos');
+            navigate(`/${townId}/red-comercial/descuentos`);
         } else {
-            navigate('/red-comercial/ofertas');
+            navigate(`/${townId}/red-comercial/ofertas`);
         }
     };
 
@@ -83,8 +85,8 @@ const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) 
                         Ofertas {offerTarget}
                     </h2>
                 </div>
-                <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest mt-1">
-                    {offerTarget === 'B2B' ? 'Red Comercial · Descuentos entre Comerciantes' : 'Clientes de Calle · Promociones Públicas'}
+                <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mt-1 italic">
+                    Región: {townId.replace(/-/g, ' ').toUpperCase()}
                 </p>
                 <span className={`mt-2 text-[8px] font-black uppercase tracking-widest ${COLORS.text} ${COLORS.bg} px-3 py-1 rounded-full border ${COLORS.border}`}>
                     {filteredOffers.length} Ofertas Registradas
@@ -92,9 +94,9 @@ const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) 
             </div>
 
             <div className="px-5 max-w-lg mx-auto relative z-10">
-                {/* Create Button */}
+                {/* Create Button - REGIONAL LINK 🛡️ */}
                 <button
-                    onClick={() => { playNeonClick(); navigate(`/embajador/ofertas/crear/${offerTarget.toLowerCase()}`); }}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/ofertas/crear/${offerTarget.toLowerCase()}`); }}
                     className={`w-full mb-6 ${COLORS.bg} border ${COLORS.border} py-4 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] ${COLORS.text} active:scale-95 transition-all hover:opacity-80 ${COLORS.shadow}`}
                 >
                     <Plus size={18} /> Crear Nueva Promoción
@@ -106,7 +108,7 @@ const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) 
                         <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center gap-3 text-center">
                             <Tag size={24} className="text-white/20" />
                             <p className="text-[10px] text-white/40 uppercase tracking-widest leading-relaxed">
-                                No hay ofertas {offerTarget} creadas todavía.
+                                No hay ofertas {offerTarget} en esta zona.
                             </p>
                         </div>
                     ) : (
@@ -169,7 +171,8 @@ const OfferManagementPage: React.FC<OfferManagementPageProps> = ({ allOffers }) 
                                             {offer.isActive ? <PowerOff size={14} /> : <Power size={14} />}
                                             {offer.isActive ? 'Pausar' : 'Publicar'}
                                         </button>
-                                        <button onClick={() => { playNeonClick(); navigate(`/embajador/ofertas/editar/${offer.id}`); }}
+                                        {/* Edit - REGIONAL LINK 🛡️ */}
+                                        <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/ofertas/editar/${offer.id}`); }}
                                             className="flex flex-col items-center gap-1 py-2.5 rounded-xl border bg-blue-500/10 border-blue-400/30 text-blue-300 text-[7px] font-black uppercase tracking-wider active:scale-95 transition-all">
                                             <Edit3 size={14} /> Editar
                                         </button>

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { CATEGORIES } from '../constants';
+import { useTownLocalities } from '../hooks/useTownLocalities';
 
 interface ShopEditPageProps {
   allShops: Shop[];
@@ -35,9 +36,10 @@ const THEME_COLORS = [
 ];
 
 const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
-  const { shopId, shopSlug } = useParams<{ shopId?: string; shopSlug?: string }>();
+  const { townId = 'esteban-echeverria', shopId, shopSlug } = useParams<{ townId?: string; shopId?: string; shopSlug?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { localities } = useTownLocalities(townId);
   const ROOT_EMAIL = 'walyconexion@gmail.com';
 
   const [shop, setShop] = useState<Shop | null>(null);
@@ -69,7 +71,9 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
     setSaving(true);
     playNeonClick();
     try {
-      await updateComercio(shop.id, shop);
+      // Inyectar townId si por alguna razón no lo tiene (seguridad extra) 🛡️
+      const updatedShop = { ...shop, townId: shop.townId || townId };
+      await updateComercio(shop.id, updatedShop);
       alert('¡Comercio actualizado con éxito!');
       navigate(-1);
     } catch (e: any) {
@@ -96,7 +100,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
   if (!shop) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-cyan-400 font-bold uppercase tracking-widest">
-        <div className="animate-pulse">Cargando datos del comercio...</div>
+        <div className="animate-pulse">Cargando datos regionales...</div>
       </div>
     );
   }
@@ -118,8 +122,8 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
           <h1 className="text-sm font-[1000] uppercase tracking-[0.1em] text-white text-center leading-tight">
             Panel de Edición
           </h1>
-          <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: shop.themeColor || '#22d3ee' }}>
-            {shop.name}
+          <p className="text-[9px] font-black uppercase tracking-widest mt-0.5 opacity-60">
+            Sede: {townId.replace(/-/g, ' ').toUpperCase()}
           </p>
         </div>
         <button 
@@ -203,7 +207,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
                 />
                 {shop.bannerImage && (
-                  <div className="mt-2 h-24 rounded-lg overflow-hidden border border-white/10">
+                  <div className="mt-2 h-24 rounded-lg overflow-hidden border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                     <img src={shop.bannerImage} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -234,13 +238,29 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                 <MapPin size={14} /> Ubicación Geográfica
               </h2>
 
+              {/* SELECT DE ZONA DINÁMICO 🛡️ */}
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Zona / Localidad</label>
+                <select 
+                  value={shop.zone || ''}
+                  onChange={(e) => handleInputChange('zone', e.target.value)}
+                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                >
+                  <option value="">Seleccioná una zona</option>
+                  {localities.map(loc => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                  <option value="Otra">Otra</option>
+                </select>
+              </div>
+
               <div className="space-y-1">
                 <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Dirección Escrita</label>
                 <input 
                   type="text" 
                   value={shop.address || ''}
                   onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Ej: Alem 123, Monte Grande"
+                  placeholder="Ej: Alem 123"
                   className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
                 />
               </div>
@@ -268,7 +288,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   value={shop.phone || ''}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="Ej: 5491122334455"
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-green-500/50 transition-colors"
+                  className="w-full bg-black/50 border border-green-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-green-500/50 transition-colors"
                 />
               </div>
             </div>
@@ -329,7 +349,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                         className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
                       />
                       {imgUrl && (
-                         <div className="mt-3 aspect-video rounded-xl overflow-hidden border border-white/10">
+                         <div className="mt-3 aspect-video rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
                             <img src={imgUrl} alt="Feed Preview" className="w-full h-full object-cover" />
                          </div>
                       )}
@@ -492,7 +512,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                             handleInputChange('reviews', newReviews);
                           }}
                           rows={2}
-                          className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white focus:outline-none focus:border-cyan-500/50"
+                          className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white focus:outline-none focus:border-cyan-500/50 shadow-inner"
                         />
                       </div>
                     </div>
@@ -603,8 +623,6 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
           </div>
         )}
       </div>
-
-      {/* Floating Save Button Removed (Moved to Header) */}
 
     </div>
   );

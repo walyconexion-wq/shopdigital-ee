@@ -5,7 +5,7 @@ import {
   suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas, 
   subscribeToGlobalConfig, migrarDatosLegados 
 } from './firebase';
-import { populateInvoices } from './dbFix';
+import { populateInvoices, rescueEzeizaData } from './dbFix';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -44,6 +44,7 @@ import ShopMenuPage from './pages/ShopMenuPage';
 import ShopEditPage from './pages/ShopEditPage';
 import GlobalConfigPage from './pages/GlobalConfigPage';
 import FactoryPanelPage from './pages/FactoryPanelPage';
+import ClientVipCredentialPage from './pages/ClientVipCredentialPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -74,9 +75,12 @@ const TownController: React.FC = () => {
         if (params.get('repair') === 'true') {
             console.log("🛠️ ACTIVADOR MAESTRO DETECTADO: Iniciando reparación de emergencia...");
             migrarDatosLegados(townId)
-                .then(result => {
+                .then(async (result) => {
                     console.log("✅ REPARACIÓN EXITOSA:", result);
-                    alert("¡SISTEMA REESTABLECIDO! Los datos han sido resucitados.");
+                    // Adicionalmente, ejecutar rescate de Ezeiza para asegurar multiverso
+                    const rescue = await rescueEzeizaData();
+                    console.log("🛡️ RESCATE ADICIONAL:", rescue);
+                    alert(`¡SISTEMA REESTABLECIDO! Datos resucitados y ${rescue.clientsFixed} fantasmas capturados.`);
                     window.history.replaceState({}, '', window.location.pathname);
                 })
                 .catch(err => {
@@ -188,6 +192,7 @@ const TownController: React.FC = () => {
                     <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
                     <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/factura" element={<InvoiceViewerPage allShops={allShops} />} />
+                    <Route path=":categorySlug/:shopSlug/credencial-vip" element={<ClientVipCredentialPage allShops={allShops} />} />
                     <Route path="terminos" element={<TermsPage />} />
                     <Route path="embajador/relevamiento/nuevo" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyFormPage /></ProtectedRoute>} />
                     <Route path="embajador/relevamiento/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyManagementPage /></ProtectedRoute>} />

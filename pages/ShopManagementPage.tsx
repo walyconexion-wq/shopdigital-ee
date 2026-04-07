@@ -19,8 +19,6 @@ import {
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
-// Las localidades se cargan dinámicamente desde Firebase (ver useTownLocalities)
-
 interface ShopManagementPageProps {
     allShops: Shop[];
 }
@@ -45,7 +43,7 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
     // Filter shops by selected category and location
     const filteredShops = useMemo(() => {
         if (!selectedCategoryId) return [];
-        const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        const normalize = (str: string) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         const normalizedLoc = normalize(activeLocation);
         
         return allShops.filter(shop =>
@@ -85,7 +83,8 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
         if (window.confirm(`⏸️ ¿SUSPENDER "${shop.name}"?\n\nLa tarjeta se ocultará de la interfaz pública pero se mantiene en la base de datos.`)) {
             setProcessingId(shop.id);
             try {
-                await guardarComercio({ ...shop, isActive: false });
+                // PASAR townId PARA ESTANQUEIDAD 🛡️
+                await guardarComercio({ ...shop, isActive: false }, townId);
                 playSuccessSound();
             } catch (error) {
                 console.error("Error al suspender:", error);
@@ -101,7 +100,8 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
         if (window.confirm(`✅ ¿ACTIVAR "${shop.name}"?\n\nLa tarjeta será visible para todos los usuarios en la interfaz.`)) {
             setProcessingId(shop.id);
             try {
-                await guardarComercio({ ...shop, isActive: true });
+                // PASAR townId PARA ESTANQUEIDAD 🛡️
+                await guardarComercio({ ...shop, isActive: true }, townId);
                 playSuccessSound();
             } catch (error) {
                 console.error("Error al activar:", error);
@@ -136,8 +136,8 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                             Gestión de Comercios
                         </h2>
                     </div>
-                    <p className="text-[9px] font-bold text-yellow-400/80 uppercase tracking-widest text-center mt-2 px-4">
-                        Seleccioná un rubro para administrar
+                    <p className="text-[9px] font-black text-yellow-400/80 uppercase tracking-widest text-center mt-2 px-4 italic">
+                        SEDE: {townId.toUpperCase().replace(/-/g, ' ')}
                     </p>
                 </div>
 
@@ -174,7 +174,6 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
     // =========================================================
     // VIEW 2: Location Tabs + Shop Cards with Controls
     // =========================================================
-    // Paleta cíclica por índice (no por nombre hardcodeado)
     const CYCLIC_COLORS = [
         { border: 'border-cyan-400',   bg: 'bg-cyan-500/20',   text: 'text-cyan-300',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.4)]'  },
         { border: 'border-violet-400', bg: 'bg-violet-500/20', text: 'text-violet-300', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.4)]'  },
@@ -203,8 +202,8 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                         {selectedCategory?.name || 'Rubro'}
                     </h2>
                 </div>
-                <p className="text-[8px] font-bold text-yellow-400/60 uppercase tracking-widest text-center mt-1">
-                    Panel de gestión · Eliminar · Suspender · Activar
+                <p className="text-[8px] font-bold text-yellow-400/60 uppercase tracking-widest text-center mt-1 italic">
+                    Región: {townId.replace(/-/g, ' ').toUpperCase()}
                 </p>
             </div>
 
@@ -282,11 +281,11 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
 
                                 {/* Action Buttons */}
                                 <div className="flex gap-2 pt-2 border-t border-white/5">
-                                    {/* Edit */}
+                                    {/* Edit - REGIONAL LINK 🛡️ */}
                                     <button
                                         onClick={() => {
                                             playNeonClick();
-                                            navigate(`/embajador/editar/${shop.id}`);
+                                            navigate(`/${townId}/embajador/editar/${shop.id}`);
                                         }}
                                         className="flex-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
                                     >

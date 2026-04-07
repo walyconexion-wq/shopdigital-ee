@@ -3,12 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, Search, Plus, UserCheck, 
     MapPin, Trash2, Zap, Send, FileText, CheckCircle,
-    Edit3, ExternalLink, X, Save, Eye, PauseCircle
+    Edit3, X, Save, Eye, PauseCircle
 } from 'lucide-react';
 import { Lead } from '../types';
 import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio, eliminarComercio, actualizarComercio } from '../firebase';
 import { playNeonClick } from '../utils/audio';
 import { CATEGORIES } from '../constants';
+import { useTownLocalities } from '../hooks/useTownLocalities';
 
 const categoryMap: Record<string, string> = {
     "Barbería/Peluquería": "barber",
@@ -20,16 +21,6 @@ const categoryMap: Record<string, string> = {
     "Otro": "servicios"
 };
 
-const zoneMap: Record<string, string> = {
-    "Monte Grande Centro": "Monte Grande",
-    "El Jagüel": "El Jagüel",
-    "Luis Guillón": "Luis Guillón",
-    "Canning": "Canning",
-    "Ezeiza Centro": "Ezeiza",
-    "Tristán Suárez": "Tristán Suárez",
-    "Otra": "Otra"
-};
-
 const getCategoryName = (catIdOrName: string) => {
     const found = CATEGORIES.find(c => c.id === catIdOrName);
     return found ? found.name : catIdOrName;
@@ -38,6 +29,7 @@ const getCategoryName = (catIdOrName: string) => {
 const SurveyManagementPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { localities } = useTownLocalities(townId);
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -50,58 +42,57 @@ const SurveyManagementPage: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         const unsubscribe = suscribirseARelevamientos((data) => {
             const sorted = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
             setLeads(sorted as Lead[]);
             setLoading(false);
-        });
+        }, townId); // FILTRADO POR ZONA 🛡️
         return () => unsubscribe();
-    }, []);
+    }, [townId]);
 
     const filteredLeads = leads.filter(lead => {
         const matchesSearch = lead.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              lead.contactName.toLowerCase().includes(searchQuery.toLowerCase());
+                               lead.contactName.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesZone = filterZone === 'ALL' || lead.zone === filterZone;
-        const leadStatus = lead.status || 'pending'; // Fallback for legacy leads
+        const leadStatus = lead.status || 'pending'; 
         const matchesStatus = filterStatus === 'ALL' || leadStatus === filterStatus;
         return matchesSearch && matchesZone && matchesStatus;
     });
 
-    const uniqueZones = Array.from(new Set(leads.map(l => l.zone)));
-
     const handleActivateLead = async (lead: Lead) => {
         playNeonClick();
-        const confirmMsg = `¿Activamos a ${lead.name} como un Comercio en ShopDigital?\xA0\n\nEsto creará su sucursal, credencial y catálogo interactivo.`;
+        const confirmMsg = `¿Activamos a ${lead.name} como un Comercio en ShopDigital (${townId})?\xA0\n\nEsto creará su sucursal, credencial y catálogo interactivo regional.`;
         if (!window.confirm(confirmMsg)) return;
 
         try {
-            // Transform Lead to Shop shape. 
-            // In a real scenario we might map more things exactly.
             const newShopId = `shop-${Date.now()}`;
             const slugBase = lead.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
             
+            const categoryObj = CATEGORIES.find(c => c.id === lead.category || c.id === categoryMap[lead.category]) || CATEGORIES[0];
+
             const newShop = {
                 id: newShopId,
                 slug: slugBase,
                 name: lead.name,
-                category: categoryMap[lead.category] || lead.category,
-                zone: zoneMap[lead.zone] || lead.zone,
+                category: categoryObj.id,
+                zone: lead.zone,
                 address: lead.address,
                 phone: lead.phone,
                 rating: 5.0,
-                specialty: lead.category,
+                specialty: categoryObj.name,
                 offers: [],
                 bannerImage: '',
                 image: '',
-                isActive: true
+                isActive: true,
+                townId // SELLO REGIONAL 🛡️
             };
 
-            await guardarComercio(newShop);
+            await guardarComercio(newShop, townId);
             
-            // Mark as activated instead of deleting
             await actualizarRelevamiento(lead.id, { status: 'activated', createdShopId: newShopId });
             
-            alert(`✅ ¡${lead.name} Activado Exitosamente!`);
+            alert(`✅ ¡${lead.name} Activado Exitosamente en ${townId}!`);
             handleSendWelcomeMessage(lead, newShop);
             
         } catch (error) {
@@ -113,9 +104,10 @@ const SurveyManagementPage: React.FC = () => {
     const handleSendWelcomeMessage = (lead: Lead, shop: any) => {
         playNeonClick();
         const phoneStr = lead.phone.replace(/\D/g, '');
-        const credencialUrl = `${window.location.origin}/${shop.category}/${shop.slug}/credencial`;
+        // LINK REGIONAL SIMÉTRICO: /:townId/:category/:slug/credencial-vip
+        const credencialUrl = `${window.location.origin}/${townId}/${shop.category}/${shop.slug}/credencial-vip`;
         
-        const wpMsg = `¡Hola *${lead.contactName}*! 👋\n\nBienvenido a la red de *ShopDigital VIP* 🚀. Ya creamos tu perfil comercial.\n\n👉 *Acá tenés el link a tu Credencial VIP y Catálogo Interactvo:*\n${credencialUrl}\n\n¡Cualquier duda, avisanos!`;
+        const wpMsg = `¡Hola *${lead.contactName}*! 👋\n\nBienvenido a la red de *ShopDigital VIP* en *${townId.replace(/-/g, ' ').toUpperCase()}* 🚀. Ya creamos tu perfil comercial.\n\n👉 *Acá tenés el link a tu Credencial Inteligente y Catálogo:* \n${credencialUrl}\n\n¡Cualquier duda, avisanos!`;
         
         window.open(`https://wa.me/549${phoneStr}?text=${encodeURIComponent(wpMsg)}`, '_blank');
     };
@@ -185,7 +177,7 @@ const SurveyManagementPage: React.FC = () => {
             </div>
 
             <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-yellow-500/30 pt-10 pb-6 px-6 relative z-10 sticky top-0 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <button onClick={() => { playNeonClick(); navigate(-1); }} className="absolute top-10 left-6 text-yellow-400 hover:text-yellow-300">
+                <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} className="absolute top-10 left-6 text-yellow-400 hover:text-yellow-300">
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center">
@@ -193,6 +185,7 @@ const SurveyManagementPage: React.FC = () => {
                         <UserCheck size={24} className="text-yellow-400" />
                     </div>
                     <h1 className="text-[14px] font-[1000] uppercase tracking-widest text-white text-center">Gestión de<br/>Prospectos</h1>
+                    <p className="text-[9px] font-black text-yellow-500/60 uppercase tracking-widest mt-1">Región: {townId.replace(/-/g, ' ')}</p>
                 </div>
             </div>
 
@@ -214,7 +207,7 @@ const SurveyManagementPage: React.FC = () => {
                         className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase text-white outline-none focus:border-yellow-400/50"
                     >
                         <option value="ALL">Zonas</option>
-                        {uniqueZones.map(z => <option key={z} value={z}>{z}</option>)}
+                        {localities.map(z => <option key={z} value={z}>{z}</option>)}
                     </select>
                     <select
                         value={filterStatus}
@@ -244,7 +237,7 @@ const SurveyManagementPage: React.FC = () => {
                 ) : filteredLeads.length === 0 ? (
                     <div className="text-center mt-20 opacity-50">
                         <FileText size={32} className="mx-auto mb-3 text-white/40" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">No hay prospectos cargados.</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest">No hay prospectos en esta zona.</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -320,7 +313,7 @@ const SurveyManagementPage: React.FC = () => {
                                                 <Edit3 size={16} />
                                             </button>
                                             <button 
-                                                onClick={() => handleSendWelcomeMessage(lead, { slug: lead.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'), category: categoryMap[lead.category] || 'servicios' })}
+                                                onClick={() => handleSendWelcomeMessage(lead, { category: lead.category, slug: lead.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') })}
                                                 className="py-3 flex items-center justify-center text-white/40 hover:text-green-400 transition-colors border-r border-white/5 bg-zinc-800 hover:bg-zinc-700"
                                                 title="Reenviar Bienvenida"
                                             >
@@ -376,22 +369,21 @@ const SurveyManagementPage: React.FC = () => {
                                             onChange={e => setEditingLead({...editingLead, category: e.target.value})}
                                             className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50 appearance-none"
                                         >
-                                            <optgroup label="Rubros del Relevamiento Viejo">
-                                                {Object.keys(categoryMap).map(k => <option key={k} value={k}>{k}</option>)}
-                                            </optgroup>
-                                            <optgroup label="Rubros de la App">
+                                            <optgroup label="Rubros Disponibles">
                                                 {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                             </optgroup>
                                         </select>
                                     </div>
                                     <div>
                                         <label className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">Zona</label>
-                                        <input 
-                                            type="text" 
+                                        <select 
                                             value={editingLead.zone}
                                             onChange={e => setEditingLead({...editingLead, zone: e.target.value})}
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50"
-                                        />
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50 appearance-none"
+                                        >
+                                            {localities.map(z => <option key={z} value={z}>{z}</option>)}
+                                            <option value="Otra">Otra</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div>
@@ -436,7 +428,7 @@ const SurveyManagementPage: React.FC = () => {
                         <div className="p-8 space-y-6">
                             <div className="text-center pb-4 border-b border-white/5">
                                 <h3 className="text-2xl font-[1000] text-white uppercase tracking-tighter">{viewingLead.name}</h3>
-                                <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mt-1">{viewingLead.category}</p>
+                                <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mt-1">{getCategoryName(viewingLead.category)}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-6">
@@ -461,7 +453,7 @@ const SurveyManagementPage: React.FC = () => {
                             </div>
 
                             <div className="flex justify-between items-center text-[9px] font-bold text-white/20 uppercase tracking-widest">
-                                <span>Activado por {viewingLead.ambassadorName}</span>
+                                <span>Relevado por {viewingLead.ambassadorName}</span>
                                 <span>{new Date(viewingLead.date).toLocaleDateString()}</span>
                             </div>
 

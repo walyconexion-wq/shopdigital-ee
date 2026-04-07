@@ -16,14 +16,15 @@ interface ClientSubscriptionPageProps {
 }
 
 const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShops }) => {
-    const { categorySlug, shopSlug } = useParams<{ categorySlug: string; shopSlug: string }>();
+    const { townId, categorySlug, shopSlug } = useParams<{ townId: string; categorySlug: string; shopSlug: string }>();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
-        phone: ''
+        phone: '',
+        email: ''
     });
 
     const selectedShop = useMemo(() =>
@@ -34,8 +35,8 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
         e.preventDefault();
         playNeonClick();
         
-        if (!formData.name || !formData.phone) {
-            alert("Por favor completá los datos para suscribirte.");
+        if (!formData.name || !formData.phone || !formData.email) {
+            alert("Por favor completá todos los campos para suscribirte.");
             return;
         }
 
@@ -50,6 +51,7 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
             id: `client-${Date.now()}`,
             name: formData.name,
             phone: formData.phone,
+            email: formData.email,
             sourceShopId: selectedShop.id,
             sourceShopName: selectedShop.name,
             createdAt: new Date().toISOString(),
@@ -91,7 +93,7 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                     <button
                         onClick={() => {
                             playNeonClick();
-                            navigate('/red-comercial/ofertas');
+                            navigate(`/${townId || 'esteban-echeverria'}/red-comercial/ofertas`);
                         }}
                         className="w-full glass-action-btn btn-cyan-neon py-4 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] active:scale-95 transition-all"
                     >
@@ -160,7 +162,21 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                             placeholder="Ej: 1122334455"
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/10 pb-2 text-white text-lg font-bold placeholder:text-white/20 focus:outline-none focus:border-cyan-400 transition-all"
+                            className="w-full bg-transparent border-b border-white/10 pb-2 text-white text-lg font-bold placeholder:text-white/20 focus:outline-none focus:border-cyan-400 transition-all font-inter"
+                        />
+                    </div>
+
+                    <div className="focus-within:bg-white/[0.01] rounded-xl transition-colors">
+                        <label className="text-[9px] flex items-center gap-2 font-black uppercase tracking-[0.2em] text-cyan-400 mb-2">
+                             Email
+                        </label>
+                        <input
+                            required
+                            type="email"
+                            placeholder="Ej: juan@ejemplo.com"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className="w-full bg-transparent border-b border-white/10 pb-2 text-white text-lg font-bold placeholder:text-white/20 focus:outline-none focus:border-cyan-400 transition-all font-inter"
                         />
                     </div>
                 </div>

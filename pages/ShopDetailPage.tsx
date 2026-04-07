@@ -494,7 +494,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <div className="w-full flex justify-center mb-8">
                     <button onClick={() => {
                         playNeonClick();
-                        navigate(`/${categorySlug}`);
+                        navigate(`/${townId}/${categorySlug}`);
                     }} 
                         className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-8 rounded-full flex items-center gap-2 text-white transition-all duration-75 active:translate-y-[4px]"
                         style={{ 

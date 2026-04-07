@@ -78,6 +78,7 @@ export interface Client {
   id: string;
   name: string;
   phone: string;
+  email: string;
   sourceShopId: string;
   sourceShopName: string;
   createdAt: string;

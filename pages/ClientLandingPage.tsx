@@ -13,7 +13,7 @@ import {
     LayoutDashboard,
     Gift
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Logo from '../components/Logo';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { guardarCliente } from '../firebase';
@@ -21,10 +21,11 @@ import { Client } from '../types';
 
 const ClientLandingPage: React.FC = () => {
     const navigate = useNavigate();
+    const { townId } = useParams<{ townId: string }>();
     const [isVisible, setIsVisible] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formData, setFormData] = useState({ name: '', phone: '' });
+    const [formData, setFormData] = useState({ name: '', phone: '', email: '' });
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -35,8 +36,8 @@ const ClientLandingPage: React.FC = () => {
         e.preventDefault();
         playNeonClick();
         
-        if (!formData.name || !formData.phone) {
-            alert("Por favor completá los datos para suscribirte.");
+        if (!formData.name || !formData.phone || !formData.email) {
+            alert("Por favor completá todos los campos para suscribirte.");
             return;
         }
 
@@ -46,15 +47,16 @@ const ClientLandingPage: React.FC = () => {
             id: `client-${Date.now()}`,
             name: formData.name,
             phone: formData.phone,
+            email: formData.email,
             sourceShopId: "b2c-landing-qr",
             sourceShopName: "QR Vía Pública",
             createdAt: new Date().toISOString()
         };
 
         try {
-            await guardarCliente(newClient);
+            await guardarCliente(newClient, townId || 'esteban-echeverria');
             playSuccessSound();
-            navigate('/red-comercial/ofertas');
+            navigate(`/${townId || 'esteban-echeverria'}/red-comercial/ofertas`);
         } catch (error) {
             console.error(error);
             alert("Hubo un error al suscribirte. Por favor intentá nuevamente.");
@@ -169,6 +171,17 @@ const ClientLandingPage: React.FC = () => {
                                         placeholder="Ej: 1145678900"
                                         value={formData.phone}
                                         onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition-all font-bold placeholder:text-white/20"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-cyan-500 ml-2">Tu Email</label>
+                                    <input 
+                                        required
+                                        type="email"
+                                        placeholder="Ej: juan@ejemplo.com"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
                                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition-all font-bold placeholder:text-white/20"
                                     />
                                 </div>
