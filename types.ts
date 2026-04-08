@@ -89,6 +89,7 @@ export interface Client {
   cardColor?: string;
   points?: number;
   pointsHistory?: PointsTransaction[];
+  locality?: string; // Sello geográfico del socio 📍
 }
 
 export interface Offer {

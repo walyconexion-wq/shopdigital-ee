@@ -83,12 +83,23 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             const shopAddrNormalized = normalize(shop.address || "");
             const matchedLoc = localities.find(loc => {
                 const locNorm = normalize(loc);
-                return shopLocNormalized === locNorm || shopAddrNormalized.includes(locNorm);
+                return shopLocNormalized.includes(locNorm) || shopAddrNormalized.includes(locNorm);
             });
             map[shop.id] = matchedLoc || (localities.length > 0 ? localities[0] : 'Centro');
         });
         return map;
     }, [allShops, localities]);
+
+    // Mapeo dinámico de clientes a localidad (ADN ShopDigital 3.1) 🧬
+    const clientToLocalityMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        clientsInZone.forEach(client => {
+            // 1. Si el cliente tiene localidad explícita, usarla.
+            // 2. Si no, heredar la del comercio de origen.
+            map[client.id] = client.locality || shopToLocalityMap[client.sourceShopId] || (localities.length > 0 ? localities[0] : 'Centro');
+        });
+        return map;
+    }, [clientsInZone, shopToLocalityMap, localities]);
 
     // Conteo regionalizado
     const clientCountByCategory = useMemo(() => {
@@ -104,21 +115,25 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     // Comercios filtrados por Rubro + Localidad + TOWNID (BLINDAJE TOTAL 🛡️)
     const shopsWithClients = useMemo(() => {
         if (!selectedCategoryId) return [];
-        const countsByShop: Record<string, number> = {};
+        
+        // 1. Identificar qué comercios tienen socios en la localidad ACTIVA
+        const countsByShopAndLocality: Record<string, number> = {};
         clientsInZone.forEach(c => {
-            countsByShop[c.sourceShopId] = (countsByShop[c.sourceShopId] || 0) + 1;
+            const clientLoc = clientToLocalityMap[c.id];
+            if (clientLoc === activeLocation) {
+                countsByShopAndLocality[c.sourceShopId] = (countsByShopAndLocality[c.sourceShopId] || 0) + 1;
+            }
         });
 
+        // 2. Filtrar comercios que tengan socios en esta localidad específica
         return allShops.filter(shop => 
-            shop.townId === townId && // SELLO REGIONAL 🛡️
             shop.category === selectedCategoryId &&
-            shopToLocalityMap[shop.id] === activeLocation &&
-            (countsByShop[shop.id] || 0) > 0
+            (countsByShopAndLocality[shop.id] || 0) > 0
         ).map(shop => ({
             ...shop,
-            clientCount: countsByShop[shop.id] || 0
+            clientCount: countsByShopAndLocality[shop.id] || 0
         }));
-    }, [selectedCategoryId, activeLocation, allShops, clientsInZone, shopToLocalityMap, townId]);
+    }, [selectedCategoryId, activeLocation, allShops, clientsInZone, clientToLocalityMap]);
 
     // Clientes del comercio seleccionado con búsqueda táctica
     const filteredShopClients = useMemo(() => {
@@ -420,21 +435,36 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                                     </div>
                                 </div>
 
-                                <div className="pt-2">
-                                    <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">Estado de Membresía</label>
-                                    <div className="flex gap-2">
-                                        <button 
-                                            onClick={() => setEditingClient({...editingClient, status: 'active'})}
-                                            className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${editingClient.status !== 'suspended' ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-white/5 border-white/10 text-white/30'}`}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="pt-2">
+                                        <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">Localidad Residencial</label>
+                                        <select 
+                                            value={editingClient.locality || ''}
+                                            onChange={(e) => setEditingClient({...editingClient, locality: e.target.value})}
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[10px] text-white focus:border-cyan-400 outline-none appearance-none"
                                         >
-                                            Activa
-                                        </button>
-                                        <button 
-                                            onClick={() => setEditingClient({...editingClient, status: 'suspended'})}
-                                            className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${editingClient.status === 'suspended' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/30'}`}
-                                        >
-                                            Suspendida
-                                        </button>
+                                            <option value="">(Herencia de Local)</option>
+                                            {localities.map(loc => (
+                                                <option key={loc} value={loc}>{loc}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="pt-2">
+                                        <label className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block">Estado de Membresía</label>
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => setEditingClient({...editingClient, status: 'active'})}
+                                                className={`flex-1 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${editingClient.status !== 'suspended' ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-white/5 border-white/10 text-white/30'}`}
+                                            >
+                                                Activa
+                                            </button>
+                                            <button 
+                                                onClick={() => setEditingClient({...editingClient, status: 'suspended'})}
+                                                className={`flex-1 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${editingClient.status === 'suspended' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/30'}`}
+                                            >
+                                                Susp.
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
