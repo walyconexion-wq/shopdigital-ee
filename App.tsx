@@ -184,6 +184,7 @@ const TownController: React.FC = () => {
                     <Route path="nosotros" element={<AboutPage />} />
                     <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
                     <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
+                    <Route path="validar/:clientId" element={<ClientValidationPage />} />
                     <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
                     <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/fabrica" element={<ProtectedRoute roles={['admin']}><FactoryPanelPage /></ProtectedRoute>} />

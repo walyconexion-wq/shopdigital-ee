@@ -1,198 +1,275 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { Client } from '../types';
+import { transaccionarCreditos } from '../firebaseVIP';
+import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { Client, Shop } from '../types';
 import {
     ShieldCheck,
     ChevronLeft,
     XCircle,
     CheckCircle,
     Lock,
-    Unlock
+    Unlock,
+    Wallet,
+    Store,
+    ArrowDownRight,
+    Search,
+    User
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import LoadingScreen from '../components/LoadingScreen';
 
-const VERIFICATION_CODE = "VIP"; // Hardcoded for events
-
 const ClientValidationPage: React.FC = () => {
-    const { clientId } = useParams<{ clientId: string }>();
+    const { townId = 'esteban-echeverria', clientId } = useParams<{ townId: string, clientId: string }>();
     const navigate = useNavigate();
+    
     const [client, setClient] = useState<Client | null>(null);
     const [loading, setLoading] = useState(true);
+    const [shopsInTown, setShopsInTown] = useState<Shop[]>([]);
     
-    // PIN logic
-    const [enteredCode, setEnteredCode] = useState("");
+    // Form State
+    const [selectedShopId, setSelectedShopId] = useState("");
+    const [amount, setAmount] = useState("");
+    const [pin, setPin] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        const fetchClient = async () => {
+        const fetchData = async () => {
             if (!clientId) return;
             try {
+                // 1. Fetch Client
                 const docRef = doc(db, 'clientes', clientId);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     setClient({ id: docSnap.id, ...docSnap.data() } as Client);
                 }
+
+                // 2. Fetch Shops for this town
+                const q = query(collection(db, "comercios"), where("townId", "==", townId));
+                const shopSnap = await getDocs(q);
+                const shops = shopSnap.docs.map(d => ({ id: d.id, ...d.data() } as Shop));
+                setShopsInTown(shops);
             } catch (error) {
-                console.error("Error fetching client for validation:", error);
+                console.error("Error fetching data for terminal:", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchClient();
-    }, [clientId]);
+        fetchData();
+    }, [clientId, townId]);
 
-    if (loading) return (
-        <div className="min-h-screen bg-black z-50 fixed inset-0 flex items-center justify-center">
-            <LoadingScreen ready={false} onDone={() => {}} />
-        </div>
-    );
+    const handleTransaction = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!client || !selectedShopId || !amount) return;
+
+        const numAmount = parseInt(amount);
+        if (isNaN(numAmount) || numAmount <= 0) {
+            alert("Monto inválido");
+            return;
+        }
+
+        if ((client.credits || 0) < numAmount) {
+            setErrorMessage("Créditos insuficientes");
+            setStatus('error');
+            return;
+        }
+
+        setIsProcessing(true);
+        setStatus('idle');
+
+        try {
+            const newBalance = await transaccionarCreditos(
+                client.id, 
+                selectedShopId, 
+                numAmount, 
+                'spend', 
+                `Canje de créditos en terminal`
+            );
+            
+            setClient(prev => prev ? { ...prev, credits: newBalance } : null);
+            setStatus('success');
+            playSuccessSound();
+            setAmount("");
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("Error en la transacción");
+            setStatus('error');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    if (loading) return <LoadingScreen ready={false} onDone={() => {}} />;
 
     if (!client) {
         return (
-            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
-                <ShieldCheck size={64} className="text-red-500 mb-4 animate-pulse" />
-                <h1 className="text-2xl font-black text-red-500 uppercase tracking-widest text-center">Credencial Falsa</h1>
-                <p className="text-sm text-white/50 text-center mt-2">Esta persona no está registrada en la red.</p>
-                <div className="mt-8 flex flex-col gap-4">
-                    <button onClick={() => navigate('/')} className="px-6 py-2 bg-white/10 rounded-full text-xs uppercase font-bold tracking-widest">
-                        Cerrar
-                    </button>
-                    <button onClick={() => navigate('/subscripcion')} className="px-6 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/40 rounded-full text-xs uppercase font-bold tracking-widest">
-                        Registrar Ahora
-                    </button>
-                </div>
+            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center">
+                <ShieldCheck size={64} className="text-red-500 mb-6 animate-pulse" />
+                <h1 className="text-2xl font-black text-red-500 uppercase tracking-widest">Socio No Identificado</h1>
+                <p className="text-sm text-white/40 mt-4 leading-relaxed">Esta credencial no existe en el sistema o es inválida.</p>
+                <button onClick={() => navigate(-1)} className="mt-8 bg-zinc-900 border border-white/10 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest text-white">Regresar</button>
             </div>
         );
     }
 
-    const handleKeypadPress = (val: string) => {
-        playNeonClick();
-        if (status !== 'idle') setStatus('idle'); // Reset on new press
-
-        setEnteredCode(prev => {
-            const newCode = prev + val;
-            if (newCode.length >= VERIFICATION_CODE.length) {
-                verifyCode(newCode);
-                return newCode.substring(0, VERIFICATION_CODE.length); // limit length visually
-            }
-            return newCode;
-        });
-    };
-
-    const handleDelete = () => {
-        playNeonClick();
-        if (status !== 'idle') setStatus('idle');
-        setEnteredCode(prev => prev.slice(0, -1));
-    };
-
-    const verifyCode = (code: string) => {
-        if (code === VERIFICATION_CODE) {
-            setStatus('success');
-            playSuccessSound();
-            setEnteredCode("");
-        } else {
-            setStatus('error');
-            // Re-use click sound rapidly for error feedback, or you could add a playErrorSound to audio.ts later
-            playNeonClick();
-            setTimeout(() => playNeonClick(), 150);
-            setTimeout(() => setEnteredCode(""), 800);
-        }
-    };
-
-    const STATUS_COLORS = {
-        idle: 'bg-zinc-900 border-cyan-500/30 text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
-        success: 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_30px_rgba(34,197,94,0.5)]',
-        error: 'bg-red-500/20 border-red-500 text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.5)]'
-    };
-
     return (
-        <div className="min-h-screen bg-black text-white relative flex flex-col items-center py-10 overflow-hidden">
-            {/* Background Dynamics */}
+        <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden">
+            {/* HUD Layers */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                {status === 'success' && <div className="absolute inset-0 bg-green-500/10 animate-pulse" />}
-                {status === 'error' && <div className="absolute inset-0 bg-red-500/10 animate-pulse" />}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-500/5 rounded-full blur-[100px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:40px_40px]" />
             </div>
 
-            <div className="w-full max-w-sm px-6 flex items-center justify-between relative z-10 mb-8">
-                <button onClick={() => { playNeonClick(); navigate(-1); }}
-                    className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 transition-all">
-                    <ChevronLeft size={20} />
-                </button>
-                <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Terminal Táctica</span>
-                    <span className="text-[12px] font-black text-cyan-400 tracking-[0.1em] uppercase">Control de Acceso</span>
+            {/* HEADER */}
+            <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-white/5 py-6 px-8 flex items-center justify-between sticky top-0 z-50">
+                <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 border border-white/10"><ChevronLeft size={20} /></button>
+                <div className="text-right">
+                    <p className="text-[10px] font-black uppercase text-cyan-400 tracking-[0.25em]">Terminal de Comerciante</p>
+                    <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest">{townId.toUpperCase()}</p>
                 </div>
             </div>
 
-            {/* Target Client Profile */}
-            <div className={`w-full max-w-sm px-6 mb-8 transition-all duration-300 relative z-10 
-                ${status === 'success' ? 'scale-105' : status === 'error' ? 'animate-[shake_0.4s_ease-in-out]' : ''}`}>
-                <div className={`rounded-3xl p-6 border flex flex-col items-center text-center transition-colors duration-300 ${STATUS_COLORS[status]}`}>
+            <div className="max-w-md mx-auto p-8 relative z-10 space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                
+                {/* CLIENT PROFILE CARD */}
+                <div className="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl" />
                     
-                    {status === 'idle' && <Lock size={32} className="mb-2 opacity-50" />}
-                    {status === 'success' && <Unlock size={40} className="mb-2 animate-bounce" />}
-                    {status === 'error' && <XCircle size={40} className="mb-2 animate-pulse" />}
-
-                    <h2 className="text-2xl font-[1000] uppercase tracking-tighter mb-1 mt-2">{client.name}</h2>
-                    <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">
-                        {status === 'idle' ? 'Esperando validación de puerta' :
-                         status === 'success' ? '✔ ACCESO VIP AUTORIZADO' : 
-                         '✖ CÓDIGO INCORRECTO'}
-                    </p>
-                </div>
-            </div>
-
-            {/* Terminal Keypad */}
-            {status !== 'success' && (
-                <div className="w-full max-w-[280px] grid grid-cols-3 gap-3 relative z-10">
-                    {/* Display input mask */}
-                    <div className="col-span-3 bg-black/50 border border-white/10 rounded-2xl h-14 mb-4 flex items-center justify-center gap-2">
-                        {[0, 1, 2].map((i) => (
-                            <div key={i} className={`w-4 h-4 rounded-full transition-all duration-200
-                                ${i < enteredCode.length ? 'bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]' : 'bg-white/10'}`} 
-                            />
-                        ))}
+                    <div className="flex items-center gap-6 mb-8">
+                        <div className="w-20 h-20 rounded-full border-2 border-cyan-500/30 p-1 relative overflow-hidden bg-white/5 shadow-inner">
+                            {client.photo ? (
+                                <img src={client.photo} className="w-full h-full object-cover rounded-full" alt={client.name} />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center opacity-20">
+                                   <User size={40} className="text-cyan-400" />
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-[1000] text-white uppercase tracking-tighter leading-none mb-2">{client.name}</h2>
+                            <div className="flex items-center gap-2 text-cyan-400 font-black text-[10px] uppercase tracking-widest bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">
+                                <CheckCircle size={10} /> SOCIO VIP VERIFICADO
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Numeric/Alpha Pad */}
-                    {['V', 'I', 'P'].map((char) => (
-                        <button key={char} onClick={() => handleKeypadPress(char)}
-                            className="bg-zinc-900 border border-white/10 h-16 rounded-2xl text-2xl font-black text-white hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:text-cyan-300 active:scale-95 transition-all shadow-lg">
-                            {char}
-                        </button>
-                    ))}
-                    
-                    {/* Fake numbers for aesthetics/confusion */}
-                    {['1', '2', '3', '4', '5', '6'].map((num) => (
-                        <button key={num} onClick={() => handleKeypadPress(num)}
-                            className="bg-zinc-900 border border-white/10 h-16 rounded-2xl text-2xl font-black text-white hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:text-cyan-300 active:scale-95 transition-all shadow-lg">
-                            {num}
-                        </button>
-                    ))}
-                    
-                    <button className="h-16 rounded-2xl bg-zinc-900/50 border border-white/5 opacity-50 cursor-not-allowed text-xs font-black">→</button>
-                    <button onClick={() => handleKeypadPress('0')}
-                        className="bg-zinc-900 border border-white/10 h-16 rounded-2xl text-2xl font-black text-white hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:text-cyan-300 active:scale-95 transition-all shadow-lg">
-                        0
-                    </button>
-                    <button onClick={handleDelete}
-                        className="h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 hover:bg-red-500/20 active:scale-95 transition-all shadow-lg">
-                        DEL
-                    </button>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                            <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">Membresía</p>
+                            <p className="text-[13px] font-black text-white/70 tracking-tighter">{client.dni || "PENDIENTE"}</p>
+                        </div>
+                        <div className="bg-cyan-500/5 rounded-2xl p-4 border border-cyan-500/10">
+                            <p className="text-[8px] font-black text-cyan-400/30 uppercase tracking-widest mb-1">Saldo Créditos</p>
+                            <p className="text-[20px] font-[1000] text-cyan-400 tabular-nums">{client.credits || 0}</p>
+                        </div>
+                    </div>
                 </div>
-            )}
 
-            {/* Global Styles for Animations */}
+                {/* TRANSACTION FORM */}
+                <form onSubmit={handleTransaction} className="space-y-6">
+                    <div className="space-y-4">
+                        <div className="group">
+                            <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2 ml-1 flex items-center gap-2">
+                                <Store size={12} /> Local / Comercio
+                            </label>
+                            <select 
+                                required
+                                value={selectedShopId}
+                                onChange={(e) => setSelectedShopId(e.target.value)}
+                                className="w-full bg-zinc-900 border border-white/10 rounded-2xl p-4 text-sm font-black text-white focus:border-cyan-500/50 outline-none appearance-none cursor-pointer"
+                            >
+                                <option value="" disabled>Seleccione Su Comercio</option>
+                                {shopsInTown.map(shop => (
+                                    <option key={shop.id} value={shop.id}>{shop.name} ({shop.zone})</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="group">
+                            <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2 ml-1 flex items-center gap-2">
+                                <Wallet size={12} /> Monto a Descontar
+                            </label>
+                            <div className="relative">
+                                <input 
+                                    required
+                                    type="number"
+                                    placeholder="0"
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    className="w-full bg-zinc-900 border border-white/10 rounded-2xl p-4 text-[24px] font-[1000] text-cyan-400 placeholder:text-white/5 focus:border-cyan-500/50 outline-none tabular-nums"
+                                />
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/20 uppercase tracking-widest">CRÉDITOS</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* STATUS FEEDBACK */}
+                    {status === 'success' && (
+                        <div className="bg-green-500/10 border border-green-500/30 p-4 rounded-2xl flex items-center gap-4 animate-in zoom-in duration-300">
+                            <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-black shadow-lg shadow-green-500/40">
+                                <CheckCircle size={24} />
+                            </div>
+                            <div>
+                                <p className="text-[11px] font-[1000] text-green-400 uppercase tracking-widest">Pago Autorizado</p>
+                                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Saldos actualizados en tiempo real.</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {status === 'error' && (
+                        <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl flex items-center gap-4 animate-in shake duration-300">
+                            <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white">
+                                <XCircle size={24} />
+                            </div>
+                            <div>
+                                <p className="text-[11px] font-[1000] text-red-500 uppercase tracking-widest">Operación Fallida</p>
+                                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest">{errorMessage}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    <button 
+                        type="submit"
+                        disabled={isProcessing || !amount || !selectedShopId || status === 'success'}
+                        className="w-full h-20 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-30 disabled:grayscale rounded-3xl flex flex-col items-center justify-center gap-1 font-black uppercase tracking-[0.2em] text-[12px] shadow-[0_10px_30px_rgba(34,211,238,0.3)] active:scale-95 transition-all text-white border border-white/20"
+                    >
+                        {isProcessing ? (
+                            <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                            <>
+                                <ArrowDownRight size={22} className="opacity-70" />
+                                <span>Confirmar Descuento</span>
+                            </>
+                        )}
+                    </button>
+
+                    {status === 'success' && (
+                        <button 
+                            type="button"
+                            onClick={() => setStatus('idle')}
+                            className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 text-white/40 font-black uppercase tracking-widest text-[9px] transition-all active:scale-95"
+                        >
+                            Nueva Transacción
+                        </button>
+                    )}
+                </form>
+
+                <p className="text-[7.5px] text-center text-white/20 uppercase tracking-[0.4em] font-black leading-relaxed px-8">
+                    Esta terminal es para uso exclusivo de comercios autorizados. <br/>
+                    Todas las transacciones son registradas bajo seguridad Blockchain.
+                </p>
+            </div>
+
             <style dangerouslySetInnerHTML={{__html: `
                 @keyframes shake {
                     0%, 100% { transform: translateX(0); }
-                    25% { transform: translateX(-10px) rotate(-2deg); }
-                    75% { transform: translateX(10px) rotate(2deg); }
+                    25% { transform: translateX(-8px); }
+                    75% { transform: translateX(8px); }
                 }
+                .shake { animation: shake 0.3s ease-in-out; }
             `}} />
         </div>
     );
