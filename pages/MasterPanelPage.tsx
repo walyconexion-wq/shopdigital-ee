@@ -27,8 +27,8 @@ const MasterPanelPage: React.FC = () => {
         return () => unsub();
     }, [townId]);
 
-    const zoneColor = zoneConfig?.primaryColor || '#22d3ee';
-    const zoneName = zoneConfig?.townName || townId;
+    const zoneColor = townId === 'ezeiza' ? '#22d3ee' : '#a855f7'; // Cian Neón vs Violeta EE 🎨
+    const zoneName = townId === 'ezeiza' ? 'Ezeiza' : 'Esteban Echeverría';
     const hexToRgba = (hex: string, alpha: number) => {
         try {
             const r = parseInt(hex.slice(1, 3), 16);
@@ -451,8 +451,6 @@ const MasterPanelPage: React.FC = () => {
         { title: 'Relevamiento Táctico', desc: 'Carga Express Mobile de prospectos en calle', path: `/${townId}/embajador/relevamiento/nuevo` },
         { title: 'Gestión de Prospectos', desc: 'Ver, revisar, y activar leads de relevamiento', path: `/${townId}/embajador/relevamiento/gestion` },
         { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: `/${townId}/subscripcion` },
-        { title: 'Gestión Comercial', desc: 'Ruta directa a listado de comercios', path: `/${townId}/embajador/gestion` },
-        { title: 'Configuración Global', desc: 'Temas estacionales e identidad de App', path: `/${townId}/tablero-maestro/configuracion` },
     ];
 
     return (
@@ -515,16 +513,35 @@ const MasterPanelPage: React.FC = () => {
                     <span className="text-[8px] text-cyan-200 pointer-events-none">INICIALIZAR CONFIGURACIÓN GLOBAL (RESET MAESTRO)</span>
                 </div>
 
+                {/* SELECTORES DE ADN ZONAL 🧬 */}
+                <div className="grid grid-cols-2 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
+                    <button 
+                        onClick={() => { playNeonClick(); navigate('/ezeiza/tablero-maestro'); }}
+                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${townId === 'ezeiza' ? 'bg-cyan-500/20 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.2)]' : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
+                    >
+                        <Globe size={24} className={townId === 'ezeiza' ? 'text-cyan-400' : 'text-white/40'} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'ezeiza' ? 'text-white' : 'text-white/20'}`}>Zona Ezeiza</span>
+                    </button>
+                    <button 
+                        onClick={() => { playNeonClick(); navigate('/esteban-echeverria/tablero-maestro'); }}
+                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${townId === 'esteban-echeverria' ? 'bg-violet-500/20 border-violet-500 shadow-[0_0_30px_rgba(139,92,246,0.2)]' : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
+                    >
+                        <Lock size={24} className={townId === 'esteban-echeverria' ? 'text-violet-400' : 'text-white/40'} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'esteban-echeverria' ? 'text-white' : 'text-white/20'}`}>Zona E. Echeverría</span>
+                    </button>
+                </div>
+
                 <div 
                     role="button" tabIndex={0}
                     onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/configuracion`); }} 
-                    className="w-full bg-violet-600/80 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-violet-500/50 hover:bg-violet-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full bg-zinc-900/40 text-white p-6 rounded-3xl font-[1000] uppercase tracking-widest border transition-all flex flex-col items-center justify-center gap-2 cursor-pointer group hover:bg-zinc-800"
+                    style={{ borderColor: hexToRgba(zoneColor, 0.3) }}
                 >
-                    <div className="flex items-center gap-2 pointer-events-none">
-                        <Palette size={14} className="text-white/80" />
-                        <span className="text-[14px]">🎨 SINFONÍA DE ESTACIONES</span>
+                    <div className="flex items-center gap-3">
+                        <Palette size={20} style={{ color: zoneColor }} />
+                        <span className="text-[14px]">DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR</span>
                     </div>
-                    <span className="text-[8px] text-violet-200 pointer-events-none">CAMBIAR TEMA · COLORES · TÍTULOS DE INTERFAZ 1 y 2</span>
+                    <span className="text-[8px] opacity-40 uppercase tracking-[0.3em]">Control visual total · Colores · Temas · Identidad</span>
                 </div>
 
                 <div 
@@ -619,80 +636,6 @@ const MasterPanelPage: React.FC = () => {
                         ))}
                     </div>
 
-                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-5 mt-4">
-                        <h3 className="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-2 flex items-center gap-2 border-b border-yellow-500/20 pb-2">
-                            <Store size={14} /> Paneles de Comercio Especiales
-                        </h3>
-                        <p className="text-[9px] text-yellow-400/80 leading-relaxed">
-                            Para acceder a los paneles de: <br/>
-                            <span className="font-bold text-white uppercase ml-1">- Carga de Ofertas y Puntos VIP (Posnet)</span><br/>
-                            <span className="font-bold text-white uppercase ml-1">- Suscripción B2C (Cliente)</span><br/>
-                            Debe buscar el comercio específico en <strong>Gestión Comercial</strong> y usar los botones de acceso directo que figuran para ese local.
-                        </p>
-                        <div 
-                            role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/gestion`); }}
-                            className="w-full mt-4 bg-yellow-500 text-black py-3 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-transform text-center cursor-pointer"
-                        >
-                            Ir a buscar comercio
-                        </div>
-                    </div>
-
-                    {/* SECCIÓN DE MANTENIMIENTO */}
-                    <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl p-5 mt-8 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-2 opacity-20">
-                            <Database size={40} className="text-cyan-400" />
-                        </div>
-                        <h3 className="text-[11px] font-black text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-cyan-500/20 pb-2">
-                            <RefreshCw size={14} className={isMigrating ? "animate-spin" : ""} /> Mantenimiento del Sistema
-                        </h3>
-                        
-                        {!migrationResult ? (
-                            <>
-                                <p className="text-[10px] text-white/70 leading-relaxed mb-4">
-                                    Si no ves tus comercios o categorías antiguas en la Interfaz 1, usa este botón para re-conectarlos a la zona de <strong>Esteban Echeverría</strong>.
-                                </p>
-                                <div 
-                                    role="button" tabIndex={0}
-                                    onClick={handleMigration}
-                                    className={`w-full py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 transition-all ${isMigrating ? 'bg-cyan-900/50 text-cyan-500 cursor-not-allowed' : 'bg-cyan-500 text-black active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)] cursor-pointer'}`}
-                                >
-                                    {isMigrating ? (
-                                        <>Procesando ADN...</>
-                                    ) : (
-                                        <>
-                                            <Zap size={14} /> Migrar Datos Legados
-                                        </>
-                                    )}
-                                </div>
-                            </>
-                        ) : (
-                            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
-                                <p className="text-[10px] text-green-400 font-bold mb-2">¡MIGRACIÓN COMPLETADA!</p>
-                                <div className="grid grid-cols-3 gap-2 text-center text-[9px] uppercase tracking-tighter">
-                                    <div className="bg-white/5 p-2 rounded-lg">
-                                        <div className="text-white font-black text-xs">{migrationResult.shops}</div>
-                                        <div className="text-white/40">Comercios</div>
-                                    </div>
-                                    <div className="bg-white/5 p-2 rounded-lg">
-                                        <div className="text-white font-black text-xs">{migrationResult.clients}</div>
-                                        <div className="text-white/40">Clientes</div>
-                                    </div>
-                                    <div className="bg-white/5 p-2 rounded-lg">
-                                        <div className="text-white font-black text-xs">{migrationResult.offers}</div>
-                                        <div className="text-white/40">Ofertas</div>
-                                    </div>
-                                </div>
-                                <div 
-                                    role="button" tabIndex={0}
-                                    onClick={() => setMigrationResult(null)}
-                                    className="w-full mt-4 text-[9px] text-cyan-400/60 hover:text-cyan-400 uppercase font-black text-center cursor-pointer"
-                                >
-                                    Cerrar Reporte
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 </section>
             </div>
         </div>
