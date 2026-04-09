@@ -275,6 +275,31 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                     </div>
                                 </div>
                             </div>
+
+                            {/* HISTORIAL DE TRANSACCIONES 📋 */}
+                            {(client as any).creditsHistory && (client as any).creditsHistory.length > 0 && (
+                                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+                                    <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] mb-3 flex items-center gap-1.5">
+                                        <Activity size={10} /> Últimos Movimientos
+                                    </p>
+                                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                                        {((client as any).creditsHistory as any[]).slice(0, 5).map((tx: any, i: number) => (
+                                            <div key={tx.id || i} className="flex items-center gap-3 py-1.5 border-b border-white/5 last:border-0">
+                                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black ${tx.type === 'load' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                                                    {tx.type === 'load' ? '↑' : '↓'}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-[9px] font-black text-white/70 truncate">{tx.description || (tx.type === 'load' ? 'Carga de créditos' : 'Canje de créditos')}</p>
+                                                    <p className="text-[7px] text-white/30">{new Date(tx.date).toLocaleDateString('es-AR')}</p>
+                                                </div>
+                                                <span className={`text-[11px] font-[1000] tabular-nums ${tx.type === 'load' ? 'text-green-400' : 'text-red-400'}`}>
+                                                    {tx.type === 'load' ? '+' : '-'}{tx.amount}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

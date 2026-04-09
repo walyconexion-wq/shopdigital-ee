@@ -50,6 +50,7 @@ import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
 import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
 import EnterpriseFormPage from './pages/EnterpriseFormPage';
 import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
+import CreditsPosnetPage from './pages/CreditsPosnetPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -213,6 +214,8 @@ const TownController: React.FC = () => {
                     <Route path="embajador/empresas" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="embajador/empresas/nueva" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseFormPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="embajador/empresas/editar/:enterpriseId" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseFormPage allShops={allShops} /></ProtectedRoute>} />
+                    {/* 💳 POSNET DE CRÉDITOS */}
+                    <Route path="embajador/posnet" element={<ProtectedRoute roles={['admin', 'ambassador']}><CreditsPosnetPage /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="home" replace />} />
                 </Route>
             </Routes>

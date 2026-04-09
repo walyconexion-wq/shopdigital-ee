@@ -154,6 +154,14 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                         <Store size={16} />
                         🏭 Gestión de Empresas B2B
                     </button>
+
+                    <button
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/posnet`); }}
+                        className="w-full bg-cyan-500/15 border border-cyan-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[9px] text-cyan-300 active:scale-95 transition-all hover:bg-cyan-500/25 shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+                    >
+                        <Store size={16} />
+                        💳 POSNET de Créditos VIP
+                    </button>
                 </div>
             </div>
 
