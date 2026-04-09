@@ -571,6 +571,20 @@ const MasterPanelPage: React.FC = () => {
                     </div>
                     <span className="text-[8px] text-yellow-100 italic pointer-events-none">VER Y SALTAR A CUALQUIER ZONA · FORJAR NUEVAS CIUDADES</span>
                 </div>
+
+                {/* 🏭 BÚNKER INDUSTRIAL B2B */}
+                <div 
+                    role="button" tabIndex={0}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/control-maestro`); }} 
+                    className="w-full bg-gradient-to-r from-amber-700/70 to-orange-700/70 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-500/40 hover:from-amber-600 hover:to-orange-600 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                    <div className="flex items-center gap-2 pointer-events-none">
+                        <Factory size={14} className="text-amber-200" />
+                        <span className="text-[13px]">🔐 BÚNKER INDUSTRIAL B2B</span>
+                    </div>
+                    <span className="text-[8px] text-amber-200/70 italic pointer-events-none">CENTRO DE MANDO · NODO EMPRESARIAL · CONTROL TOTAL</span>
+                </div>
                 
                 {/* Public Landings & Sections */}
                 <section>

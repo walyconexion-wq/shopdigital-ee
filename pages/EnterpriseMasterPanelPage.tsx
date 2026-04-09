@@ -123,10 +123,11 @@ const EnterpriseMasterPanelPage: React.FC = () => {
     const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     const quickLinks = [
-        { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/${townId}/empresas`, icon: <Factory size={16} /> },
-        { title: 'Gestión de Empresas', desc: 'Alta, edición y control', path: `/${townId}/embajador/empresas`, icon: <Settings size={16} /> },
-        { title: 'Nueva Empresa', desc: 'Formulario de alta B2B', path: `/${townId}/embajador/empresas/nueva`, icon: <FileText size={16} /> },
-        { title: 'Tablero Maestro', desc: 'Panel municipal general', path: `/${townId}/tablero-maestro`, icon: <Zap size={16} /> },
+        { title: 'Centro de Mando Ezeiza', desc: 'Tablero Maestro · Zona Ezeiza', path: `/ezeiza/tablero-maestro`, icon: <Zap size={16} />, color: 'cyan' },
+        { title: 'Centro de Mando Echeverría', desc: 'Tablero Maestro · Zona E. Echeverría', path: `/esteban-echeverria/tablero-maestro`, icon: <Zap size={16} />, color: 'violet' },
+        { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/${townId}/empresas`, icon: <Factory size={16} />, color: 'amber' },
+        { title: 'Gestión de Empresas', desc: 'Alta, edición y control', path: `/${townId}/embajador/empresas`, icon: <Settings size={16} />, color: 'amber' },
+        { title: 'Nueva Empresa', desc: 'Formulario de alta B2B', path: `/${townId}/embajador/empresas/nueva`, icon: <FileText size={16} />, color: 'amber' },
     ];
 
     return (
@@ -233,22 +234,30 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                         <Zap size={14} /> Accesos Rápidos
                     </h3>
                     <div className="space-y-2">
-                        {quickLinks.map((link, i) => (
-                            <button
-                                key={i}
-                                onClick={() => { playNeonClick(); navigate(link.path); }}
-                                className="w-full bg-zinc-900/50 border border-amber-500/15 rounded-xl p-3.5 flex items-center gap-3 hover:bg-amber-500/10 hover:border-amber-500/30 transition-all active:scale-[0.98] group"
-                            >
-                                <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/20 transition-all">
-                                    {link.icon}
-                                </div>
-                                <div className="flex-1 text-left">
-                                    <p className="text-[10px] font-black text-white uppercase tracking-widest">{link.title}</p>
-                                    <p className="text-[8px] text-white/40 tracking-wider">{link.desc}</p>
-                                </div>
-                                <ExternalLink size={14} className="text-white/20 group-hover:text-amber-400 transition-colors" />
-                            </button>
-                        ))}
+                        {quickLinks.map((link, i) => {
+                            const colorMap: Record<string, { bg: string; border: string; text: string; hoverBg: string }> = {
+                                cyan: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', text: 'text-cyan-400', hoverBg: 'hover:bg-cyan-500/20' },
+                                violet: { bg: 'bg-violet-500/10', border: 'border-violet-500/20', text: 'text-violet-400', hoverBg: 'hover:bg-violet-500/20' },
+                                amber: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'text-amber-400', hoverBg: 'hover:bg-amber-500/20' },
+                            };
+                            const c = colorMap[link.color] || colorMap.amber;
+                            return (
+                                <button
+                                    key={i}
+                                    onClick={() => { playNeonClick(); navigate(link.path); }}
+                                    className={`w-full bg-zinc-900/50 border border-amber-500/15 rounded-xl p-3.5 flex items-center gap-3 ${c.hoverBg} hover:border-amber-500/30 transition-all active:scale-[0.98] group`}
+                                >
+                                    <div className={`w-9 h-9 rounded-lg ${c.bg} border ${c.border} flex items-center justify-center ${c.text} group-hover:scale-105 transition-all`}>
+                                        {link.icon}
+                                    </div>
+                                    <div className="flex-1 text-left">
+                                        <p className="text-[10px] font-black text-white uppercase tracking-widest">{link.title}</p>
+                                        <p className="text-[8px] text-white/40 tracking-wider">{link.desc}</p>
+                                    </div>
+                                    <ExternalLink size={14} className={`text-white/20 group-hover:${c.text} transition-colors`} />
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
