@@ -47,6 +47,8 @@ import FactoryPanelPage from './pages/FactoryPanelPage';
 import ClientVipCredentialPage from './pages/ClientVipCredentialPage';
 import EnterpriseHomePage from './pages/EnterpriseHomePage';
 import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
+import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
+import EnterpriseFormPage from './pages/EnterpriseFormPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -205,6 +207,10 @@ const TownController: React.FC = () => {
                     <Route path="terminos" element={<TermsPage />} />
                     <Route path="embajador/relevamiento/nuevo" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyFormPage /></ProtectedRoute>} />
                     <Route path="embajador/relevamiento/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><SurveyManagementPage /></ProtectedRoute>} />
+                    {/* 🏭 GESTOR DE EMPRESAS B2B */}
+                    <Route path="embajador/empresas" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseManagementPage allShops={allShops} /></ProtectedRoute>} />
+                    <Route path="embajador/empresas/nueva" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseFormPage allShops={allShops} /></ProtectedRoute>} />
+                    <Route path="embajador/empresas/editar/:enterpriseId" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseFormPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="home" replace />} />
                 </Route>
             </Routes>
