@@ -45,6 +45,8 @@ import ShopEditPage from './pages/ShopEditPage';
 import GlobalConfigPage from './pages/GlobalConfigPage';
 import FactoryPanelPage from './pages/FactoryPanelPage';
 import ClientVipCredentialPage from './pages/ClientVipCredentialPage';
+import EnterpriseHomePage from './pages/EnterpriseHomePage';
+import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -159,6 +161,12 @@ const TownController: React.FC = () => {
                 <Route path="/" element={<Layout allShops={allShops} globalConfig={globalConfig} />}>
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<Home globalConfig={globalConfig} />} />
+                    {/* 🏭 NODO EMPRESARIAL B2B */}
+                    <Route path="empresas" element={<EnterpriseHomePage globalConfig={globalConfig} />} />
+                    <Route path="empresas/:categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
+                    <Route path="empresas/:categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
+                    <Route path="empresas/:categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
+                    <Route path="empresas/:categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
                     <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={globalConfig} />} />
                     <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />

@@ -442,6 +442,7 @@ const MasterPanelPage: React.FC = () => {
         { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={18} /> },
         { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={18} /> },
         { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: `/${townId}/reclutamiento`, icon: <Globe size={18} /> },
+        { title: 'Directorio Industrial', desc: 'Portal B2B de Proveedores y Mayoristas', path: `/${townId}/empresas`, icon: <Factory size={18} /> },
     ];
 
     const managementPages = [
@@ -542,6 +543,20 @@ const MasterPanelPage: React.FC = () => {
                         <span className="text-[14px]">DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR</span>
                     </div>
                     <span className="text-[8px] opacity-40 uppercase tracking-[0.3em]">Control visual total · Colores · Temas · Identidad</span>
+                </div>
+
+                {/* 🏭 NODO EMPRESARIAL B2B */}
+                <div 
+                    role="button" tabIndex={0}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }} 
+                    className="w-full bg-gradient-to-r from-amber-700/80 to-orange-600/80 text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.25)] border border-amber-500/40 hover:from-amber-600 hover:to-orange-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                    <div className="flex items-center gap-2 pointer-events-none">
+                        <Factory size={18} className="text-amber-200" />
+                        <span className="text-[14px]">🏭 NODO EMPRESARIAL B2B</span>
+                    </div>
+                    <span className="text-[8px] text-amber-200/80 italic pointer-events-none">DIRECTORIO INDUSTRIAL · PROVEEDORES · MAYORISTAS</span>
                 </div>
 
                 <div 

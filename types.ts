@@ -122,6 +122,8 @@ export interface Shop {
   phone?: string;
   zone?: string;
   townId?: string; // Inyector de la zona inamovible (SaaS)
+  entityType?: 'shop' | 'enterprise'; // Discriminador de nodo 🏭
+  reach?: 'national' | 'regional' | 'local'; // Alcance de distribución 🌎
   image: string;
   bannerImage: string;
   offers: ProductOffer[];
