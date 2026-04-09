@@ -1,9 +1,16 @@
-// ShopDigital Technical Protocol - Security Phase 5
-import React, { useMemo } from 'react';
+// ShopDigital — Credencial de Comerciante PRO (v4.0 POSNET Integrado) 🪪💳
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shop } from '../types';
-import { ArrowLeft, Star, QrCode, Lock, ShieldCheck, X, Volume2, CreditCard } from 'lucide-react';
+import { Shop, Client } from '../types';
+import { db } from '../firebase';
+import { transaccionarCreditos } from '../firebaseVIP';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { QRCodeCanvas } from 'qrcode.react';
+import {
+    ChevronLeft, Star, QrCode, ShieldCheck, Clock, IdCard,
+    Wallet, CreditCard, ArrowUpRight, ArrowDownRight,
+    CheckCircle, XCircle, Search, User, Store, MapPin
+} from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
 interface CredencialPageProps {
@@ -11,232 +18,381 @@ interface CredencialPageProps {
 }
 
 const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
-    const { categorySlug, shopSlug } = useParams<{ categorySlug: string; shopSlug: string }>();
+    const { townId = 'esteban-echeverria', categorySlug, shopSlug } = useParams<{
+        townId: string; categorySlug: string; shopSlug: string;
+    }>();
     const navigate = useNavigate();
-    const [isManualModalOpen, setIsManualModalOpen] = React.useState(false);
-    const [manualCode, setManualCode] = React.useState('');
-    const [isVerifying, setIsVerifying] = React.useState(false);
-    const [verificationError, setVerificationError] = React.useState(false);
-    const [showSuccess, setShowSuccess] = React.useState(false);
 
-
-    const handleManualVerify = () => {
-        setIsVerifying(true);
-        setVerificationError(false);
-
-        // Simulation of a secure delay
-        setTimeout(() => {
-            if (manualCode === '123') {
-                playSuccessSound();
-                setShowSuccess(true);
-                setTimeout(() => {
-                    navigate(`/${categorySlug}/${shopSlug}/validar`);
-                }, 800);
-            } else {
-                setVerificationError(true);
-                setIsVerifying(false);
-                setManualCode('');
-                // Reset error after pulse
-                setTimeout(() => setVerificationError(false), 2000);
-            }
-        }, 1000);
-    };
-
-    const validationUrl = useMemo(() => {
-        return `${window.location.origin}/${categorySlug}/${shopSlug}/validar`;
-    }, [categorySlug, shopSlug]);
-
+    // --- Shop ---
     const selectedShop = useMemo(() =>
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
-        [shopSlug, allShops]);
+    [shopSlug, allShops]);
+
+    // --- Clock ---
+    const [currentTime, setCurrentTime] = useState(new Date());
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+    const formatClock = (d: Date) => `${d.toLocaleDateString('es-AR')} - ${d.toLocaleTimeString('es-AR')}`;
+
+    // --- POSNET State ---
+    const [posnetOpen, setPosnetOpen] = useState(false);
+    const [posnetMode, setPosnetMode] = useState<'load' | 'spend'>('load');
+    const [clients, setClients] = useState<Client[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+    const [amount, setAmount] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [txStatus, setTxStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [errorMsg, setErrorMsg] = useState('');
+
+    // Fetch clients when POSNET opens
+    useEffect(() => {
+        if (!posnetOpen) return;
+        const fetchClients = async () => {
+            try {
+                const snap = await getDocs(query(collection(db, 'clientes'), where('townId', '==', townId)));
+                setClients(snap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));
+            } catch (err) { console.error(err); }
+        };
+        fetchClients();
+    }, [posnetOpen, townId]);
+
+    const filteredClients = useMemo(() => {
+        if (!searchTerm.trim()) return [];
+        const t = searchTerm.toLowerCase();
+        return clients.filter(c =>
+            c.name?.toLowerCase().includes(t) || c.dni?.toLowerCase().includes(t) || c.phone?.includes(t)
+        ).slice(0, 6);
+    }, [clients, searchTerm]);
+
+    const handleTransaction = async () => {
+        if (!selectedClient || !amount || !selectedShop) return;
+        const num = parseInt(amount);
+        if (isNaN(num) || num <= 0) return;
+
+        if (posnetMode === 'spend' && (selectedClient.credits || 0) < num) {
+            setErrorMsg(`Saldo insuficiente (${selectedClient.credits || 0} créditos)`);
+            setTxStatus('error');
+            return;
+        }
+
+        setIsProcessing(true);
+        setTxStatus('idle');
+        try {
+            const desc = posnetMode === 'load'
+                ? `+${num} créditos por compra en ${selectedShop.name}`
+                : `-${num} créditos canjeados en ${selectedShop.name}`;
+            const newBalance = await transaccionarCreditos(selectedClient.id, selectedShop.id, num, posnetMode, desc);
+            setSelectedClient(prev => prev ? { ...prev, credits: newBalance } : null);
+            setTxStatus('success');
+            playSuccessSound();
+            setAmount('');
+        } catch (err) {
+            console.error(err);
+            setErrorMsg('Error en la transacción');
+            setTxStatus('error');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const resetPosnet = () => {
+        setSelectedClient(null);
+        setSearchTerm('');
+        setAmount('');
+        setTxStatus('idle');
+        setErrorMsg('');
+    };
+
+    // Validation URL
+    const validationUrl = useMemo(() =>
+        `${window.location.origin}/${townId}/${categorySlug}/${shopSlug}/validar`,
+    [townId, categorySlug, shopSlug]);
 
     if (!selectedShop) return null;
 
+    // Color scheme: Slate/Blue Deep for merchant — different from client's Cyan
+    const ACCENT = '#6366f1'; // Indigo
+    const ACCENT_LIGHT = 'rgba(99, 102, 241, ';
+
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center p-8 animate-in fade-in duration-700 relative overflow-hidden">
-            {/* HUD Decorative Elements */}
-            <div className="absolute top-20 left-[-10%] w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-            
-            <button
-                onClick={() => {
-                    playNeonClick();
-                    navigate(-1);
-                }}
-                className="self-start mb-8 text-cyan-400/90 hover:text-cyan-300 flex items-center gap-2 transition-all relative z-10 group/back hover:translate-x-[-4px]"
-            >
-                <ArrowLeft size={18} className="drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver</span>
+        <div className="min-h-screen bg-black flex flex-col items-center px-6 py-8 relative overflow-hidden selection:bg-indigo-500/30">
+            {/* HUD Background */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[100px]" />
+                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.01)_1px,transparent_1px)] bg-[size:40px_40px]" />
+            </div>
+
+            {/* Back Button */}
+            <button onClick={() => { playNeonClick(); navigate(-1); }}
+                className="self-start mb-6 w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/20 transition-all z-10">
+                <ChevronLeft size={20} />
             </button>
 
-            <div className="w-full max-w-sm bg-gradient-to-br from-cyan-500/30 to-blue-900/40 rounded-[2.5rem] p-[1.5px] shadow-[0_0_40px_rgba(34,211,238,0.15)] relative overflow-hidden group animate-in slide-in-from-bottom duration-1000">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-cyan-400/20 transition-colors"></div>
-                
-                <div className="bg-[#050505] rounded-[2.4rem] p-8 flex flex-col items-center relative z-10 border border-white/5">
-                    <div className="w-24 h-24 rounded-2xl overflow-hidden mb-6 border-2 border-cyan-500/50 shadow-[0_0_20px_rgba(34,211,238,0.3)] bg-black p-1">
-                        <img src={selectedShop.image} alt={selectedShop.name} className="w-full h-full object-cover rounded-xl" />
-                    </div>
+            {/* ═══════════ CREDENCIAL CARD ═══════════ */}
+            <div className="w-full max-w-sm relative z-10">
+                <div className="bg-gradient-to-br from-indigo-500/20 to-blue-900/30 rounded-[2.5rem] p-[1.5px] shadow-[0_0_40px_rgba(99,102,241,0.15)]">
+                    <div className="bg-[#060612] rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/5">
+                        {/* Ambient glow */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -mr-16 -mt-16 blur-2xl" />
 
-                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 text-center text-shadow-premium">{selectedShop.name}</h2>
-                    
-                    <div className="flex items-center gap-2 mb-8 bg-cyan-500/10 px-4 py-1.5 rounded-full border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.1)]">
-                        <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
-                        <span className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Socio VIP Digital</span>
-                    </div>
-
-                    <div className="w-full bg-cyan-500/[0.03] rounded-[2rem] p-8 flex flex-col items-center border border-cyan-500/10 mb-8 relative group/qr">
-                        <div className="absolute inset-0 bg-cyan-400/5 blur-xl opacity-0 group-hover/qr:opacity-100 transition-opacity" />
-                        <div className="bg-white p-5 rounded-2xl mb-5 shadow-[0_0_30px_rgba(255,255,255,0.1)] relative z-10">
-                            <QRCodeCanvas 
-                                value={validationUrl}
-                                size={160}
-                                level="H"
-                                includeMargin={false}
-                                imageSettings={{
-                                    src: selectedShop.image,
-                                    x: undefined,
-                                    y: undefined,
-                                    height: 30,
-                                    width: 30,
-                                    excavate: true,
-                                }}
-                            />
+                        {/* SELLO DE VIDA: RELOJ EN TIEMPO REAL ⏱️ */}
+                        <div className="w-full flex items-center justify-center gap-2 mb-6 py-2 px-4 rounded-full bg-indigo-500/5 border border-indigo-500/10">
+                            <Clock size={10} className="text-indigo-400 animate-pulse" />
+                            <span className="text-[9px] font-[1000] text-indigo-400/80 uppercase tracking-widest tabular-nums">
+                                {formatClock(currentTime)}
+                            </span>
                         </div>
-                        <p className="text-[10px] font-black text-cyan-500/60 uppercase tracking-[0.3em] relative z-10">Escaneá tu beneficio</p>
-                    </div>
 
-                    <div className="w-full space-y-4">
-                        <div className="flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.3em] border-b border-white/10 pb-3">
-                            <span className="opacity-60">Membresía Activa</span>
-                            <span className="text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]">DIC 2026</span>
+                        {/* Shop Avatar */}
+                        <div className="w-24 h-24 rounded-2xl overflow-hidden mb-5 border-2 border-indigo-500/40 shadow-[0_0_25px_rgba(99,102,241,0.3)] bg-black p-1">
+                            <img src={selectedShop.image} alt={selectedShop.name} className="w-full h-full object-cover rounded-xl" />
                         </div>
-                        <div className="flex justify-center pt-2">
-                            <p className="text-[11px] font-black text-center text-white/80 uppercase tracking-[0.25em] leading-relaxed">
-                                Presentá este pase y accedé a <br/>
-                                <span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">VENTAJAS EXCLUSIVAS</span>
-                            </p>
+
+                        {/* Shop Name */}
+                        <h2 className="text-xl font-[1000] text-white uppercase tracking-tight mb-1 text-center leading-tight">
+                            {selectedShop.name}
+                        </h2>
+                        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-4 text-center">
+                            {selectedShop.specialty || selectedShop.category}
+                        </p>
+
+                        {/* Badge */}
+                        <div className="flex items-center gap-2 mb-6 bg-indigo-500/10 px-4 py-1.5 rounded-full border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                            <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                            <span className="text-indigo-400 text-[9px] font-black uppercase tracking-[0.2em]">Comercio Verificado</span>
+                        </div>
+
+                        {/* Data Grid */}
+                        <div className="w-full grid grid-cols-2 gap-3 mb-6">
+                            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5">
+                                <p className="text-[7px] font-black text-white/20 uppercase tracking-widest mb-0.5">Titular</p>
+                                <p className="text-[11px] font-[1000] text-white/80 uppercase tracking-tight truncate">
+                                    {selectedShop.ownerName || selectedShop.name}
+                                </p>
+                            </div>
+                            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5">
+                                <p className="text-[7px] font-black text-white/20 uppercase tracking-widest mb-0.5">ID Comercio</p>
+                                <p className="text-[11px] font-[1000] text-indigo-400/80 tracking-tight truncate">
+                                    {selectedShop.shopNumber || selectedShop.id.slice(0, 8).toUpperCase()}
+                                </p>
+                            </div>
+                            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5 col-span-2">
+                                <p className="text-[7px] font-black text-white/20 uppercase tracking-widest mb-0.5 flex items-center gap-1">
+                                    <MapPin size={8} /> Dirección
+                                </p>
+                                <p className="text-[10px] font-bold text-white/60 truncate">{selectedShop.address}</p>
+                            </div>
+                        </div>
+
+                        {/* QR Code */}
+                        <div className="w-full bg-indigo-500/[0.03] rounded-[2rem] p-6 flex flex-col items-center border border-indigo-500/10 mb-6 relative group/qr">
+                            <div className="bg-white p-4 rounded-2xl mb-4 shadow-[0_0_30px_rgba(255,255,255,0.05)] relative z-10">
+                                <QRCodeCanvas
+                                    value={validationUrl}
+                                    size={140}
+                                    level="H"
+                                    includeMargin={false}
+                                    imageSettings={{
+                                        src: selectedShop.image,
+                                        x: undefined, y: undefined,
+                                        height: 28, width: 28, excavate: true,
+                                    }}
+                                />
+                            </div>
+                            <p className="text-[9px] font-black text-indigo-400/50 uppercase tracking-[0.3em]">Código de Validación</p>
+                        </div>
+
+                        {/* Status */}
+                        <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t border-white/5 pt-4">
+                            <span className="text-white/30">Membresía Activa</span>
+                            <span className="text-indigo-400 drop-shadow-[0_0_5px_rgba(99,102,241,0.4)]">
+                                {selectedShop.billingStatus === 'active' ? '✅ ACTIVA' : '⏳ PENDIENTE'}
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Connecting Button to Discounts */}
-            <div className="mt-10 animate-in fade-in slide-in-from-bottom duration-1000 delay-300">
-                <button
-                    onClick={() => {
-                        playNeonClick();
-                        navigate('/red-comercial/descuentos');
-                    }}
-                    className="glass-button-3d btn-neon-active px-10 py-5 flex items-center gap-3 group"
-                >
-                    <div className="bg-cyan-400/20 p-2 rounded-lg group-hover:bg-cyan-400/30 transition-colors">
-                        <QrCode size={20} className="text-cyan-400" />
-                    </div>
-                    <div className="flex flex-col items-start gap-0.5">
-                        <span className="text-[11px] font-black text-white uppercase tracking-[0.15em] leading-none">Ver Descuentos B2B</span>
-                        <span className="text-[8px] font-bold text-cyan-400/60 uppercase tracking-widest">Beneficios de red</span>
-                    </div>
-                </button>
-            </div>
-
-            {/* Manual Verification Action Trigger */}
-            <button 
-                onClick={() => {
-                    playNeonClick();
-                    setIsManualModalOpen(true);
-                }}
-                className="mt-6 flex items-center gap-2 text-cyan-400/50 hover:text-cyan-400 transition-all py-3 px-6 group rounded-xl border border-white/5 hover:border-cyan-500/20 active:scale-95 bg-white/0 hover:bg-white/[0.02]"
-            >
-                <Lock size={12} className="group-hover:text-cyan-400 transition-colors shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Protocolo de Verificación Manual</span>
-            </button>
-
-            {/* Manual Verification HUD Modal */}
-            {isManualModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-6 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => !isVerifying && setIsManualModalOpen(false)} />
-                    
-                    <div className={`relative w-full max-w-sm glass-card-3d border ${verificationError ? 'border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.2)]' : 'border-cyan-500/30 shadow-[0_0_50px_rgba(34,211,238,0.15)]'} rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 md:p-10 overflow-hidden transform animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto`}>
-                        {/* HUD Scanning Line Animation */}
-                        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent animate-scan z-0 pointer-events-none" />
-                        
-                        <div className="relative z-10 flex flex-col items-center">
-                            <button 
-                                onClick={() => {
-                                    playNeonClick();
-                                    !isVerifying && setIsManualModalOpen(false);
-                                }}
-                                className="absolute -top-4 -right-4 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors"
-                            >
-                                <X size={18} />
-                            </button>
-
-                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border ${verificationError ? 'bg-red-500/10 border-red-500/30' : 'bg-cyan-500/10 border-cyan-500/30'} shadow-lg transition-colors`}>
-                                {showSuccess ? (
-                                    <ShieldCheck size={32} className="text-cyan-400 animate-bounce" />
-                                ) : verificationError ? (
-                                    <X size={32} className="text-red-500 animate-pulse" />
-                                ) : (
-                                    <Lock size={32} className={isVerifying ? 'text-cyan-400 animate-pulse' : 'text-white/80'} />
-                                )}
-                            </div>
-
-                            <h3 className={`text-xl font-black uppercase tracking-tighter mb-1 ${verificationError ? 'text-red-500' : 'text-white'}`}>
-                                {showSuccess ? 'Acceso Concedido' : verificationError ? 'Clave Inválida' : 'Protocolo Manual'}
+            {/* ═══════════ POSNET INTEGRADO ═══════════ */}
+            <div className="w-full max-w-sm mt-8 relative z-10 space-y-4">
+                {!posnetOpen ? (
+                    <button
+                        onClick={() => { playNeonClick(); setPosnetOpen(true); }}
+                        className="w-full h-20 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 rounded-3xl flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_10px_30px_rgba(99,102,241,0.3)] active:scale-95 transition-all text-white border border-white/10 relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                        <CreditCard size={22} />
+                        <span>💳 Abrir POSNET de Créditos</span>
+                    </button>
+                ) : (
+                    <div className="bg-zinc-900/80 border border-indigo-500/20 rounded-[2rem] p-6 space-y-5 backdrop-blur-sm">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <CreditCard size={14} /> POSNET de Créditos
                             </h3>
-                            <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em] mb-6 md:mb-10">Ingresá el código de seguridad</p>
+                            <button onClick={() => { playNeonClick(); setPosnetOpen(false); resetPosnet(); }}
+                                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:text-white/60 border border-white/10 text-[12px]">✕</button>
+                        </div>
 
-                            <div className="w-full relative mb-8">
-                                <input 
-                                    type="password"
-                                    value={manualCode}
-                                    onChange={(e) => setManualCode(e.target.value)}
-                                    disabled={isVerifying}
-                                    autoFocus
-                                    className={`w-full bg-black/40 border-2 ${verificationError ? 'border-red-500/50 text-red-500' : 'border-cyan-400/20 text-cyan-400'} rounded-2xl py-5 px-6 text-center text-2xl font-black tracking-[0.5em] focus:outline-none focus:border-cyan-400/60 transition-all placeholder:text-white/5`}
-                                    placeholder="••••"
-                                />
-                                {isVerifying && !showSuccess && (
-                                    <div className="absolute inset-x-0 -bottom-1 h-1 bg-cyan-500/20 rounded-full overflow-hidden">
-                                        <div className="h-full bg-cyan-400 animate-progress-indefinite" />
+                        {/* Mode Selector */}
+                        <div className="grid grid-cols-2 gap-2">
+                            <button
+                                onClick={() => { playNeonClick(); setPosnetMode('load'); setTxStatus('idle'); }}
+                                className={`py-3 rounded-xl font-black uppercase tracking-widest text-[9px] border transition-all active:scale-95 flex flex-col items-center gap-1
+                                    ${posnetMode === 'load'
+                                        ? 'bg-green-500/15 border-green-400 text-green-300 shadow-[0_0_15px_rgba(34,197,94,0.2)]'
+                                        : 'bg-white/5 border-white/10 text-white/40'}`}
+                            >
+                                <ArrowUpRight size={16} />
+                                Cargar
+                            </button>
+                            <button
+                                onClick={() => { playNeonClick(); setPosnetMode('spend'); setTxStatus('idle'); }}
+                                className={`py-3 rounded-xl font-black uppercase tracking-widest text-[9px] border transition-all active:scale-95 flex flex-col items-center gap-1
+                                    ${posnetMode === 'spend'
+                                        ? 'bg-red-500/15 border-red-400 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                                        : 'bg-white/5 border-white/10 text-white/40'}`}
+                            >
+                                <ArrowDownRight size={16} />
+                                Descontar
+                            </button>
+                        </div>
+
+                        {/* Client Search or Selected */}
+                        {!selectedClient ? (
+                            <div className="space-y-2">
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={searchTerm}
+                                        onChange={e => setSearchTerm(e.target.value)}
+                                        placeholder="Buscar socio (nombre, DNI, tel)..."
+                                        className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-[11px] font-bold text-white placeholder:text-white/20 focus:border-indigo-500/40 outline-none"
+                                        autoFocus
+                                    />
+                                    <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20" />
+                                </div>
+                                {filteredClients.map(c => (
+                                    <button key={c.id}
+                                        onClick={() => { playNeonClick(); setSelectedClient(c); setSearchTerm(''); setTxStatus('idle'); }}
+                                        className="w-full bg-black/30 border border-white/5 hover:border-indigo-500/30 rounded-lg p-2.5 flex items-center gap-2.5 transition-all active:scale-[0.98]"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/10">
+                                            {c.photo ? <img src={c.photo} className="w-full h-full object-cover rounded-full" alt="" /> : <User size={12} className="text-white/30" />}
+                                        </div>
+                                        <div className="flex-1 text-left min-w-0">
+                                            <p className="text-[10px] font-black text-white uppercase tracking-wider truncate">{c.name}</p>
+                                            <p className="text-[7px] text-white/30">{c.dni || 'Sin DNI'} · 💰 {c.credits || 0}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {/* Selected Client Mini-Card */}
+                                <div className="bg-black/40 border border-indigo-500/15 rounded-xl p-3 flex items-center gap-3 relative">
+                                    <button onClick={() => { playNeonClick(); resetPosnet(); }}
+                                        className="absolute top-2 right-2 text-white/20 hover:text-white/50 text-[10px]">✕</button>
+                                    <div className="w-10 h-10 rounded-full border border-indigo-500/20 overflow-hidden bg-white/5 flex-shrink-0">
+                                        {selectedClient.photo ? <img src={selectedClient.photo} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center"><User size={16} className="text-white/20" /></div>}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[10px] font-black text-white uppercase tracking-wider truncate">{selectedClient.name}</p>
+                                        <p className="text-[8px] text-indigo-400">Saldo: <span className="font-[1000] tabular-nums">{selectedClient.credits || 0}</span> créditos</p>
+                                    </div>
+                                </div>
+
+                                {/* Amount */}
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={amount}
+                                        onChange={e => setAmount(e.target.value)}
+                                        placeholder="0"
+                                        className={`w-full bg-black/40 border rounded-xl p-3 text-[22px] font-[1000] placeholder:text-white/5 focus:outline-none tabular-nums text-center
+                                            ${posnetMode === 'load' ? 'border-green-500/20 text-green-400' : 'border-red-500/20 text-red-400'}`}
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/20 uppercase tracking-widest">CRÉDITOS</span>
+                                </div>
+
+                                {/* Status */}
+                                {txStatus === 'success' && (
+                                    <div className="bg-green-500/10 border border-green-500/30 p-3 rounded-xl flex items-center gap-3">
+                                        <CheckCircle size={18} className="text-green-400 flex-shrink-0" />
+                                        <div>
+                                            <p className="text-[10px] font-[1000] text-green-400 uppercase tracking-widest">
+                                                {posnetMode === 'load' ? '✅ Créditos Cargados' : '✅ Descuento Aplicado'}
+                                            </p>
+                                            <p className="text-[8px] text-white/40">Nuevo saldo: {selectedClient.credits}</p>
+                                        </div>
                                     </div>
                                 )}
+                                {txStatus === 'error' && (
+                                    <div className="bg-red-500/10 border border-red-500/30 p-3 rounded-xl flex items-center gap-3">
+                                        <XCircle size={18} className="text-red-400 flex-shrink-0" />
+                                        <p className="text-[9px] font-black text-red-400">{errorMsg}</p>
+                                    </div>
+                                )}
+
+                                {/* Action Button */}
+                                <button
+                                    onClick={handleTransaction}
+                                    disabled={isProcessing || !amount}
+                                    className={`w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-[0.15em] text-[10px] active:scale-95 transition-all border border-white/10 disabled:opacity-30 disabled:grayscale
+                                        ${posnetMode === 'load'
+                                            ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-[0_8px_20px_rgba(34,197,94,0.2)]'
+                                            : 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-[0_8px_20px_rgba(239,68,68,0.2)]'}`}
+                                >
+                                    {isProcessing
+                                        ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        : <>
+                                            {posnetMode === 'load' ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
+                                            {posnetMode === 'load' ? 'Otorgar Créditos' : 'Confirmar Descuento'}
+                                        </>
+                                    }
+                                </button>
+
+                                {txStatus === 'success' && (
+                                    <button onClick={() => { playNeonClick(); resetPosnet(); }}
+                                        className="w-full h-10 rounded-xl bg-white/5 border border-white/10 text-white/40 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all">
+                                        Nueva Transacción
+                                    </button>
+                                )}
                             </div>
-
-                            <button 
-                                onClick={handleManualVerify}
-                                disabled={isVerifying || !manualCode}
-                                className={`w-full py-5 rounded-2xl font-[1000] uppercase tracking-[0.3em] text-[11px] transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-30 ${showSuccess ? 'bg-cyan-500 text-black shadow-[0_0_30px_rgba(34,211,238,0.5)]' : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'}`}
-                            >
-                                {isVerifying ? 'Verificando...' : 'Autenticar'}
-                                {showSuccess && <Volume2 size={16} />}
-                            </button>
-                        </div>
+                        )}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
-            {/* Merchant Access Link */}
-            <div className="w-full flex justify-center mt-6 opacity-40 hover:opacity-100 transition-opacity">
-                <button 
-                    onClick={() => {
-                        playNeonClick();
-                        navigate(`/${categorySlug}/${shopSlug}/panel-autogestion`);
-                    }}
-                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-cyan-400"
+            {/* Navigation Buttons */}
+            <div className="w-full max-w-sm mt-6 space-y-3 relative z-10">
+                <button
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/${categorySlug}/${shopSlug}/panel-autogestion`); }}
+                    className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-white/5 flex items-center justify-center gap-2"
                 >
-                    <Lock size={12} /> Acceso Comercio
+                    <Store size={14} /> Panel de Autogestión
+                </button>
+                <button
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
+                    className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 text-white/30 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-white/5"
+                >
+                    Volver a Inicio
                 </button>
             </div>
 
-            <div className="mt-12 flex flex-col items-center gap-2 opacity-80">
-                <p className="text-[8px] font-black text-cyan-400/80 uppercase tracking-[0.5em] text-center px-12 leading-loose">
+            {/* Footer */}
+            <div className="mt-10 flex flex-col items-center gap-2 relative z-10">
+                <p className="text-[8px] font-black text-indigo-400/60 uppercase tracking-[0.4em] text-center px-12 leading-loose">
                     Security ID: SHOP-{selectedShop.id.slice(0, 8).toUpperCase()}
                 </p>
                 <div className="flex items-center gap-4">
-                    <div className="h-[1px] w-8 bg-cyan-500/40 shadow-[0_0_5px_rgba(34,211,238,0.3)]" />
-                    <span className="text-[7px] font-bold text-white uppercase tracking-[1em] mr-[-1em]">ShopDigital.tech</span>
-                    <div className="h-[1px] w-8 bg-cyan-500/40 shadow-[0_0_5px_rgba(34,211,238,0.3)]" />
+                    <div className="h-[1px] w-8 bg-indigo-500/40" />
+                    <span className="text-[7px] font-bold text-white/40 uppercase tracking-[0.8em]">ShopDigital.tech</span>
+                    <div className="h-[1px] w-8 bg-indigo-500/40" />
                 </div>
             </div>
         </div>
