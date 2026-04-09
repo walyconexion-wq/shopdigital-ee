@@ -70,11 +70,11 @@ export async function rescueEzeizaData() {
     let shopsFixed = 0;
 
     for (const d of shopsSnap.docs) {
-        const data = d.data();
-        const normalize = (str: string) => (str || "").toLowerCase();
+        // Si el nombre o el slug sugieren Ezeiza o es el Tano, o la zona es Spegazzini, forzar townId
+        const isTano = normalize(data.name).includes("tano") || normalize(data.slug).includes("tano");
+        const isEzeizaZone = normalize(data.zone).includes("ezeiza") || normalize(data.zone).includes("spegazzini") || normalize(data.zone).includes("union") || normalize(data.zone).includes("suarez");
         
-        // Si el nombre o el slug sugieren Ezeiza o es el Tano, forzar townId
-        if (normalize(data.name).includes("tano") || normalize(data.slug).includes("tano") || normalize(data.zone).includes("ezeiza")) {
+        if (isTano || isEzeizaZone) {
             if (data.townId !== "ezeiza") {
                 batch.update(d.ref, { townId: "ezeiza" });
                 shopsFixed++;
@@ -88,17 +88,16 @@ export async function rescueEzeizaData() {
 
     for (const d of clientsSnap.docs) {
         const data = d.data();
-        const normalize = (str: string) => (str || "").toLowerCase();
-
         // Criterio de Rescate: 
-        // a) Referencia a un comercio de Ezeiza
+        // a) Referencia a un comercio de Ezeiza/Tano
         // b) Venir de la landing de Ezeiza
         // c) Estar huérfano de townId
-        const isFromEzeizaShop = normalize(data.sourceShopId || "").includes("tano") || normalize(data.subscribedTo || "").includes("tano");
-        const isFromEzeizaLanding = normalize(data.sourceShopId || "").includes("ezeiza");
+        // d) Estar en Spegazzini/Ezeiza explícitamente en su localidad
+        const isTanoClient = normalize(data.sourceShopId || "").includes("tano") || normalize(data.sourceShopName || "").includes("tano");
+        const isEzeizaOrigin = normalize(data.sourceShopId || "").includes("ezeiza") || normalize(data.locality || "").includes("spegazzini");
         const isOrphan = !data.townId;
 
-        if (isFromEzeizaShop || isFromEzeizaLanding || isOrphan) {
+        if (isTanoClient || isEzeizaOrigin || isOrphan) {
             if (data.townId !== "ezeiza") {
                 batch.update(d.ref, { townId: "ezeiza" });
                 clientsFixed++;

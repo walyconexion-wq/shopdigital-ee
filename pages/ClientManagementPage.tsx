@@ -125,8 +125,9 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             }
         });
 
-        // 2. Filtrar comercios que tengan socios en esta localidad específica
+        // 2. Filtrar comercios que tengan socios en esta localidad específica Y sean de la zona
         return allShops.filter(shop => 
+            shop.townId === townId && // SELLO REGIONAL ESTRICTO 🛡️
             shop.category === selectedCategoryId &&
             (countsByShopAndLocality[shop.id] || 0) > 0
         ).map(shop => ({
