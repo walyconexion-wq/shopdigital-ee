@@ -49,6 +49,7 @@ import EnterpriseHomePage from './pages/EnterpriseHomePage';
 import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
 import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
 import EnterpriseFormPage from './pages/EnterpriseFormPage';
+import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -169,6 +170,7 @@ const TownController: React.FC = () => {
                     <Route path="empresas/:categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
+                    <Route path="empresas/control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage /></ProtectedRoute>} />
                     <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={globalConfig} />} />
                     <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />

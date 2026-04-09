@@ -13,6 +13,20 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     const navigate = useNavigate();
     const townName = globalConfig?.townName || townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
+    // 🔐 Activador secreto de 5-Click para el Búnker Industrial
+    const [bunkerClicks, setBunkerClicks] = React.useState(0);
+    React.useEffect(() => {
+        if (bunkerClicks === 0) return;
+        const timer = setTimeout(() => setBunkerClicks(0), 1500);
+        return () => clearTimeout(timer);
+    }, [bunkerClicks]);
+    const handleBunkerClick = () => {
+        playNeonClick();
+        const next = bunkerClicks + 1;
+        if (next >= 5) { navigate(`/${townId}/empresas/control-maestro`); setBunkerClicks(0); }
+        else setBunkerClicks(next);
+    };
+
     const handleShare = () => {
         playNeonClick();
         const url = `${window.location.origin}/${townId}/empresas`;
@@ -96,7 +110,11 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                 <p className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none">
                     © 2026 · ShopDigital
                 </p>
-                <p className="text-[8px] font-bold text-amber-400 uppercase tracking-[0.25em] text-center select-none" style={{ textShadow: '0 0 10px rgba(245,158,11,0.5)' }}>
+                <p 
+                    onClick={handleBunkerClick}
+                    className="text-[8px] font-bold text-amber-400 uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
+                    style={{ textShadow: '0 0 10px rgba(245,158,11,0.5)' }}
+                >
                     🏭 Nodo Empresarial B2B
                 </p>
             </footer>
