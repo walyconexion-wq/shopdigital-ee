@@ -94,8 +94,19 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                 ))}
             </div>
 
-            {/* CTA Compartir */}
+            {/* CTA Inscripción + Compartir */}
             <div className="mt-12 mb-4 px-14 flex flex-col gap-4 justify-center items-center w-full relative z-10">
+                {/* 🏭 Botón de Inscripción B2B */}
+                <button
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/inscripcion`); }}
+                    className="w-full py-5 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] active:scale-95 transition-all flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-[0_0_30px_rgba(245,158,11,0.3)] border border-amber-400/50 relative overflow-hidden group"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                    <Factory size={18} />
+                    <span>🏭 Asociar Mi Empresa / Fábrica</span>
+                </button>
+
+                {/* Compartir */}
                 <button
                     onClick={handleShare}
                     className="glass-action-btn w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 border flex items-center justify-center gap-3 bg-amber-500/20 border-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.2)]"

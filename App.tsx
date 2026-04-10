@@ -51,6 +51,7 @@ import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
 import EnterpriseFormPage from './pages/EnterpriseFormPage';
 import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
 import CreditsPosnetPage from './pages/CreditsPosnetPage';
+import EnterpriseSubscriptionPage from './pages/EnterpriseSubscriptionPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -168,6 +169,7 @@ const TownController: React.FC = () => {
                     {/* 🏭 NODO EMPRESARIAL B2B */}
                     <Route path="empresas" element={<EnterpriseHomePage globalConfig={globalConfig} />} />
                     <Route path="empresas/:categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
+                    <Route path="empresas/inscripcion" element={<EnterpriseSubscriptionPage />} />
                     <Route path="empresas/:categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
