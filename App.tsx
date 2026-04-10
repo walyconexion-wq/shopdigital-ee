@@ -168,12 +168,12 @@ const TownController: React.FC = () => {
                     <Route path="home" element={<Home globalConfig={globalConfig} />} />
                     {/* 🏭 NODO EMPRESARIAL B2B */}
                     <Route path="empresas" element={<EnterpriseHomePage globalConfig={globalConfig} />} />
-                    <Route path="empresas/:categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
+                    <Route path="empresas/control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="empresas/inscripcion" element={<EnterpriseSubscriptionPage />} />
+                    <Route path="empresas/:categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
-                    <Route path="empresas/control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage /></ProtectedRoute>} />
                     <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={globalConfig} />} />
                     <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />

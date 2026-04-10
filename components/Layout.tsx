@@ -10,6 +10,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
+    const bgColor = globalConfig?.bgColor || '#000000';
     
     // Helper to convert hex to rgba
     const hexToRgba = (hex: string, alpha: number) => {
@@ -27,15 +28,15 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
 
     return (
         <div 
-            className="w-full max-w-md mx-auto h-screen flex flex-col bg-gray-900 overflow-hidden relative shadow-2xl"
-            style={containerStyle}
+            className="w-full max-w-md mx-auto h-screen flex flex-col overflow-hidden relative shadow-2xl"
+            style={{ ...containerStyle, backgroundColor: bgColor }}
         >
             {/* Background Effect */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 <div
                     className="absolute inset-0"
                     style={{
-                        background: `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.08)} 0%, transparent 60%), linear-gradient(180deg, #0D0E12 0%, #090A0D 50%, #050507 100%)`,
+                        background: `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.08)} 0%, transparent 60%), linear-gradient(180deg, ${bgColor} 0%, ${bgColor} 50%, ${bgColor} 100%)`,
                     }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />

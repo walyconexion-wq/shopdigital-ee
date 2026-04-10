@@ -128,6 +128,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
         { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/${townId}/empresas`, icon: <Factory size={16} />, color: 'amber' },
         { title: 'Gestión de Empresas', desc: 'Alta, edición y control', path: `/${townId}/embajador/empresas`, icon: <Settings size={16} />, color: 'amber' },
         { title: 'Nueva Empresa', desc: 'Formulario de alta B2B', path: `/${townId}/embajador/empresas/nueva`, icon: <FileText size={16} />, color: 'amber' },
+        { title: '🎨 Editor de Tema', desc: 'Colores · Estaciones · Fondo', path: `/${townId}/tablero-maestro/configuracion`, icon: <Settings size={16} />, color: 'violet' },
     ];
 
     return (

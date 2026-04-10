@@ -266,7 +266,51 @@ const GlobalConfigPage: React.FC = () => {
                         </div>
                         <div className="flex-1">
                             <p className="text-[11px] font-black uppercase tracking-widest text-white">{config.primaryColor}</p>
-                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-1">Este color bañará todos los brillos, botones y sombras de la Home y Categorías.</p>
+                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-1">Este color bañará brillos, botones, bordes de rubros y sombras.</p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Section: Color de Fondo de la App */}
+                <section className="space-y-4">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <Layout size={14} /> Color de Fondo de la App
+                    </h2>
+                    
+                    <div className="bg-zinc-900/40 p-5 rounded-[2rem] border border-white/5 space-y-4">
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                { color: '#000000', name: 'Negro' },
+                                { color: '#0a0a0a', name: 'Gris Oscuro' },
+                                { color: '#0a0f1e', name: 'Azul Profundo' },
+                                { color: '#0a1a0a', name: 'Verde Oscuro' },
+                                { color: '#1a0a0a', name: 'Borgoña' },
+                                { color: '#0f0a1a', name: 'Púrpura Oscuro' },
+                            ].map(bg => (
+                                <button
+                                    key={bg.color}
+                                    onClick={() => { playNeonClick(); setConfig({ ...config, bgColor: bg.color }); }}
+                                    className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-2 ${(config.bgColor || '#000000') === bg.color ? 'border-white/50 ring-2 ring-white/10' : 'border-white/10 hover:border-white/20'}`}
+                                >
+                                    <div className="w-10 h-10 rounded-lg border border-white/20 shadow-inner" style={{ backgroundColor: bg.color }} />
+                                    <span className="text-[7px] font-black text-white/50 uppercase tracking-wider">{bg.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-4 pt-2 border-t border-white/5">
+                            <div className="relative group">
+                                <input 
+                                    type="color"
+                                    value={config.bgColor || '#000000'}
+                                    onChange={(e) => setConfig({ ...config, bgColor: e.target.value })}
+                                    className="w-12 h-12 rounded-xl bg-transparent border-none cursor-pointer"
+                                />
+                                <div className="absolute inset-0 rounded-xl ring-2 ring-white/20 pointer-events-none" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{config.bgColor || '#000000'}</p>
+                                <p className="text-[8px] text-white/30 uppercase tracking-widest mt-0.5">Color personalizado de fondo</p>
+                            </div>
                         </div>
                     </div>
                 </section>

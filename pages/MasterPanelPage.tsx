@@ -585,7 +585,19 @@ const MasterPanelPage: React.FC = () => {
                     </div>
                     <span className="text-[8px] text-amber-200/70 italic pointer-events-none">CENTRO DE MANDO · NODO EMPRESARIAL · CONTROL TOTAL</span>
                 </div>
-                
+
+                {/* 🎨 EDITOR DE TEMA Y FONDO */}
+                <div 
+                    role="button" tabIndex={0}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/configuracion`); }} 
+                    className="w-full bg-gradient-to-r from-purple-600/70 to-pink-600/70 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(168,85,247,0.2)] border border-purple-500/40 hover:from-purple-500 hover:to-pink-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                    <div className="flex items-center gap-2 pointer-events-none">
+                        <span className="text-[13px]">🎨 EDITOR DE TEMA Y FONDO</span>
+                    </div>
+                    <span className="text-[8px] text-purple-200/70 italic pointer-events-none">COLORES · ESTACIONES · BORDES · FONDO DE APP</span>
+                </div>
                 {/* Public Landings & Sections */}
                 <section>
                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
