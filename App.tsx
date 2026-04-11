@@ -55,6 +55,7 @@ import EnterpriseGlobalConfigPage from './pages/EnterpriseGlobalConfigPage';
 import CreditsPosnetPage from './pages/CreditsPosnetPage';
 import EnterpriseSubscriptionPage from './pages/EnterpriseSubscriptionPage';
 import MarketingPanelPage from './pages/MarketingPanelPage';
+import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -209,6 +210,7 @@ const TownController: React.FC = () => {
                     <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
                     <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
                     <Route path="validar/:clientId" element={<ClientValidationPage />} />
+                    <Route path="mi-comercio/panel-de-gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopMasterPanelPage /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
                     <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/fabrica" element={<ProtectedRoute roles={['admin']}><FactoryPanelPage /></ProtectedRoute>} />
