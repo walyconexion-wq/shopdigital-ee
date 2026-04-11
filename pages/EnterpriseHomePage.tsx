@@ -11,7 +11,20 @@ interface EnterpriseHomePageProps {
 const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    
+    // Extracción de Configuración Dinámica Industrial
+    const primaryColor = globalConfig?.primaryColor || '#f59e0b';
+    const bgColor = globalConfig?.bgColor || '#000000';
+    const mainTitle = globalConfig?.mainTitle || "Directorio Industrial";
+    const mainSubtitle = globalConfig?.mainSubtitle || "Proveedores & Mayoristas";
     const townName = globalConfig?.townName || townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+    const hexToRgba = (hex: string, alpha: number) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
 
     // 🔐 Activador secreto de 5-Click para el Búnker Industrial
     const [bunkerClicks, setBunkerClicks] = React.useState(0);
@@ -30,7 +43,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     const handleShare = () => {
         playNeonClick();
         const url = `${window.location.origin}/${townId}/empresas`;
-        const text = `¡Descubrí el Directorio Industrial de ${townName}! 🏭\n\n👉 ${url}`;
+        const text = `¡Descubrí el ${mainTitle} de ${townName}! 🏭\n\n👉 ${url}`;
         if (navigator.share) {
             navigator.share({ title: 'ShopDigital Empresas', text, url }).catch(console.error);
         } else {
@@ -39,36 +52,37 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     };
 
     return (
-        <div className="flex flex-col pt-6 pb-12 animate-in fade-in duration-700 relative overflow-hidden min-h-screen bg-transparent">
-            {/* HUD Background — Estética Industrial (Acero Neón) */}
+        <div className="flex flex-col pt-6 pb-12 animate-in fade-in duration-700 relative overflow-hidden min-h-screen" style={{ backgroundColor: bgColor }}>
+            {/* HUD Background — Estética Industrial Dinámica */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-orange-500/5 rounded-full blur-[100px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(245,158,11,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(245,158,11,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                <div className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full blur-[120px]" style={{ backgroundColor: hexToRgba(primaryColor, 0.05) }} />
+                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full blur-[100px]" style={{ backgroundColor: hexToRgba(primaryColor, 0.05) }} />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(245,158,11,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(245,158,11,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" style={{ backgroundImage: `linear-gradient(${hexToRgba(primaryColor, 0.02)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(primaryColor, 0.02)} 1px, transparent 1px)` }} />
             </div>
 
             {/* Header Industrial */}
             <header className="flex flex-col items-center relative z-10 px-6 mb-8">
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                    className="self-start mb-4 w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/30 hover:bg-amber-500/20 transition-all shadow-lg active:scale-95"
+                    className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center transition-all shadow-lg active:scale-95"
+                    style={{ color: primaryColor, border: `1px solid ${hexToRgba(primaryColor, 0.3)}` }}
                 >
                     <ChevronLeft size={20} />
                 </button>
 
-                <div className="glass-header rounded-3xl p-5 mb-4 border backdrop-blur-md border-amber-500/30 bg-gradient-to-br from-amber-500/15 to-orange-600/10 shadow-[0_15px_40px_rgba(245,158,11,0.2)]">
-                    <Factory size={48} className="text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]" />
+                <div className="glass-header rounded-3xl p-5 mb-4 border backdrop-blur-md shadow-2xl" style={{ borderColor: hexToRgba(primaryColor, 0.3), background: `linear-gradient(135deg, ${hexToRgba(primaryColor, 0.15)}, transparent)` }}>
+                    <Factory size={48} style={{ color: primaryColor, filter: `drop-shadow(0 0 15px ${hexToRgba(primaryColor, 0.6)})` }} />
                 </div>
 
-                <h1 className="text-[18px] font-[1000] text-white uppercase tracking-[0.2em] text-center drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]">
-                    Directorio Industrial
+                <h1 className="text-[18px] font-[1000] text-white uppercase tracking-[0.2em] text-center" style={{ textShadow: `0 0 15px ${hexToRgba(primaryColor, 0.4)}` }}>
+                    {mainTitle}
                 </h1>
                 <div className="flex items-center gap-2 mt-2">
-                    <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-amber-500/50" />
-                    <p className="text-[9px] font-black text-amber-400/70 uppercase tracking-[0.3em]">
-                        {townName} · Proveedores & Mayoristas
+                    <div className="h-[1px] w-8 bg-gradient-to-r from-transparent" style={{ backgroundImage: `linear-gradient(to right, transparent, ${hexToRgba(primaryColor, 0.5)})` }} />
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: hexToRgba(primaryColor, 0.7) }}>
+                        {townName} · {mainSubtitle}
                     </p>
-                    <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-amber-500/50" />
+                    <div className="h-[1px] w-8 bg-gradient-to-l from-transparent" style={{ backgroundImage: `linear-gradient(to left, transparent, ${hexToRgba(primaryColor, 0.5)})` }} />
                 </div>
             </header>
 
@@ -78,13 +92,15 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                     <button
                         key={cat.id}
                         onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/${cat.slug}`); }}
-                        className="glass-button-3d category-btn btn-neon-active aspect-square group backdrop-blur-md border rounded-[1.25rem] transition-all duration-300 bg-amber-500/10 border-amber-500/15 hover:border-amber-400/40 active:scale-95"
+                        className="glass-button-3d category-btn btn-neon-active aspect-square group backdrop-blur-md border rounded-[1.25rem] transition-all duration-300"
                         style={{
                             animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms both`,
-                            boxShadow: '0 0 15px rgba(245,158,11,0.06)'
+                            boxShadow: `0 0 15px ${hexToRgba(primaryColor, 0.06)}`,
+                            backgroundColor: hexToRgba(primaryColor, 0.1),
+                            borderColor: hexToRgba(primaryColor, 0.15)
                         }}
                     >
-                        <div className="mb-1.5 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out text-amber-400">
+                        <div className="mb-1.5 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 ease-out" style={{ color: primaryColor }}>
                             {cat.icon}
                         </div>
                         <span className="text-[8px] text-center font-black uppercase leading-[1.1] tracking-[0.01em] px-0.5 text-white/90 group-hover:text-white transition-colors">
@@ -99,7 +115,13 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                 {/* 🏭 Botón de Inscripción B2B */}
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/inscripcion`); }}
-                    className="w-full py-5 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] active:scale-95 transition-all flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-[0_0_30px_rgba(245,158,11,0.3)] border border-amber-400/50 relative overflow-hidden group"
+                    className="w-full py-5 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] active:scale-95 transition-all flex items-center justify-center gap-3 relative overflow-hidden group border"
+                    style={{ 
+                        background: `linear-gradient(to right, ${primaryColor}, #f97316)`, 
+                        color: bgColor === '#000000' ? '#000' : '#fff',
+                        boxShadow: `0 0 30px ${hexToRgba(primaryColor, 0.3)}`,
+                        borderColor: hexToRgba(primaryColor, 0.5)
+                    }}
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
                     <Factory size={18} />
@@ -109,22 +131,23 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                 {/* Compartir */}
                 <button
                     onClick={handleShare}
-                    className="glass-action-btn w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 border flex items-center justify-center gap-3 bg-amber-500/20 border-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+                    className="glass-action-btn w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 border flex items-center justify-center gap-3"
+                    style={{ backgroundColor: hexToRgba(primaryColor, 0.2), borderColor: hexToRgba(primaryColor, 0.4), boxShadow: `0 0 20px ${hexToRgba(primaryColor, 0.2)}` }}
                 >
-                    <Share2 size={16} className="text-amber-400" strokeWidth={3} />
+                    <Share2 size={16} style={{ color: primaryColor }} strokeWidth={3} />
                     <span className="text-white text-shadow-premium">Compartir Directorio</span>
                 </button>
             </div>
 
             {/* Footer Industrial */}
-            <footer className="w-full flex flex-col items-center gap-2 pt-6 pb-6 mt-auto border-t border-amber-500/10 relative z-10">
+            <footer className="w-full flex flex-col items-center gap-2 pt-6 pb-6 mt-auto border-t relative z-10" style={{ borderColor: hexToRgba(primaryColor, 0.1) }}>
                 <p className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none">
                     © 2026 · ShopDigital
                 </p>
                 <p 
                     onClick={handleBunkerClick}
-                    className="text-[8px] font-bold text-amber-400 uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
-                    style={{ textShadow: '0 0 10px rgba(245,158,11,0.5)' }}
+                    className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
+                    style={{ color: primaryColor, textShadow: `0 0 10px ${hexToRgba(primaryColor, 0.5)}` }}
                 >
                     🏭 Nodo Empresarial B2B
                 </p>

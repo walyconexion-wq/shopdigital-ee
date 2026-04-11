@@ -5,6 +5,7 @@ import {
   suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas, 
   subscribeToGlobalConfig, migrarDatosLegados 
 } from './firebase';
+import { subscribeToEnterpriseConfig } from './firebase_enterprise';
 import { populateInvoices, rescueEzeizaData } from './dbFix';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
@@ -49,7 +50,9 @@ import EnterpriseHomePage from './pages/EnterpriseHomePage';
 import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
 import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
 import EnterpriseFormPage from './pages/EnterpriseFormPage';
+import EnterpriseFormPage from './pages/EnterpriseFormPage';
 import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
+import EnterpriseGlobalConfigPage from './pages/EnterpriseGlobalConfigPage';
 import CreditsPosnetPage from './pages/CreditsPosnetPage';
 import EnterpriseSubscriptionPage from './pages/EnterpriseSubscriptionPage';
 
@@ -68,12 +71,16 @@ const TownController: React.FC = () => {
     const [allOffers, setAllOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
     const [showLoader, setShowLoader] = useState(true);
-    const [globalConfig, setGlobalConfig] = useState<any>({
-        mainTitle: "ShopDigital",
-        mainSubtitle: "Tu guía de ofertas locales",
-        theme: 'default',
-        primaryColor: '#22d3ee',
         townName: townId === 'esteban-echeverria' ? "Esteban Echeverría" : townId
+    });
+
+    const [enterpriseGlobalConfig, setEnterpriseGlobalConfig] = useState<any>({
+        mainTitle: "Directorio Industrial",
+        mainSubtitle: "Conectando la fuerza productiva",
+        theme: 'default',
+        primaryColor: '#f59e0b',
+        townName: townId === 'esteban-echeverria' ? "Esteban Echeverría" : townId,
+        bgColor: '#000000'
     });
 
     // --- REPAIR TRIGGER VIA URL (?repair=true) ---
@@ -148,11 +155,16 @@ const TownController: React.FC = () => {
             if (config) setGlobalConfig(config);
         }, townId);
 
+        const unsubscribeEnterprise = subscribeToEnterpriseConfig((config: any) => {
+            if (config) setEnterpriseGlobalConfig(config);
+        }, townId);
+
         return () => {
             unsubscribe();
             unsubscribeClients();
             unsubscribeOffers();
             unsubscribeGlobal();
+            unsubscribeEnterprise();
         };
     }, [townId]);
 
@@ -167,9 +179,10 @@ const TownController: React.FC = () => {
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<Home globalConfig={globalConfig} />} />
                     {/* 🏭 NODO EMPRESARIAL B2B */}
-                    <Route path="empresas" element={<EnterpriseHomePage globalConfig={globalConfig} />} />
+                    <Route path="empresas" element={<EnterpriseHomePage globalConfig={enterpriseGlobalConfig} />} />
                     <Route path="empresas/control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="empresas/inscripcion" element={<EnterpriseSubscriptionPage />} />
+                    <Route path="empresas/configuracion" element={<ProtectedRoute roles={['admin']}><EnterpriseGlobalConfigPage /></ProtectedRoute>} />
                     <Route path="empresas/:categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path="empresas/:categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
