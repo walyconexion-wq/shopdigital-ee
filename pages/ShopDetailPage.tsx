@@ -203,7 +203,14 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
 
                 <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
-                    <h1 className="impact-title neon-flicker text-[34px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] text-white text-center">
+                    <h1 
+                        className="impact-title neon-flicker text-[34px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] text-white text-center pointer-events-auto cursor-default"
+                        onClick={(e) => {
+                            if (e.detail === 3) {
+                                handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`);
+                            }
+                        }}
+                    >
                         {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                     </h1>
                     <div className="flex items-center gap-1.5 mt-1 opacity-90">
@@ -378,7 +385,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </button>
                     <button onClick={() => {
                         playNeonClick();
-                        navigate(`${basePath}/${categorySlug}/${shopSlug}/panel-autogestion`);
+                        navigate(`/${townId}/mi-comercio/panel-de-gestion`);
                     }} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
                 </div>
 
@@ -526,16 +533,16 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 {/* Merchant Access Links */}
                 <div className="w-full flex flex-col items-center gap-4 pb-12 opacity-40 hover:opacity-100 transition-opacity">
                     <button
-                        onClick={() => handleMerchantAccess(`${basePath}/${categorySlug}/${shopSlug}/panel-autogestion`)}
+                        onClick={() => handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`)}
                         className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-white hover:text-cyan-400 transition-colors"
                     >
                         <Lock size={12} /> Acceso Comercio
                     </button>
                     <button
-                        onClick={() => handleMerchantAccess(`${basePath}/${categorySlug}/${shopSlug}/editar`)}
+                        onClick={() => handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`)}
                         className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-black text-cyan-500/80 hover:text-cyan-400 transition-colors"
                     >
-                        <Lock size={10} /> Panel de Edición
+                        <Lock size={10} /> Panel Central
                     </button>
                 </div>
             </div>
