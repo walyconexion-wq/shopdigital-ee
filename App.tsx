@@ -54,6 +54,7 @@ import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
 import EnterpriseGlobalConfigPage from './pages/EnterpriseGlobalConfigPage';
 import CreditsPosnetPage from './pages/CreditsPosnetPage';
 import EnterpriseSubscriptionPage from './pages/EnterpriseSubscriptionPage';
+import MarketingPanelPage from './pages/MarketingPanelPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -213,6 +214,7 @@ const TownController: React.FC = () => {
                     <Route path="tablero-maestro/fabrica" element={<ProtectedRoute roles={['admin']}><FactoryPanelPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
+                    <Route path="marketing-inteligente" element={<ProtectedRoute roles={['admin']}><MarketingPanelPage /></ProtectedRoute>} />
                     <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/factura" element={<InvoiceViewerPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/credencial-vip/:clientId" element={<ClientVipCredentialPage allShops={allShops} allClients={allClients} />} />
@@ -266,6 +268,7 @@ const EnterpriseController: React.FC = () => {
             <Route path="/" element={<Layout allShops={allShops} globalConfig={enterpriseGlobalConfig} />}>
                 <Route index element={<EnterpriseHomePage globalConfig={enterpriseGlobalConfig} />} />
                 <Route path="control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage /></ProtectedRoute>} />
+                <Route path="marketing-inteligente" element={<ProtectedRoute roles={['admin']}><MarketingPanelPage /></ProtectedRoute>} />
                 <Route path="inscripcion" element={<EnterpriseSubscriptionPage />} />
                 <Route path="configuracion" element={<ProtectedRoute roles={['admin']}><EnterpriseGlobalConfigPage /></ProtectedRoute>} />
                 <Route path=":categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />

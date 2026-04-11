@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database, Megaphone
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { 
@@ -594,9 +594,24 @@ const MasterPanelPage: React.FC = () => {
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
                     <div className="flex items-center gap-2 pointer-events-none">
+                        <Palette size={14} className="text-purple-200" />
                         <span className="text-[13px]">🎨 EDITOR DE TEMA Y FONDO</span>
                     </div>
                     <span className="text-[8px] text-purple-200/70 italic pointer-events-none">COLORES · ESTACIONES · BORDES · FONDO DE APP</span>
+                </div>
+
+                {/* 📢 MARKETING INTELIGENTE */}
+                <div 
+                    role="button" tabIndex={0}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/marketing-inteligente`); }} 
+                    className="w-full bg-gradient-to-r from-cyan-600/70 to-blue-600/70 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.2)] border border-cyan-500/40 hover:from-cyan-500 hover:to-blue-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                    <div className="flex items-center gap-2 pointer-events-none">
+                        <Megaphone size={14} className="text-cyan-200" />
+                        <span className="text-[13px]">📢 MARKETING INTELIGENTE</span>
+                    </div>
+                    <span className="text-[8px] text-cyan-200/70 italic pointer-events-none">CEREBRO DEL BOT · CAMPAÑAS · FIDELIZACIÓN</span>
                 </div>
                 {/* Public Landings & Sections */}
                 <section>

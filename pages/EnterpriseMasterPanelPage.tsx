@@ -6,7 +6,7 @@ import { suscribirseAComercios } from '../firebase';
 import {
     Lock, ChevronLeft, Factory, Zap, Users, BarChart3,
     Globe, Landmark, ExternalLink, Settings, FileText,
-    CheckCircle, AlertTriangle, TrendingUp, Package
+    CheckCircle, AlertTriangle, TrendingUp, Package, Megaphone
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
@@ -128,6 +128,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
         { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/empresas`, icon: <Factory size={16} />, color: 'amber' },
         { title: 'Gestión de Empresas', desc: 'Alta, edición y control (Central)', path: `/esteban-echeverria/embajador/empresas`, icon: <Settings size={16} />, color: 'amber' },
         { title: 'Nueva Empresa', desc: 'Formulario de alta B2B', path: `/esteban-echeverria/embajador/empresas/nueva`, icon: <FileText size={16} />, color: 'amber' },
+        { title: '📢 Marketing Industrial', desc: 'Automatización y Campañas', path: `/empresas/marketing-inteligente`, icon: <Megaphone size={16} />, color: 'amber' },
         { title: '🎨 Editor de Tema', desc: 'Colores · Estaciones · Fondo', path: `/empresas/configuracion`, icon: <Settings size={16} />, color: 'violet' },
     ];
 
