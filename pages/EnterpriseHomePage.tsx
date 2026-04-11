@@ -9,7 +9,6 @@ interface EnterpriseHomePageProps {
 }
 
 const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig }) => {
-    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     
     // Extracción de Configuración Dinámica Industrial
@@ -17,7 +16,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     const bgColor = globalConfig?.bgColor || '#000000';
     const mainTitle = globalConfig?.mainTitle || "Directorio Industrial";
     const mainSubtitle = globalConfig?.mainSubtitle || "Proveedores & Mayoristas";
-    const townName = globalConfig?.townName || townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const townName = globalConfig?.townName || 'Nacional';
 
     const hexToRgba = (hex: string, alpha: number) => {
         const r = parseInt(hex.slice(1, 3), 16);
@@ -36,13 +35,13 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     const handleBunkerClick = () => {
         playNeonClick();
         const next = bunkerClicks + 1;
-        if (next >= 5) { navigate(`/${townId}/empresas/control-maestro`); setBunkerClicks(0); }
+        if (next >= 5) { navigate(`/empresas/control-maestro`); setBunkerClicks(0); }
         else setBunkerClicks(next);
     };
 
     const handleShare = () => {
         playNeonClick();
-        const url = `${window.location.origin}/${townId}/empresas`;
+        const url = `${window.location.origin}/empresas`;
         const text = `¡Descubrí el ${mainTitle} de ${townName}! 🏭\n\n👉 ${url}`;
         if (navigator.share) {
             navigator.share({ title: 'ShopDigital Empresas', text, url }).catch(console.error);
@@ -63,7 +62,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
             {/* Header Industrial */}
             <header className="flex flex-col items-center relative z-10 px-6 mb-8">
                 <button
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
+                    onClick={() => { playNeonClick(); navigate(-1); }}
                     className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center transition-all shadow-lg active:scale-95"
                     style={{ color: primaryColor, border: `1px solid ${hexToRgba(primaryColor, 0.3)}` }}
                 >
@@ -91,7 +90,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                 {ENTERPRISE_CATEGORIES.map((cat, index) => (
                     <button
                         key={cat.id}
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/${cat.slug}`); }}
+                        onClick={() => { playNeonClick(); navigate(`/empresas/${cat.slug}`); }}
                         className="glass-button-3d category-btn btn-neon-active aspect-square group backdrop-blur-md border rounded-[1.25rem] transition-all duration-300"
                         style={{
                             animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms both`,
@@ -114,7 +113,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
             <div className="mt-12 mb-4 px-14 flex flex-col gap-4 justify-center items-center w-full relative z-10">
                 {/* 🏭 Botón de Inscripción B2B */}
                 <button
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/inscripcion`); }}
+                    onClick={() => { playNeonClick(); navigate(`/empresas/inscripcion`); }}
                     className="w-full py-5 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] active:scale-95 transition-all flex items-center justify-center gap-3 relative overflow-hidden group border"
                     style={{ 
                         background: `linear-gradient(to right, ${primaryColor}, #f97316)`, 

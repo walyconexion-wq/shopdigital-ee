@@ -94,9 +94,9 @@ const MasterPanelPage: React.FC = () => {
             // ─── Leer localidades reales de la zona activa ────────────────
             const { getTowns } = await import('../firebase');
             const towns = await getTowns();
-            const thisTown = towns.find((t: any) => t.id === townId);
-            const baseLocs: string[] = (thisTown && Array.isArray(thisTown.localities) && thisTown.localities.length > 0)
-                ? thisTown.localities
+            const thisTown = towns.find((t: any) => t.id === townId) as any;
+            const baseLocs: string[] = (thisTown && Array.isArray((thisTown as any).localities) && (thisTown as any).localities.length > 0)
+                ? (thisTown as any).localities
                 : ['Centro'];
             // Expandir a 6 slots (ciclar si hay menos)
             const locs = Array.from({ length: 6 }, (_, i) => baseLocs[i % baseLocs.length]);
@@ -442,7 +442,7 @@ const MasterPanelPage: React.FC = () => {
         { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={18} /> },
         { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={18} /> },
         { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: `/${townId}/reclutamiento`, icon: <Globe size={18} /> },
-        { title: 'Directorio Industrial', desc: 'Portal B2B de Proveedores y Mayoristas', path: `/${townId}/empresas`, icon: <Factory size={18} /> },
+        { title: 'Directorio Industrial', desc: 'Portal B2B de Proveedores y Mayoristas', path: `/empresas`, icon: <Factory size={18} /> },
     ];
 
     const managementPages = [
@@ -548,7 +548,7 @@ const MasterPanelPage: React.FC = () => {
                 {/* 🏭 NODO EMPRESARIAL B2B */}
                 <div 
                     role="button" tabIndex={0}
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }} 
+                    onClick={() => { playNeonClick(); navigate(`/empresas`); }} 
                     className="w-full bg-gradient-to-r from-amber-700/80 to-orange-600/80 text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.25)] border border-amber-500/40 hover:from-amber-600 hover:to-orange-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
@@ -575,7 +575,7 @@ const MasterPanelPage: React.FC = () => {
                 {/* 🏭 BÚNKER INDUSTRIAL B2B */}
                 <div 
                     role="button" tabIndex={0}
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/control-maestro`); }} 
+                    onClick={() => { playNeonClick(); navigate(`/empresas/control-maestro`); }} 
                     className="w-full bg-gradient-to-r from-amber-700/70 to-orange-700/70 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-500/40 hover:from-amber-600 hover:to-orange-600 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />

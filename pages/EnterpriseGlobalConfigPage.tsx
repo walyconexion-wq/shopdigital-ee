@@ -9,20 +9,14 @@ import { playNeonClick } from '../utils/audio';
 import { subscribeToEnterpriseConfig, saveEnterpriseConfig } from '../firebase_enterprise';
 
 const EnterpriseGlobalConfigPage: React.FC = () => {
-    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     
-    const derivedTownName = townId
-        .split('-')
-        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-
     const [config, setConfig] = useState<any>({
         mainTitle: "Directorio Industrial",
         mainSubtitle: "Conectando la fuerza productiva",
         theme: 'default',
         primaryColor: '#f59e0b',
-        townName: derivedTownName,
+        townName: 'Argentina',
         bgColor: '#000000'
     });
     const [saving, setSaving] = useState(false);
@@ -33,13 +27,13 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
             if (updatedConfig) {
                 setConfig(updatedConfig);
             }
-        }, townId);
+        });
         return () => unsubscribe();
-    }, [townId]);
+    }, []);
 
     const handleSave = async () => {
         const confirmed = window.confirm(
-            `¿Confirmás los cambios estéticos para el NODO INDUSTRIAL de:\n\n"${config.townName || derivedTownName}"?`
+            `¿Confirmás los cambios estéticos para el NODO INDUSTRIAL GLOBAL?\n\n"${config.townName || 'Argentina'}"`
         );
         if (!confirmed) return;
 
@@ -47,7 +41,7 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
         setMessage(null);
         playNeonClick();
         try {
-            await saveEnterpriseConfig(config, townId);
+            await saveEnterpriseConfig(config);
             setMessage({ type: 'success', text: `¡Configuración Industrial guardada! 🏭✨` });
             setTimeout(() => setMessage(null), 3000);
         } catch (error) {
@@ -83,7 +77,7 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
 
             {/* Header Sticky */}
             <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-amber-500/20 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl flex items-center justify-between">
-                <button onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/control-maestro`); }} className="text-white/50 hover:text-white transition-colors">
+                <button onClick={() => { playNeonClick(); navigate(`/empresas/control-maestro`); }} className="text-white/50 hover:text-white transition-colors">
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center flex-1">
@@ -92,7 +86,7 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
                         Editor Industrial
                     </h1>
                     <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5 text-amber-400">
-                        {config.townName || townId}
+                        {config.townName || 'Argentina'}
                     </p>
                 </div>
                 <button 

@@ -11,7 +11,8 @@ import {
 import { playNeonClick } from '../utils/audio';
 
 const EnterpriseMasterPanelPage: React.FC = () => {
-    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
+const EnterpriseMasterPanelPage: React.FC = () => {
+
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [pin, setPin] = useState('');
@@ -22,9 +23,9 @@ const EnterpriseMasterPanelPage: React.FC = () => {
     useEffect(() => {
         const unsub = suscribirseAComercios((shops) => {
             setAllShops(shops.filter(s => s && s.name));
-        }, townId, (err) => console.error(err));
+        }, undefined, (err) => console.error(err));
         return () => unsub();
-    }, [townId]);
+    }, []);
 
     const enterprises = useMemo(() =>
         allShops.filter(s => s.entityType === 'enterprise'),
@@ -82,7 +83,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(245,158,11,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(245,158,11,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
                 </div>
 
-                <button onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }}
+                <button onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                     className="absolute top-8 left-6 w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/30 z-50">
                     <ChevronLeft size={20} />
                 </button>
@@ -120,15 +121,15 @@ const EnterpriseMasterPanelPage: React.FC = () => {
     // ============================
     // CONSOLA AMBER PRINCIPAL
     // ============================
-    const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const formattedTown = 'NACIONAL';
 
     const quickLinks = [
         { title: 'Centro de Mando Ezeiza', desc: 'Tablero Maestro · Zona Ezeiza', path: `/ezeiza/tablero-maestro`, icon: <Zap size={16} />, color: 'cyan' },
         { title: 'Centro de Mando Echeverría', desc: 'Tablero Maestro · Zona E. Echeverría', path: `/esteban-echeverria/tablero-maestro`, icon: <Zap size={16} />, color: 'violet' },
-        { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/${townId}/empresas`, icon: <Factory size={16} />, color: 'amber' },
-        { title: 'Gestión de Empresas', desc: 'Alta, edición y control', path: `/${townId}/embajador/empresas`, icon: <Settings size={16} />, color: 'amber' },
-        { title: 'Nueva Empresa', desc: 'Formulario de alta B2B', path: `/${townId}/embajador/empresas/nueva`, icon: <FileText size={16} />, color: 'amber' },
-        { title: '🎨 Editor de Tema', desc: 'Colores · Estaciones · Fondo', path: `/${townId}/empresas/configuracion`, icon: <Settings size={16} />, color: 'violet' },
+        { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/empresas`, icon: <Factory size={16} />, color: 'amber' },
+        { title: 'Gestión de Empresas', desc: 'Alta, edición y control (Central)', path: `/esteban-echeverria/embajador/empresas`, icon: <Settings size={16} />, color: 'amber' },
+        { title: 'Nueva Empresa', desc: 'Formulario de alta B2B', path: `/esteban-echeverria/embajador/empresas/nueva`, icon: <FileText size={16} />, color: 'amber' },
+        { title: '🎨 Editor de Tema', desc: 'Colores · Estaciones · Fondo', path: `/empresas/configuracion`, icon: <Settings size={16} />, color: 'violet' },
     ];
 
     return (
@@ -142,7 +143,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
 
             {/* Header */}
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-amber-500/20 mb-6 sticky top-0 z-50">
-                <button onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }}
+                <button onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                     className="self-start mb-4 w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/30 hover:bg-amber-500/20 transition-all">
                     <ChevronLeft size={20} />
                 </button>

@@ -17,7 +17,7 @@ const REACH_FILTERS = [
 ];
 
 const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShops }) => {
-    const { townId = 'esteban-echeverria', categorySlug } = useParams<{ townId: string; categorySlug: string }>();
+    const { categorySlug } = useParams<{ categorySlug: string }>();
     const navigate = useNavigate();
     const [activeReach, setActiveReach] = useState('all');
 
@@ -43,12 +43,12 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
             <div className="flex flex-col items-center justify-center h-full text-white min-h-screen">
                 <Factory size={48} className="text-amber-400/30 mb-4" />
                 <p className="text-white/50 uppercase tracking-widest text-[10px] font-black">Sector Industrial no encontrado</p>
-                <button onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }} className="mt-4 text-amber-400 font-bold uppercase tracking-widest text-[10px]">Volver al Directorio</button>
+                <button onClick={() => { playNeonClick(); navigate(`/empresas`); }} className="mt-4 text-amber-400 font-bold uppercase tracking-widest text-[10px]">Volver al Directorio</button>
             </div>
         );
     }
 
-    const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const formattedTown = 'NACIONAL';
 
     return (
         <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-transparent pb-10">
@@ -63,7 +63,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
             <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
                 <div className="w-full px-6 flex flex-col pb-4">
                     <button
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }}
+                        onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                         className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-amber-500/20 active:scale-90 transition-all hover:bg-black/50 shadow-lg"
                     >
                         <ArrowLeft size={22} className="text-amber-400 drop-shadow-md pr-0.5" />
@@ -159,7 +159,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
 
                                     <div className="w-full flex justify-center py-3 px-4">
                                         <button
-                                            onClick={() => { playNeonClick(); navigate(`/${townId}/empresas/${selectedCategory.slug}/${enterprise.slug || enterprise.id}`); }}
+                                            onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory.slug}/${enterprise.slug || enterprise.id}`); }}
                                             className="py-2.5 px-6 text-[9px] text-white font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all duration-75 rounded-full border backdrop-blur-md active:translate-y-[2px] border-amber-400/50 bg-amber-600/30 shadow-[0_4px_0_rgba(245,158,11,0.5)]"
                                         >
                                             <BookOpen size={14} strokeWidth={3} className="text-white drop-shadow-md" />VER CATÁLOGO
@@ -184,7 +184,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                 {/* Botón Regresar */}
                 <div className="w-full flex justify-center mb-8 mt-4">
                     <button
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }}
+                        onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                         className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-full flex items-center gap-2 shadow-lg active:translate-y-[2px] transition-all bg-amber-500/15 border-amber-500/30 text-amber-400"
                     >
                         <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>

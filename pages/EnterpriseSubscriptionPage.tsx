@@ -19,7 +19,6 @@ const REACH_OPTIONS = [
 const DIRECTOR_WHATSAPP = '5491122334455';
 
 const EnterpriseSubscriptionPage: React.FC = () => {
-    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -75,7 +74,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
         const newEnterprise: Shop = {
             id: `ent-${Date.now()}`,
             slug: generateSlug(formData.name),
-            townId,
+            townId: 'nacional',
             name: formData.name,
             category: formData.category,
             zone: '',
@@ -98,7 +97,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
         };
 
         try {
-            await guardarComercio(newEnterprise, townId);
+            await guardarComercio(newEnterprise);
             playSuccessSound();
             setShowSuccess(true);
 
@@ -150,7 +149,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                     </p>
 
                     <button
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/empresas`); }}
+                        onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                         className="w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] active:scale-95 transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)]"
                     >
                         Volver al Directorio Industrial
@@ -161,7 +160,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
     }
 
     // ═══ FORMULARIO ═══
-    const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const formattedTown = 'NACIONAL';
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-amber-500/30">

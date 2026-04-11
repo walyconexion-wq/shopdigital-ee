@@ -178,15 +178,6 @@ const TownController: React.FC = () => {
                 <Route path="/" element={<Layout allShops={allShops} globalConfig={globalConfig} />}>
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<Home globalConfig={globalConfig} />} />
-                    {/* 🏭 NODO EMPRESARIAL B2B */}
-                    <Route path="empresas" element={<EnterpriseHomePage globalConfig={enterpriseGlobalConfig} />} />
-                    <Route path="empresas/control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage allShops={allShops} /></ProtectedRoute>} />
-                    <Route path="empresas/inscripcion" element={<EnterpriseSubscriptionPage />} />
-                    <Route path="empresas/configuracion" element={<ProtectedRoute roles={['admin']}><EnterpriseGlobalConfigPage /></ProtectedRoute>} />
-                    <Route path="empresas/:categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
-                    <Route path="empresas/:categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
-                    <Route path="empresas/:categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
-                    <Route path="empresas/:categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
                     <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={globalConfig} />} />
                     <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
@@ -238,12 +229,59 @@ const TownController: React.FC = () => {
     );
 };
 
+// --- Controlador del Nodo Industrial B2B (Global) ---
+const EnterpriseController: React.FC = () => {
+    const [allShops, setAllShops] = useState<Shop[]>([]);
+    const [enterpriseGlobalConfig, setEnterpriseGlobalConfig] = useState<any>(null);
+
+    useEffect(() => {
+        const unsubscribe = suscribirseAComercios((fbShops) => {
+            const cleanedShops = fbShops
+                .filter(shop => shop && shop.name)
+                .map(shop => ({
+                    ...shop,
+                    bannerImage: shop.bannerImage || '',
+                    image: shop.image || shop.bannerImage || '',
+                    offers: shop.offers || []
+                }));
+            setAllShops(cleanedShops);
+        });
+
+        const unsubscribeEnterprise = subscribeToEnterpriseConfig((config: any) => {
+            if (config) setEnterpriseGlobalConfig(config);
+        });
+
+        return () => {
+            unsubscribe();
+            unsubscribeEnterprise();
+        };
+    }, []);
+
+    return (
+        <Routes>
+            <Route path="/" element={<Layout allShops={allShops} globalConfig={enterpriseGlobalConfig} />}>
+                <Route index element={<EnterpriseHomePage globalConfig={enterpriseGlobalConfig} />} />
+                <Route path="control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage /></ProtectedRoute>} />
+                <Route path="inscripcion" element={<EnterpriseSubscriptionPage />} />
+                <Route path="configuracion" element={<ProtectedRoute roles={['admin']}><EnterpriseGlobalConfigPage /></ProtectedRoute>} />
+                <Route path=":categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
+                <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
+                <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
+                <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
+            </Route>
+        </Routes>
+    );
+};
+
 const App: React.FC = () => {
     console.log("🧬 ROOT_CAMALEON_ACTIVE: El motor Multi-Zona está en marcha!");
     
     return (
         <BrowserRouter>
             <Routes>
+                {/* 🏭 Nodo Empresarial Global */}
+                <Route path="/empresas/*" element={<EnterpriseController />} />
+
                 {/* Redirección directa para el Director Global (Tablero Maestro) */}
                 <Route path="/tablero-maestro" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
                 <Route path="/tablero-maestro/*" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
