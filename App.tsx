@@ -50,7 +50,6 @@ import EnterpriseHomePage from './pages/EnterpriseHomePage';
 import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
 import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
 import EnterpriseFormPage from './pages/EnterpriseFormPage';
-import EnterpriseFormPage from './pages/EnterpriseFormPage';
 import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
 import EnterpriseGlobalConfigPage from './pages/EnterpriseGlobalConfigPage';
 import CreditsPosnetPage from './pages/CreditsPosnetPage';
@@ -71,6 +70,11 @@ const TownController: React.FC = () => {
     const [allOffers, setAllOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
     const [showLoader, setShowLoader] = useState(true);
+    const [globalConfig, setGlobalConfig] = useState<any>({
+        mainTitle: "ShopDigital",
+        mainSubtitle: "Tu guía de ofertas locales",
+        theme: 'default',
+        primaryColor: '#22d3ee',
         townName: townId === 'esteban-echeverria' ? "Esteban Echeverría" : townId
     });
 
