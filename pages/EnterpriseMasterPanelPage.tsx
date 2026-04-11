@@ -11,7 +11,6 @@ import {
 import { playNeonClick } from '../utils/audio';
 
 const EnterpriseMasterPanelPage: React.FC = () => {
-const EnterpriseMasterPanelPage: React.FC = () => {
 
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
