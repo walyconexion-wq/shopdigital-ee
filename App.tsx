@@ -163,7 +163,7 @@ const TownController: React.FC = () => {
 
         const unsubscribeEnterprise = subscribeToEnterpriseConfig((config: any) => {
             if (config) setEnterpriseGlobalConfig(config);
-        }, townId);
+        });
 
         return () => {
             unsubscribe();
@@ -230,6 +230,7 @@ const TownController: React.FC = () => {
                     <Route path="embajador/empresas/editar/:enterpriseId" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseFormPage allShops={allShops} /></ProtectedRoute>} />
                     {/* 💳 POSNET DE CRÉDITOS */}
                     <Route path="embajador/posnet" element={<ProtectedRoute roles={['admin', 'ambassador']}><CreditsPosnetPage /></ProtectedRoute>} />
+                    <Route path="mi-comercio/posnet-virtual" element={<CreditsPosnetPage />} />
                     <Route path="*" element={<Navigate to="home" replace />} />
                 </Route>
             </Routes>

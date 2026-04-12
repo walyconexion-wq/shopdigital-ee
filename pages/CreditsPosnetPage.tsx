@@ -2,8 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { transaccionarCreditos } from '../firebaseVIP';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, getDocs } from 'firebase/firestore';
 import { Client, Shop } from '../types';
+import { useAuth } from '../components/AuthContext';
 import {
     ChevronLeft,
     CreditCard,
@@ -25,10 +26,12 @@ import LoadingScreen from '../components/LoadingScreen';
 const CreditsPosnetPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { user, login } = useAuth();
 
     const [clients, setClients] = useState<Client[]>([]);
     const [shops, setShops] = useState<Shop[]>([]);
     const [loading, setLoading] = useState(true);
+    const [accessDenied, setAccessDenied] = useState(false);
 
     // Search & Selection
     const [searchTerm, setSearchTerm] = useState('');
@@ -43,24 +46,56 @@ const CreditsPosnetPage: React.FC = () => {
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Fetch data
+    // Fetch data and check permissions in real-time
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [clientSnap, shopSnap] = await Promise.all([
-                    getDocs(query(collection(db, "clientes"), where("townId", "==", townId))),
-                    getDocs(query(collection(db, "comercios"), where("townId", "==", townId)))
-                ]);
-                setClients(clientSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));
-                setShops(shopSnap.docs.map(d => ({ id: d.id, ...d.data() } as Shop)).filter(s => s.isActive && s.entityType !== 'enterprise'));
-            } catch (err) {
-                console.error("Error:", err);
-            } finally {
-                setLoading(false);
-            }
+        if (!user) {
+            login();
+            return;
+        }
+
+        const fetchClients = async () => {
+            const clientSnap = await getDocs(query(collection(db, "clientes"), where("townId", "==", townId)));
+            setClients(clientSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));
         };
-        fetchData();
-    }, [townId]);
+
+        fetchClients();
+
+        const unsubShops = onSnapshot(query(collection(db, "comercios"), where("townId", "==", townId)), (snapshot) => {
+            let allLoadedShops = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Shop)).filter(s => s.isActive && s.entityType !== 'enterprise');
+            
+            // Check authorization
+            const userEmail = user.email?.trim().toLowerCase();
+            const isAdmin = userEmail === 'walyconexion@gmail.com';
+            
+            // Si no es admin, filtramos solo a las tiendas donde es dueño (authorizedEmail) o empleado (authorizedStaff)
+            if (!isAdmin) {
+                allLoadedShops = allLoadedShops.filter(s => {
+                    const shopEmail = s.authorizedEmail?.trim().toLowerCase();
+                    const staff = s.authorizedStaff || [];
+                    return (shopEmail && shopEmail === userEmail) || staff.includes(userEmail || '');
+                });
+
+                if (allLoadedShops.length === 0) {
+                    setAccessDenied(true);
+                    setLoading(false);
+                    return;
+                }
+            }
+            
+            setShops(allLoadedShops);
+            if (allLoadedShops.length === 1 && !selectedShopId) {
+                setSelectedShopId(allLoadedShops[0].id);
+            }
+            
+            setAccessDenied(false);
+            setLoading(false);
+        }, (err) => {
+            console.error(err);
+            setLoading(false);
+        });
+
+        return () => unsubShops();
+    }, [townId, user, login]);
 
     // Search filter
     const filteredClients = useMemo(() => {
@@ -128,6 +163,22 @@ const CreditsPosnetPage: React.FC = () => {
     };
 
     if (loading) return <LoadingScreen ready={false} onDone={() => {}} />;
+
+    if (accessDenied) {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+                 <div className="bg-red-500/10 border border-red-500/30 p-8 rounded-3xl flex flex-col items-center gap-4 text-center max-w-sm">
+                    <ShieldCheck size={48} className="text-red-500" />
+                    <h2 className="text-[16px] font-[1000] uppercase tracking-widest text-red-500">Acceso Revocado</h2>
+                    <p className="text-[10px] text-white/50 leading-relaxed uppercase tracking-wider font-bold">
+                        Tu cuenta ha sido desvinculada del POSNET de este comercio.
+                    </p>
+                    <p className="text-[10px] text-red-400 mt-2">{user?.email}</p>
+                    <button onClick={() => navigate(-1)} className="mt-4 px-6 py-3 bg-red-500/20 text-red-400 text-[10px] uppercase font-black tracking-widest rounded-xl hover:bg-red-500 hover:text-white transition-colors">Volver</button>
+                 </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">

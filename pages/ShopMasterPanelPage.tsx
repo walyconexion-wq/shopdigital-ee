@@ -6,7 +6,8 @@ import {
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { Shop } from '../types';
-import { suscribirseAComercios } from '../firebase';
+import { suscribirseAComercios, db } from '../firebase';
+import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 
 const ShopMasterPanelPage: React.FC = () => {
     const { townId } = useParams<{ townId: string }>();
@@ -46,11 +47,46 @@ const ShopMasterPanelPage: React.FC = () => {
     const borderTheme = 'border-cyan-500/30';
     const glowTheme = `0 0 20px ${hexToRgba(CYAN, 0.3)}`;
 
-    const handleAddEmail = () => {
+    const handleAddEmail = async () => {
         playNeonClick();
-        if (!newEmail) return;
-        alert(`GMAIL Autorizado: ${newEmail} podrá operar tu POSNET y Editor.`);
-        setNewEmail('');
+        if (!newEmail || !selectedShop) return;
+        const emailToAdd = newEmail.trim().toLowerCase();
+        try {
+            const shopRef = doc(db, 'comercios', selectedShop.id);
+            await updateDoc(shopRef, {
+                authorizedStaff: arrayUnion(emailToAdd)
+            });
+            alert(`✅ GMAIL Autorizado: ${emailToAdd} podrá operar tu POSNET y Tablero de Marketing.`);
+            setNewEmail('');
+        } catch (error) {
+            console.error("Error al autorizar:", error);
+            alert("❌ Hubo un error. Intenta nuevamente.");
+        }
+    };
+
+    const handleRemoveEmail = async (emailToRemove: string) => {
+        playNeonClick();
+        if (!selectedShop) return;
+        if (window.confirm(`¿Estás seguro de revocar el acceso a ${emailToRemove}?`)) {
+            try {
+                const shopRef = doc(db, 'comercios', selectedShop.id);
+                await updateDoc(shopRef, {
+                    authorizedStaff: arrayRemove(emailToRemove)
+                });
+            } catch (error) {
+                console.error("Error al revocar:", error);
+            }
+        }
+    };
+
+    const handleSharePosnet = () => {
+        playNeonClick();
+        if (!selectedShop) return;
+        const appUrl = window.location.origin;
+        const posnetUrl = `${appUrl}/${townId}/mi-comercio/posnet-virtual`;
+        const shareText = `*POSNET VIRTUAL - ${selectedShop.name}*\n\nAcceso a la terminal de cobro para personal autorizado:\n👉 ${posnetUrl}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     };
 
     return (
@@ -162,13 +198,23 @@ const ShopMasterPanelPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div 
-                        role="button" tabIndex={0}
-                        onClick={() => { playNeonClick(); alert("Se abre el Lector POSNET para escanear clientes"); }} 
-                        className={`w-full bg-cyan-500 text-black p-4 rounded-2xl font-[1000] uppercase tracking-[0.2em] shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:bg-cyan-400 active:scale-95 transition-all justify-center flex items-center gap-2 cursor-pointer`}
-                    >
-                        <CreditCard size={18} />
-                        <span className="text-[13px]">POSNET VIRTUAL</span>
+                    <div className="grid grid-cols-4 gap-3">
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/mi-comercio/posnet-virtual`); }} 
+                            className={`col-span-3 w-full bg-cyan-500 text-black p-4 rounded-2xl font-[1000] uppercase tracking-[0.2em] shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:bg-cyan-400 active:scale-95 transition-all justify-center flex items-center gap-2 cursor-pointer`}
+                        >
+                            <CreditCard size={18} />
+                            <span className="text-[13px]">POSNET VIRTUAL</span>
+                        </div>
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={handleSharePosnet}
+                            className="col-span-1 w-full bg-transparent border border-cyan-500/40 text-cyan-400 rounded-2xl flex flex-col items-center justify-center hover:bg-cyan-500/10 active:scale-95 transition-all cursor-pointer"
+                        >
+                            <Share2 size={20} className="mb-1" />
+                            <span className="text-[7px] font-black uppercase tracking-widest">Compartir</span>
+                        </div>
                     </div>
                 </section>
 
@@ -200,15 +246,28 @@ const ShopMasterPanelPage: React.FC = () => {
                             </button>
                         </div>
 
-                        {/* Falsas Empleadas para mockup visual */}
+                        {/* Empleados Reales */}
                         <div className="mt-4 space-y-2">
-                            <div className="flex items-center justify-between bg-white/[0.02] border border-white/5 py-2 px-3 rounded-lg">
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-[10px] font-bold text-white truncate">marta.turnotarde@gmail.com</p>
-                                    <p className="text-[7px] text-green-400 uppercase tracking-widest">Activa · POSNET</p>
-                                </div>
-                                <button className="text-[8px] bg-red-500/20 text-red-400 px-2 py-1 rounded">Revocar</button>
-                            </div>
+                            {selectedShop?.authorizedStaff && selectedShop.authorizedStaff.length > 0 ? (
+                                selectedShop.authorizedStaff.map((email: string) => (
+                                    <div key={email} className="flex items-center justify-between bg-white/[0.02] border border-white/5 py-2 px-3 rounded-lg">
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-[10px] font-bold text-white truncate">{email}</p>
+                                            <p className="text-[7px] text-green-400 uppercase tracking-widest">Activo · POSNET Y MARKETING</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => handleRemoveEmail(email)}
+                                            className="text-[8px] bg-red-500/20 text-red-400 px-2 py-1 rounded hover:bg-red-500/40 active:scale-95 transition-all"
+                                        >
+                                            Revocar
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-[8px] text-white/30 text-center uppercase tracking-widest py-2">
+                                    No hay empleados autorizados
+                                </p>
+                            )}
                         </div>
                     </div>
                 </section>

@@ -150,6 +150,7 @@ export interface Shop {
   subscribers?: number;
   reviews?: Review[];
   authorizedEmail?: string;
+  authorizedStaff?: string[];
   feedImages?: string[];
   feedLikes?: number;
 }
