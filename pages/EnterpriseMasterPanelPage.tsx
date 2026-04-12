@@ -13,9 +13,6 @@ import { playNeonClick } from '../utils/audio';
 const EnterpriseMasterPanelPage: React.FC = () => {
 
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [pin, setPin] = useState('');
-    const [error, setError] = useState(false);
     const [allShops, setAllShops] = useState<Shop[]>([]);
 
     // Suscripción a datos en tiempo real
@@ -59,63 +56,6 @@ const EnterpriseMasterPanelPage: React.FC = () => {
 
     const AMBER = '#f59e0b';
 
-    const handlePinSubmit = () => {
-        playNeonClick();
-        if (pin === '1234') {
-            setIsAuthenticated(true);
-            setError(false);
-        } else {
-            setError(true);
-            setPin('');
-            setTimeout(() => setError(false), 1000);
-        }
-    };
-
-    // ============================
-    // PANTALLA DE PIN
-    // ============================
-    if (!isAuthenticated) {
-        return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center px-8 relative overflow-hidden">
-                <div className="fixed inset-0 pointer-events-none">
-                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[100px]" />
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(245,158,11,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(245,158,11,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
-                </div>
-
-                <button onClick={() => { playNeonClick(); navigate(`/empresas`); }}
-                    className="absolute top-8 left-6 w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/30 z-50">
-                    <ChevronLeft size={20} />
-                </button>
-
-                <div className={`flex flex-col items-center gap-6 z-10 ${error ? 'animate-shake' : ''}`}>
-                    <div className="w-20 h-20 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
-                        <Lock size={32} className="text-amber-400" />
-                    </div>
-                    <h2 className="text-[14px] font-black text-white uppercase tracking-[0.3em]">Búnker Industrial</h2>
-                    <p className="text-[9px] text-amber-400/60 uppercase tracking-widest text-center">Ingresá el código de acceso</p>
-
-                    <input
-                        type="password"
-                        maxLength={4}
-                        value={pin}
-                        onChange={e => setPin(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handlePinSubmit()}
-                        className={`w-48 text-center text-[24px] font-[1000] tracking-[1em] py-4 bg-zinc-900/60 border rounded-2xl text-white focus:outline-none transition-all
-                            ${error ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]' : 'border-amber-500/30 focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.3)]'}`}
-                        placeholder="····"
-                        autoFocus
-                    />
-
-                    <button
-                        onClick={handlePinSubmit}
-                        className="w-48 py-3.5 bg-amber-500 text-black rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)]"
-                    >
-                        Acceder
-                    </button>
-                </div>
-            </div>
-        );
-    }
 
     // ============================
     // CONSOLA AMBER PRINCIPAL
