@@ -88,7 +88,9 @@ export interface Client {
   status?: 'active' | 'suspended';
   cardColor?: string;
   points?: number;
+  credits?: number;
   pointsHistory?: PointsTransaction[];
+  creditsHistory?: any[];
   locality?: string; // Sello geográfico del socio 📍
 }
 

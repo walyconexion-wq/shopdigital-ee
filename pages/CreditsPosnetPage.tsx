@@ -145,7 +145,8 @@ const CreditsPosnetPage: React.FC = () => {
                 selectedShopId,
                 numAmount,
                 mode,
-                desc
+                desc,
+                user?.email || 'Desconocido'
             );
 
             setSelectedClient(prev => prev ? { ...prev, credits: newBalance } : null);

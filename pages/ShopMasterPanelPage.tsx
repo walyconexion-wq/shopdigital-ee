@@ -7,7 +7,7 @@ import {
 import { playNeonClick } from '../utils/audio';
 import { Shop } from '../types';
 import { suscribirseAComercios, db } from '../firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
 const ShopMasterPanelPage: React.FC = () => {
     const { townId } = useParams<{ townId: string }>();
@@ -18,6 +18,8 @@ const ShopMasterPanelPage: React.FC = () => {
     const [myShops, setMyShops] = useState<Shop[]>([]);
     const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
     const [newEmail, setNewEmail] = useState('');
+    const [creditLogs, setCreditLogs] = useState<any[]>([]);
+    const [logSearchQuery, setLogSearchQuery] = useState('');
 
     useEffect(() => {
         const unsub = suscribirseAComercios((shops) => {
@@ -32,6 +34,23 @@ const ShopMasterPanelPage: React.FC = () => {
         }, townId);
         return () => unsub();
     }, [townId]);
+
+    useEffect(() => {
+        if (!selectedShop?.id) {
+            setCreditLogs([]);
+            return;
+        }
+
+        const logsRef = collection(db, `comercios/${selectedShop.id}/credit_logs`);
+        const q = query(logsRef, orderBy('date', 'desc'), limit(50));
+        
+        const unsubLogs = onSnapshot(q, (snapshot) => {
+            const logsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setCreditLogs(logsData);
+        }, (err) => console.error(err));
+
+        return () => unsubLogs();
+    }, [selectedShop?.id]);
 
     const hexToRgba = (hex: string, alpha: number) => {
         try {
@@ -267,6 +286,63 @@ const ShopMasterPanelPage: React.FC = () => {
                                 <p className="text-[8px] text-white/30 text-center uppercase tracking-widest py-2">
                                     No hay empleados autorizados
                                 </p>
+                            )}
+                        </div>
+                    </div>
+                </section>
+
+                {/* ─── 🕵️‍♂️ AUDITORÍA Y TRAZABILIDAD (MÓDULO ANTI-FRAUDE) ─── */}
+                <section className="animate-in slide-in-from-bottom-4 duration-500 fade-in delay-600">
+                    <h2 className="text-[10px] font-black text-red-500/80 uppercase tracking-[0.3em] mb-4 flex items-center gap-2 border-b border-red-500/10 pb-2">
+                        <ShieldCheck size={14} className="text-red-500" /> Libro de Guardia (Auditoría)
+                    </h2>
+                    
+                    <div className="bg-black/60 border border-white/10 rounded-2xl p-5 overflow-hidden">
+                        <div className="flex items-center gap-2 mb-4 bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-red-500/50 transition-colors">
+                            <Search size={14} className="text-white/40" />
+                            <input 
+                                type="text" 
+                                placeholder="Filtrar DNI o Credencial..." 
+                                value={logSearchQuery}
+                                onChange={e => setLogSearchQuery(e.target.value)}
+                                className="w-full bg-transparent text-[10px] text-white px-2 py-3 outline-none" 
+                            />
+                        </div>
+                        
+                        <div className="max-h-60 overflow-y-auto pr-1 no-scrollbar space-y-2">
+                            {creditLogs
+                                .filter(log => !logSearchQuery || (log.clientId || '').toLowerCase().includes(logSearchQuery.toLowerCase()))
+                                .map(log => (
+                                <div key={log.id} className="flex flex-col bg-white/[0.02] border border-white/5 p-3 rounded-lg hover:border-white/20 transition-colors">
+                                    <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/5">
+                                        <div className="flex items-center gap-1.5">
+                                            {log.type === 'load' ? (
+                                                <div className="bg-green-500/20 text-green-400 p-1 rounded"><ArrowUpRight size={10} /></div>
+                                            ) : (
+                                                <div className="bg-cyan-500/20 text-cyan-400 p-1 rounded"><ArrowDownRight size={10} /></div>
+                                            )}
+                                            <span className={`text-[12px] font-[1000] ${log.type === 'load' ? 'text-green-400' : 'text-cyan-400'}`}>
+                                                {log.type === 'load' ? '+' : '-'}{log.amount}
+                                            </span>
+                                        </div>
+                                        <span className="text-[8px] text-white/40 font-bold uppercase tracking-wider">
+                                            {new Date(log.date).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' })}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-[9px] uppercase tracking-widest text-white/50">
+                                        <div className="flex items-center gap-1">
+                                            <User size={10} className="text-red-400/70" /> 
+                                            <span className="truncate max-w-[100px]">{log.operatorEmail}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="truncate max-w-[80px]">Destino: {log.clientId?.slice(0,8) || 'Desconocido'}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-[8px] text-white/30 italic mt-2">Detalle: {log.description}</p>
+                                </div>
+                            ))}
+                            {creditLogs.length === 0 && (
+                                <p className="text-[9px] text-center text-white/30 uppercase tracking-widest py-6">No hay registros de auditoría aún.</p>
                             )}
                         </div>
                     </div>

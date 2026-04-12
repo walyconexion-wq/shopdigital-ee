@@ -1,10 +1,10 @@
 import { db } from './firebase';
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc } from "firebase/firestore";
 
 /**
- * Transacciona créditos (moneda VIP) en la billetera del cliente.
+ * Transacciona créditos (moneda VIP) en la billetera del cliente y deja trazo de auditoría.
  */
-export const transaccionarCreditos = async (clientId: string, shopId: string, amount: number, type: 'load' | 'spend', description: string = '') => {
+export const transaccionarCreditos = async (clientId: string, shopId: string, amount: number, type: 'load' | 'spend', description: string = '', operatorEmail: string = 'SISTEMA') => {
     try {
         const docRef = doc(db, "clientes", clientId);
         const docSnap = await getDoc(docRef);
@@ -17,6 +17,8 @@ export const transaccionarCreditos = async (clientId: string, shopId: string, am
             const transaction = {
                 id: `ctx-${Date.now()}`,
                 shopId,
+                clientId,
+                operatorEmail,
                 type,
                 amount,
                 description,
@@ -30,6 +32,10 @@ export const transaccionarCreditos = async (clientId: string, shopId: string, am
                 creditsHistory: [transaction, ...history],
                 updatedAt: new Date().toISOString()
             });
+            
+            // INYECCIÓN DE AUDITORÍA (Trazabilidad para el dueño del local)
+            const auditRef = collection(db, `comercios/${shopId}/credit_logs`);
+            await addDoc(auditRef, transaction);
             
             return newCredits;
         } else {
