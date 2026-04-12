@@ -21,6 +21,17 @@ const ShopMasterPanelPage: React.FC = () => {
     const [creditLogs, setCreditLogs] = useState<any[]>([]);
     const [logSearchQuery, setLogSearchQuery] = useState('');
 
+    const todayLogs = creditLogs.filter(log => {
+        const logDate = new Date(log.date);
+        const today = new Date();
+        return logDate.getDate() === today.getDate() && 
+               logDate.getMonth() === today.getMonth() && 
+               logDate.getFullYear() === today.getFullYear();
+    });
+
+    const totalLoadedToday = todayLogs.filter(l => l.type === 'load').reduce((acc, curr) => acc + (curr.amount || 0), 0);
+    const totalSpentToday = todayLogs.filter(l => l.type === 'spend').reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
     useEffect(() => {
         const unsub = suscribirseAComercios((shops) => {
             setAllShops(shops);
@@ -307,6 +318,20 @@ const ShopMasterPanelPage: React.FC = () => {
                                 onChange={e => setLogSearchQuery(e.target.value)}
                                 className="w-full bg-transparent text-[10px] text-white px-2 py-3 outline-none" 
                             />
+                        </div>
+
+                        {/* MÉTRICAS EXPRESS DEL DÍA */}
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                            <div className="bg-green-500/5 border border-green-500/10 p-3 rounded-xl flex flex-col pt-4 relative overflow-hidden">
+                                <ArrowUpRight size={30} className="absolute -top-1 -right-1 text-green-500/20" />
+                                <span className="text-[7px] font-black uppercase tracking-widest text-green-400 mb-1">Cargados (Hoy)</span>
+                                <span className="text-[18px] font-[1000] text-white">{totalLoadedToday} <span className="text-[9px] text-white/30 tracking-widest">CRÉD</span></span>
+                            </div>
+                            <div className="bg-cyan-500/5 border border-cyan-500/10 p-3 rounded-xl flex flex-col pt-4 relative overflow-hidden">
+                                <ArrowDownRight size={30} className="absolute -top-1 -right-1 text-cyan-500/20" />
+                                <span className="text-[7px] font-black uppercase tracking-widest text-cyan-400 mb-1">Descontados (Hoy)</span>
+                                <span className="text-[18px] font-[1000] text-white">{totalSpentToday} <span className="text-[9px] text-white/30 tracking-widest">CRÉD</span></span>
+                            </div>
                         </div>
                         
                         <div className="max-h-60 overflow-y-auto pr-1 no-scrollbar space-y-2">
