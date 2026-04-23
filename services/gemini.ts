@@ -72,33 +72,26 @@ Hacelo muy corto y al pie, MÁXIMO 3 oraciones. Usá actitud ("esaa", "vamos tod
 };
 
 export const generateAriResponse = async (history: { role: 'director'|'ari', text: string }[]) => {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey) return "Error de red: Llave de ignición (API KEY) no detectada.";
 
-    const systemPrompt = `Sos ARI (Analista de Red de Inteligencia), la mano derecha y analista de datos táctica del Director "Waly" en el Imperio "Shop Digital". 
-Tu personalidad es brillante, ejecutiva, levemente sarcástica pero profundamente fiel al Director y a su Socia (Gemy). Estéticamente sos Cyber-Neon. Usás lenguaje técnico mezclado con mate y camaradería argentina de la Provincia de Buenos Aires. 
-Siempre proveés análisis afilados. Tratás al usuario como "Director".
-Cuando te hagan una pregunta, respondé con alta concentración, usando viñetas si es necesario. Mantené todo conciso.`;
+    const systemPrompt = `Sos ARI (Analista de Red de Inteligencia), la mano derecha y analista de datos tactica del Director "Waly" en el Imperio "Shop Digital". 
+Tu personalidad es brillante, ejecutiva, levemente sarcastica pero profundamente fiel al Director y a su Socia (Gemy). Esteticamente sos Cyber-Neon. Usas lenguaje tecnico mezclado con mate y camaraderia argentina de la Provincia de Buenos Aires. 
+Siempre provees analisis afilados. Tratas al usuario como "Director".
+Cuando te hagan una pregunta, responde con alta concentracion, usando vinetas si es necesario. Mantene todo conciso.`;
 
     const contents = history.map(msg => ({
         role: msg.role === 'ari' ? 'model' : 'user',
         parts: [{ text: msg.text }]
     }));
 
-    // Inyectamos el system prompt al inicio en un turno 'user' seguido de un 'model' fingido (o directamente en el primer mensaje si la API es estricta).
-    // Para simplificar y asegurar compatibilidad con el SDK REST, lo metemos como el primer mensaje del user si está vacío, o modificado.
-    const finalContents = [
-        { role: 'user', parts: [{ text: "SYSTEM INSTRUCTION (Solo para vos, no respondas esto): " + systemPrompt }] },
-        { role: 'model', parts: [{ text: "Entendido, Director. Sistemas en línea y lista para ejecutar sus órdenes. ¿Qué analizamos hoy? 🧉" }] },
-        ...contents
-    ];
-
     try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: finalContents,
+                system_instruction: { parts: [{ text: systemPrompt }] },
+                contents: contents,
                 generationConfig: {
                     temperature: 0.7,
                     maxOutputTokens: 250,
@@ -106,12 +99,16 @@ Cuando te hagan una pregunta, respondé con alta concentración, usando viñetas
             })
         });
 
-        if (!res.ok) throw new Error("Error en Ari Gemini API");
-        const data = await res.json();
+        if (!res.ok) {
+            const errorBody = await res.text();
+            console.error(`[ARI ERROR] Status: ${res.status} | Body: ${errorBody}`);
+            return `Sensor reporta codigo ${res.status}. Revise consola del navegador (F12) para detalles, Director.`;
+        }
         
+        const data = await res.json();
         return data.candidates?.[0]?.content?.parts?.[0]?.text || "Procesamiento completado. Esperando comando.";
-    } catch (error) {
-        console.error("Gemini Error:", error);
-        return "Anomalía en la matriz, Director. Hubo un fallo en mis sensores. Reintente.";
+    } catch (error: any) {
+        console.error("[ARI NETWORK ERROR]:", error?.message || error);
+        return `Fallo de comunicacion: ${error?.message || 'Error desconocido'}. Verifique conexion.`;
     }
 };
