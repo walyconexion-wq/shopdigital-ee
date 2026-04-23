@@ -28,7 +28,6 @@ import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
 import { useAuth } from '../components/AuthContext';
 import { incrementarLikesFeed } from '../firebase';
-import { SmartAdvisor } from '../components/SmartAdvisor';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
@@ -238,16 +237,6 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
             </div>
 
             <div className="relative z-10 flex flex-col items-center">
-                
-                {/* 🤖 ASESOR VIRTUAL (Vendedor Inteligente Neón) */}
-                <div className="w-full max-w-lg mx-auto">
-                    <SmartAdvisor 
-                        shopName={selectedShop.name}
-                        zone={selectedShop.zone || 'Tu zona'}
-                        categoryTitle={selectedShop.category || categorySlug}
-                        offers={selectedShop.offers}
-                    />
-                </div>
 
                 <div ref={catalogRef} className="w-full mb-10 mt-2">
                     <div className="w-full px-6 mb-8 flex flex-col items-center">
