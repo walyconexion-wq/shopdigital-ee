@@ -92,10 +92,10 @@ export const DirectorBunkerPage: React.FC = () => {
             </header>
 
             {/* Main Content: Left Dashboard (60%) | Right Chat (40%) */}
-            <main className="flex-1 relative z-10 flex flex-col md:flex-row w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 h-[calc(100vh-80px)]">
+            <main className="flex-1 relative z-10 flex flex-col xl:flex-row w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)]">
                 
                 {/* ─── CAPA 2: DASHBOARD DE ESTADO ─── */}
-                <div className="flex-[3] flex flex-col gap-6 overflow-y-auto pr-2 no-scrollbar">
+                <div className="flex-[3] flex flex-col gap-6 xl:overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
                     {/* Contadores Globales */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -175,7 +175,7 @@ export const DirectorBunkerPage: React.FC = () => {
                 </div>
 
                 {/* ─── CAPA 3: EL ALTAR DE ARI (CHAT) ─── */}
-                <div className="flex-[2] bg-black/80 backdrop-blur-2xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(139,92,246,0.15)] h-[600px] md:h-auto">
+                <div className="flex-[2] w-full mt-4 xl:mt-0 bg-black/80 backdrop-blur-2xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(139,92,246,0.15)] h-[600px] xl:h-auto shrink-0">
                     
                     {/* Ari Header */}
                     <div className="bg-gradient-to-r from-violet-900/50 to-indigo-900/50 p-4 border-b border-violet-500/30 flex items-center gap-4">
