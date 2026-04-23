@@ -182,9 +182,6 @@ const TownController: React.FC = () => {
             )}
 
             <Routes>
-                {/* BÚNKER DE MANDO (DIRECTOR) - FUERA DEL LAYOUT MÓVIL */}
-                <Route path="/:townId/bunker-waly" element={<DirectorBunkerPage />} />
-
                 <Route path="/" element={<Layout allShops={allShops} globalConfig={globalConfig} />}>
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<Home globalConfig={globalConfig} />} />
@@ -308,6 +305,9 @@ const App: React.FC = () => {
                 <Route path="/embajador" element={<Navigate to="/" replace />} />
                 <Route path="/embajador/*" element={<Navigate to="/" replace />} />
                 
+                {/* 🛡️ BÚNKER DE MANDO (DIRECTOR) - Prioridad absoluta antes del catch-all */}
+                <Route path="/:townId/bunker-waly" element={<DirectorBunkerPage />} />
+
                 {/* Ruteo Dinámico Multi-Zona */}
                 <Route path="/:townId/*" element={<TownController />} />
                 
