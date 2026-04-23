@@ -182,6 +182,9 @@ const TownController: React.FC = () => {
             )}
 
             <Routes>
+                {/* BÚNKER DE MANDO (DIRECTOR) - FUERA DEL LAYOUT MÓVIL */}
+                <Route path="/:townId/bunker-waly" element={<DirectorBunkerPage />} />
+
                 <Route path="/" element={<Layout allShops={allShops} globalConfig={globalConfig} />}>
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<Home globalConfig={globalConfig} />} />
@@ -213,9 +216,6 @@ const TownController: React.FC = () => {
                     <Route path="validar/:clientId" element={<ClientValidationPage />} />
                     <Route path="mi-comercio/panel-de-gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopMasterPanelPage /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
-                    
-                    {/* BÚNKER DE MANDO (DIRECTOR) */}
-                    <Route path="bunker-waly" element={<DirectorBunkerPage />} />
 
                     <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/fabrica" element={<ProtectedRoute roles={['admin']}><FactoryPanelPage /></ProtectedRoute>} />
