@@ -19,6 +19,7 @@ import DiscountsPage from './pages/DiscountsPage';
 import LandingPage from './pages/LandingPage';
 import AboutPage from './pages/AboutPage';
 import MasterPanelPage from './pages/MasterPanelPage';
+import { DirectorBunkerPage } from './pages/DirectorBunkerPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
@@ -212,6 +213,10 @@ const TownController: React.FC = () => {
                     <Route path="validar/:clientId" element={<ClientValidationPage />} />
                     <Route path="mi-comercio/panel-de-gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopMasterPanelPage /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/cliente-subscripcion" element={<ClientSubscriptionPage allShops={allShops} />} />
+                    
+                    {/* BÚNKER DE MANDO (DIRECTOR) */}
+                    <Route path="bunker-waly" element={<DirectorBunkerPage />} />
+
                     <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/fabrica" element={<ProtectedRoute roles={['admin']}><FactoryPanelPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
