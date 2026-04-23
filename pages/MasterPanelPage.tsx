@@ -488,6 +488,18 @@ const MasterPanelPage: React.FC = () => {
             </div>
 
             <div className="px-6 mt-8 space-y-10 relative z-10 pb-20 max-w-lg mx-auto">
+                
+                {/* 🛡️ ACCESO DIRECTO AL BÚNKER CENTRAL (Solo Director) */}
+                <div 
+                    role="button" tabIndex={0}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/bunker-waly`); }}
+                    className="w-full bg-gradient-to-r from-violet-900/50 to-indigo-900/50 text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(139,92,246,0.2)] relative overflow-hidden group"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500/0 via-white/5 to-violet-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <Zap size={18} className="text-violet-400" />
+                    <span className="text-[13px] text-violet-300">Búnker Central · ARI</span>
+                </div>
+
                 <div 
                     role="button" tabIndex={0}
                     onClick={injectTestShops} 

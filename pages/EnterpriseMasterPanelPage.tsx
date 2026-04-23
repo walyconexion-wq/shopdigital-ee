@@ -63,6 +63,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
     const formattedTown = 'NACIONAL';
 
     const quickLinks = [
+        { title: '🛡️ Búnker Central · ARI', desc: 'Terminal del Director · Chat IA', path: `/esteban-echeverria/bunker-waly`, icon: <Zap size={16} />, color: 'violet' },
         { title: 'Centro de Mando Ezeiza', desc: 'Tablero Maestro · Zona Ezeiza', path: `/ezeiza/tablero-maestro`, icon: <Zap size={16} />, color: 'cyan' },
         { title: 'Centro de Mando Echeverría', desc: 'Tablero Maestro · Zona E. Echeverría', path: `/esteban-echeverria/tablero-maestro`, icon: <Zap size={16} />, color: 'violet' },
         { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/empresas`, icon: <Factory size={16} />, color: 'amber' },
