@@ -41,6 +41,8 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const catalogRef = useRef<HTMLDivElement>(null);
     const { user, login } = useAuth();
+    const [lockClicks, setLockClicks] = useState(0);
+    const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const ROOT_EMAIL = 'walyconexion@gmail.com';
 
@@ -54,9 +56,22 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         const shopEmail = selectedShop?.authorizedEmail?.trim().toLowerCase();
         if (userEmail === ROOT_EMAIL || (shopEmail && userEmail === shopEmail)) {
             navigate(destination);
-        } else {
-            alert('🔒 Acceso denegado. Este acceso es exclusivo para el comerciante autorizado. Contactá al administrador.');
         }
+        // Si no tiene acceso, simplemente no pasa nada (modo mudo)
+    };
+
+    // 🔐 Cerradura Secreta: 5 toques para activar
+    const handleLockTap = () => {
+        if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
+        const next = lockClicks + 1;
+        setLockClicks(next);
+        if (next >= 5) {
+            setLockClicks(0);
+            handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`);
+            return;
+        }
+        // Reset después de 3 segundos sin toques
+        lockTimerRef.current = setTimeout(() => setLockClicks(0), 3000);
     };
 
     const selectedShop = useMemo(() =>
@@ -205,11 +220,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
                     <h1 
                         className="impact-title neon-flicker text-[34px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] text-white text-center pointer-events-auto cursor-default"
-                        onClick={(e) => {
-                            if (e.detail === 3) {
-                                handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`);
-                            }
-                        }}
+                    onClick={(e) => e.preventDefault()}
                     >
                         {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                     </h1>
@@ -386,8 +397,17 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </button>
                     <button onClick={() => {
                         playNeonClick();
-                        navigate(`/${townId}/mi-comercio/panel-de-gestion`);
-                    }} className="flex items-center justify-center gap-2 text-white/20 hover:text-white/40"><Lock size={12} /><span className="text-[8px] font-bold uppercase">Gestión</span></button>
+                        handleLockTap();
+                    }} className={`flex items-center justify-center gap-1.5 py-2 transition-all duration-300 ${
+                        lockClicks >= 4 
+                        ? 'text-cyan-400 scale-110 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' 
+                        : lockClicks >= 2 
+                        ? 'text-white/25'
+                        : 'text-white/15'
+                    }`}>
+                        <Lock size={lockClicks >= 4 ? 14 : 10} className="transition-all duration-300" />
+                        <span className={`font-bold uppercase tracking-widest transition-all duration-300 ${lockClicks >= 4 ? 'text-[9px]' : 'text-[7px]'}`}>Gestión</span>
+                    </button>
                 </div>
 
                 {/* ---------- MURO DE NOVEDADES (FEED) ---------- */}
@@ -518,34 +538,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </button>
                 </div>
 
-                {/* Secret Merchant Cable */}
-                <div 
-                    onClick={() => handleMerchantAccess(`/${townId}/red-comercial/descuentos`)}
-                    className="mb-12 cursor-pointer group active:scale-95 transition-all"
-                >
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                        <Lock size={10} className="text-cyan-500/30 group-hover:text-cyan-400 transition-colors" />
-                        <p className="text-[8px] font-black uppercase tracking-[0.5em] text-cyan-500/30 group-hover:text-cyan-400 transition-colors text-center neon-flicker-slow">
-                            Catálogo exclusivo para comerciantes
-                        </p>
-                    </div>
-                </div>
 
-                {/* Merchant Access Links */}
-                <div className="w-full flex flex-col items-center gap-4 pb-12 opacity-40 hover:opacity-100 transition-opacity">
-                    <button
-                        onClick={() => handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`)}
-                        className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-white hover:text-cyan-400 transition-colors"
-                    >
-                        <Lock size={12} /> Acceso Comercio
-                    </button>
-                    <button
-                        onClick={() => handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`)}
-                        className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-black text-cyan-500/80 hover:text-cyan-400 transition-colors"
-                    >
-                        <Lock size={10} /> Panel Central
-                    </button>
-                </div>
             </div>
         </div>
     );
