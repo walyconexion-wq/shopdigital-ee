@@ -65,9 +65,9 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
         const next = lockClicks + 1;
         setLockClicks(next);
-        if (next >= 5) {
+        if (next >= 5 && selectedShop) {
             setLockClicks(0);
-            handleMerchantAccess(`/${townId}/mi-comercio/panel-de-gestion`);
+            handleMerchantAccess(`/${townId}/mi-catalogo/editar/${selectedShop.id}`);
             return;
         }
         // Reset después de 3 segundos sin toques

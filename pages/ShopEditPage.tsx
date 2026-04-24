@@ -105,6 +105,8 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
     );
   }
 
+  const isMiCatalogoRoute = window.location.pathname.includes('/mi-catalogo/');
+
   return (
     <div className="min-h-screen bg-black text-white pb-32 relative overflow-x-hidden selection:bg-cyan-500/30">
       {/* Background */}
@@ -114,9 +116,11 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
       </div>
 
       <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-white/10 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl flex items-center justify-between">
-        <button onClick={() => { playNeonClick(); navigate(-1); }} className="text-white/50 hover:text-white transition-colors">
-          <ChevronLeft size={24} />
-        </button>
+        {!isMiCatalogoRoute ? (
+          <button onClick={() => { playNeonClick(); navigate(-1); }} className="text-white/50 hover:text-white transition-colors">
+            <ChevronLeft size={24} />
+          </button>
+        ) : <div className="w-6" />}
         <div className="flex flex-col items-center flex-1">
           <Edit3 size={24} className="mb-1" style={{ color: shop.themeColor || '#22d3ee' }} />
           <h1 className="text-sm font-[1000] uppercase tracking-[0.1em] text-white text-center leading-tight">
