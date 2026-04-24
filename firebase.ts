@@ -814,26 +814,43 @@ export const ConteoPendientes = async (townId: string, locality?: string, period
 // ==============================
 // 🐕 PROTOCOLO DOBERMAN (Security Logs)
 // ==============================
+const ROOT_EMAIL = 'walyconexion@gmail.com';
+
 export const registrarIntrusionBunker = async (email: string | null) => {
+    // 🛡️ NO registrar al Director — Reconocimiento de Dueño
+    if (email && email.trim().toLowerCase() === ROOT_EMAIL) return;
+
     try {
-        // Intentar obtener IP pública (servicio gratuito)
+        // Obtener IP + País (Geo-IP gratuito)
         let ip = 'desconocida';
+        let country = 'Desconocido';
+        let countryCode = '??';
         try {
-            const ipRes = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipRes.json();
-            ip = ipData.ip || 'desconocida';
-        } catch { ip = 'no-disponible'; }
+            const geoRes = await fetch('https://ipapi.co/json/');
+            const geoData = await geoRes.json();
+            ip = geoData.ip || 'desconocida';
+            country = geoData.country_name || 'Desconocido';
+            countryCode = geoData.country_code || '??';
+        } catch {
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                ip = ipData.ip || 'desconocida';
+            } catch { ip = 'no-disponible'; }
+        }
 
         await addDoc(collection(db, 'securityLogs'), {
             type: 'bunker_intrusion',
             email: email || 'anonimo',
             ip,
+            country,
+            countryCode,
             userAgent: navigator.userAgent.substring(0, 150),
             timestamp: new Date().toISOString(),
             date: new Date().toLocaleDateString('es-AR'),
             time: new Date().toLocaleTimeString('es-AR'),
         });
-        console.warn(`[DOBERMAN] 🐕 Intrusión registrada: ${email || 'anónimo'} desde IP ${ip}`);
+        console.warn(`[DOBERMAN] 🐕 Intrusión registrada: ${email || 'anónimo'} desde ${country} (IP: ${ip})`);
     } catch (error) {
         console.error("[DOBERMAN] Error registrando intrusión:", error);
     }
@@ -851,5 +868,26 @@ export const obtenerIntrusiones = async (maxResults: number = 20): Promise<any[]
     } catch (error) {
         console.error("[DOBERMAN] Error leyendo intrusiones:", error);
         return [];
+    }
+};
+
+export const eliminarIntrusion = async (logId: string) => {
+    try {
+        await deleteDoc(doc(db, 'securityLogs', logId));
+        console.log(`[DOBERMAN] Intruso ${logId} eliminado del registro.`);
+    } catch (error) {
+        console.error("[DOBERMAN] Error eliminando intrusión:", error);
+    }
+};
+
+export const limpiarTodasIntrusiones = async () => {
+    try {
+        const snap = await getDocs(collection(db, 'securityLogs'));
+        const batch: Promise<void>[] = [];
+        snap.docs.forEach(d => batch.push(deleteDoc(doc(db, 'securityLogs', d.id))));
+        await Promise.all(batch);
+        console.log(`[DOBERMAN] 🧹 ${snap.size} registros limpiados.`);
+    } catch (error) {
+        console.error("[DOBERMAN] Error limpiando:", error);
     }
 };
