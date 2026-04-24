@@ -32,7 +32,7 @@ const getFlag = (code: string) => {
 
 export const DirectorBunkerPage: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const chatEndRef = useRef<HTMLDivElement>(null);
     
     const [ariMsgs, setAriMsgs] = useState([
@@ -48,13 +48,14 @@ export const DirectorBunkerPage: React.FC = () => {
     const ROOT_EMAIL = 'walyconexion@gmail.com';
     const isAuthorized = user?.email?.trim().toLowerCase() === ROOT_EMAIL;
 
-    // 🐕 PROTOCOLO DOBERMAN: Registrar intrusión si no autorizado
+    // 🐕 PROTOCOLO DOBERMAN: Registrar intrusión SOLO si auth ya cargó y NO es el Director
     useEffect(() => {
+        if (authLoading) return; // Esperar a que Firebase Auth resuelva
         if (!isAuthorized && !intrusionRegistered) {
             setIntrusionRegistered(true);
             registrarIntrusionBunker(user?.email || null);
         }
-    }, [isAuthorized, user, intrusionRegistered]);
+    }, [isAuthorized, user, intrusionRegistered, authLoading]);
 
     // Cargar intrusiones cuando el Director entra
     const loadIntrusiones = async () => {
@@ -75,6 +76,16 @@ export const DirectorBunkerPage: React.FC = () => {
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [ariMsgs, isThinking]);
+
+    // Mientras Firebase Auth resuelve, mostrar pantalla de carga
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center">
+                <div className="w-12 h-12 border-2 border-violet-500/20 border-t-violet-500 rounded-full animate-spin mb-4"></div>
+                <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold">Verificando ADN Digital...</p>
+            </div>
+        );
+    }
 
     // Eliminar un intruso individual
     const handleEliminarIntruso = async (logId: string) => {
