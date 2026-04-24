@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where, increment } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where, increment, addDoc, orderBy, limit } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
@@ -808,5 +808,48 @@ export const ConteoPendientes = async (townId: string, locality?: string, period
     } catch (error) {
         console.error("Error en ConteoPendientes (IA):", error);
         return 0;
+    }
+};
+
+// ==============================
+// 🐕 PROTOCOLO DOBERMAN (Security Logs)
+// ==============================
+export const registrarIntrusionBunker = async (email: string | null) => {
+    try {
+        // Intentar obtener IP pública (servicio gratuito)
+        let ip = 'desconocida';
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            ip = ipData.ip || 'desconocida';
+        } catch { ip = 'no-disponible'; }
+
+        await addDoc(collection(db, 'securityLogs'), {
+            type: 'bunker_intrusion',
+            email: email || 'anonimo',
+            ip,
+            userAgent: navigator.userAgent.substring(0, 150),
+            timestamp: new Date().toISOString(),
+            date: new Date().toLocaleDateString('es-AR'),
+            time: new Date().toLocaleTimeString('es-AR'),
+        });
+        console.warn(`[DOBERMAN] 🐕 Intrusión registrada: ${email || 'anónimo'} desde IP ${ip}`);
+    } catch (error) {
+        console.error("[DOBERMAN] Error registrando intrusión:", error);
+    }
+};
+
+export const obtenerIntrusiones = async (maxResults: number = 20): Promise<any[]> => {
+    try {
+        const q = query(
+            collection(db, 'securityLogs'),
+            orderBy('timestamp', 'desc'),
+            limit(maxResults)
+        );
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (error) {
+        console.error("[DOBERMAN] Error leyendo intrusiones:", error);
+        return [];
     }
 };

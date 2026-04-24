@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Activity, Anchor, Globe, Users, Database, 
-    MessageSquare, Zap, ShieldAlert, Cpu, ChevronLeft, Hexagon
+    MessageSquare, Zap, ShieldAlert, Cpu, ChevronLeft, Hexagon,
+    Shield, ShieldCheck, Dog
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
+import { registrarIntrusionBunker, obtenerIntrusiones } from '../firebase';
 
 // Mock data para el Radar
 const zonesData = [
@@ -22,30 +24,98 @@ const embajadores = [
 
 export const DirectorBunkerPage: React.FC = () => {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
+    const chatEndRef = useRef<HTMLDivElement>(null);
     
-    // Chat UI state (Mock)
     const [ariMsgs, setAriMsgs] = useState([
-        { role: 'ari' as 'ari' | 'director', text: 'Sistemas en línea, Director. El clúster de Ezeiza reporta alta actividad, pero San Martín está frío. ¿Qué analizamos primero?' }
+        { role: 'ari' as 'ari' | 'director', text: 'Sistemas en linea, Director. El cluster de Ezeiza reporta alta actividad, pero San Martin esta frio. ¿Que analizamos primero?' }
     ]);
     const [msgInput, setMsgInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
+    const [intrusiones, setIntrusiones] = useState<any[]>([]);
+    const [securityStatus, setSecurityStatus] = useState<'green' | 'red'>('green');
+    const [intrusionRegistered, setIntrusionRegistered] = useState(false);
 
     const ROOT_EMAIL = 'walyconexion@gmail.com';
-    
-    // Capa 1: Búnker de Seguridad Absoluta
-    if (user?.email?.trim().toLowerCase() !== ROOT_EMAIL) {
+    const isAuthorized = user?.email?.trim().toLowerCase() === ROOT_EMAIL;
+
+    // 🐕 PROTOCOLO DOBERMAN: Registrar intrusión si no autorizado
+    useEffect(() => {
+        if (!isAuthorized && !intrusionRegistered) {
+            setIntrusionRegistered(true);
+            registrarIntrusionBunker(user?.email || null);
+        }
+    }, [isAuthorized, user, intrusionRegistered]);
+
+    // Cargar intrusiones cuando el Director entra
+    useEffect(() => {
+        if (isAuthorized) {
+            obtenerIntrusiones(15).then(logs => {
+                setIntrusiones(logs);
+                // Si hay intrusiones en las últimas 24h, poner escudo rojo
+                const now = Date.now();
+                const recent = logs.filter(l => {
+                    const logTime = new Date(l.timestamp).getTime();
+                    return (now - logTime) < 24 * 60 * 60 * 1000;
+                });
+                if (recent.length > 0) setSecurityStatus('red');
+            });
+        }
+    }, [isAuthorized]);
+
+    // Auto-scroll al enviar mensaje
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [ariMsgs, isThinking]);
+
+    // ═══════════════════════════════════════════
+    // 🐕 PANTALLA DOBERMAN (Acceso Denegado)
+    // ═══════════════════════════════════════════
+    if (!isAuthorized) {
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,0,0,0.15),transparent_70%)] pointer-events-none"></div>
-                <ShieldAlert size={80} className="text-red-500 mb-6 drop-shadow-[0_0_30px_rgba(255,0,0,0.6)] animate-pulse" />
-                <h1 className="text-white text-2xl font-[1000] uppercase tracking-widest text-center mb-2 text-shadow-premium">ACCESO DENEGADO</h1>
-                <p className="text-red-400 font-bold tracking-widest text-[10px] uppercase mb-8">Nivel de autorización insuficiente</p>
-                <div className="text-[9px] text-white/30 tracking-[0.3em] uppercase">Se ha registrado el intento de intrusión.</div>
+                {/* Fondo rojo pulsante */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,0,0,0.2),transparent_70%)] pointer-events-none animate-pulse"></div>
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,0,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+                
+                {/* Doberman Digital */}
+                <div className="relative mb-8">
+                    <div className="w-32 h-32 rounded-full bg-red-900/30 border-2 border-red-500/50 flex items-center justify-center relative shadow-[0_0_60px_rgba(239,68,68,0.3)]">
+                        <Dog size={64} className="text-red-500 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)]" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-ping"></div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-[8px] font-black text-white">!</span>
+                    </div>
+                </div>
+                
+                <h1 className="text-white text-3xl font-[1000] uppercase tracking-[0.3em] text-center mb-3">
+                    ZONA PROTEGIDA
+                </h1>
+                <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-red-500 to-transparent mb-4"></div>
+                <p className="text-red-400 font-bold tracking-[0.4em] text-[10px] uppercase mb-6">
+                    Protocolo Doberman Activado
+                </p>
+                <p className="text-white/40 text-[11px] text-center max-w-xs leading-relaxed mb-10">
+                    Este acceso está reservado exclusivamente para el Director. 
+                    Su intento ha sido registrado con fecha, hora e IP.
+                </p>
+                <div className="flex flex-col items-center gap-2 p-4 border border-red-500/20 rounded-2xl bg-red-900/10">
+                    <ShieldAlert size={18} className="text-red-500" />
+                    <span className="text-[9px] text-red-400 font-bold uppercase tracking-widest">
+                        Intrusión Documentada
+                    </span>
+                    <span className="text-[8px] text-white/20 tracking-wider">
+                        {new Date().toLocaleString('es-AR')}
+                    </span>
+                </div>
             </div>
         );
     }
 
+    // ═══════════════════════════════════════════
+    // PANEL DEL DIRECTOR (Autorizado)
+    // ═══════════════════════════════════════════
     const handleSend = async () => {
         if (!msgInput.trim() || isThinking) return;
         playNeonClick();
@@ -73,7 +143,7 @@ export const DirectorBunkerPage: React.FC = () => {
             {/* Header Mando */}
             <header className="relative z-10 bg-black/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => { playNeonClick(); navigate('/tablero-maestro'); }} className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10">
+                    <button onClick={() => { playNeonClick(); navigate(-1); }} className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10">
                         <ChevronLeft size={18} className="text-white/70" />
                     </button>
                     <div>
@@ -84,17 +154,29 @@ export const DirectorBunkerPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]"></div>
-                        <span className="text-[9px] text-green-400 font-bold uppercase tracking-widest">En Línea</span>
+                    {/* 🐕 Escudo de Seguridad */}
+                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
+                        securityStatus === 'green' 
+                        ? 'bg-green-500/10 border-green-500/20' 
+                        : 'bg-red-500/10 border-red-500/30 animate-pulse'
+                    }`}>
+                        {securityStatus === 'green' 
+                            ? <ShieldCheck size={14} className="text-green-400" />
+                            : <Dog size={14} className="text-red-400" />
+                        }
+                        <span className={`text-[9px] font-bold uppercase tracking-widest ${
+                            securityStatus === 'green' ? 'text-green-400' : 'text-red-400'
+                        }`}>
+                            {securityStatus === 'green' ? 'Perímetro Seguro' : `${intrusiones.length} Alertas`}
+                        </span>
                     </div>
                 </div>
             </header>
 
-            {/* Main Content: Left Dashboard (60%) | Right Chat (40%) */}
+            {/* Main Content */}
             <main className="flex-1 relative z-10 flex flex-col xl:flex-row w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)]">
                 
-                {/* ─── CAPA 2: DASHBOARD DE ESTADO ─── */}
+                {/* ─── DASHBOARD DE ESTADO ─── */}
                 <div className="flex-[3] flex flex-col gap-6 xl:overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
                     {/* Contadores Globales */}
@@ -119,11 +201,9 @@ export const DirectorBunkerPage: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
                         {/* Radar de Zonas */}
                         <div className="bg-[#050505] border border-white/10 rounded-2xl p-5 flex flex-col">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
-                                    <Globe size={14} className="text-cyan-500" /> Radar de Zonas
-                                </h2>
-                            </div>
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80 mb-4">
+                                <Globe size={14} className="text-cyan-500" /> Radar de Zonas
+                            </h2>
                             <div className="flex flex-col gap-3">
                                 {zonesData.map(zone => (
                                     <div key={zone.name} className="flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-xl hover:border-white/10 transition-colors">
@@ -147,14 +227,12 @@ export const DirectorBunkerPage: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Alerta de Embajadores */}
+                        {/* Fuerza de Elite + Bitácora de Seguridad */}
                         <div className="bg-[#050505] border border-white/10 rounded-2xl p-5 flex flex-col">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
-                                    <Users size={14} className="text-violet-500" /> Fuerza de Elite
-                                </h2>
-                            </div>
-                            <div className="space-y-3">
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80 mb-4">
+                                <Users size={14} className="text-violet-500" /> Fuerza de Elite
+                            </h2>
+                            <div className="space-y-3 mb-6">
                                 {embajadores.map(emb => (
                                     <div key={emb.name} className="flex items-center gap-3 p-3 bg-gradient-to-r from-violet-900/10 to-transparent border-l-2 border-violet-500 rounded-r-xl">
                                         <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400">
@@ -170,11 +248,34 @@ export const DirectorBunkerPage: React.FC = () => {
                                     </div>
                                 ))}
                             </div>
+
+                            {/* 🐕 Bitácora Doberman */}
+                            {intrusiones.length > 0 && (
+                                <div className="border-t border-red-500/20 pt-4 mt-auto">
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-red-400 flex items-center gap-2 mb-3">
+                                        <Dog size={12} /> Bitácora Doberman
+                                    </h3>
+                                    <div className="space-y-2 max-h-[120px] overflow-y-auto no-scrollbar">
+                                        {intrusiones.slice(0, 5).map((log, idx) => (
+                                            <div key={idx} className="flex items-center justify-between p-2 bg-red-900/10 border border-red-500/10 rounded-lg">
+                                                <div>
+                                                    <p className="text-[10px] text-white/70 font-bold">{log.email}</p>
+                                                    <p className="text-[8px] text-white/30">IP: {log.ip}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-[8px] text-red-400 font-bold">{log.date}</p>
+                                                    <p className="text-[7px] text-white/30">{log.time}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
-                {/* ─── CAPA 3: EL ALTAR DE ARI (CHAT) ─── */}
+                {/* ─── EL ALTAR DE ARI (CHAT) ─── */}
                 <div className="flex-[2] w-full mt-4 xl:mt-0 bg-black/80 backdrop-blur-2xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(139,92,246,0.15)] h-[600px] xl:h-auto shrink-0">
                     
                     {/* Ari Header */}
@@ -187,8 +288,8 @@ export const DirectorBunkerPage: React.FC = () => {
                             <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-400 border-2 border-black rounded-full z-20"></span>
                         </div>
                         <div>
-                            <h2 className="text-[16px] font-[1000] uppercase tracking-widest text-white shadow-sm">Ari</h2>
-                            <p className="text-[8px] text-violet-300 font-bold tracking-[0.3em] uppercase">Analista de Datos Táctica · En línea</p>
+                            <h2 className="text-[16px] font-[1000] uppercase tracking-widest text-white">Ari</h2>
+                            <p className="text-[8px] text-violet-300 font-bold tracking-[0.3em] uppercase">Analista Táctica · En línea</p>
                         </div>
                     </div>
 
@@ -214,6 +315,7 @@ export const DirectorBunkerPage: React.FC = () => {
                                 </div>
                             </div>
                         )}
+                        <div ref={chatEndRef} />
                     </div>
 
                     {/* Input Area */}
