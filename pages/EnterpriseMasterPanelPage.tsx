@@ -9,6 +9,7 @@ import {
     CheckCircle, AlertTriangle, TrendingUp, Package, Megaphone
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { DobermanBadge } from '../components/DobermanBadge';
 
 const EnterpriseMasterPanelPage: React.FC = () => {
 
@@ -95,6 +96,9 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                 <p className="text-[8px] font-bold text-amber-400/60 uppercase tracking-widest mt-1 italic">
                     Panel de Control B2B · {formattedTown}
                 </p>
+                <div className="mt-2">
+                    <DobermanBadge />
+                </div>
             </div>
 
             <div className="px-6 space-y-6 relative z-10 max-w-lg mx-auto">

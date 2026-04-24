@@ -5,6 +5,7 @@ import {
     Image as ImageIcon, Share2, PlusCircle, ShieldCheck, Zap
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { DobermanBadge } from '../components/DobermanBadge';
 import { Shop } from '../types';
 import { suscribirseAComercios, db } from '../firebase';
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
@@ -154,6 +155,9 @@ const ShopMasterPanelPage: React.FC = () => {
                 <p className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${textTheme}`}>
                     <ShieldCheck size={12} /> Autogestión Cyber-Shop
                 </p>
+                <div className="mt-2">
+                    <DobermanBadge />
+                </div>
             </div>
 
             <div className="px-5 space-y-6 relative z-10 max-w-lg mx-auto">

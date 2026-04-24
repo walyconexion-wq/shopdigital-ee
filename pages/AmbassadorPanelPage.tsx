@@ -21,6 +21,7 @@ import {
     Tag
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
+import { DobermanBadge } from '../components/DobermanBadge';
 
 interface AmbassadorPanelPageProps {
     allShops: Shop[];
@@ -113,6 +114,9 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                 <p className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest text-center mt-2 px-4">
                     Comercios Pendientes: {pendingShops.length}
                 </p>
+                <div className="mt-2">
+                    <DobermanBadge />
+                </div>
                 {/* Botones de Gestión */}
                 <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
                     <button

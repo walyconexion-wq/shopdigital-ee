@@ -10,6 +10,7 @@ import {
     saveCategoriesConfig, migrarDatosLegados, subscribeToGlobalConfig
 } from '../firebase';
 import { Offer } from '../types';
+import { DobermanBadge } from '../components/DobermanBadge';
 
 const MasterPanelPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
@@ -484,6 +485,9 @@ const MasterPanelPage: React.FC = () => {
                     <p className="text-[9px] font-bold uppercase tracking-widest mt-1" style={{ color: zoneColor }}>
                         {zoneName} · Control General
                     </p>
+                    <div className="mt-2">
+                        <DobermanBadge />
+                    </div>
                 </div>
             </div>
 
