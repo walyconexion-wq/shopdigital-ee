@@ -56,6 +56,7 @@ import EnterpriseGlobalConfigPage from './pages/EnterpriseGlobalConfigPage';
 import CreditsPosnetPage from './pages/CreditsPosnetPage';
 import EnterpriseSubscriptionPage from './pages/EnterpriseSubscriptionPage';
 import MarketingPanelPage from './pages/MarketingPanelPage';
+import LiveBroadcastPage from './pages/LiveBroadcastPage';
 import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
@@ -220,6 +221,7 @@ const TownController: React.FC = () => {
                     <Route path="tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
                     <Route path="marketing-inteligente" element={<ProtectedRoute roles={['admin']}><MarketingPanelPage /></ProtectedRoute>} />
+                    <Route path="director/transmision-en-vivo" element={<ProtectedRoute roles={['admin']}><LiveBroadcastPage /></ProtectedRoute>} />
                     <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/factura" element={<InvoiceViewerPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/credencial-vip/:clientId" element={<ClientVipCredentialPage allShops={allShops} allClients={allClients} />} />
