@@ -903,7 +903,7 @@ export interface Broadcast {
     targetCategories: string[];  // ['all'] o ['pizzerias','heladerias']
     active: boolean;
     priority: number;
-    townId: string;
+    targetTowns: string[];  // Ej: ['global'], ['ezeiza', 'esteban-echeverria']
     createdAt: string;
     createdBy: string;
 }
@@ -925,7 +925,7 @@ export const suscribirseABroadcast = (onUpdate: (broadcasts: Broadcast[]) => voi
     const q = query(
         collection(db, 'broadcastChannel'),
         where('active', '==', true),
-        where('townId', 'in', [townId, 'global']),
+        where('targetTowns', 'array-contains-any', [townId, 'global']),
     );
     return onSnapshot(q, (snap) => {
         const broadcasts = snap.docs.map(d => ({ id: d.id, ...d.data() } as Broadcast));
@@ -943,7 +943,8 @@ export const obtenerBroadcasts = async (townId: string = 'esteban-echeverria'): 
         const snap = await getDocs(collection(db, 'broadcastChannel'));
         return snap.docs
             .map(d => ({ id: d.id, ...d.data() } as Broadcast))
-            .filter(b => b.townId === townId || b.townId === 'global');
+            .filter(b => (!b.targetTowns) ? true : b.targetTowns.includes('global') || b.targetTowns.includes(townId) || b.townId === townId || b.townId === 'global'); 
+             // Mantiene compatibilidad con migraciones de datos viejos que usan townId
     } catch (error) {
         console.error("[BROADCAST] Error obteniendo:", error);
         return [];

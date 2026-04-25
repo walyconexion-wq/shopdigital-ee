@@ -21,6 +21,7 @@ const LiveBroadcastPage: React.FC = () => {
     const [broadcastTitle, setBroadcastTitle] = useState('');
     const [broadcastType, setBroadcastType] = useState<'image' | 'video'>('image');
     const [targetCats, setTargetCats] = useState<string[]>(['all']);
+    const [targetTowns, setTargetTowns] = useState<string[]>(['global']);
     const [allBroadcasts, setAllBroadcasts] = useState<Broadcast[]>([]);
     const [transmitting, setTransmitting] = useState(false);
 
@@ -43,6 +44,9 @@ const LiveBroadcastPage: React.FC = () => {
     const firstActive = allBroadcasts.find(b => b.active);
     const previewUrl = broadcastUrl.trim() !== '' ? broadcastUrl : firstActive?.mediaUrl;
     const previewType = broadcastUrl.trim() !== '' ? broadcastType : firstActive?.mediaType;
+    const previewTownsText = broadcastUrl.trim() !== '' 
+        ? (targetTowns.includes('global') ? 'CADENA NACIONAL' : targetTowns.join(' - ').replace(/-/g, ' ').toUpperCase())
+        : (firstActive?.targetTowns?.includes('global') || !firstActive?.targetTowns ? 'CADENA NACIONAL' : firstActive.targetTowns.join(' - ').replace(/-/g, ' ').toUpperCase());
 
     const handleTransmit = async () => {
         if (!broadcastUrl.trim() || !broadcastTitle.trim()) {
@@ -57,9 +61,9 @@ const LiveBroadcastPage: React.FC = () => {
             mediaType: broadcastType,
             title: broadcastTitle.trim(),
             targetCategories: targetCats,
+            targetTowns: targetTowns,
             active: true,
             priority: 1,
-            townId,
             createdBy: 'Director'
         });
         
@@ -67,6 +71,7 @@ const LiveBroadcastPage: React.FC = () => {
         setBroadcastUrl('');
         setBroadcastTitle('');
         setTargetCats(['all']);
+        setTargetTowns(['global']);
         
         const updated = await obtenerBroadcasts(townId);
         setAllBroadcasts(updated);
@@ -74,9 +79,10 @@ const LiveBroadcastPage: React.FC = () => {
 
         // Ari comment
         setTimeout(() => {
+            const zonaTxt = targetTowns.includes('global') ? 'toda la Cadena Nacional' : targetTowns.join(' y ').replace(/-/g, ' ').toUpperCase();
             setAriMsgs(prev => [...prev, { 
                 role: 'ari', 
-                text: `¡Campaña "${titleCopy}" inyectada con éxito! Monitoreando propagación en los muros del Hormiguero...` 
+                text: `¡Campaña "${titleCopy}" inyectada con éxito en ${zonaTxt}! Monitoreando propagación en muros...` 
             }]);
         }, 1000);
     };
@@ -106,6 +112,20 @@ const LiveBroadcastPage: React.FC = () => {
                 setTargetCats(next.length > 0 ? next : ['all']);
             } else {
                 setTargetCats([...without, catId]);
+            }
+        }
+    };
+
+    const toggleTown = (town: string) => {
+        if (town === 'global') {
+            setTargetTowns(['global']);
+        } else {
+            const without = targetTowns.filter(t => t !== 'global');
+            if (without.includes(town)) {
+                const next = without.filter(t => t !== town);
+                setTargetTowns(next.length > 0 ? next : ['global']);
+            } else {
+                setTargetTowns([...without, town]);
             }
         }
     };
@@ -215,6 +235,25 @@ const LiveBroadcastPage: React.FC = () => {
                                 />
                             </div>
 
+                            {/* Chips de Zonas (Target Towns) */}
+                            <div className="pt-2 border-b border-white/5 pb-4">
+                                <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Zonas Geográficas :</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button 
+                                        onClick={() => toggleTown('global')}
+                                        className={`col-span-2 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetTowns.includes('global') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
+                                    >🌐 Global / Cadena Nacional</button>
+                                    <button 
+                                        onClick={() => toggleTown('ezeiza')}
+                                        className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetTowns.includes('ezeiza') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
+                                    >🏙️ Ezeiza</button>
+                                    <button 
+                                        onClick={() => toggleTown('esteban-echeverria')}
+                                        className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetTowns.includes('esteban-echeverria') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
+                                    >🌳 Esteban Echeverría</button>
+                                </div>
+                            </div>
+
                             {/* Chips de Categorías (Compact Grid Symmetrical) */}
                             <div className="pt-2">
                                 <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Target en Muros :</label>
@@ -265,7 +304,7 @@ const LiveBroadcastPage: React.FC = () => {
                                             <div>
                                                 <p className={`text-[10px] font-bold truncate ${bc.active ? 'text-white' : 'text-white/50'}`}>{bc.title}</p>
                                                 <p className="text-[7px] text-white/30 uppercase tracking-widest mt-0.5">
-                                                    Target: {bc.targetCategories.includes('all') ? 'HORMIGUERO' : bc.targetCategories.length + ' SECTORES'}
+                                                    Target: {!bc.targetTowns || bc.targetTowns.includes('global') ? 'CADENA NACIONAL' : bc.targetTowns.join(', ').replace(/-/g, ' ').toUpperCase()} | {bc.targetCategories.includes('all') ? ' TODOS LOS SECTORES' : ' ' + bc.targetCategories.length + ' SECTORES'}
                                                 </p>
                                             </div>
                                         </div>
@@ -335,9 +374,9 @@ const LiveBroadcastPage: React.FC = () => {
                         {/* Tag Bottom */}
                         <div className="absolute bottom-6 left-0 right-0 flex justify-center z-30">
                             <div className="px-4 py-1.5 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
-                                <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Canal 01</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Target Zona</span>
                                 <div className="w-[1px] h-3 bg-white/20" />
-                                <span className="text-[8px] font-black uppercase tracking-widest text-white/50">Muro Vivo RMN</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-white/50">{previewUrl ? previewTownsText : 'Muro Vivo RMN'}</span>
                             </div>
                         </div>
 
