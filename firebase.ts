@@ -906,6 +906,8 @@ export interface Broadcast {
     targetTowns: string[];  // Ej: ['global'], ['ezeiza', 'esteban-echeverria']
     createdAt: string;
     createdBy: string;
+    scheduledStart?: string; // ISO String para activar
+    scheduledEnd?: string;   // ISO String para desactivar
 }
 
 export const guardarBroadcast = async (broadcast: Omit<Broadcast, 'id' | 'createdAt'>) => {
@@ -943,7 +945,7 @@ export const obtenerBroadcasts = async (townId: string = 'esteban-echeverria'): 
         const snap = await getDocs(collection(db, 'broadcastChannel'));
         return snap.docs
             .map(d => ({ id: d.id, ...d.data() } as Broadcast))
-            .filter(b => (!b.targetTowns) ? true : b.targetTowns.includes('global') || b.targetTowns.includes(townId) || b.townId === townId || b.townId === 'global'); 
+            .filter(b => (!b.targetTowns) ? true : b.targetTowns.includes('global') || b.targetTowns.includes(townId) || (b as any).townId === townId || (b as any).townId === 'global'); 
              // Mantiene compatibilidad con migraciones de datos viejos que usan townId
     } catch (error) {
         console.error("[BROADCAST] Error obteniendo:", error);
@@ -966,5 +968,14 @@ export const toggleBroadcast = async (broadcastId: string, active: boolean) => {
         console.log(`[BROADCAST] Transmisión ${broadcastId} → ${active ? 'ON' : 'OFF'}`);
     } catch (error) {
         console.error("[BROADCAST] Error toggle:", error);
+    }
+};
+
+export const editarBroadcast = async (broadcastId: string, updates: Partial<Broadcast>) => {
+    try {
+        await updateDoc(doc(db, 'broadcastChannel', broadcastId), updates);
+        console.log(`[BROADCAST] Transmisión ${broadcastId} editada.`);
+    } catch (error) {
+        console.error("[BROADCAST] Error editando:", error);
     }
 };
