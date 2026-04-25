@@ -161,7 +161,7 @@ const LiveBroadcastPage: React.FC = () => {
                 <div className="flex-none xl:w-[450px] shrink-0 flex flex-col gap-6 h-full overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
                     {/* Status Bar Elegante */}
-                    <div className="bg-black/80 backdrop-blur-2xl border border-violet-500/20 rounded-3xl p-5 flex items-center justify-between shadow-[0_0_20px_rgba(139,92,246,0.1)]">
+                    <div className="bg-black/90 backdrop-blur-2xl border-2 border-purple-900/50 rounded-3xl p-5 flex items-center justify-between shadow-[0_0_20px_rgba(88,28,135,0.3)]">
                         <div className="flex items-center gap-3">
                             <div className={`w-3 h-3 rounded-full ${activeCount > 0 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)] animate-pulse' : 'bg-white/10'}`} />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Canal Maestro</span>
@@ -180,7 +180,7 @@ const LiveBroadcastPage: React.FC = () => {
                     </div>
 
                     {/* Nuevo Contenedor Formulario */}
-                    <div className="bg-[#050505] border border-violet-500/20 shadow-[0_0_30px_rgba(139,92,246,0.05)] rounded-3xl p-6 relative overflow-hidden">
+                    <div className="bg-[#050505] border-2 border-purple-900/50 shadow-[0_0_30px_rgba(88,28,135,0.2)] rounded-3xl p-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/10 blur-[50px] pointer-events-none rounded-full" />
                         
                         <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400 flex items-center gap-2 mb-6">
@@ -250,7 +250,7 @@ const LiveBroadcastPage: React.FC = () => {
 
                     {/* Lista Activas */}
                     {allBroadcasts.length > 0 && (
-                        <div className="bg-[#050505] border border-white/5 rounded-3xl p-5 mb-8">
+                        <div className="bg-[#050505] border-2 border-purple-900/50 rounded-3xl p-5 mb-8">
                             <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2 mb-4">
                                 <Tv size={12} className="text-violet-400/50" />
                                 Monitor de Muros
@@ -292,10 +292,10 @@ const LiveBroadcastPage: React.FC = () => {
                 {/* ==================================================== */}
                 {/* PILAR 2: MONITOR DE RETORNO (CENTRO)                 */}
                 {/* ==================================================== */}
-                <div className="flex-[1.5] hidden xl:flex flex-col items-center justify-center relative p-2">
+                <div className="flex-[2] hidden xl:flex flex-col items-center justify-start relative p-2 pt-12">
                     
                     {/* TV Monitor Container con Efecto Cristal */}
-                    <div className="relative h-full aspect-[9/16] rounded-[3rem] border border-white/10 bg-black overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)] ring-8 ring-black relative max-h-full">
+                    <div className="relative w-full max-w-[850px] aspect-video rounded-[2rem] border-2 border-purple-900/50 bg-black overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,1),0_0_40px_rgba(88,28,135,0.2)] ring-4 ring-black relative">
                         
                         {/* Brillo Bisel TV */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none rounded-[3rem] z-20" />
@@ -347,7 +347,7 @@ const LiveBroadcastPage: React.FC = () => {
                 {/* ==================================================== */}
                 {/* PILAR 3: CEREBRO ARI (DERECHA)                       */}
                 {/* ==================================================== */}
-                <div className="flex-none xl:w-[400px] h-full bg-black/20 backdrop-blur-3xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_50px_rgba(139,92,246,0.15)] shrink-0">
+                <div className="flex-none xl:w-[550px] h-full bg-black/40 backdrop-blur-3xl border-2 border-purple-900/50 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_50px_rgba(88,28,135,0.2)] shrink-0">
                     <div className="bg-gradient-to-r from-violet-900/50 to-indigo-900/50 p-4 border-b border-violet-500/30 flex items-center gap-4">
                         <div className="relative">
                             <div className="w-12 h-12 rounded-2xl bg-black border border-violet-500/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(139,92,246,0.4)]">
