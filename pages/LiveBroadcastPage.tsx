@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, Megaphone, Radio, Tv, Signal, 
-    Trash2, Power, MonitorPlay
+    Trash2, Power, MonitorPlay, MessageSquare, Cpu, Anchor
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { generateAriResponse } from '../services/gemini';
 import { 
     guardarBroadcast, obtenerBroadcasts, eliminarBroadcast, toggleBroadcast, Broadcast 
 } from '../firebase';
 import { CATEGORIES } from '../constants';
-import { DobermanBadge } from '../components/DobermanBadge';
 
 const LiveBroadcastPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const chatEndRef = useRef<HTMLDivElement>(null);
 
+    // Formulario de Transmisión
     const [broadcastUrl, setBroadcastUrl] = useState('');
     const [broadcastTitle, setBroadcastTitle] = useState('');
     const [broadcastType, setBroadcastType] = useState<'image' | 'video'>('image');
@@ -22,11 +24,25 @@ const LiveBroadcastPage: React.FC = () => {
     const [allBroadcasts, setAllBroadcasts] = useState<Broadcast[]>([]);
     const [transmitting, setTransmitting] = useState(false);
 
+    // Ari Terminal
+    const [ariMsgs, setAriMsgs] = useState([
+        { role: 'ari' as 'ari' | 'director', text: 'Sistemas enganchados, Director. El Centro de Transmisión global está listo para inyectar sobre la señal de los muros. ¿Qué campaña corremos primero?' }
+    ]);
+    const [msgInput, setMsgInput] = useState('');
+    const [isThinking, setIsThinking] = useState(false);
+
     useEffect(() => {
         obtenerBroadcasts(townId).then(setAllBroadcasts);
     }, [townId]);
 
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [ariMsgs, isThinking]);
+
     const activeCount = allBroadcasts.filter(b => b.active).length;
+    const firstActive = allBroadcasts.find(b => b.active);
+    const previewUrl = broadcastUrl.trim() !== '' ? broadcastUrl : firstActive?.mediaUrl;
+    const previewType = broadcastUrl.trim() !== '' ? broadcastType : firstActive?.mediaType;
 
     const handleTransmit = async () => {
         if (!broadcastUrl.trim() || !broadcastTitle.trim()) {
@@ -35,6 +51,7 @@ const LiveBroadcastPage: React.FC = () => {
         }
         setTransmitting(true);
         playNeonClick();
+        
         await guardarBroadcast({
             mediaUrl: broadcastUrl.trim(),
             mediaType: broadcastType,
@@ -45,14 +62,27 @@ const LiveBroadcastPage: React.FC = () => {
             townId,
             createdBy: 'Director'
         });
+        
+        const titleCopy = broadcastTitle.trim();
         setBroadcastUrl('');
         setBroadcastTitle('');
+        setTargetCats(['all']);
+        
         const updated = await obtenerBroadcasts(townId);
         setAllBroadcasts(updated);
         setTransmitting(false);
+
+        // Ari comment
+        setTimeout(() => {
+            setAriMsgs(prev => [...prev, { 
+                role: 'ari', 
+                text: `¡Campaña "${titleCopy}" inyectada con éxito! Monitoreando propagación en los muros del Hormiguero...` 
+            }]);
+        }, 1000);
     };
 
     const handleToggle = async (id: string, active: boolean) => {
+        playNeonClick();
         await toggleBroadcast(id, !active);
         const updated = await obtenerBroadcasts(townId);
         setAllBroadcasts(updated);
@@ -80,218 +110,299 @@ const LiveBroadcastPage: React.FC = () => {
         }
     };
 
+    const handleSendAri = async () => {
+        if (!msgInput.trim() || isThinking) return;
+        playNeonClick();
+        const newHistory = [...ariMsgs, { role: 'director' as const, text: msgInput }];
+        setAriMsgs(newHistory);
+        setMsgInput('');
+        setIsThinking(true);
+        
+        const response = await generateAriResponse(newHistory);
+        setAriMsgs([...newHistory, { role: 'ari' as const, text: response }]);
+        setIsThinking(false);
+    };
+
     return (
-        <div className="min-h-screen h-screen bg-black text-white flex flex-col overflow-hidden selection:bg-red-500/30">
-            {/* === BACKGROUND === */}
+        <div className="min-h-screen bg-[#020202] text-white font-sans overflow-hidden flex flex-col selection:bg-emerald-500/30">
+            {/* Background ADN Estético Búnker */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full blur-[150px] opacity-15 bg-red-600" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 bg-cyan-500" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px]" />
-                {/* Scanlines */}
-                <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.03)_2px,rgba(0,0,0,0.03)_4px)]" />
+                <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-emerald-600/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-violet-600/10 rounded-full blur-[120px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:30px_30px]" />
             </div>
 
-            {/* === HEADER === */}
-            <header className="relative z-10 bg-zinc-950/80 backdrop-blur-2xl border-b-2 border-red-500/20 px-6 py-4 flex items-center justify-between shadow-[0_4px_30px_rgba(239,68,68,0.1)]">
-                <button onClick={() => { playNeonClick(); navigate(-1); }} className="text-white/40 hover:text-white transition-colors">
-                    <ChevronLeft size={24} />
-                </button>
-                <div className="flex flex-col items-center flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                        <Radio size={20} className="text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.8)] animate-pulse" />
-                        <h1 className="text-[15px] font-[1000] uppercase tracking-[0.15em] text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                            Centro de Transmisión
+            {/* Header Mando */}
+            <header className="relative z-10 bg-black/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => { playNeonClick(); navigate(-1); }} className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10">
+                        <ChevronLeft size={18} className="text-white/70" />
+                    </button>
+                    <div>
+                        <h1 className="text-[14px] font-[1000] uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-violet-400 flex items-center gap-2 drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                            <Anchor size={14} className="text-emerald-400" /> SINFONÍA DE TRANSMISIÓN
                         </h1>
-                        <Radio size={20} className="text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.8)] animate-pulse" />
+                        <p className="text-[8px] text-white/50 tracking-[0.3em] font-bold uppercase mt-1">
+                            Centro de Comando RMN · {townId.replace(/-/g, ' ').toUpperCase()}
+                        </p>
                     </div>
-                    <p className="text-[8px] font-black uppercase tracking-[0.4em] text-red-400/60">
-                        Retail Media Network · {townId.replace(/-/g, ' ').toUpperCase()}
-                    </p>
                 </div>
-                <DobermanBadge />
+                <div className="flex items-center gap-3">
+                    <Radio size={20} className="text-emerald-500 drop-shadow-[0_0_12px_rgba(16,185,129,0.8)] animate-pulse" />
+                </div>
             </header>
 
-            {/* === MAIN CONTENT === */}
-            <main className="flex-1 relative z-10 overflow-y-auto px-6 py-6 max-w-3xl mx-auto w-full">
+            {/* Main Content Layout (3 Columns Desktop) */}
+            <main className="flex-1 relative z-10 flex flex-col xl:flex-row w-full max-w-[1920px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)]">
                 
-                {/* Status Bar */}
-                <div className="flex items-center justify-between mb-8 bg-zinc-900/60 border border-white/5 rounded-2xl px-5 py-4">
-                    <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${activeCount > 0 ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse' : 'bg-white/10'}`} />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Estado del Canal</span>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <div className="text-center">
-                            <p className="text-[22px] font-[1000] text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)] leading-none">{activeCount}</p>
-                            <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1">Activas</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-[22px] font-[1000] text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] leading-none">{allBroadcasts.length}</p>
-                            <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1">Total</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-[22px] font-[1000] text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] leading-none">{targetCats.includes('all') ? '∞' : targetCats.length}</p>
-                            <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1">Target</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* === FORM DE TRANSMISIÓN === */}
-                <div className="bg-gradient-to-br from-red-950/20 via-zinc-900/80 to-zinc-900/80 border-2 border-red-500/15 rounded-3xl p-6 mb-6 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+                {/* ==================================================== */}
+                {/* PILAR 1: PANEL DE TRANSMISIÓN PRO (IZQUIERDA)        */}
+                {/* ==================================================== */}
+                <div className="flex-[1] xl:w-[450px] shrink-0 flex flex-col gap-6 xl:overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
-                    <h2 className="text-[12px] font-[1000] uppercase tracking-[0.2em] text-red-400 flex items-center gap-2 mb-6">
-                        <Megaphone size={16} className="drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
-                        Nueva Transmisión
-                    </h2>
-
-                    <div className="space-y-4">
-                        <div className="space-y-1">
-                            <label className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30 ml-1">Título de la Campaña</label>
-                            <input 
-                                type="text" 
-                                value={broadcastTitle}
-                                onChange={e => setBroadcastTitle(e.target.value)}
-                                placeholder="Ej: Cerveza Quilmes - Promo Verano 🍺"
-                                className="w-full bg-black/60 border border-red-500/15 rounded-xl px-5 py-4 text-sm text-white placeholder:text-white/15 focus:outline-none focus:border-red-500/40 focus:shadow-[0_0_20px_rgba(239,68,68,0.1)] transition-all"
-                            />
-                        </div>
-
-                        <div className="space-y-1">
-                            <label className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30 ml-1">URL del Media</label>
-                            <input 
-                                type="text" 
-                                value={broadcastUrl}
-                                onChange={e => {
-                                    setBroadcastUrl(e.target.value);
-                                    if (/\.(mp4|webm|mov)($|\?)/i.test(e.target.value)) setBroadcastType('video');
-                                    else setBroadcastType('image');
-                                }}
-                                placeholder="https://... imagen o video (.mp4, .webm)"
-                                className="w-full bg-black/60 border border-red-500/15 rounded-xl px-5 py-4 text-sm text-white placeholder:text-white/15 focus:outline-none focus:border-red-500/40 focus:shadow-[0_0_20px_rgba(239,68,68,0.1)] transition-all"
-                            />
-                        </div>
-
-                        {/* Preview */}
-                        {broadcastUrl && (
-                            <div className="rounded-xl overflow-hidden border border-white/10 h-32 bg-black/40">
-                                {broadcastType === 'video' ? (
-                                    <video src={broadcastUrl} className="w-full h-full object-cover" autoPlay muted loop playsInline />
-                                ) : (
-                                    <img src={broadcastUrl} className="w-full h-full object-cover" alt="Preview" />
-                                )}
-                            </div>
-                        )}
-
-                        {/* Tipo */}
+                    {/* Status Bar Elegante */}
+                    <div className="bg-black/80 backdrop-blur-2xl border border-violet-500/20 rounded-3xl p-5 flex items-center justify-between shadow-[0_0_20px_rgba(139,92,246,0.1)]">
                         <div className="flex items-center gap-3">
-                            <span className="text-[8px] text-white/30 font-bold uppercase tracking-[0.2em]">Formato:</span>
-                            <button onClick={() => setBroadcastType('image')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all duration-200 ${broadcastType === 'image' ? 'bg-red-500/15 border-red-500/30 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.15)]' : 'bg-white/[0.02] border-white/10 text-white/25'}`}>
-                                🖼️ Imagen
-                            </button>
-                            <button onClick={() => setBroadcastType('video')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all duration-200 ${broadcastType === 'video' ? 'bg-red-500/15 border-red-500/30 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.15)]' : 'bg-white/[0.02] border-white/10 text-white/25'}`}>
-                                🎬 Video
+                            <div className={`w-3 h-3 rounded-full ${activeCount > 0 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)] animate-pulse' : 'bg-white/10'}`} />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Canal Maestro</span>
+                        </div>
+                        <div className="flex items-center gap-5">
+                            <div className="text-center">
+                                <p className="text-[20px] font-[1000] text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)] leading-none">{activeCount}</p>
+                                <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1.5">Activas</p>
+                            </div>
+                            <div className="w-[1px] h-8 bg-white/10" />
+                            <div className="text-center">
+                                <p className="text-[20px] font-[1000] text-violet-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)] leading-none">{allBroadcasts.length}</p>
+                                <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1.5">Total</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Nuevo Contenedor Formulario */}
+                    <div className="bg-[#050505] border border-violet-500/20 shadow-[0_0_30px_rgba(139,92,246,0.05)] rounded-3xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/10 blur-[50px] pointer-events-none rounded-full" />
+                        
+                        <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400 flex items-center gap-2 mb-6">
+                            <Megaphone size={16} className="drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
+                            Configuración de Campaña
+                        </h2>
+
+                        <div className="space-y-4 relative z-10">
+                            {/* Titulo */}
+                            <div className="space-y-1.5">
+                                <input 
+                                    type="text" 
+                                    value={broadcastTitle}
+                                    onChange={e => setBroadcastTitle(e.target.value)}
+                                    placeholder="Nombre de campaña (Ej: Promo Quilmes)"
+                                    className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_20px_rgba(139,92,246,0.15)] transition-all"
+                                />
+                            </div>
+
+                            {/* URL Media */}
+                            <div className="space-y-1.5">
+                                <input 
+                                    type="text" 
+                                    value={broadcastUrl}
+                                    onChange={e => {
+                                        setBroadcastUrl(e.target.value);
+                                        if (/\.(mp4|webm|mov)($|\?)/i.test(e.target.value)) setBroadcastType('video');
+                                        else setBroadcastType('image');
+                                    }}
+                                    placeholder="https://... URL (Video .mp4 o Imagen)"
+                                    className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_20px_rgba(139,92,246,0.15)] transition-all"
+                                />
+                            </div>
+
+                            {/* Chips de Categorías (Compact Grid) */}
+                            <div className="pt-2">
+                                <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Target en Muros :</label>
+                                <div className="flex flex-wrap gap-2">
+                                    <button 
+                                        onClick={() => toggleCat('all')}
+                                        className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes('all') ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
+                                    >🌐 Todos</button>
+                                    {CATEGORIES.map(cat => (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => toggleCat(cat.id)}
+                                            className={`px-3 py-1.5 rounded-full text-[7px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes(cat.id) ? 'bg-violet-500/20 border-violet-500/40 text-violet-400 shadow-[0_0_12px_rgba(139,92,246,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
+                                        >{cat.name}</button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Botón Transmitir */}
+                            <button 
+                                onClick={handleTransmit}
+                                disabled={transmitting || !broadcastUrl.trim() || !broadcastTitle.trim()}
+                                className="w-full mt-4 py-4 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 rounded-2xl text-white font-[1000] uppercase tracking-[0.3em] text-[12px] shadow-[0_5px_0_rgba(6,95,70,1),0_10px_30px_rgba(16,185,129,0.25)] active:translate-y-[5px] active:shadow-[0_0_0_rgba(6,95,70,1),0_5px_15px_rgba(16,185,129,0.15)] transition-all duration-75 flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group relative overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                                <Signal size={18} className={transmitting ? 'animate-ping' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]'} />
+                                <span className="drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                                    {transmitting ? 'INYECTANDO...' : 'INYECTAR EN LA RED'}
+                                </span>
                             </button>
                         </div>
+                    </div>
 
-                        {/* Categorías */}
-                        <div>
-                            <label className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30 ml-1 block mb-3">Transmitir a:</label>
-                            <div className="flex flex-wrap gap-2">
-                                <button 
-                                    onClick={() => toggleCat('all')}
-                                    className={`px-4 py-2 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all duration-200 ${targetCats.includes('all') ? 'bg-red-500/15 border-red-500/30 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/25 hover:border-white/20'}`}
-                                >🌐 Todo el Hormiguero</button>
-                                {CATEGORIES.map(cat => (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => toggleCat(cat.id)}
-                                        className={`px-3 py-1.5 rounded-full text-[7px] font-black uppercase tracking-widest border transition-all duration-200 ${targetCats.includes(cat.id) ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400' : 'bg-white/[0.02] border-white/[0.06] text-white/20 hover:border-white/15'}`}
-                                    >{cat.name}</button>
+                    {/* Lista Activas */}
+                    {allBroadcasts.length > 0 && (
+                        <div className="bg-[#050505] border border-white/5 rounded-3xl p-5 mb-8">
+                            <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2 mb-4">
+                                <Tv size={12} className="text-violet-400/50" />
+                                Monitor de Muros
+                            </h3>
+                            <div className="space-y-2">
+                                {allBroadcasts.map(bc => (
+                                    <div key={bc.id} className={`flex items-center gap-4 p-3 rounded-2xl border transition-all duration-300 ${bc.active ? 'bg-emerald-900/10 border-emerald-500/20 shadow-[inset_0_0_20px_rgba(16,185,129,0.03)]' : 'bg-black border-white/5 opacity-50 block'}`}>
+                                        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${bc.active ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse' : 'bg-white/10'}`} />
+                                        
+                                        <div className="flex-1 min-w-0 flex items-center gap-3">
+                                            {bc.mediaType === 'video' ? <MonitorPlay size={14} className={bc.active ? 'text-emerald-400' : 'text-white/20'} /> : <Tv size={14} className={bc.active ? 'text-emerald-400' : 'text-white/20'} />}
+                                            <div>
+                                                <p className={`text-[10px] font-bold truncate ${bc.active ? 'text-white' : 'text-white/50'}`}>{bc.title}</p>
+                                                <p className="text-[7px] text-white/30 uppercase tracking-widest mt-0.5">
+                                                    Target: {bc.targetCategories.includes('all') ? 'HORMIGUERO' : bc.targetCategories.length + ' SECTORES'}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <button 
+                                            onClick={() => handleToggle(bc.id!, bc.active)} 
+                                            className={`px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-200 ${bc.active ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20' : 'border-white/10 text-white/30 bg-black hover:border-white/20'}`}
+                                        >
+                                            {bc.active ? 'ON' : 'OFF'}
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDelete(bc.id!)} 
+                                            className="text-white/10 hover:text-red-400 transition-colors p-2"
+                                        >
+                                            <Trash2 size={12} />
+                                        </button>
+                                    </div>
                                 ))}
                             </div>
                         </div>
+                    )}
+                </div>
+
+                {/* ==================================================== */}
+                {/* PILAR 2: MONITOR DE RETORNO (CENTRO)                 */}
+                {/* ==================================================== */}
+                <div className="flex-[1.5] hidden xl:flex flex-col items-center justify-center relative p-8">
+                    
+                    {/* TV Monitor Container con Efecto Cristal */}
+                    <div className="relative w-full aspect-[9/16] max-h-full max-w-[450px] mx-auto rounded-[3rem] border border-white/10 bg-black overflow-hidden shadow-[0_0_80px_rgba(0,0,0,1)] ring-8 ring-black relative">
+                        
+                        {/* Brillo Bisel TV */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none rounded-[3rem] z-20" />
+                        {/* Scanlines Profesionales */}
+                        <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.2)_2px,rgba(0,0,0,0.2)_4px)] z-20 pointer-events-none mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.8)_100%)] z-20 pointer-events-none" />
+
+                        {previewUrl ? (
+                            <div className="w-full h-full relative group">
+                                {previewType === 'video' ? (
+                                    <video src={previewUrl} className="w-full h-full object-cover scale-[1.02]" autoPlay muted loop playsInline />
+                                ) : (
+                                    <img src={previewUrl} className="w-full h-full object-cover scale-[1.02]" alt="Live Preview" />
+                                )}
+                                <div className="absolute inset-0 bg-[#000] transition-opacity duration-1000 pointer-events-none opacity-0 mix-blend-screen glitch-active" />
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full w-full bg-zinc-950">
+                                <div className="w-32 h-32 rounded-full border border-white/5 flex items-center justify-center mb-6">
+                                    <Signal size={40} className="text-white/10 animate-pulse" />
+                                </div>
+                                <p className="text-[11px] text-white/20 font-black uppercase tracking-[0.3em] text-center px-8">
+                                    MONITOR STANDBY
+                                </p>
+                                <p className="text-[8px] text-white/10 tracking-[0.2em] font-bold uppercase mt-2">
+                                    ESPERANDO SEÑAL DE INYECCIÓN
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Etiqueta LIVE */}
+                        <div className="absolute top-6 right-6 z-30 flex items-center gap-2 px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-full border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+                            <div className={`w-2 h-2 rounded-full ${previewUrl ? 'bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,1)]' : 'bg-white/20'}`} />
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${previewUrl ? 'text-white' : 'text-white/40'}`}>RETORNO</span>
+                        </div>
+
+                        {/* Tag Bottom */}
+                        <div className="absolute bottom-6 left-0 right-0 flex justify-center z-30">
+                            <div className="px-4 py-1.5 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
+                                <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Canal 01</span>
+                                <div className="w-[1px] h-3 bg-white/20" />
+                                <span className="text-[8px] font-black uppercase tracking-widest text-white/50">Muro Vivo RMN</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                {/* === BOTÓN TRANSMITIR === */}
-                <button 
-                    onClick={handleTransmit}
-                    disabled={transmitting || !broadcastUrl.trim() || !broadcastTitle.trim()}
-                    className="w-full py-5 bg-gradient-to-r from-red-700 via-red-600 to-red-700 rounded-2xl text-white font-[1000] uppercase tracking-[0.3em] text-[13px] shadow-[0_6px_0_rgba(127,29,29,1),0_12px_40px_rgba(239,68,68,0.25)] active:translate-y-[6px] active:shadow-[0_0_0_rgba(127,29,29,1),0_5px_15px_rgba(239,68,68,0.15)] transition-all duration-75 flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed mb-8 relative overflow-hidden group"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                    <Signal size={20} className={transmitting ? 'animate-ping' : ''} />
-                    {transmitting ? '📡 Transmitiendo...' : '📡 TRANSMITIR A TODOS LOS MUROS'}
-                </button>
-
-                {/* === LISTA DE TRANSMISIONES === */}
-                {allBroadcasts.length > 0 && (
-                    <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-5 mb-8">
-                        <div className="flex items-center justify-between mb-5">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2">
-                                <Tv size={14} className="text-red-400/50" />
-                                Transmisiones en el Hormiguero
-                            </h3>
-                            <span className="text-[8px] font-black text-red-400/50 uppercase tracking-widest">
-                                {activeCount} en vivo
-                            </span>
+                {/* ==================================================== */}
+                {/* PILAR 3: CEREBRO ARI (DERECHA)                       */}
+                {/* ==================================================== */}
+                <div className="flex-[1] xl:w-[400px] bg-black/80 backdrop-blur-2xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(139,92,246,0.15)] h-[600px] xl:h-auto shrink-0">
+                    <div className="bg-gradient-to-r from-violet-900/50 to-indigo-900/50 p-4 border-b border-violet-500/30 flex items-center gap-4">
+                        <div className="relative">
+                            <div className="w-12 h-12 rounded-2xl bg-black border border-violet-500/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(139,92,246,0.4)]">
+                                <Cpu size={24} className="text-violet-400" />
+                            </div>
+                            <div className="absolute inset-0 bg-violet-500 blur-xl opacity-40 animate-pulse"></div>
+                            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-black rounded-full z-20 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
                         </div>
-                        <div className="space-y-2">
-                            {allBroadcasts.map(bc => (
-                                <div key={bc.id} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 ${bc.active ? 'bg-gradient-to-r from-red-950/20 to-transparent border-red-500/15 shadow-[inset_0_0_20px_rgba(239,68,68,0.03)]' : 'bg-white/[0.01] border-white/[0.04] opacity-40'}`}>
-                                    {/* Status dot */}
-                                    <div className={`w-3 h-3 rounded-full shrink-0 ${bc.active ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-pulse' : 'bg-white/10'}`} />
-                                    
-                                    {/* Thumbnail */}
-                                    <div className="w-14 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0 bg-black/40">
-                                        {bc.mediaType === 'video' ? (
-                                            <video src={bc.mediaUrl} className="w-full h-full object-cover" muted />
-                                        ) : (
-                                            <img src={bc.mediaUrl} className="w-full h-full object-cover" alt="" />
-                                        )}
-                                    </div>
+                        <div>
+                            <h2 className="text-[16px] font-[1000] uppercase tracking-widest text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">Ari</h2>
+                            <p className="text-[8px] text-violet-300 font-bold tracking-[0.3em] uppercase">Analista Base · Lista</p>
+                        </div>
+                    </div>
 
-                                    {/* Info */}
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-bold text-white truncate">{bc.title}</p>
-                                        <p className="text-[7px] text-white/25 uppercase tracking-widest mt-0.5">
-                                            {bc.mediaType === 'video' ? '🎬' : '🖼️'} {bc.mediaType} · {bc.targetCategories.join(', ')}
-                                        </p>
-                                    </div>
-
-                                    {/* Controls */}
-                                    <button 
-                                        onClick={() => handleToggle(bc.id!, bc.active)} 
-                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-200 ${bc.active ? 'border-red-500/30 text-red-400 bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.1)]' : 'border-white/10 text-white/30 bg-white/[0.02]'}`}
-                                    >
-                                        <Power size={12} />
-                                        {bc.active ? 'ON' : 'OFF'}
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDelete(bc.id!)} 
-                                        className="text-white/10 hover:text-red-400 transition-colors p-2"
-                                    >
-                                        <Trash2 size={14} />
-                                    </button>
+                    <div className="flex-1 overflow-y-auto p-5 pb-20 space-y-4 no-scrollbar">
+                        {ariMsgs.map((msg, idx) => (
+                            <div key={idx} className={`flex ${msg.role === 'ari' ? 'justify-start' : 'justify-end'}`}>
+                                <div className={`max-w-[85%] rounded-2xl p-4 text-[12px] leading-relaxed ${
+                                    msg.role === 'ari' 
+                                    ? 'bg-violet-900/20 border border-violet-500/30 text-white rounded-tl-sm shadow-[0_5px_15px_rgba(139,92,246,0.1)]' 
+                                    : 'bg-emerald-900/20 border border-emerald-500/30 text-white rounded-tr-sm shadow-[0_5px_15px_rgba(16,185,129,0.1)]'
+                                }`}>
+                                    {msg.text}
                                 </div>
-                            ))}
+                            </div>
+                        ))}
+                        {isThinking && (
+                            <div className="flex justify-start">
+                                <div className="max-w-[85%] rounded-2xl p-4 bg-violet-900/20 border border-violet-500/30 text-white rounded-tl-sm flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                    <div className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                    <div className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce"></div>
+                                </div>
+                            </div>
+                        )}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
+                        <div className="bg-black border border-violet-500/40 rounded-2xl flex items-center p-2 focus-within:border-violet-400 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all">
+                            <input 
+                                type="text"
+                                value={msgInput}
+                                onChange={e => setMsgInput(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleSendAri()}
+                                placeholder="Escribile a Ari o dale una orden..."
+                                className="flex-1 bg-transparent text-white text-[12px] px-3 outline-none placeholder:text-white/20"
+                            />
+                            <button onClick={handleSendAri} className="w-10 h-10 bg-violet-500/20 hover:bg-violet-500 border border-violet-500/50 rounded-xl flex items-center justify-center text-violet-300 hover:text-white transition-all active:scale-90">
+                                <MessageSquare size={16} />
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
 
-                {/* Empty state */}
-                {allBroadcasts.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                        <MonitorPlay size={48} className="text-white/5 mb-4" />
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/15">
-                            No hay transmisiones activas
-                        </p>
-                        <p className="text-[8px] text-white/10 mt-1 uppercase tracking-widest">
-                            Creá tu primera campaña de Retail Media
-                        </p>
-                    </div>
-                )}
             </main>
         </div>
     );
