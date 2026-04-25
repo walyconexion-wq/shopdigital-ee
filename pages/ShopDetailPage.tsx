@@ -27,7 +27,7 @@ import {
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
 import { useAuth } from '../components/AuthContext';
-import { incrementarLikesFeed } from '../firebase';
+import { incrementarLikesFeed, suscribirseABroadcast, Broadcast } from '../firebase';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
@@ -88,6 +88,10 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
     const [hasLikedFeed, setHasLikedFeed] = useState(false);
     const [feedLikesCount, setFeedLikesCount] = useState(0);
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [isGlitching, setIsGlitching] = useState(false);
+    const [broadcasts, setBroadcasts] = useState<Broadcast[]>([]);
+    const slideTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const feedGallery = useMemo(() => {
         if (!selectedShop) return [];
@@ -98,6 +102,52 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         if (selectedShop.image) return [selectedShop.image];
         return [];
     }, [selectedShop]);
+
+    // Mezclar feed local + broadcasts globales
+    const muroItems = useMemo(() => {
+        const localItems = feedGallery.map(url => ({
+            url,
+            type: /\.(mp4|webm|mov)($|\?)/i.test(url) ? 'video' as const : 'image' as const,
+            isBroadcast: false,
+            title: ''
+        }));
+        // Filtrar broadcasts por categoría del comercio
+        const shopCategory = selectedShop?.category?.toLowerCase() || '';
+        const activeBroadcasts = broadcasts
+            .filter(b => b.targetCategories.includes('all') || b.targetCategories.some(c => c.toLowerCase() === shopCategory))
+            .map(b => ({
+                url: b.mediaUrl,
+                type: b.mediaType,
+                isBroadcast: true,
+                title: b.title
+            }));
+        // Intercalar: broadcast cada 2 items locales
+        const result = [...localItems];
+        activeBroadcasts.forEach((bc, i) => {
+            const pos = Math.min((i + 1) * 2, result.length);
+            result.splice(pos, 0, bc);
+        });
+        return result.length > 0 ? result : [];
+    }, [feedGallery, broadcasts, selectedShop]);
+
+    // Suscribirse a broadcasts en tiempo real
+    useEffect(() => {
+        const unsub = suscribirseABroadcast((bcs) => setBroadcasts(bcs), townId);
+        return () => unsub();
+    }, [townId]);
+
+    // Auto-slideshow cada 5 segundos
+    useEffect(() => {
+        if (muroItems.length <= 1) return;
+        slideTimerRef.current = setInterval(() => {
+            setIsGlitching(true);
+            setTimeout(() => {
+                setCurrentSlide(prev => (prev + 1) % muroItems.length);
+                setIsGlitching(false);
+            }, 400);
+        }, 5000);
+        return () => { if (slideTimerRef.current) clearInterval(slideTimerRef.current); };
+    }, [muroItems.length]);
 
     const handleLikeFeed = async () => {
         if (hasLikedFeed || !selectedShop) return;
@@ -410,20 +460,50 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </button>
                 </div>
 
-                {/* ---------- MURO DE NOVEDADES (FEED) ---------- */}
+                {/* ---------- 📺 MURO VIVO (FEED DINÁMICO) ---------- */}
                 <div className="w-full px-5 mb-14 flex flex-col items-center">
                     <div className="flex items-center gap-2 mb-6">
                         <ImageIcon size={16} style={{ color: themeColor }} />
                         <h3 className="font-black text-[11px] uppercase tracking-[0.3em]" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor,0.6)})` }}>Muro de Novedades</h3>
+                        {broadcasts.length > 0 && (
+                            <div className="badge-en-vivo flex items-center gap-1 bg-red-500/20 border border-red-500/40 rounded-full px-2 py-0.5 ml-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                                <div className="w-2 h-2 rounded-full bg-red-500 absolute" />
+                                <span className="text-[7px] font-black text-red-400 uppercase tracking-widest">En Vivo</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="w-full aspect-square md:aspect-video rounded-[1.7rem] overflow-hidden relative border isolate bg-zinc-900 group" style={{ borderColor: hexToRgba(themeColor, 0.2), boxShadow: `0 0 30px ${hexToRgba(themeColor, 0.1)}` }}>
                         
-                        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full">
-                            {feedGallery.length > 0 ? (
-                                feedGallery.map((img, i) => (
-                                    <img key={i} src={img} className="w-full h-full object-cover shrink-0 snap-center" alt={`Novedad ${i + 1}`} loading="lazy" />
-                                ))
+                        {/* Slide Container */}
+                        <div className={`w-full h-full relative ${isGlitching ? 'muro-glitch-active muro-scanline' : ''}`}>
+                            {muroItems.length > 0 ? (
+                                <>
+                                    {muroItems[currentSlide]?.type === 'video' ? (
+                                        <video
+                                            key={`vid-${currentSlide}`}
+                                            src={muroItems[currentSlide].url}
+                                            className="w-full h-full object-cover muro-fade-in"
+                                            autoPlay muted loop playsInline
+                                        />
+                                    ) : (
+                                        <img 
+                                            key={`img-${currentSlide}`}
+                                            src={muroItems[currentSlide]?.url} 
+                                            className="w-full h-full object-cover muro-fade-in" 
+                                            alt={`Slide ${currentSlide + 1}`} 
+                                            loading="lazy" 
+                                        />
+                                    )}
+                                    {/* Broadcast overlay label */}
+                                    {muroItems[currentSlide]?.isBroadcast && (
+                                        <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-black/60 border border-red-500/30 rounded-full px-2.5 py-1 backdrop-blur-md">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                            <span className="text-[7px] font-black text-red-400 uppercase tracking-widest">📡 Transmisión</span>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center bg-black/50 text-white/40 relative">
                                     <div className="absolute inset-0 bg-cyan-500/5 blur-3xl pointer-events-none" />
@@ -433,11 +513,15 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                             )}
                         </div>
 
-                        {/* Pagination Dots */}
-                        {feedGallery.length > 1 && (
+                        {/* Dots de paginación activos */}
+                        {muroItems.length > 1 && (
                             <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10">
-                                {feedGallery.map((_, i) => (
-                                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/50 backdrop-blur-md shadow-[0_0_5px_rgba(0,0,0,0.5)]"></div>
+                                {muroItems.map((item, i) => (
+                                    <div key={i} className={`rounded-full backdrop-blur-md shadow-[0_0_5px_rgba(0,0,0,0.5)] transition-all duration-500 ${
+                                        i === currentSlide 
+                                        ? `w-4 h-1.5 ${item.isBroadcast ? 'bg-red-400 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.5)]'}` 
+                                        : 'w-1.5 h-1.5 bg-white/30'
+                                    }`}></div>
                                 ))}
                             </div>
                         )}

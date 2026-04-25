@@ -7,10 +7,12 @@ import {
 import { playNeonClick } from '../utils/audio';
 import { 
     guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, 
-    saveCategoriesConfig, migrarDatosLegados, subscribeToGlobalConfig
+    saveCategoriesConfig, migrarDatosLegados, subscribeToGlobalConfig,
+    guardarBroadcast, obtenerBroadcasts, eliminarBroadcast, toggleBroadcast, Broadcast
 } from '../firebase';
 import { Offer } from '../types';
 import { DobermanBadge } from '../components/DobermanBadge';
+import { CATEGORIES } from '../constants';
 
 const MasterPanelPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
@@ -709,8 +711,174 @@ const MasterPanelPage: React.FC = () => {
                     </div>
 
                 </section>
+
+                {/* ═══════════════════════════════════════════ */}
+                {/* 📺 TRANSMISIÓN GLOBAL — Canal de Broadcast */}
+                {/* ═══════════════════════════════════════════ */}
+                <BroadcastSection townId={townId} zoneColor={zoneColor} />
             </div>
         </div>
+    );
+};
+
+// ==============================
+// 📺 BroadcastSection — Canal de Transmisión Global
+// ==============================
+const BroadcastSection: React.FC<{ townId: string; zoneColor: string }> = ({ townId, zoneColor }) => {
+    const [broadcastUrl, setBroadcastUrl] = useState('');
+    const [broadcastTitle, setBroadcastTitle] = useState('');
+    const [broadcastType, setBroadcastType] = useState<'image' | 'video'>('image');
+    const [targetCats, setTargetCats] = useState<string[]>(['all']);
+    const [allBroadcasts, setAllBroadcasts] = useState<Broadcast[]>([]);
+    const [transmitting, setTransmitting] = useState(false);
+
+    useEffect(() => {
+        obtenerBroadcasts(townId).then(setAllBroadcasts);
+    }, [townId]);
+
+    const handleTransmit = async () => {
+        if (!broadcastUrl.trim() || !broadcastTitle.trim()) {
+            alert('Completá la URL y el Título para transmitir.');
+            return;
+        }
+        setTransmitting(true);
+        playNeonClick();
+        await guardarBroadcast({
+            mediaUrl: broadcastUrl.trim(),
+            mediaType: broadcastType,
+            title: broadcastTitle.trim(),
+            targetCategories: targetCats,
+            active: true,
+            priority: 1,
+            townId,
+            createdBy: 'Director'
+        });
+        setBroadcastUrl('');
+        setBroadcastTitle('');
+        const updated = await obtenerBroadcasts(townId);
+        setAllBroadcasts(updated);
+        setTransmitting(false);
+    };
+
+    const handleToggle = async (id: string, active: boolean) => {
+        await toggleBroadcast(id, !active);
+        const updated = await obtenerBroadcasts(townId);
+        setAllBroadcasts(updated);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('¿Eliminar esta transmisión?')) return;
+        await eliminarBroadcast(id);
+        const updated = await obtenerBroadcasts(townId);
+        setAllBroadcasts(updated);
+    };
+
+    const toggleCat = (catId: string) => {
+        if (catId === 'all') {
+            setTargetCats(['all']);
+        } else {
+            const without = targetCats.filter(c => c !== 'all');
+            if (without.includes(catId)) {
+                const next = without.filter(c => c !== catId);
+                setTargetCats(next.length > 0 ? next : ['all']);
+            } else {
+                setTargetCats([...without, catId]);
+            }
+        }
+    };
+
+    return (
+        <section className="bg-gradient-to-br from-red-950/30 via-black to-black border-2 border-red-500/20 rounded-3xl p-6 relative overflow-hidden mt-8 shadow-[0_0_40px_rgba(239,68,68,0.08)]">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-red-500/10 blur-[80px] rounded-full pointer-events-none" />
+            
+            <h2 className="text-[13px] font-[1000] uppercase tracking-[0.2em] flex items-center gap-2 mb-6" style={{ color: '#ef4444' }}>
+                <Megaphone size={18} className="drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+                Transmisión Global — Muro Vivo
+            </h2>
+
+            {/* Form */}
+            <div className="space-y-3 mb-6">
+                <input 
+                    type="text" 
+                    value={broadcastTitle}
+                    onChange={e => setBroadcastTitle(e.target.value)}
+                    placeholder="Título: ej. Cerveza Quilmes - Promo Verano"
+                    className="w-full bg-black/60 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-red-500/50 transition-colors"
+                />
+                <input 
+                    type="text" 
+                    value={broadcastUrl}
+                    onChange={e => {
+                        setBroadcastUrl(e.target.value);
+                        if (/\.(mp4|webm|mov)($|\?)/i.test(e.target.value)) setBroadcastType('video');
+                        else setBroadcastType('image');
+                    }}
+                    placeholder="URL del media: imagen o video (.mp4, .webm)"
+                    className="w-full bg-black/60 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-red-500/50 transition-colors"
+                />
+                <div className="flex items-center gap-3">
+                    <span className="text-[8px] text-white/40 font-bold uppercase tracking-widest">Tipo:</span>
+                    <button 
+                        onClick={() => setBroadcastType('image')} 
+                        className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border transition-all ${broadcastType === 'image' ? 'bg-red-500/20 border-red-500/40 text-red-400' : 'bg-white/5 border-white/10 text-white/30'}`}
+                    >Imagen</button>
+                    <button 
+                        onClick={() => setBroadcastType('video')} 
+                        className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border transition-all ${broadcastType === 'video' ? 'bg-red-500/20 border-red-500/40 text-red-400' : 'bg-white/5 border-white/10 text-white/30'}`}
+                    >Video</button>
+                </div>
+
+                {/* Categorías target */}
+                <div>
+                    <span className="text-[8px] text-white/40 font-bold uppercase tracking-widest block mb-2">Transmitir a:</span>
+                    <div className="flex flex-wrap gap-2">
+                        <button 
+                            onClick={() => toggleCat('all')}
+                            className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all ${targetCats.includes('all') ? 'bg-red-500/20 border-red-500/40 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'bg-white/5 border-white/10 text-white/30'}`}
+                        >🌐 Todos</button>
+                        {CATEGORIES.slice(0, 8).map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => toggleCat(cat.id)}
+                                className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all ${targetCats.includes(cat.id) ? 'bg-red-500/20 border-red-500/40 text-red-400' : 'bg-white/5 border-white/10 text-white/30'}`}
+                            >{cat.name}</button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Botón TRANSMITIR */}
+            <button 
+                onClick={handleTransmit}
+                disabled={transmitting}
+                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl text-white font-[1000] uppercase tracking-[0.3em] text-[12px] shadow-[0_4px_0_rgba(127,29,29,1),0_10px_30px_rgba(239,68,68,0.3)] active:translate-y-[4px] active:shadow-[0_0_0_rgba(127,29,29,1),0_5px_15px_rgba(239,68,68,0.2)] transition-all duration-75 flex items-center justify-center gap-3 disabled:opacity-50"
+            >
+                <Megaphone size={18} />
+                {transmitting ? 'Transmitiendo...' : '📡 Transmitir a Todos los Muros'}
+            </button>
+
+            {/* Lista de broadcasts activos */}
+            {allBroadcasts.length > 0 && (
+                <div className="mt-6 space-y-2">
+                    <h3 className="text-[9px] text-white/40 font-bold uppercase tracking-widest mb-3">Transmisiones Activas</h3>
+                    {allBroadcasts.map(bc => (
+                        <div key={bc.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${bc.active ? 'bg-red-900/10 border-red-500/20' : 'bg-white/[0.02] border-white/5 opacity-50'}`}>
+                            <div className={`w-2 h-2 rounded-full ${bc.active ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse' : 'bg-white/20'}`} />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-bold text-white truncate">{bc.title}</p>
+                                <p className="text-[7px] text-white/30 uppercase tracking-widest">{bc.mediaType} · {bc.targetCategories.join(', ')}</p>
+                            </div>
+                            <button onClick={() => handleToggle(bc.id!, bc.active)} className="text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border transition-all" style={{ borderColor: bc.active ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)', color: bc.active ? '#ef4444' : '#ffffff40' }}>
+                                {bc.active ? 'ON' : 'OFF'}
+                            </button>
+                            <button onClick={() => handleDelete(bc.id!)} className="text-red-400/30 hover:text-red-400 transition-colors">
+                                ✕
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </section>
     );
 };
 

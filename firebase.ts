@@ -891,3 +891,79 @@ export const limpiarTodasIntrusiones = async () => {
         console.error("[DOBERMAN] Error limpiando:", error);
     }
 };
+
+// ==============================
+// 📺 CANAL DE BROADCAST (Muro Vivo)
+// ==============================
+export interface Broadcast {
+    id?: string;
+    mediaUrl: string;
+    mediaType: 'image' | 'video';
+    title: string;
+    targetCategories: string[];  // ['all'] o ['pizzerias','heladerias']
+    active: boolean;
+    priority: number;
+    townId: string;
+    createdAt: string;
+    createdBy: string;
+}
+
+export const guardarBroadcast = async (broadcast: Omit<Broadcast, 'id' | 'createdAt'>) => {
+    try {
+        const docRef = await addDoc(collection(db, 'broadcastChannel'), {
+            ...broadcast,
+            createdAt: new Date().toISOString(),
+        });
+        console.log(`[BROADCAST] 📡 Transmisión creada: ${docRef.id}`);
+        return docRef.id;
+    } catch (error) {
+        console.error("[BROADCAST] Error guardando:", error);
+    }
+};
+
+export const suscribirseABroadcast = (onUpdate: (broadcasts: Broadcast[]) => void, townId: string = 'esteban-echeverria') => {
+    const q = query(
+        collection(db, 'broadcastChannel'),
+        where('active', '==', true),
+        where('townId', 'in', [townId, 'global']),
+    );
+    return onSnapshot(q, (snap) => {
+        const broadcasts = snap.docs.map(d => ({ id: d.id, ...d.data() } as Broadcast));
+        // Ordenar por prioridad (menor número = mayor prioridad)
+        broadcasts.sort((a, b) => (a.priority || 99) - (b.priority || 99));
+        onUpdate(broadcasts);
+    }, (error) => {
+        console.error("[BROADCAST] Error suscribiéndose:", error);
+        onUpdate([]);
+    });
+};
+
+export const obtenerBroadcasts = async (townId: string = 'esteban-echeverria'): Promise<Broadcast[]> => {
+    try {
+        const snap = await getDocs(collection(db, 'broadcastChannel'));
+        return snap.docs
+            .map(d => ({ id: d.id, ...d.data() } as Broadcast))
+            .filter(b => b.townId === townId || b.townId === 'global');
+    } catch (error) {
+        console.error("[BROADCAST] Error obteniendo:", error);
+        return [];
+    }
+};
+
+export const eliminarBroadcast = async (broadcastId: string) => {
+    try {
+        await deleteDoc(doc(db, 'broadcastChannel', broadcastId));
+        console.log(`[BROADCAST] Transmisión ${broadcastId} eliminada.`);
+    } catch (error) {
+        console.error("[BROADCAST] Error eliminando:", error);
+    }
+};
+
+export const toggleBroadcast = async (broadcastId: string, active: boolean) => {
+    try {
+        await updateDoc(doc(db, 'broadcastChannel', broadcastId), { active });
+        console.log(`[BROADCAST] Transmisión ${broadcastId} → ${active ? 'ON' : 'OFF'}`);
+    } catch (error) {
+        console.error("[BROADCAST] Error toggle:", error);
+    }
+};

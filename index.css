@@ -1,2 +1,68 @@
-/* Index Styles - Placeholder for Vite Build */
+/* Index Styles */
 /* All main styles are currently inline in index.html */
+
+/* ═══════════════════════════════════════════ */
+/* 📺 MURO VIVO — Glitch & Transition Effects */
+/* ═══════════════════════════════════════════ */
+
+@keyframes muro-glitch {
+  0% { opacity: 1; filter: none; transform: translate(0); }
+  10% { opacity: 0.8; filter: hue-rotate(90deg) saturate(3); transform: translate(-2px, 1px); }
+  20% { opacity: 0.6; filter: hue-rotate(-60deg) brightness(2); transform: translate(2px, -1px); }
+  30% { opacity: 0; filter: invert(1); transform: translate(0); }
+  40% { opacity: 0.3; filter: hue-rotate(180deg) saturate(5); transform: translate(1px, 2px); }
+  50% { opacity: 0; }
+  60% { opacity: 0.4; filter: hue-rotate(-120deg) contrast(2); transform: translate(-1px, -2px); }
+  70% { opacity: 0.7; filter: hue-rotate(45deg); transform: translate(2px, 0); }
+  80% { opacity: 0.9; filter: none; transform: translate(-1px, 1px); }
+  100% { opacity: 1; filter: none; transform: translate(0); }
+}
+
+@keyframes muro-fade-in {
+  0% { opacity: 0; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes muro-scanline {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+.muro-glitch-active {
+  animation: muro-glitch 0.4s ease-in-out;
+}
+
+.muro-fade-in {
+  animation: muro-fade-in 0.8s ease-out;
+}
+
+/* Scanline overlay effect during transitions */
+.muro-scanline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    transparent 0%,
+    rgba(0, 255, 255, 0.03) 50%,
+    transparent 100%
+  );
+  height: 30%;
+  width: 100%;
+  animation: muro-scanline 0.6s linear;
+  pointer-events: none;
+  z-index: 30;
+}
+
+/* EN VIVO badge pulse */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); }
+  50% { opacity: 0.6; box-shadow: 0 0 20px rgba(239, 68, 68, 0.9); }
+}
+
+.badge-en-vivo {
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+/* No scrollbar utility for the muro carousel */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
