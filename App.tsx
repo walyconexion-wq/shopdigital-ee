@@ -221,7 +221,6 @@ const TownController: React.FC = () => {
                     <Route path="tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
                     <Route path="tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
                     <Route path="marketing-inteligente" element={<ProtectedRoute roles={['admin']}><MarketingPanelPage /></ProtectedRoute>} />
-                    <Route path="director/transmision-en-vivo" element={<ProtectedRoute roles={['admin']}><LiveBroadcastPage /></ProtectedRoute>} />
                     <Route path="embajador/facturacion" element={<ProtectedRoute roles={['admin', 'ambassador']}><BillingManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/factura" element={<InvoiceViewerPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/credencial-vip/:clientId" element={<ClientVipCredentialPage allShops={allShops} allClients={allClients} />} />
@@ -308,8 +307,9 @@ const App: React.FC = () => {
                 <Route path="/embajador" element={<Navigate to="/" replace />} />
                 <Route path="/embajador/*" element={<Navigate to="/" replace />} />
                 
-                {/* 🛡️ BÚNKER DE MANDO (DIRECTOR) - Prioridad absoluta antes del catch-all */}
+                {/* 🛡️ BÚNKER DE MANDO Y TRANSMISIÓN (DIRECTOR) - Fuera de Layout mobile */}
                 <Route path="/:townId/bunker-waly" element={<DirectorBunkerPage />} />
+                <Route path="/:townId/director/transmision-en-vivo" element={<ProtectedRoute roles={['admin']}><LiveBroadcastPage /></ProtectedRoute>} />
 
                 {/* Ruteo Dinámico Multi-Zona */}
                 <Route path="/:townId/*" element={<TownController />} />

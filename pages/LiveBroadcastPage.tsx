@@ -124,7 +124,7 @@ const LiveBroadcastPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#020202] text-white font-sans overflow-hidden flex flex-col selection:bg-emerald-500/30">
+        <div className="fixed inset-0 w-screen h-screen bg-[#050505] text-white font-sans overflow-hidden flex flex-col selection:bg-emerald-500/30">
             {/* Background ADN Estético Búnker */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-emerald-600/5 rounded-full blur-[120px]" />
@@ -153,12 +153,12 @@ const LiveBroadcastPage: React.FC = () => {
             </header>
 
             {/* Main Content Layout (3 Columns Desktop) */}
-            <main className="flex-1 relative z-10 flex flex-col xl:flex-row w-full max-w-[1920px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)]">
+            <main className="flex-1 min-h-0 relative z-10 flex flex-col xl:flex-row w-full h-full p-4 xl:p-8 gap-6 xl:gap-8 origin-top">
                 
                 {/* ==================================================== */}
                 {/* PILAR 1: PANEL DE TRANSMISIÓN PRO (IZQUIERDA)        */}
                 {/* ==================================================== */}
-                <div className="flex-[1] xl:w-[450px] shrink-0 flex flex-col gap-6 xl:overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
+                <div className="flex-none xl:w-[450px] shrink-0 flex flex-col gap-6 h-full overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
                     {/* Status Bar Elegante */}
                     <div className="bg-black/80 backdrop-blur-2xl border border-violet-500/20 rounded-3xl p-5 flex items-center justify-between shadow-[0_0_20px_rgba(139,92,246,0.1)]">
@@ -215,19 +215,19 @@ const LiveBroadcastPage: React.FC = () => {
                                 />
                             </div>
 
-                            {/* Chips de Categorías (Compact Grid) */}
+                            {/* Chips de Categorías (Compact Grid Symmetrical) */}
                             <div className="pt-2">
                                 <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Target en Muros :</label>
-                                <div className="flex flex-wrap gap-2">
+                                <div className="grid grid-cols-3 gap-2">
                                     <button 
                                         onClick={() => toggleCat('all')}
-                                        className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes('all') ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
-                                    >🌐 Todos</button>
+                                        className={`col-span-3 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes('all') ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
+                                    >🌐 Todos los Sectores</button>
                                     {CATEGORIES.map(cat => (
                                         <button
                                             key={cat.id}
                                             onClick={() => toggleCat(cat.id)}
-                                            className={`px-3 py-1.5 rounded-full text-[7px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes(cat.id) ? 'bg-violet-500/20 border-violet-500/40 text-violet-400 shadow-[0_0_12px_rgba(139,92,246,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
+                                            className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetCats.includes(cat.id) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
                                         >{cat.name}</button>
                                     ))}
                                 </div>
@@ -292,10 +292,10 @@ const LiveBroadcastPage: React.FC = () => {
                 {/* ==================================================== */}
                 {/* PILAR 2: MONITOR DE RETORNO (CENTRO)                 */}
                 {/* ==================================================== */}
-                <div className="flex-[1.5] hidden xl:flex flex-col items-center justify-center relative p-8">
+                <div className="flex-[1.5] hidden xl:flex flex-col items-center justify-center relative p-2">
                     
                     {/* TV Monitor Container con Efecto Cristal */}
-                    <div className="relative w-full aspect-[9/16] max-h-full max-w-[450px] mx-auto rounded-[3rem] border border-white/10 bg-black overflow-hidden shadow-[0_0_80px_rgba(0,0,0,1)] ring-8 ring-black relative">
+                    <div className="relative h-full aspect-[9/16] rounded-[3rem] border border-white/10 bg-black overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)] ring-8 ring-black relative max-h-full">
                         
                         {/* Brillo Bisel TV */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none rounded-[3rem] z-20" />
@@ -347,7 +347,7 @@ const LiveBroadcastPage: React.FC = () => {
                 {/* ==================================================== */}
                 {/* PILAR 3: CEREBRO ARI (DERECHA)                       */}
                 {/* ==================================================== */}
-                <div className="flex-[1] xl:w-[400px] bg-black/80 backdrop-blur-2xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(139,92,246,0.15)] h-[600px] xl:h-auto shrink-0">
+                <div className="flex-none xl:w-[400px] h-full bg-black/20 backdrop-blur-3xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_50px_rgba(139,92,246,0.15)] shrink-0">
                     <div className="bg-gradient-to-r from-violet-900/50 to-indigo-900/50 p-4 border-b border-violet-500/30 flex items-center gap-4">
                         <div className="relative">
                             <div className="w-12 h-12 rounded-2xl bg-black border border-violet-500/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(139,92,246,0.4)]">
