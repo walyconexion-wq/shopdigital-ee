@@ -60,6 +60,16 @@ const LiveBroadcastPage: React.FC = () => {
         ? (!selectedBroadcast.targetTowns || selectedBroadcast.targetTowns.includes('global') ? 'CADENA NACIONAL' : selectedBroadcast.targetTowns.join(' - ').replace(/-/g, ' ').toUpperCase())
         : (broadcastUrl.trim() !== '' ? resolvedLocalTargetText : resolvedActiveTargetFallback);
 
+    const buildAriContext = () => {
+        return `[CONTEXTO TÁCTICO DEL TABLERO DE TRANSMISIÓN "SINFONÍA"]:
+- Total de campañas en base: ${allBroadcasts.length}
+- Campañas ON-AIR (Actualmente emitiendo en Muros): ${activeCount}
+- Detalle de Pautas:
+${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" | Target: ${!b.targetTowns || b.targetTowns.includes('global') ? 'Cadena Nacional' : b.targetTowns.join(', ')} | Inicia: ${b.scheduledStart ? new Date(b.scheduledStart).toLocaleString('es-AR') : 'Manual'} | Termina: ${b.scheduledEnd ? new Date(b.scheduledEnd).toLocaleString('es-AR') : 'S/ Fin'}`).join('\n')}
+------------------------------------------------------
+Al recibir solicitudes, analizá si hay alertas lógicas (ej: superposición horaria, saturación en Ezeiza, etc.) de ser relevante para el comentario. Mantené actitud cibernética/búnker.`;
+    };
+
     const handleTransmit = async () => {
         if (!broadcastUrl.trim() || !broadcastTitle.trim()) {
             alert('Completá la URL y el Título para transmitir.');
@@ -89,14 +99,14 @@ const LiveBroadcastPage: React.FC = () => {
         setAllBroadcasts(updated);
         setTransmitting(false);
 
-        // Ari comment
-        setTimeout(() => {
-            const zonaTxt = targetTowns.includes('global') ? 'toda la Cadena Nacional' : targetTowns.join(' y ').replace(/-/g, ' ').toUpperCase();
-            setAriMsgs(prev => [...prev, { 
-                role: 'ari', 
-                text: `¡Campaña "${titleCopy}" inyectada con éxito en ${zonaTxt}! Monitoreando propagación en muros...` 
-            }]);
-        }, 1000);
+        // Ari Tactical Sync Report
+        setIsThinking(true);
+        const zonaTxt = targetTowns.includes('global') ? 'Cadena Nacional' : targetTowns.join(' y ').replace(/-/g, ' ').toUpperCase();
+        const confirmPrompt = `Director acaba de inyectar la campaña "${titleCopy}" en el target de ${zonaTxt}. Dame un reporte táctico breve de la operación y el estado general de la malla (ya que tenés la lista actualizada de pautas en contexto).`;
+        
+        const response = await generateAriResponse([{ role: 'director', text: confirmPrompt }], buildAriContext());
+        setAriMsgs(prev => [...prev, { role: 'ari', text: response }]);
+        setIsThinking(false);
     };
 
     const handleToggle = async (id: string, active: boolean) => {
@@ -150,7 +160,7 @@ const LiveBroadcastPage: React.FC = () => {
         setMsgInput('');
         setIsThinking(true);
         
-        const response = await generateAriResponse(newHistory);
+        const response = await generateAriResponse(newHistory, buildAriContext());
         setAriMsgs([...newHistory, { role: 'ari' as const, text: response }]);
         setIsThinking(false);
     };
