@@ -86,6 +86,25 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     };
 
+    // Mapa de configuracion visual por tema estacional
+    const SEASON_CONFIG: Record<string, { particles: string[]; bg: string; overlay: string }> = {
+        winter:     { particles: ['❄️','❅','❄️','⛄','❄️'], bg: 'rgba(30,58,138,0.07)',  overlay: 'rgba(96,165,250,0.04)' },
+        spring:     { particles: ['🌸','🌷','🌺','🪷','🌸'], bg: 'rgba(131,24,67,0.06)',  overlay: 'rgba(244,114,182,0.04)' },
+        summer:     { particles: ['☀️','🌞','🌴','🌼','☀️'], bg: 'rgba(120,53,15,0.07)',  overlay: 'rgba(251,191,36,0.04)' },
+        autumn:     { particles: ['🍂','🍁','🍃','🍂','🍁'], bg: 'rgba(124,45,18,0.08)',  overlay: 'rgba(249,115,22,0.04)' },
+        christmas:  { particles: ['❄️','🎄','🎅','⭐','🔔'], bg: 'rgba(20,83,45,0.08)',   overlay: 'rgba(34,197,94,0.04)' },
+        halloween:  { particles: ['🎃','👻','🕷️','🌚','🎃'], bg: 'rgba(67,20,7,0.10)',   overlay: 'rgba(249,115,22,0.05)' },
+        valentines: { particles: ['❤️','💕','💖','💝','❤️'], bg: 'rgba(136,19,55,0.08)',  overlay: 'rgba(244,63,94,0.04)' },
+        newyear:    { particles: ['🎆','✨','🥂','🎆','✨'], bg: 'rgba(69,10,10,0.07)',   overlay: 'rgba(250,204,21,0.04)' },
+        patrio:     { particles: ['🇦🇷','⭐','🌊','⭐','🇦🇷'], bg: 'rgba(7,89,133,0.08)',  overlay: 'rgba(56,189,248,0.04)' },
+        carnival:   { particles: ['🎭','🎉','🎈','✨','🎊'], bg: 'rgba(88,28,135,0.08)',  overlay: 'rgba(168,85,247,0.04)' },
+        easter:     { particles: ['🐣','🐥','🌻','🥚','🐣'], bg: 'rgba(26,46,5,0.07)',   overlay: 'rgba(132,204,22,0.04)' },
+    };
+    const activeSeason = selectedShop?.seasonTheme && selectedShop.seasonTheme !== 'none'
+        ? SEASON_CONFIG[selectedShop.seasonTheme]
+        : null;
+
+
     const [hasLikedFeed, setHasLikedFeed] = useState(false);
     const [feedLikesCount, setFeedLikesCount] = useState(0);
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -226,7 +245,32 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
 
     return (
-        <div className="pb-24 animate-in fade-in duration-700 bg-transparent min-h-screen">
+        <div className="pb-24 animate-in fade-in duration-700 bg-transparent min-h-screen relative">
+
+            {/* OVERLAY ESTACIONAL - particulas flotantes */}
+            {activeSeason && (
+                <div className="fixed inset-0 pointer-events-none z-[998] overflow-hidden">
+                    <div className="absolute inset-0" style={{ background: activeSeason.bg }} />
+                    <div className="absolute inset-0" style={{ background: activeSeason.overlay }} />
+                    {activeSeason.particles.map((emoji, i) => (
+                        <span key={i} className="absolute text-2xl select-none" style={{
+                            left: `${8 + i * 17}%`,
+                            top: '-8%',
+                            animation: `seasonFall ${7 + i * 1.4}s linear ${i * 1.1}s infinite`,
+                            opacity: 0.65,
+                        }}>{emoji}</span>
+                    ))}
+                    {activeSeason.particles.map((emoji, i) => (
+                        <span key={`b${i}`} className="absolute text-xl select-none" style={{
+                            left: `${3 + i * 20}%`,
+                            top: '-12%',
+                            animation: `seasonFall ${9 + i * 1.1}s linear ${i * 2.2 + 2}s infinite`,
+                            opacity: 0.35,
+                        }}>{emoji}</span>
+                    ))}
+                </div>
+            )}
+
             <Helmet>
                 <title>{selectedShop.name} - Catálogo de Ofertas</title>
                 <meta name="description" content={`Mirá nuestro menú digital de ${selectedShop.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
