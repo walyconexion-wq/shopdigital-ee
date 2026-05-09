@@ -40,6 +40,9 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
     const basePath = isEnterprisePath ? '/empresas' : `/${townId}`;
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const catalogRef = useRef<HTMLDivElement>(null);
+    const offersCarouselRef = useRef<HTMLDivElement>(null);
+    const offersTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const isTouchingRef = useRef(false);
     const { user, login } = useAuth();
     const [lockClicks, setLockClicks] = useState(0);
     const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -194,6 +197,24 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         return undefined;
     }, [selectedShop]);
 
+    // Auto-scroll híbrido del carrusel de ofertas
+    useEffect(() => {
+        if (!selectedShop || selectedShop.offers.length <= 1) return;
+        
+        offersTimerRef.current = setInterval(() => {
+            if (!isTouchingRef.current && offersCarouselRef.current) {
+                const el = offersCarouselRef.current;
+                if (el.scrollLeft >= (el.scrollWidth - el.clientWidth - 10)) {
+                    el.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    el.scrollBy({ left: 180, behavior: 'smooth' });
+                }
+            }
+        }, 3500); 
+
+        return () => { if (offersTimerRef.current) clearInterval(offersTimerRef.current); };
+    }, [selectedShop]);
+
     const scrollToCatalog = () => {
         playNeonClick();
         catalogRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -288,7 +309,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <meta name="twitter:image" content={selectedShop.bannerImage || selectedShop.image} />
             </Helmet>
 
-            <div className="relative w-full h-[260px] bg-black overflow-hidden">
+            <div className="relative w-full h-[360px] bg-black overflow-hidden">
                 {/* Back Button Overlay */}
                 <button
                     onClick={() => {
@@ -346,32 +367,33 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 {/* ---------- CATÁLOGO DE OFERTAS ---------- */}
                 <div ref={catalogRef} className="w-full mb-14 mt-2">
                     <div className="w-full px-5 mb-6 flex flex-col items-center">
-                        <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] w-full flex flex-col items-center gap-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <ShoppingBag size={14} className="text-white/60" />
-                                <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Nuestro Menú</h3>
-                            </div>
-                            <button
-                                onClick={() => {
-                                    playNeonClick();
-                                    navigate(`${basePath}/${categorySlug}/${shopSlug}/menu`);
-                                }}
-                                className="w-full glass-action-btn backdrop-blur-md border py-4 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:scale-95 group"
-                                style={{ 
-                                    backgroundColor: hexToRgba(themeColor, 0.2),
-                                    borderColor: hexToRgba(themeColor, 0.4),
-                                    boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.15)}`
-                                }}
-                            >
-                                <span className="group-hover:scale-110 transition-transform" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Abrir Catálogo Completo</span>
-                                <ArrowLeft size={14} className="rotate-180 opacity-70 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => {
+                                playNeonClick();
+                                navigate(`${basePath}/${categorySlug}/${shopSlug}/menu`);
+                            }}
+                            className="w-full glass-action-btn backdrop-blur-md border py-4 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:scale-95 group shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+                            style={{ 
+                                backgroundColor: hexToRgba(themeColor, 0.2),
+                                borderColor: hexToRgba(themeColor, 0.4),
+                                boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.15)}`
+                            }}
+                        >
+                            <span className="group-hover:scale-110 transition-transform" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Abrir Catálogo Completo</span>
+                            <ArrowLeft size={14} className="rotate-180 opacity-70 group-hover:translate-x-1 transition-transform" />
+                        </button>
                     </div>
 
-                    <div className="overflow-hidden w-full relative">
+                    <div className="w-full relative">
                         <div className="absolute top-0 left-0 w-32 h-32 bg-cyan-500/5 blur-3xl rounded-full pointer-events-none" />
-                        <div className="animate-delicate-marquee flex gap-4 px-4 pb-4">
+                        <div 
+                            className="flex gap-4 px-4 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar relative z-10" 
+                            ref={offersCarouselRef}
+                            onTouchStart={() => isTouchingRef.current = true}
+                            onTouchEnd={() => { setTimeout(() => isTouchingRef.current = false, 2000) }}
+                            onMouseEnter={() => isTouchingRef.current = true}
+                            onMouseLeave={() => isTouchingRef.current = false}
+                        >
                             {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => {
                                 // Badges Dinámicos sugeridos por Gemy
                                 const badgeType = idx % 3;
@@ -382,15 +404,15 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                                     : { text: '⚡ HOY', bg: 'bg-rose-500/90', shadow: 'shadow-[0_0_10px_rgba(244,63,94,0.8)]' };
 
                                 return (
-                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group">
+                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center">
                                         <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative">
-                                            <img src={offer.image} alt={offer.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <img src={offer.image} alt={offer.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
                                             {/* Dynamic Badge */}
-                                            <div className={`absolute top-2 right-2 text-white text-[7.5px] font-black px-2 py-1 rounded-full uppercase backdrop-blur-md ${badgeProps.bg} ${badgeProps.shadow} border border-white/20`}>
+                                            <div className={`absolute top-2 right-2 text-white text-[7.5px] font-black px-2 py-1 rounded-full uppercase backdrop-blur-md ${badgeProps.bg} ${badgeProps.shadow} border border-white/20 pointer-events-none`}>
                                                 {badgeProps.text}
                                             </div>
                                         </div>
-                                        <div className="px-1 pb-1 text-center">
+                                        <div className="px-1 pb-1 text-center pointer-events-none">
                                             <p className="text-[10px] font-black uppercase tracking-tight text-white mb-3.5 line-clamp-1">{offer.name}</p>
                                             <div className="glass-action-btn offer-price-tag py-2 px-3 rounded-xl border border-white/10 bg-white/5">
                                                 <span className="text-[12.5px] font-black text-white drop-shadow-md">$ {offer.price.toLocaleString('es-AR')}</span>
@@ -420,6 +442,30 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </div>
                 )}
 
+                {/* ---------- DASHBOARD DE CONTACTO ---------- */}
+                <div className="w-full px-5 mb-14">
+                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                        <div className="flex items-center gap-2 mb-5">
+                            <MessageCircle size={14} className="text-white/60" />
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Canales de Atención</h3>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                            <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="btn-neon-red flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#EA044E]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                                <span className="italic text-[20px] font-black text-[#EA044E] drop-shadow-[0_0_8px_rgba(234,4,78,0.8)] group-hover:scale-110 transition-transform">P</span>
+                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">PedidosYa</span>
+                            </button>
+                            <button onClick={() => selectedShop.phone && handleOpenLink(`https://wa.me/549${selectedShop.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="btn-neon-green flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#25D366]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                                <MessageCircle size={20} className="text-[#25D366] drop-shadow-[0_0_8px_rgba(37,211,102,0.8)] group-hover:scale-110 transition-transform" fill="currentColor" strokeWidth={0} />
+                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">WhatsApp</span>
+                            </button>
+                            <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="btn-neon-blue flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#009EE3]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                                <Handshake size={20} className="text-[#009EE3] drop-shadow-[0_0_8px_rgba(0,158,227,0.8)] group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">M. Pago</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 {/* ---------- CREDENCIAL VIP PREMIUM ---------- */}
                 <div className="w-full px-5 mb-14 flex flex-col items-center">
                     <button
@@ -447,30 +493,6 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                             </div>
                         </div>
                     </button>
-                </div>
-
-                {/* ---------- DASHBOARD DE CONTACTO ---------- */}
-                <div className="w-full px-5 mb-14">
-                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-                        <div className="flex items-center gap-2 mb-5">
-                            <MessageCircle size={14} className="text-white/60" />
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Canales de Atención</h3>
-                        </div>
-                        <div className="grid grid-cols-3 gap-3">
-                            <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="btn-neon-red flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#EA044E]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
-                                <span className="italic text-[20px] font-black text-[#EA044E] drop-shadow-[0_0_8px_rgba(234,4,78,0.8)] group-hover:scale-110 transition-transform">P</span>
-                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">PedidosYa</span>
-                            </button>
-                            <button onClick={() => selectedShop.phone && handleOpenLink(`https://wa.me/549${selectedShop.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="btn-neon-green flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#25D366]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
-                                <MessageCircle size={20} className="text-[#25D366] drop-shadow-[0_0_8px_rgba(37,211,102,0.8)] group-hover:scale-110 transition-transform" fill="currentColor" strokeWidth={0} />
-                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">WhatsApp</span>
-                            </button>
-                            <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="btn-neon-blue flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#009EE3]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
-                                <Handshake size={20} className="text-[#009EE3] drop-shadow-[0_0_8px_rgba(0,158,227,0.8)] group-hover:scale-110 transition-transform" strokeWidth={2.5} />
-                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">M. Pago</span>
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 {/* ---------- MÓDULO DE UBICACIÓN ---------- */}
