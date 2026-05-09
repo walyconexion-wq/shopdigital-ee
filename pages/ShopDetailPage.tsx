@@ -343,81 +343,110 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
             <div className="relative z-10 flex flex-col items-center">
 
-                <div ref={catalogRef} className="w-full mb-10 mt-2">
-                    <div className="w-full px-6 mb-8 flex flex-col items-center">
-                        <button
-                            onClick={() => {
-                                playNeonClick();
-                                navigate(`${basePath}/${categorySlug}/${shopSlug}/menu`);
-                            }}
-                            className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px]"
-                            style={{ 
-                                backgroundColor: hexToRgba(themeColor, 0.35),
-                                borderColor: hexToRgba(themeColor, 0.5),
-                                boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 12px 20px ${hexToRgba(themeColor, 0.2)}`
-                            }}
-                        >
-                            <ShoppingBag size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
-                            <span style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Catálogo de Ofertas</span>
-                        </button>
+                {/* ---------- CATÁLOGO DE OFERTAS ---------- */}
+                <div ref={catalogRef} className="w-full mb-14 mt-2">
+                    <div className="w-full px-5 mb-6 flex flex-col items-center">
+                        <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] w-full flex flex-col items-center gap-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <ShoppingBag size={14} className="text-white/60" />
+                                <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Nuestro Menú</h3>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    playNeonClick();
+                                    navigate(`${basePath}/${categorySlug}/${shopSlug}/menu`);
+                                }}
+                                className="w-full glass-action-btn backdrop-blur-md border py-4 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:scale-95 group"
+                                style={{ 
+                                    backgroundColor: hexToRgba(themeColor, 0.2),
+                                    borderColor: hexToRgba(themeColor, 0.4),
+                                    boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.15)}`
+                                }}
+                            >
+                                <span className="group-hover:scale-110 transition-transform" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Abrir Catálogo Completo</span>
+                                <ArrowLeft size={14} className="rotate-180 opacity-70 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        </div>
                     </div>
 
                     <div className="overflow-hidden w-full relative">
-                        {/* Subtle Glows for Catalog */}
                         <div className="absolute top-0 left-0 w-32 h-32 bg-cyan-500/5 blur-3xl rounded-full pointer-events-none" />
-                        <div className="animate-delicate-marquee flex gap-4 px-4">
-                            {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => (
-                                <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col">
-                                    <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative">
-                                        <img src={offer.image} alt={offer.name} className="w-full h-full object-cover" />
-                                        <div className="absolute top-2 right-2 bg-cyan-500/80 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase">Oferta</div>
-                                    </div>
-                                    <div className="px-1 pb-1 text-center">
-                                        <p className="text-[10px] font-black uppercase tracking-tight text-white mb-3.5 line-clamp-1">{offer.name}</p>
-                                        <div className="glass-action-btn offer-price-tag py-2 px-3 rounded-xl">
-                                            <span className="text-[12.5px] font-black text-white">$ {offer.price.toLocaleString('es-AR')}</span>
+                        <div className="animate-delicate-marquee flex gap-4 px-4 pb-4">
+                            {[...selectedShop.offers, ...selectedShop.offers].map((offer, idx) => {
+                                // Badges Dinámicos sugeridos por Gemy
+                                const badgeType = idx % 3;
+                                const badgeProps = badgeType === 0 
+                                    ? { text: '🔥 HOT', bg: 'bg-orange-500/90', shadow: 'shadow-[0_0_10px_rgba(249,115,22,0.8)]' }
+                                    : badgeType === 1 
+                                    ? { text: '✨ NUEVO', bg: 'bg-green-500/90', shadow: 'shadow-[0_0_10px_rgba(34,197,94,0.8)]' }
+                                    : { text: '⚡ HOY', bg: 'bg-rose-500/90', shadow: 'shadow-[0_0_10px_rgba(244,63,94,0.8)]' };
+
+                                return (
+                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group">
+                                        <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative">
+                                            <img src={offer.image} alt={offer.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            {/* Dynamic Badge */}
+                                            <div className={`absolute top-2 right-2 text-white text-[7.5px] font-black px-2 py-1 rounded-full uppercase backdrop-blur-md ${badgeProps.bg} ${badgeProps.shadow} border border-white/20`}>
+                                                {badgeProps.text}
+                                            </div>
+                                        </div>
+                                        <div className="px-1 pb-1 text-center">
+                                            <p className="text-[10px] font-black uppercase tracking-tight text-white mb-3.5 line-clamp-1">{offer.name}</p>
+                                            <div className="glass-action-btn offer-price-tag py-2 px-3 rounded-xl border border-white/10 bg-white/5">
+                                                <span className="text-[12.5px] font-black text-white drop-shadow-md">$ {offer.price.toLocaleString('es-AR')}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
 
-                {/* Botón Integración PedidoYa */}
+                {/* ---------- INTEGRACIÓN PEDIDOSYA ---------- */}
                 {selectedShop.pedidoYaUrl && (
-                    <div className="w-full px-6 mb-8 mt-2">
+                    <div className="w-full px-5 mb-14">
                         <button
                             onClick={() => {
                                 playNeonClick();
                                 window.open(selectedShop.pedidoYaUrl, '_blank', 'noopener,noreferrer');
                             }}
-                            className="w-full bg-[#EA044E]/10 border border-[#EA044E]/50 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(234,4,78,0.2)] hover:bg-[#EA044E]/20 active:scale-95 group relative overflow-hidden transition-all"
+                            className="w-full bg-[#EA044E]/10 border border-[#EA044E]/50 py-4 rounded-[2rem] flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(234,4,78,0.2)] hover:bg-[#EA044E]/20 active:scale-95 group relative overflow-hidden transition-all"
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-[#EA044E]/0 via-white/10 to-[#EA044E]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <ShoppingBag size={16} strokeWidth={3} className="text-[#EA044E] group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#EA044E] drop-shadow-md">Pedir por PedidoYa</span>
+                            <ShoppingBag size={18} strokeWidth={2.5} className="text-[#EA044E] group-hover:scale-110 transition-transform" />
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#EA044E] drop-shadow-md">Pedir por PedidoYa</span>
                         </button>
                     </div>
                 )}
-                {/* B2C Client Fidelity Subscription Trigger */}
-                <div className="w-full px-6 mb-12 flex flex-col items-center">
+
+                {/* ---------- CREDENCIAL VIP PREMIUM ---------- */}
+                <div className="w-full px-5 mb-14 flex flex-col items-center">
                     <button
                         onClick={() => {
                             playNeonClick();
                             navigate(`${basePath}/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
-                        className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px]"
-                        style={{ 
-                            backgroundColor: hexToRgba(themeColor, 0.35),
-                            borderColor: hexToRgba(themeColor, 0.5),
-                            boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 12px 20px ${hexToRgba(themeColor, 0.2)}`
-                        }}
+                        className="w-full relative overflow-hidden rounded-[2rem] p-[1px] active:scale-95 transition-transform duration-300 group shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                     >
-                        <Gift size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
-                        <span style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Obtener Credencial VIP</span>
+                        {/* Golden Border Glow */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-yellow-600 to-yellow-900 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        {/* Inner Metallic Card */}
+                        <div className="relative w-full h-full bg-gradient-to-br from-zinc-900 via-black to-zinc-900 rounded-[2rem] p-6 flex flex-col items-center justify-center gap-3 border border-white/5 backdrop-blur-xl z-10" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent)', backgroundSize: '6px 6px' }}>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                            <div className="flex items-center gap-2">
+                                <Star size={16} className="text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)] fill-yellow-500/50" />
+                                <h3 className="font-black text-[12px] uppercase tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600">Club Exclusivo</h3>
+                            </div>
+                            <p className="text-[8px] text-center font-bold uppercase tracking-widest text-zinc-400 mt-1">
+                                Beneficios locales para clientes
+                            </p>
+                            <div className="mt-3 bg-yellow-500/10 border border-yellow-500/30 px-6 py-2.5 rounded-full backdrop-blur-md group-hover:bg-yellow-500/20 transition-colors">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-yellow-500">Obtener Credencial</span>
+                            </div>
+                        </div>
                     </button>
-                    <p className="text-[8px] text-center font-bold uppercase tracking-widest mt-4" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>Sumate a nuestra red de beneficios locales</p>
                 </div>
 
                 {/* ---------- DASHBOARD DE CONTACTO ---------- */}
