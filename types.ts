@@ -155,4 +155,5 @@ export interface Shop {
   authorizedStaff?: string[];
   feedImages?: string[];
   feedLikes?: number;
+  seasonTheme?: string; // Tema estacional/festivo del catálogo 🎄❄️🌸
 }

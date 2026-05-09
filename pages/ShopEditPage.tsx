@@ -8,7 +8,7 @@ import {
   MapPin, Phone, Edit3, Trash2, Plus,
   Instagram, Facebook, LayoutDashboard,
   ShoppingCart, Palette, PenTool, ExternalLink,
-  MessageSquare, Star
+  MessageSquare, Star, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { CATEGORIES } from '../constants';
@@ -25,6 +25,22 @@ const TABS = [
   { id: 'novedades', label: 'Muro Novedades', icon: <ImageIcon size={14} /> },
   { id: 'resenas', label: 'Gestión Reseñas', icon: <MessageSquare size={14} /> },
   { id: 'enlaces', label: 'Enlaces Exteriores', icon: <ExternalLink size={14} /> },
+  { id: 'estacion', label: 'Estación & Fiesta', icon: <Sparkles size={14} /> },
+];
+
+const SEASON_THEMES = [
+  { id: 'none',       emoji: '🏪', label: 'Sin Tema',      description: 'Catálogo neutro',        bg: 'from-zinc-800 to-zinc-900',     glow: 'rgba(100,100,100,0.3)' },
+  { id: 'winter',     emoji: '❄️',  label: 'Invierno',      description: 'Nieve y copos de hielo', bg: 'from-blue-900 to-slate-900',    glow: 'rgba(96,165,250,0.4)' },
+  { id: 'spring',     emoji: '🌸',  label: 'Primavera',     description: 'Flores y pétalos',       bg: 'from-pink-900 to-fuchsia-900',  glow: 'rgba(244,114,182,0.4)' },
+  { id: 'summer',     emoji: '☀️',  label: 'Verano',        description: 'Sol y días de playa',    bg: 'from-amber-800 to-orange-900',  glow: 'rgba(251,191,36,0.4)' },
+  { id: 'autumn',     emoji: '🍂',  label: 'Otoño',         description: 'Hojas cayendo',          bg: 'from-orange-900 to-red-950',    glow: 'rgba(249,115,22,0.4)' },
+  { id: 'christmas',  emoji: '🎄',  label: 'Navidad',       description: 'Luces y Papa Noel',      bg: 'from-green-900 to-red-950',     glow: 'rgba(34,197,94,0.4)' },
+  { id: 'halloween',  emoji: '🎃',  label: 'Halloween',     description: 'Calabazas y misterio',   bg: 'from-orange-950 to-black',      glow: 'rgba(249,115,22,0.5)' },
+  { id: 'valentines', emoji: '💘',  label: 'San Valentín',  description: 'Amor y corazones',       bg: 'from-rose-900 to-pink-950',     glow: 'rgba(244,63,94,0.4)' },
+  { id: 'newyear',    emoji: '🥂',  label: 'Año Nuevo',     description: 'Brindis y fuegos',       bg: 'from-yellow-900 to-violet-950', glow: 'rgba(250,204,21,0.4)' },
+  { id: 'patrio',     emoji: '🇦🇷', label: 'Fiestas Patrias', description: 'Celeste y blanco',    bg: 'from-sky-900 to-blue-950',      glow: 'rgba(56,189,248,0.4)' },
+  { id: 'carnival',  emoji: '🎭',  label: 'Carnaval',      description: 'Colores y alegría',      bg: 'from-purple-900 to-pink-900',   glow: 'rgba(168,85,247,0.4)' },
+  { id: 'easter',    emoji: '🐣',  label: 'Pascua',        description: 'Huevos y colores',       bg: 'from-lime-900 to-emerald-900',  glow: 'rgba(132,204,22,0.4)' },
 ];
 
 const THEME_COLORS = [
@@ -628,6 +644,71 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
             )}
             
             <div className="h-6"></div> {/* Spacer for scroll */}
+          </div>
+        )}
+
+        {activeTab === 'estacion' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            
+            {/* Header informativo */}
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2 mb-4">
+                <Sparkles size={14} className="text-violet-400" /> Decoración Estacional
+              </h2>
+              <p className="text-[10px] text-white/40 leading-relaxed">
+                Elegí el tema visual de tu catálogo. Tus clientes van a ver esta decoración cuando visiten tu perfil. Podés cambiarlo en cualquier momento.
+              </p>
+              {shop.seasonTheme && shop.seasonTheme !== 'none' && (
+                <div className="mt-4 flex items-center gap-3 bg-violet-500/10 border border-violet-500/20 rounded-2xl px-4 py-3">
+                  <span className="text-2xl">{SEASON_THEMES.find(t => t.id === shop.seasonTheme)?.emoji}</span>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-violet-300">Tema activo</p>
+                    <p className="text-sm font-bold text-white">{SEASON_THEMES.find(t => t.id === shop.seasonTheme)?.label}</p>
+                  </div>
+                  <div className="ml-auto w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse" />
+                </div>
+              )}
+            </div>
+
+            {/* Grid de temas */}
+            <div className="grid grid-cols-2 gap-3">
+              {SEASON_THEMES.map(theme => {
+                const isSelected = (shop.seasonTheme || 'none') === theme.id;
+                return (
+                  <button
+                    key={theme.id}
+                    onClick={() => { playNeonClick(); handleInputChange('seasonTheme', theme.id); }}
+                    className={`relative overflow-hidden rounded-[1.5rem] p-4 text-left transition-all duration-300 border-2
+                      ${ isSelected
+                        ? 'border-white/60 scale-[1.02] shadow-[0_0_25px_var(--glow)]'
+                        : 'border-white/[0.06] hover:border-white/20 hover:scale-[1.01]'
+                      }`}
+                    style={isSelected ? { '--glow': theme.glow } as React.CSSProperties : {}}
+                  >
+                    {/* Fondo degradado del tema */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${theme.bg} opacity-80`} />
+                    <div className="absolute inset-0 bg-black/20" />
+                    
+                    {/* Checkmark activo */}
+                    {isSelected && (
+                      <div className="absolute top-3 right-3 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-lg z-10">
+                        <svg className="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+
+                    <div className="relative z-10">
+                      <span className="text-3xl block mb-2">{theme.emoji}</span>
+                      <p className="text-[11px] font-[1000] uppercase tracking-widest text-white leading-tight">{theme.label}</p>
+                      <p className="text-[9px] text-white/50 mt-1">{theme.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="h-6" />
           </div>
         )}
       </div>
