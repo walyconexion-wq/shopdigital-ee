@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shop } from '../types';
+import { Shop, ProductOffer } from '../types';
 import {
     Share2,
     MapPin,
@@ -43,6 +43,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
     const offersCarouselRef = useRef<HTMLDivElement>(null);
     const offersTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const isTouchingRef = useRef(false);
+    const [selectedOfferForModal, setSelectedOfferForModal] = useState<ProductOffer | null>(null);
     const { user, login } = useAuth();
     const [lockClicks, setLockClicks] = useState(0);
     const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -404,7 +405,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                                     : { text: '⚡ HOY', bg: 'bg-rose-500/90', shadow: 'shadow-[0_0_10px_rgba(244,63,94,0.8)]' };
 
                                 return (
-                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center">
+                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center cursor-pointer" onClick={() => { playNeonClick(); setSelectedOfferForModal(offer); }}>
                                         <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative">
                                             <img src={offer.image} alt={offer.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
                                             {/* Dynamic Badge */}
@@ -739,6 +740,72 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
 
 
             </div>
+
+            {/* Modal de Oferta (Fase 4) */}
+            {selectedOfferForModal && (
+                <div className="fixed inset-0 z-[1000] flex items-end justify-center p-4 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedOfferForModal(null)}></div>
+                    <div className="relative w-full max-w-sm bg-zinc-900 border border-white/10 rounded-[2rem] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.8)] animate-in slide-in-from-bottom-10 duration-300" style={{ boxShadow: `0 0 40px ${hexToRgba(themeColor, 0.15)}` }}>
+                        <button 
+                            onClick={() => setSelectedOfferForModal(null)}
+                            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 border border-white/10 text-white/70 active:scale-90 transition-transform"
+                        >
+                            <span className="text-xl leading-none font-light">&times;</span>
+                        </button>
+                        
+                        <div className="w-full aspect-square rounded-[1.5rem] overflow-hidden border border-white/10 mb-5 relative">
+                            <img src={selectedOfferForModal.image} alt={selectedOfferForModal.name} className="w-full h-full object-cover" />
+                            <div className="absolute top-3 left-3 bg-cyan-500/90 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.8)]">
+                                Oferta Especial
+                            </div>
+                        </div>
+                        
+                        <h2 className="text-[16px] font-black uppercase tracking-[0.1em] text-white leading-tight mb-2 text-center">
+                            {selectedOfferForModal.name}
+                        </h2>
+                        
+                        <div className="w-full flex justify-center mb-6">
+                            <div className="glass-action-btn py-2 px-5 rounded-xl border border-white/10 bg-white/5">
+                                <span className="text-[18px] font-black text-white drop-shadow-md">$ {selectedOfferForModal.price.toLocaleString('es-AR')}</span>
+                            </div>
+                        </div>
+                        
+                        <div className="flex flex-col gap-3">
+                            {/* Botón WhatsApp */}
+                            {selectedShop.phone && (
+                                <button 
+                                    onClick={() => {
+                                        playNeonClick();
+                                        const msg = `Hola! Vengo de la App Waly. Me interesa la oferta: *${selectedOfferForModal.name}* por *$${selectedOfferForModal.price.toLocaleString('es-AR')}*. ¿Tienen disponibilidad?`;
+                                        window.open(`https://wa.me/549${selectedShop.phone!.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+                                    }}
+                                    className="w-full btn-neon-green bg-[#25D366]/10 border border-[#25D366]/50 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-[0_0_15px_rgba(37,211,102,0.2)]"
+                                >
+                                    <MessageCircle size={18} className="text-[#25D366] drop-shadow-[0_0_8px_rgba(37,211,102,0.8)]" fill="currentColor" strokeWidth={0} />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#25D366]">Consultar x WhatsApp</span>
+                                </button>
+                            )}
+                            
+                            {/* Botón MercadoPago */}
+                            {selectedShop.mercadoPagoUrl && (
+                                <button 
+                                    onClick={() => {
+                                        playNeonClick();
+                                        window.open(selectedShop.mercadoPagoUrl, '_blank', 'noopener,noreferrer');
+                                    }}
+                                    className="w-full btn-neon-blue bg-[#009EE3]/10 border border-[#009EE3]/50 py-3.5 rounded-[1.25rem] flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,158,227,0.2)]"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Handshake size={18} className="text-[#009EE3] drop-shadow-[0_0_8px_rgba(0,158,227,0.8)]" strokeWidth={2.5} />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#009EE3]">Pagar con M. Pago</span>
+                                    </div>
+                                    <span className="text-[6.5px] font-bold tracking-widest text-[#009EE3]/70 uppercase">Recordá ingresar el monto exacto</span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
