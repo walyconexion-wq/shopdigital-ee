@@ -755,9 +755,15 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         
                         <div className="w-full aspect-square rounded-[1.5rem] overflow-hidden border border-white/10 mb-5 relative">
                             <img src={selectedOfferForModal.image} alt={selectedOfferForModal.name} className="w-full h-full object-cover" />
-                            <div className="absolute top-3 left-3 bg-cyan-500/90 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.8)]">
-                                Oferta Especial
+                            <div className={`absolute top-3 left-3 ${selectedOfferForModal.scarcityLabel ? 'bg-orange-500/90 shadow-[0_0_15px_rgba(249,115,22,0.8)]' : 'bg-cyan-500/90 shadow-[0_0_15px_rgba(6,182,212,0.8)]'} text-white text-[9px] font-black px-3 py-1 rounded-full uppercase backdrop-blur-md`}>
+                                {selectedOfferForModal.scarcityLabel || 'Oferta Especial'}
                             </div>
+                            {selectedOfferForModal.stockCount && selectedOfferForModal.stockCount > 0 && (
+                                <div className="absolute top-3 right-3 bg-red-600/90 shadow-[0_0_15px_rgba(220,38,38,0.8)] text-white text-[9px] font-black px-3 py-1 rounded-full uppercase backdrop-blur-md flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                    Solo quedan {selectedOfferForModal.stockCount}
+                                </div>
+                            )}
                         </div>
                         
                         <h2 className="text-[16px] font-black uppercase tracking-[0.1em] text-white leading-tight mb-2 text-center">
@@ -786,23 +792,34 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                                 </button>
                             )}
                             
-                            {/* Botón MercadoPago */}
-                            {selectedShop.mercadoPagoUrl && (
-                                <button 
-                                    onClick={() => {
-                                        playNeonClick();
+                            {/* Botón MercadoPago Permanente */}
+                            <button 
+                                onClick={() => {
+                                    playNeonClick();
+                                    if (selectedShop.mercadoPagoUrl) {
                                         window.open(selectedShop.mercadoPagoUrl, '_blank', 'noopener,noreferrer');
-                                    }}
-                                    className="w-full btn-neon-blue bg-[#009EE3]/10 border border-[#009EE3]/50 py-3.5 rounded-[1.25rem] flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,158,227,0.2)]"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <Handshake size={18} className="text-[#009EE3] drop-shadow-[0_0_8px_rgba(0,158,227,0.8)]" strokeWidth={2.5} />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#009EE3]">Pagar con M. Pago</span>
-                                    </div>
-                                    <span className="text-[6.5px] font-bold tracking-widest text-[#009EE3]/70 uppercase">Recordá ingresar el monto exacto</span>
-                                </button>
-                            )}
+                                    } else {
+                                        alert('⚠️ Este comercio aún no tiene habilitado el link de pago automático. Por favor, pedile el CVU/Alias por WhatsApp al botón de arriba.');
+                                    }
+                                }}
+                                className={`w-full btn-neon-blue bg-[#009EE3]/10 border border-[#009EE3]/50 py-3.5 rounded-[1.25rem] flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,158,227,0.2)] ${!selectedShop.mercadoPagoUrl ? 'opacity-80 grayscale-[30%]' : ''}`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Handshake size={18} className="text-[#009EE3] drop-shadow-[0_0_8px_rgba(0,158,227,0.8)]" strokeWidth={2.5} />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#009EE3]">Pagar con M. Pago</span>
+                                </div>
+                                <span className="text-[6.5px] font-bold tracking-widest text-[#009EE3]/70 uppercase">
+                                    {selectedShop.mercadoPagoUrl ? 'Recordá ingresar el monto exacto' : 'Consultar CVU/Alias al comercio'}
+                                </span>
+                            </button>
                         </div>
+
+                        {/* Texto Legal Scarcity */}
+                        {selectedOfferForModal.legalText && (
+                            <p className="mt-4 text-center text-[7.5px] text-white/40 uppercase tracking-widest leading-relaxed px-2">
+                                * {selectedOfferForModal.legalText}
+                            </p>
+                        )}
                     </div>
                 </div>
             )}

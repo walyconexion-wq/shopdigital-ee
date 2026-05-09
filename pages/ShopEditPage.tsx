@@ -637,6 +637,60 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                           className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                         />
                       </div>
+
+                      {/* ACELERADORES DE VENTA (Scarcity Marketing) */}
+                      <div className="mt-4 pt-4 border-t border-violet-500/20 space-y-3">
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-violet-400/80 flex items-center gap-1.5">
+                          <Sparkles size={12} /> Aceleradores de Venta (Scarcity)
+                        </h4>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Etiqueta de Urgencia</label>
+                            <input 
+                              type="text" 
+                              value={offer.scarcityLabel || ''}
+                              onChange={(e) => {
+                                const newOffers = [...shop.offers];
+                                newOffers[index].scarcityLabel = e.target.value;
+                                handleInputChange('offers', newOffers);
+                              }}
+                              placeholder="Ej: Solo por hoy, Promo Relámpago"
+                              className="w-full bg-black/40 border border-orange-500/20 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-orange-500/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all placeholder-white/20"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Stock Disponible</label>
+                            <input 
+                              type="number" 
+                              value={offer.stockCount || ''}
+                              onChange={(e) => {
+                                const newOffers = [...shop.offers];
+                                newOffers[index].stockCount = e.target.value ? parseInt(e.target.value) : undefined;
+                                handleInputChange('offers', newOffers);
+                              }}
+                              placeholder="Ej: 3"
+                              className="w-full bg-black/40 border border-orange-500/20 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-orange-500/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all placeholder-white/20"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Texto Legal o Aclaración</label>
+                          <input 
+                            type="text" 
+                            value={offer.legalText || ''}
+                            onChange={(e) => {
+                              const newOffers = [...shop.offers];
+                              newOffers[index].legalText = e.target.value;
+                              handleInputChange('offers', newOffers);
+                            }}
+                            placeholder="Ej: Válido solo para take-away abonando en efectivo."
+                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-[10px] text-white/70 focus:outline-none focus:border-violet-500/50 transition-all placeholder-white/20"
+                          />
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 ))}

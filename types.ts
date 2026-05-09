@@ -64,6 +64,9 @@ export interface ProductOffer {
   name: string;
   price: number;
   image: string;
+  scarcityLabel?: string; // e.g. "¡Válido solo por hoy!"
+  stockCount?: number;    // e.g. 3
+  legalText?: string;     // e.g. "Válido solo para take-away"
 }
 
 export interface PointsTransaction {
