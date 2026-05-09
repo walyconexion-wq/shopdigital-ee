@@ -2,7 +2,7 @@
 // ARI (Analista Táctica del Director)
 // Único consumidor de la API de Gemini
 // ==============================
-export const generateAriResponse = async (history: { role: 'director'|'ari', text: string }[], systemContext?: string) => {
+export const generateAriResponse = async (history: { role: 'director'|'ari', text: string }[], systemContext?: string, onRetryProgress?: (msg: string) => void) => {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey) return "Error de red: Llave de ignicion (API KEY) no detectada.";
 
@@ -20,11 +20,11 @@ Responde conciso, con vinetas si es necesario. No repitas el contexto ciegamente
         parts: [{ text: msg.text }]
     }));
 
-    // Retry logic para 429
+    // Retry logic para 429 y Failed to fetch
     const maxRetries = 2;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -54,10 +54,11 @@ Responde conciso, con vinetas si es necesario. No repitas el contexto ciegamente
         } catch (error: any) {
             console.error("[ARI NETWORK ERROR]:", error?.message || error);
             if (attempt < maxRetries) {
-                await new Promise(r => setTimeout(r, 5000));
+                if (onRetryProgress) onRetryProgress(`⚠️ Fallo de conexión. Iniciando protocolo de reconexión táctica (Intento ${attempt + 1}/${maxRetries})...`);
+                await new Promise(r => setTimeout(r, 4000));
                 continue;
             }
-            return `Fallo de comunicacion: ${error?.message || 'Error desconocido'}.`;
+            return `🔴 Error crítico al conectar con Ari (Failed to fetch). Revisar que VITE_GEMINI_API_KEY esté correctamente configurada en el entorno (Vercel) y hacer un Redespliegue (Redeploy). Detalle: ${error?.message || 'Error desconocido'}.`;
         }
     }
     return "Error inesperado en el motor de Ari.";

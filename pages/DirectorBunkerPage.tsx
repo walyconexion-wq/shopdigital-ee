@@ -144,8 +144,10 @@ export const DirectorBunkerPage: React.FC = () => {
         setAriMsgs(newHistory);
         setMsgInput('');
         setIsThinking(true);
-        const response = await generateAriResponse(newHistory);
-        setAriMsgs([...newHistory, { role: 'ari' as const, text: response }]);
+        const response = await generateAriResponse(newHistory, undefined, (retryMsg) => {
+            setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: retryMsg }]);
+        });
+        setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: response }]);
         setIsThinking(false);
     };
 

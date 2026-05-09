@@ -108,54 +108,58 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
   const isMiCatalogoRoute = window.location.pathname.includes('/mi-catalogo/');
 
   return (
-    <div className="min-h-screen bg-black text-white pb-32 relative overflow-x-hidden selection:bg-cyan-500/30">
-      {/* Background */}
+    <div className="min-h-screen bg-[#030712] text-white pb-32 relative overflow-x-hidden selection:bg-violet-500/30">
+      {/* Background Premium */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-20`} style={{ backgroundColor: shop.themeColor || '#22d3ee' }} />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="absolute top-[-15%] left-[-10%] w-[55vw] h-[55vw] bg-violet-600/8 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-cyan-600/6 rounded-full blur-[130px]" />
+        <div className={`absolute top-[30%] right-[10%] w-[300px] h-[300px] rounded-full blur-[100px] opacity-10`} style={{ backgroundColor: shop.themeColor || '#22d3ee' }} />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
 
-      <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-white/10 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl flex items-center justify-between">
+      <div className="bg-black/70 backdrop-blur-2xl border-b border-violet-500/20 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-[0_8px_32px_rgba(0,0,0,0.8),0_0_20px_rgba(139,92,246,0.08)] flex items-center justify-between">
         {!isMiCatalogoRoute ? (
-          <button onClick={() => { playNeonClick(); navigate(-1); }} className="text-white/50 hover:text-white transition-colors">
-            <ChevronLeft size={24} />
+          <button onClick={() => { playNeonClick(); navigate(-1); }} className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/10 hover:border-violet-500/30">
+            <ChevronLeft size={20} className="text-white/70" />
           </button>
-        ) : <div className="w-6" />}
+        ) : <div className="w-10" />}
         <div className="flex flex-col items-center flex-1">
-          <Edit3 size={24} className="mb-1" style={{ color: shop.themeColor || '#22d3ee' }} />
-          <h1 className="text-sm font-[1000] uppercase tracking-[0.1em] text-white text-center leading-tight">
-            Panel de Edición
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.2)]" style={{ background: `linear-gradient(135deg, ${shop.themeColor || '#8b5cf6'}22, transparent)` }}>
+            <Edit3 size={20} style={{ color: shop.themeColor || '#8b5cf6' }} />
+          </div>
+          <h1 className="text-[13px] font-[1000] uppercase tracking-[0.15em] text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-white to-cyan-300 text-center leading-tight">
+            Mi Catálogo Digital
           </h1>
-          <p className="text-[9px] font-black uppercase tracking-widest mt-0.5 opacity-60">
-            Sede: {townId.replace(/-/g, ' ').toUpperCase()}
+          <p className="text-[8px] font-black uppercase tracking-[0.3em] mt-1 text-violet-400/50">
+            {townId.replace(/-/g, ' ').toUpperCase()}
           </p>
         </div>
         <button 
           onClick={handleSave}
           disabled={saving}
-          className="bg-white text-black px-4 py-2 rounded-xl text-[9px] font-[1000] uppercase tracking-widest shadow-lg active:scale-90 transition-all flex items-center gap-1.5"
+          className="bg-gradient-to-r from-violet-600 to-violet-500 text-white px-5 py-2.5 rounded-2xl text-[9px] font-[1000] uppercase tracking-widest shadow-[0_4px_0_rgba(91,33,182,1),0_8px_20px_rgba(139,92,246,0.3)] active:translate-y-[4px] active:shadow-[0_0_0_rgba(91,33,182,1)] transition-all flex items-center gap-2 border border-violet-400/30"
         >
           {saving ? <span className="animate-pulse">...</span> : <><Save size={14} /> Guardar</>}
         </button>
       </div>
 
-      {/* TABS 3D REVOLUTION */}
-      <div className="px-5 mt-8 relative z-10">
-        <div className="grid grid-cols-2 gap-3 pb-4">
+      {/* TABS NEÓN */}
+      <div className="px-4 mt-6 relative z-10">
+        <div className="grid grid-cols-2 gap-2.5 pb-4">
           {TABS.map(tab => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => { playNeonClick(); setActiveTab(tab.id); }}
-                className={`glass-action-btn flex items-center justify-center gap-2 py-3.5 px-2 rounded-[1.25rem] border text-[9px] font-[1000] uppercase tracking-widest transition-all duration-75
+                className={`flex items-center justify-center gap-2 py-3 px-2 rounded-2xl border text-[8px] font-[1000] uppercase tracking-widest transition-all duration-200
                   ${isActive 
-                    ? 'bg-white/15 border-white/50 text-white shadow-[0_4px_0_rgba(255,255,255,0.3),0_10px_20px_rgba(255,255,255,0.1)] translate-y-[2px]' 
-                    : 'bg-zinc-900/60 border-white/10 text-white/40 shadow-[0_4px_0_rgba(0,0,0,0.5)] active:translate-y-[4px] active:shadow-none'
+                    ? 'bg-violet-500/15 border-violet-500/50 text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.2),inset_0_0_15px_rgba(139,92,246,0.05)]' 
+                    : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:border-white/15 hover:text-white/50 hover:bg-white/[0.04]'
                   }`}
               >
-                <span className={isActive ? 'text-white' : 'text-white/30'}>{tab.icon}</span>
-                <span className={isActive ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]' : ''}>{tab.label}</span>
+                <span className={isActive ? 'text-violet-400' : 'text-white/20'}>{tab.icon}</span>
+                <span>{tab.label}</span>
               </button>
             );
           })}
@@ -167,27 +171,27 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
         {activeTab === 'identidad' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             
-            <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-5">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-white/50 border-b border-white/10 pb-2 flex items-center gap-2">
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 space-y-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2">
                 <PenTool size={14} /> Información Básica
               </h2>
               
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Nombre del Local</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Nombre del Local</label>
                 <input 
                   type="text" 
                   value={shop.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Categoría Principal</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Categoría Principal</label>
                 <select 
                   value={shop.category}
                   onChange={(e) => handleInputChange('category', e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                 >
                   {CATEGORIES.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -196,29 +200,29 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
               </div>
             </div>
 
-            <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-5">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-white/50 border-b border-white/10 pb-2 flex items-center gap-2">
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 space-y-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2">
                 <ImageIcon size={14} /> Branding Visual
               </h2>
               
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">URL Foto Portada (Banner)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">URL Foto Portada (Banner)</label>
                 <input 
                   type="text" 
                   value={shop.bannerImage || ''}
                   onChange={(e) => handleInputChange('bannerImage', e.target.value)}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
                 {shop.bannerImage && (
-                  <div className="mt-2 h-24 rounded-lg overflow-hidden border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                  <div className="mt-3 h-28 rounded-xl overflow-hidden border border-violet-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.5),0_0_15px_rgba(139,92,246,0.1)]">
                     <img src={shop.bannerImage} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
 
               <div className="space-y-3 mt-4">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Color de Tema (Personalización)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Color de Tema (Personalización)</label>
                 <div className="flex gap-3">
                   {THEME_COLORS.map(color => (
                     <button
@@ -237,18 +241,18 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
 
         {activeTab === 'contacto' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-500">
-            <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-5">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-white/50 border-b border-white/10 pb-2 flex items-center gap-2">
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 space-y-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2">
                 <MapPin size={14} /> Ubicación Geográfica
               </h2>
 
               {/* SELECT DE ZONA DINÁMICO 🛡️ */}
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Zona / Localidad</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Zona / Localidad</label>
                 <select 
                   value={shop.zone || ''}
                   onChange={(e) => handleInputChange('zone', e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                 >
                   <option value="">Seleccioná una zona</option>
                   {localities.map(loc => (
@@ -259,40 +263,40 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Dirección Escrita</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Dirección Escrita</label>
                 <input 
                   type="text" 
                   value={shop.address || ''}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   placeholder="Ej: Alem 123"
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Código HTML Google Maps (Iframe)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Código HTML Google Maps (Iframe)</label>
                 <textarea 
                   value={shop.mapUrl || ''}
                   onChange={(e) => handleInputChange('mapUrl', e.target.value)}
                   placeholder="<iframe src='...' ></iframe>"
                   rows={4}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-mono text-white/70 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-[10px] font-mono text-white/70 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
             </div>
 
-            <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-5">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-white/50 border-b border-white/10 pb-2 flex items-center gap-2">
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 space-y-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2">
                 <Phone size={14} /> WhatsApp de Pedidos
               </h2>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Número (Sin +)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Número (Sin +)</label>
                 <input 
                   type="text" 
                   value={shop.phone || ''}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="Ej: 5491122334455"
-                  className="w-full bg-black/50 border border-green-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-green-500/50 transition-colors"
+                  className="w-full bg-black/40 border border-green-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-green-500/50 focus:shadow-[0_0_15px_rgba(34,197,94,0.15)] transition-all placeholder-white/20"
                 />
               </div>
             </div>
@@ -302,7 +306,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
         {activeTab === 'novedades' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="flex justify-between items-end mb-2">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-cyan-400 flex items-center gap-2">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400 flex items-center gap-2">
                 <ImageIcon size={14} /> Muro de Novedades
               </h2>
               <button 
@@ -311,20 +315,20 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   const newFeed = [...(shop.feedImages || []), ''];
                   handleInputChange('feedImages', newFeed);
                 }}
-                className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-cyan-500/40 transition-colors flex items-center gap-1"
+                className="bg-violet-500/15 text-violet-300 border border-violet-500/40 px-4 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-violet-500/25 hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all flex items-center gap-1.5"
               >
                 <Plus size={12} /> Agregar Foto
               </button>
             </div>
 
             {(!shop.feedImages || shop.feedImages.length === 0) ? (
-              <div className="bg-zinc-900/40 border border-dashed border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-                <p className="text-[10px] text-white/50 uppercase">El muro está vacío. Subí publicidades o eventos.</p>
+              <div className="bg-white/[0.02] border border-dashed border-violet-500/20 rounded-[1.5rem] p-8 flex flex-col items-center justify-center text-center">
+                <p className="text-[10px] text-violet-300/40 uppercase">El muro está vacío. Subí publicidades o eventos.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {shop.feedImages.map((imgUrl, index) => (
-                  <div key={index} className="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 relative group hover:border-cyan-500/30 transition-colors">
+                  <div key={index} className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-4 relative group hover:border-violet-500/30 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
                     <button 
                       onClick={() => {
                         const confirm = window.confirm('¿Eliminar esta imagen del muro?');
@@ -340,7 +344,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                     </button>
                     
                     <div className="space-y-3 mt-2 block">
-                      <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">URL Imagen publicitaria #{index + 1}</label>
+                      <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">URL Imagen publicitaria #{index + 1}</label>
                       <input 
                         type="text" 
                         value={imgUrl || ''}
@@ -350,10 +354,10 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                           handleInputChange('feedImages', newFeed);
                         }}
                         placeholder="https://...jpg"
-                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                        className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                       />
                       {imgUrl && (
-                         <div className="mt-3 aspect-video rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
+                         <div className="mt-3 aspect-video rounded-xl overflow-hidden border border-violet-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.5),0_0_10px_rgba(139,92,246,0.1)]">
                             <img src={imgUrl} alt="Feed Preview" className="w-full h-full object-cover" />
                          </div>
                       )}
@@ -369,64 +373,64 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
 
         {activeTab === 'enlaces' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-5">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-white/50 border-b border-white/10 pb-2 flex items-center gap-2">
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 space-y-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2">
                 <ExternalLink size={14} /> Botones de Acción Comercial
               </h2>
               
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Link de PedidoYa</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Link de PedidoYa</label>
                 <input 
                   type="text" 
                   value={shop.pedidoYaUrl || ''}
                   onChange={(e) => handleInputChange('pedidoYaUrl', e.target.value)}
                   placeholder="https://www.pedidosya.com.ar/..."
-                  className="w-full bg-black/50 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/80 focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition-all"
+                  className="w-full bg-black/40 border border-red-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_15px_rgba(239,68,68,0.15)] transition-all placeholder-white/20"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Link de MercadoPago</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Link de MercadoPago</label>
                 <input 
                   type="text" 
                   value={shop.mercadoPagoUrl || ''}
                   onChange={(e) => handleInputChange('mercadoPagoUrl', e.target.value)}
                   placeholder="Link de pago o alias..."
-                  className="w-full bg-black/50 border border-blue-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/80 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all"
+                  className="w-full bg-black/40 border border-blue-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:shadow-[0_0_15px_rgba(59,130,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
             </div>
 
-            <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-5">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-white/50 border-b border-white/10 pb-2 flex items-center gap-2">
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 space-y-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2">
                 <Instagram size={14} /> Redes Sociales
               </h2>
               
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Instagram (@usuario o Link)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Instagram (@usuario o Link)</label>
                 <input 
                   type="text" 
                   value={shop.instagram || ''}
                   onChange={(e) => handleInputChange('instagram', e.target.value)}
-                  className="w-full bg-black/50 border border-fuchsia-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-fuchsia-500/80 transition-all"
+                  className="w-full bg-black/40 border border-fuchsia-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-fuchsia-500/50 focus:shadow-[0_0_15px_rgba(217,70,239,0.15)] transition-all"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">Facebook (Link del Perfil)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Facebook (Link del Perfil)</label>
                 <input 
                   type="text" 
                   value={shop.facebook || ''}
                   onChange={(e) => handleInputChange('facebook', e.target.value)}
-                  className="w-full bg-black/50 border border-blue-600/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-600/80 transition-all"
+                  className="w-full bg-black/40 border border-blue-600/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-600/50 focus:shadow-[0_0_15px_rgba(37,99,235,0.15)] transition-all"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-white/40 ml-1">TikTok (@usuario o Link)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">TikTok (@usuario o Link)</label>
                 <input 
                   type="text" 
                   value={shop.tiktok || ''}
                   onChange={(e) => handleInputChange('tiktok', e.target.value)}
-                  className="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/60 transition-all"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/40 focus:shadow-[0_0_15px_rgba(255,255,255,0.08)] transition-all"
                 />
               </div>
             </div>
@@ -436,7 +440,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
         {activeTab === 'resenas' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="flex justify-between items-end mb-2">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-cyan-400 flex items-center gap-2">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400 flex items-center gap-2">
                 <MessageSquare size={14} /> Gestión de Reseñas
               </h2>
               <button 
@@ -451,26 +455,26 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   };
                   handleInputChange('reviews', [...(shop.reviews || []), newReview]);
                 }}
-                className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-cyan-500/40 transition-colors flex items-center gap-1"
+                className="bg-violet-500/15 text-violet-300 border border-violet-500/40 px-4 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-violet-500/25 hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all flex items-center gap-1.5"
               >
                 <Plus size={12} /> Nueva Reseña
               </button>
             </div>
 
             {(!shop.reviews || shop.reviews.length === 0) ? (
-              <div className="bg-zinc-900/40 border border-dashed border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-                <p className="text-[10px] text-white/50 uppercase">No hay reseñas cargadas aún.</p>
+              <div className="bg-white/[0.02] border border-dashed border-violet-500/20 rounded-[1.5rem] p-8 flex flex-col items-center justify-center text-center">
+                <p className="text-[10px] text-violet-300/40 uppercase">No hay reseñas cargadas aún.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {shop.reviews.map((review, index) => (
-                  <div key={review.id} className="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 relative group hover:border-cyan-500/30 transition-colors">
+                  <div key={review.id} className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-4 relative group hover:border-violet-500/30 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
                     <button 
                       onClick={() => {
                         const confirm = window.confirm('¿Eliminar esta reseña?');
                         if (confirm) {playNeonClick(); handleInputChange('reviews', shop.reviews!.filter(r => r.id !== review.id));}
                       }}
-                      className="absolute top-4 right-4 text-red-400/50 hover:text-red-400 transition-colors"
+                      className="absolute top-4 right-4 text-red-400/30 hover:text-red-400 transition-colors"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -478,7 +482,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                     <div className="space-y-3 mt-2">
                       <div className="flex gap-3">
                         <div className="flex-1 space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Cliente</label>
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Cliente</label>
                           <input 
                             type="text" 
                             value={review.authorName}
@@ -487,11 +491,11 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newReviews[index].authorName = e.target.value;
                               handleInputChange('reviews', newReviews);
                             }}
-                            className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                           />
                         </div>
                         <div className="w-20 space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Estrellas</label>
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Estrellas</label>
                           <select 
                             value={review.rating}
                             onChange={(e) => {
@@ -499,7 +503,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newReviews[index].rating = parseInt(e.target.value);
                               handleInputChange('reviews', newReviews);
                             }}
-                            className="w-full bg-black/50 border border-white/10 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-black/40 border border-white/8 rounded-xl px-2 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 transition-all"
                           >
                             {[1,2,3,4,5].map(v => <option key={v} value={v}>{v} ★</option>)}
                           </select>
@@ -507,7 +511,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                       </div>
                       
                       <div className="space-y-1">
-                        <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Comentario</label>
+                        <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Comentario</label>
                         <textarea 
                           value={review.text}
                           onChange={(e) => {
@@ -516,7 +520,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                             handleInputChange('reviews', newReviews);
                           }}
                           rows={2}
-                          className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white focus:outline-none focus:border-cyan-500/50 shadow-inner"
+                          className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-[10px] text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                         />
                       </div>
                     </div>
@@ -532,7 +536,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
         {activeTab === 'ofertas' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="flex justify-between items-end mb-2">
-              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-cyan-400 flex items-center gap-2">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400 flex items-center gap-2">
                 <ShoppingCart size={14} /> Gestión de Combos
               </h2>
               <button 
@@ -546,20 +550,20 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   };
                   handleInputChange('offers', [...(shop.offers || []), newOffer]);
                 }}
-                className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-cyan-500/40 transition-colors flex items-center gap-1"
+                className="bg-violet-500/15 text-violet-300 border border-violet-500/40 px-4 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-violet-500/25 hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all flex items-center gap-1.5"
               >
                 <Plus size={12} /> Agregar Oferta
               </button>
             </div>
 
             {(!shop.offers || shop.offers.length === 0) ? (
-              <div className="bg-zinc-900/40 border border-dashed border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-                <p className="text-[10px] text-white/50 uppercase">El comercio no tiene combos cargados.</p>
+              <div className="bg-white/[0.02] border border-dashed border-violet-500/20 rounded-[1.5rem] p-8 flex flex-col items-center justify-center text-center">
+                <p className="text-[10px] text-violet-300/40 uppercase">El comercio no tiene combos cargados.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {shop.offers.map((offer, index) => (
-                  <div key={offer.id} className="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 relative group hover:border-cyan-500/30 transition-colors">
+                  <div key={offer.id} className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-4 relative group hover:border-violet-500/30 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
                     <button 
                       onClick={() => {
                         const confirm = window.confirm('¿Eliminar esta oferta?');
@@ -568,7 +572,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                           handleInputChange('offers', shop.offers.filter(o => o.id !== offer.id));
                         }
                       }}
-                      className="absolute top-4 right-4 text-red-400/50 hover:text-red-400 transition-colors"
+                      className="absolute top-4 right-4 text-red-400/30 hover:text-red-400 transition-colors"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -576,7 +580,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                     <div className="space-y-3 mt-2">
                       <div className="flex gap-3">
                         <div className="flex-1 space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Nombre Combo #{index + 1}</label>
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Nombre Combo #{index + 1}</label>
                           <input 
                             type="text" 
                             value={offer.name}
@@ -585,11 +589,11 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newOffers[index].name = e.target.value;
                               handleInputChange('offers', newOffers);
                             }}
-                            className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                           />
                         </div>
                         <div className="w-24 space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">Precio ($)</label>
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Precio ($)</label>
                           <input 
                             type="number" 
                             value={offer.price}
@@ -598,13 +602,13 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newOffers[index].price = parseFloat(e.target.value) || 0;
                               handleInputChange('offers', newOffers);
                             }}
-                            className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                           />
                         </div>
                       </div>
                       
                       <div className="space-y-1">
-                        <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 ml-1">URL Fotografía</label>
+                        <label className="text-[8px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">URL Fotografía</label>
                         <input 
                           type="text" 
                           value={offer.image}
@@ -614,7 +618,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                             handleInputChange('offers', newOffers);
                           }}
                           placeholder="https://..."
-                          className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                          className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                         />
                       </div>
                     </div>

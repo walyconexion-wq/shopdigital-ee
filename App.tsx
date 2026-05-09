@@ -310,6 +310,9 @@ const App: React.FC = () => {
                 {/* 🛡️ BÚNKER DE MANDO Y TRANSMISIÓN (DIRECTOR) - Fuera de Layout mobile */}
                 <Route path="/:townId/bunker-waly" element={<DirectorBunkerPage />} />
                 <Route path="/:townId/director/transmision-en-vivo" element={<ProtectedRoute roles={['admin']}><LiveBroadcastPage /></ProtectedRoute>} />
+                {/* Alias sin townId — redirige al búnker de EE por defecto */}
+                <Route path="/director/transmision-en-vivo" element={<Navigate to="/esteban-echeverria/director/transmision-en-vivo" replace />} />
+                <Route path="/bunker-waly" element={<Navigate to="/esteban-echeverria/bunker-waly" replace />} />
 
                 {/* Ruteo Dinámico Multi-Zona */}
                 <Route path="/:townId/*" element={<TownController />} />

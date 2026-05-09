@@ -104,8 +104,10 @@ Al recibir solicitudes, analizá si hay alertas lógicas (ej: superposición hor
         const zonaTxt = targetTowns.includes('global') ? 'Cadena Nacional' : targetTowns.join(' y ').replace(/-/g, ' ').toUpperCase();
         const confirmPrompt = `Director acaba de inyectar la campaña "${titleCopy}" en el target de ${zonaTxt}. Dame un reporte táctico breve de la operación y el estado general de la malla (ya que tenés la lista actualizada de pautas en contexto).`;
         
-        const response = await generateAriResponse([{ role: 'director', text: confirmPrompt }], buildAriContext());
-        setAriMsgs(prev => [...prev, { role: 'ari', text: response }]);
+        const response = await generateAriResponse([{ role: 'director', text: confirmPrompt }], buildAriContext(), (retryMsg) => {
+            setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: retryMsg }]);
+        });
+        setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari', text: response }]);
         setIsThinking(false);
     };
 
@@ -160,8 +162,10 @@ Al recibir solicitudes, analizá si hay alertas lógicas (ej: superposición hor
         setMsgInput('');
         setIsThinking(true);
         
-        const response = await generateAriResponse(newHistory, buildAriContext());
-        setAriMsgs([...newHistory, { role: 'ari' as const, text: response }]);
+        const response = await generateAriResponse(newHistory, buildAriContext(), (retryMsg) => {
+            setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: retryMsg }]);
+        });
+        setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: response }]);
         setIsThinking(false);
     };
 
