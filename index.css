@@ -74,3 +74,21 @@
   90% { opacity: 1; }
   100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
+
+/* Efectos Neon Inteligente (Lamborghini) */
+@keyframes neon-pulse-green {
+  0%, 100% { box-shadow: 0 0 10px rgba(37,211,102,0.2), inset 0 0 5px rgba(37,211,102,0.1); border-color: rgba(37,211,102,0.3); }
+  50% { box-shadow: 0 0 20px rgba(37,211,102,0.6), inset 0 0 10px rgba(37,211,102,0.3); border-color: rgba(37,211,102,0.8); }
+}
+@keyframes neon-pulse-red {
+  0%, 100% { box-shadow: 0 0 10px rgba(234,4,78,0.2), inset 0 0 5px rgba(234,4,78,0.1); border-color: rgba(234,4,78,0.3); }
+  50% { box-shadow: 0 0 20px rgba(234,4,78,0.6), inset 0 0 10px rgba(234,4,78,0.3); border-color: rgba(234,4,78,0.8); }
+}
+@keyframes neon-pulse-blue {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,158,227,0.2), inset 0 0 5px rgba(0,158,227,0.1); border-color: rgba(0,158,227,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,158,227,0.6), inset 0 0 10px rgba(0,158,227,0.3); border-color: rgba(0,158,227,0.8); }
+}
+
+.btn-neon-green { animation: neon-pulse-green 3s infinite ease-in-out; }
+.btn-neon-red { animation: neon-pulse-red 3s infinite ease-in-out; animation-delay: 1s; }
+.btn-neon-blue { animation: neon-pulse-blue 3s infinite ease-in-out; animation-delay: 2s; }

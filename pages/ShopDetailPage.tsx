@@ -321,7 +321,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <div className="flex items-center gap-1.5 mt-1 opacity-90">
                         <MapPin size={10} className="text-red-400" strokeWidth={3} />
                         <span className="text-[8.5px] font-black uppercase tracking-[0.3em] text-white/80 text-shadow-premium">
-                            {selectedShop.zone || globalConfig?.townName || 'Tu zona'}
+                            {selectedShop.zone || 'Tu zona'}
                         </span>
                     </div>
                     <div className="w-12 h-[1px] bg-white/40 mx-auto mt-2.5 shadow-[0_0_10px_rgba(255,255,255,0.6)]"></div>
@@ -420,88 +420,108 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <p className="text-[8px] text-center font-bold uppercase tracking-widest mt-4" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>Sumate a nuestra red de beneficios locales</p>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="w-full px-5 mb-12 grid grid-cols-3 gap-4">
-                    <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="glass-action-btn btn-py py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 font-black text-white shadow-[0_4px_0_rgba(239,68,68,0.5),0_10px_15px_rgba(239,68,68,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(239,68,68,0.5),0_5px_10px_rgba(239,68,68,0.1)] transition-all duration-75">
-                        <span className="italic text-[18px] text-red-500">P</span>
-                        <span className="text-[8px] tracking-wider uppercase">PedidosYa</span>
-                    </button>
-                    <button onClick={() => selectedShop.phone && handleOpenLink(`https://wa.me/549${selectedShop.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="glass-action-btn btn-wa py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 font-black text-white shadow-[0_4px_0_rgba(37,211,102,0.5),0_10px_15px_rgba(37,211,102,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(37,211,102,0.5),0_5px_10px_rgba(37,211,102,0.1)] transition-all duration-75">
-                        <MessageCircle size={18} className="text-[#25D366]" fill="currentColor" strokeWidth={0} />
-                        <span className="text-[8px] tracking-wider uppercase">WhatsApp</span>
-                    </button>
-                    <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="glass-action-btn btn-mp py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 font-black text-white shadow-[0_4px_0_rgba(0,158,227,0.5),0_10px_15px_rgba(0,158,227,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(0,158,227,0.5),0_5px_10px_rgba(0,158,227,0.1)] transition-all duration-75">
-                        <Handshake size={18} className="text-[#009EE3]" strokeWidth={3} />
-                        <span className="text-[8px] tracking-wider uppercase">M. Pago</span>
-                    </button>
+                {/* ---------- DASHBOARD DE CONTACTO ---------- */}
+                <div className="w-full px-5 mb-14">
+                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                        <div className="flex items-center gap-2 mb-5">
+                            <MessageCircle size={14} className="text-white/60" />
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Canales de Atención</h3>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                            <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="btn-neon-red flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#EA044E]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                                <span className="italic text-[20px] font-black text-[#EA044E] drop-shadow-[0_0_8px_rgba(234,4,78,0.8)] group-hover:scale-110 transition-transform">P</span>
+                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">PedidosYa</span>
+                            </button>
+                            <button onClick={() => selectedShop.phone && handleOpenLink(`https://wa.me/549${selectedShop.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="btn-neon-green flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#25D366]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                                <MessageCircle size={20} className="text-[#25D366] drop-shadow-[0_0_8px_rgba(37,211,102,0.8)] group-hover:scale-110 transition-transform" fill="currentColor" strokeWidth={0} />
+                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">WhatsApp</span>
+                            </button>
+                            <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="btn-neon-blue flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#009EE3]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                                <Handshake size={20} className="text-[#009EE3] drop-shadow-[0_0_8px_rgba(0,158,227,0.8)] group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                                <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">M. Pago</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Map Section */}
-                <div className="w-full px-6 mb-12">
-                    <div className="map-glow-container w-full h-80 overflow-hidden bg-black/40 backdrop-blur-md relative mb-8 rounded-[2rem] border p-1" style={{ borderColor: hexToRgba(themeColor, 0.5), boxShadow: `0 0 30px ${hexToRgba(themeColor, 0.15)}` }}>
-                        <iframe
-                            title="Ubicación"
-                            src={selectedShop.mapUrl}
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen={false}
-                            loading="lazy"
-                            className="rounded-[1.7rem] invert-[100%] hue-rotate-180 contrast-[110%] saturate-[150%] brightness-[90%] opacity-95 pointer-events-auto"
-                        ></iframe>
-                    </div>
-                    <div className="mt-2 text-center px-4 mb-10">
-                        <p className="text-[8px] text-center font-bold uppercase tracking-widest" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>
+                {/* ---------- MÓDULO DE UBICACIÓN ---------- */}
+                <div className="w-full px-5 mb-14">
+                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                        <div className="flex items-center gap-2 mb-5">
+                            <MapPin size={14} className="text-white/60" />
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Dónde Encontrarnos</h3>
+                        </div>
+                        
+                        <div className="w-full h-48 overflow-hidden bg-black relative mb-4 rounded-[1.25rem] border border-white/10 group">
+                            <iframe
+                                title="Ubicación"
+                                src={selectedShop.mapUrl}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen={false}
+                                loading="lazy"
+                                className="rounded-[1.25rem] invert-[95%] hue-rotate-180 contrast-[120%] saturate-[200%] brightness-[85%] opacity-90 pointer-events-auto transition-all group-hover:opacity-100"
+                            ></iframe>
+                            <div className="absolute inset-0 pointer-events-none rounded-[1.25rem] shadow-[inset_0_0_40px_rgba(0,0,0,0.8)]"></div>
+                        </div>
+
+                        <p className="text-[8px] text-center font-bold uppercase tracking-widest mb-5" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>
                             {selectedShop.address}
                         </p>
-                    </div>
 
-                    <div className="flex flex-col gap-4 w-full">
-                        <div className="grid grid-cols-3 gap-4 mb-4">
-                            <button onClick={() => selectedShop.facebook && handleOpenLink(selectedShop.facebook)} className="glass-action-btn btn-fb py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 text-white shadow-[0_4px_0_rgba(24,119,242,0.5),0_10px_15px_rgba(24,119,242,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(24,119,242,0.5),0_5px_10px_rgba(24,119,242,0.1)] transition-all duration-75">
-                                <Facebook size={18} className="text-[#1877F2]" fill="currentColor" strokeWidth={0} />
-                                <span className="text-[8px] font-black uppercase tracking-tighter">Facebook</span>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button onClick={() => handleOpenLink(selectedShop.mapSheetUrl || '#')} className="bg-black/40 border border-violet-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
+                                <Navigation size={14} className="text-violet-400 drop-shadow-[0_0_5px_rgba(139,92,246,0.8)]" />
+                                <span className="text-[8.5px] font-bold uppercase tracking-wider text-violet-200">Cómo llegar</span>
                             </button>
-                            <button onClick={() => selectedShop.instagram && handleOpenLink(selectedShop.instagram)} className="glass-action-btn btn-ig py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 text-white shadow-[0_4px_0_rgba(228,64,95,0.5),0_10px_15px_rgba(228,64,95,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(228,64,95,0.5),0_5px_10px_rgba(228,64,95,0.1)] transition-all duration-75">
-                                <Instagram size={18} className="text-[#E4405F]" strokeWidth={2.5} />
-                                <span className="text-[8px] font-black uppercase tracking-tighter">Instagram</span>
-                            </button>
-                            <button onClick={() => selectedShop.tiktok && handleOpenLink(selectedShop.tiktok)} className="glass-action-btn btn-tk py-3 rounded-[1.25rem] flex flex-col items-center justify-center gap-1.5 text-white shadow-[0_4px_0_rgba(255,255,255,0.3),0_10px_15px_rgba(255,255,255,0.1)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(255,255,255,0.3),0_5px_10px_rgba(255,255,255,0.05)] transition-all duration-75">
-                                <Music size={18} className="text-white" strokeWidth={2.5} />
-                                <span className="text-[8px] font-black uppercase tracking-tighter">TikTok</span>
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => handleOpenLink(selectedShop.mapSheetUrl || '#')} className="glass-action-btn btn-violet py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(139,92,246,0.5),0_10px_15px_rgba(139,92,246,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(139,92,246,0.5),0_5px_10px_rgba(139,92,246,0.1)] transition-all duration-75">
-                                <Navigation size={16} className="text-violet-400" />
-                                <span className="text-[9px] font-black uppercase">Cómo llegar</span>
-                            </button>
-                            <button onClick={() => handleOpenLink('https://m.uber.com/ul/')} className="glass-action-btn bg-black/60 border border-white/20 py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(255,255,255,0.3),0_10px_15px_rgba(255,255,255,0.1)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(255,255,255,0.3),0_5px_10px_rgba(255,255,255,0.05)] transition-all duration-75">
-                                <Car size={16} className="text-white" />
-                                <span className="text-[9px] font-black uppercase">Uber</span>
+                            <button onClick={() => handleOpenLink('https://m.uber.com/ul/')} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
+                                <Car size={14} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" />
+                                <span className="text-[8.5px] font-bold uppercase tracking-wider text-white/90">Pedir Uber</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-4 w-full px-8 pb-12">
-                    <button onClick={handleShare} className="glass-action-btn btn-green py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white shadow-[0_4px_0_rgba(34,197,94,0.5),0_10px_15px_rgba(34,197,94,0.2)] active:translate-y-[4px] active:shadow-[0_0px_0_rgba(34,197,94,0.5),0_5px_10px_rgba(34,197,94,0.1)] transition-all duration-75">
-                        <Share2 size={16} className="text-green-400" />
-                        <span className="text-[10px] font-black uppercase">Compartir Catálogo</span>
-                    </button>
-                    <button onClick={() => {
-                        playNeonClick();
-                        handleLockTap();
-                    }} className={`flex items-center justify-center gap-1.5 py-2 transition-all duration-300 ${
-                        lockClicks >= 4 
-                        ? 'text-cyan-400 scale-110 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' 
-                        : lockClicks >= 2 
-                        ? 'text-white/25'
-                        : 'text-white/15'
-                    }`}>
-                        <Lock size={lockClicks >= 4 ? 14 : 10} className="transition-all duration-300" />
-                        <span className={`font-bold uppercase tracking-widest transition-all duration-300 ${lockClicks >= 4 ? 'text-[9px]' : 'text-[7px]'}`}>Gestión</span>
-                    </button>
+                {/* ---------- MÓDULO COMUNIDAD ---------- */}
+                <div className="w-full px-5 mb-12">
+                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] flex flex-col gap-4">
+                        <div className="grid grid-cols-3 gap-3">
+                            <button onClick={() => selectedShop.facebook && handleOpenLink(selectedShop.facebook)} className="bg-black/40 border border-[#1877F2]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                                <Facebook size={16} className="text-[#1877F2]" fill="currentColor" strokeWidth={0} />
+                                <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">Facebook</span>
+                            </button>
+                            <button onClick={() => selectedShop.instagram && handleOpenLink(selectedShop.instagram)} className="bg-black/40 border border-[#E4405F]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                                <Instagram size={16} className="text-[#E4405F]" strokeWidth={2.5} />
+                                <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">Instagram</span>
+                            </button>
+                            <button onClick={() => selectedShop.tiktok && handleOpenLink(selectedShop.tiktok)} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                                <Music size={16} className="text-white" strokeWidth={2.5} />
+                                <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">TikTok</span>
+                            </button>
+                        </div>
+                        <button onClick={handleShare} className="w-full bg-gradient-to-r from-emerald-900/40 to-green-900/40 border border-green-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 active:scale-95 transition-transform mt-2">
+                            <Share2 size={14} className="text-green-400" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-green-100">Compartir Catálogo</span>
+                        </button>
+                        
+                        {/* Botón Gestión Mudo (Lock) */}
+                        <div className="w-full flex justify-center mt-2">
+                            <button onClick={() => {
+                                playNeonClick();
+                                handleLockTap();
+                            }} className={`flex items-center justify-center gap-1.5 py-2 transition-all duration-300 ${
+                                lockClicks >= 4 
+                                ? 'text-cyan-400 scale-110 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' 
+                                : lockClicks >= 2 
+                                ? 'text-white/25'
+                                : 'text-white/15'
+                            }`}>
+                                <Lock size={lockClicks >= 4 ? 14 : 10} className="transition-all duration-300" />
+                                <span className={`font-bold uppercase tracking-widest transition-all duration-300 ${lockClicks >= 4 ? 'text-[9px]' : 'text-[7px]'}`}>Gestión</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* ---------- 📺 MURO VIVO (FEED DINÁMICO) ---------- */}
