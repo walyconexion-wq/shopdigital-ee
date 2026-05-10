@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Store, Megaphone, CreditCard, Users, ChevronLeft, 
-    Image as ImageIcon, Share2, PlusCircle, ShieldCheck, Zap
+    Image as ImageIcon, Share2, PlusCircle, ShieldCheck, Zap,
+    Search, ArrowUpRight, ArrowDownRight, User
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';

@@ -10,7 +10,8 @@ import {
     User,
     UserCircle,
     Mail,
-    ShieldCheck
+    ShieldCheck,
+    Store
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
