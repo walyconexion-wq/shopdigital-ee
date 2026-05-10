@@ -92,3 +92,84 @@
 .btn-neon-green { animation: neon-pulse-green 3s infinite ease-in-out; }
 .btn-neon-red { animation: neon-pulse-red 3s infinite ease-in-out; animation-delay: 1s; }
 .btn-neon-blue { animation: neon-pulse-blue 3s infinite ease-in-out; animation-delay: 2s; }
+
+/* ═══════════════════════════════════════════ */
+/* 💡 LETRERO NEÓN 3D — Shop Title Effect     */
+/* ═══════════════════════════════════════════ */
+
+@keyframes neon-sign-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow:
+      /* Capa 1: Glow interno blanco */
+      0 0 4px #fff,
+      /* Capa 2: Glow cercano */
+      0 0 11px #fff,
+      /* Capa 3: Glow medio cyan */
+      0 0 19px #fff,
+      /* Capa 4: Halo neón principal */
+      0 0 40px var(--neon-color, #22d3ee),
+      0 0 80px var(--neon-color, #22d3ee),
+      /* Capa 5: Halo exterior difuso */
+      0 0 90px var(--neon-color, #22d3ee),
+      0 0 100px var(--neon-color, #22d3ee),
+      0 0 150px var(--neon-color, #22d3ee);
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    text-shadow:
+      0 0 2px rgba(255,255,255,0.2),
+      0 0 4px rgba(255,255,255,0.1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes neon-sign-breathe {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 20px var(--neon-color, #22d3ee));
+  }
+  50% {
+    filter: brightness(1.15) drop-shadow(0 0 35px var(--neon-color, #22d3ee));
+  }
+}
+
+@keyframes neon-tube-warm {
+  0%   { opacity: 0.4; }
+  5%   { opacity: 0.5; }
+  10%  { opacity: 0.9; }
+  12%  { opacity: 0.4; }
+  14%  { opacity: 0.9; }
+  18%  { opacity: 0.5; }
+  20%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+.neon-sign-title {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  -webkit-text-stroke: 0.5px rgba(255,255,255,0.3);
+  animation:
+    neon-sign-flicker 4s infinite alternate,
+    neon-sign-breathe 3s infinite ease-in-out;
+  position: relative;
+}
+
+/* Efecto de encendido al cargar (simula tubo de neón arrancando) */
+.neon-sign-title.neon-warm-up {
+  animation:
+    neon-tube-warm 1.5s ease-out forwards,
+    neon-sign-flicker 4s 1.5s infinite alternate,
+    neon-sign-breathe 3s 1.5s infinite ease-in-out;
+}
+
+/* Resplandor detrás del texto (capa extra de profundidad 3D) */
+.neon-sign-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  filter: blur(15px);
+  opacity: 0.5;
+  animation: neon-sign-breathe 3s infinite ease-in-out;
+}

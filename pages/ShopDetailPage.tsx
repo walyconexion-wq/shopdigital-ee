@@ -334,12 +334,24 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
 
                 <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
-                    <h1 
-                        className="impact-title neon-flicker text-[34px] drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] text-white text-center pointer-events-auto cursor-default"
-                    onClick={(e) => e.preventDefault()}
-                    >
-                        {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
-                    </h1>
+                    {/* 💡 LETRERO NEÓN 3D — Nombre del Comercio */}
+                    <div className="relative" style={{ '--neon-color': themeColor } as React.CSSProperties}>
+                        {/* Capa de resplandor trasero (profundidad 3D) */}
+                        <h1
+                            aria-hidden="true"
+                            className="neon-sign-title neon-sign-glow text-[36px] text-center pointer-events-none select-none"
+                            style={{ color: themeColor }}
+                        >
+                            {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
+                        </h1>
+                        {/* Capa principal del letrero */}
+                        <h1 
+                            className="neon-sign-title neon-warm-up text-[36px] text-center pointer-events-auto cursor-default"
+                            onClick={(e) => e.preventDefault()}
+                        >
+                            {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
+                        </h1>
+                    </div>
                     <div className="flex items-center gap-1.5 mt-1 opacity-90">
                         <MapPin size={10} className="text-red-400" strokeWidth={3} />
                         <span className="text-[8.5px] font-black uppercase tracking-[0.3em] text-white/80 text-shadow-premium">
@@ -442,28 +454,6 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         </button>
                     </div>
                 )}
-
-                {/* ---------- B2C CLIENT FIDELITY SUBSCRIPTION TRIGGER (CLUB EXCLUSIVO) ---------- */}
-                <div className="w-full px-5 mb-14 flex flex-col items-center">
-                    <button
-                        onClick={() => {
-                            playNeonClick();
-                            navigate(`${basePath}/${categorySlug}/${shopSlug}/cliente-subscripcion`);
-                        }}
-                        className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px] w-full"
-                        style={{ 
-                            backgroundColor: hexToRgba(themeColor, 0.35),
-                            borderColor: hexToRgba(themeColor, 0.5),
-                            boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 12px 20px ${hexToRgba(themeColor, 0.2)}`
-                        }}
-                    >
-                        <Gift size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
-                        <span style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Obtener Credencial VIP</span>
-                    </button>
-                    <p className="text-[8px] text-center font-bold uppercase tracking-widest mt-4" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>
-                        Sumate a nuestra red de beneficios locales
-                    </p>
-                </div>
 
                 {/* ---------- DASHBOARD DE CONTACTO ---------- */}
                 <div className="w-full px-5 mb-14">
