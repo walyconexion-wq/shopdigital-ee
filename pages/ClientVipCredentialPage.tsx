@@ -41,10 +41,42 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // 1. Encontrar al socio
-    const client = useMemo(() => {
-        if (!clientId) return null;
-        return allClients.find(c => c.id === clientId);
+    // 1. Encontrar al socio con soporte para delay de Firebase
+    const [client, setClient] = useState<Client | null>(null);
+    const [isLoadingClient, setIsLoadingClient] = useState(true);
+
+    useEffect(() => {
+        if (!clientId) {
+            setIsLoadingClient(false);
+            return;
+        }
+        
+        // Intentar obtenerlo del array sincronizado
+        const found = allClients.find(c => c.id === clientId);
+        if (found) {
+            setClient(found);
+            setIsLoadingClient(false);
+            return;
+        }
+
+        // Si no está, hacer una llamada directa a Firebase (Rescue)
+        const fetchDirect = async () => {
+            try {
+                const { doc, getDoc } = await import('firebase/firestore');
+                const { db } = await import('../firebase');
+                const docRef = doc(db, 'clientes', clientId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setClient({ id: docSnap.id, ...docSnap.data() } as Client);
+                }
+            } catch (err) {
+                console.error("Error al rescatar cliente:", err);
+            } finally {
+                setIsLoadingClient(false);
+            }
+        };
+        
+        fetchDirect();
     }, [allClients, clientId]);
 
     // 2. Encontrar el comercio origen (con fallback para links genéricos de club)
@@ -92,6 +124,15 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
         };
         reader.readAsDataURL(file);
     };
+
+    if (isLoadingClient) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin mb-4" />
+                <p className="text-cyan-400 text-[10px] uppercase tracking-widest font-black animate-pulse">Sincronizando Identidad...</p>
+            </div>
+        );
+    }
 
     if (!shop || !client) {
         return (
@@ -343,7 +384,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
 
             {/* FOOTER INFO */}
             <p className="text-[8.5px] text-white/10 uppercase tracking-[0.4em] font-black text-center leading-[1.8] mt-12 px-8">
-                Blockchain Secured Identity · {formatClock(client.createdAt ? new Date(client.createdAt) : currentTime)} <br/>
+                Blockchain Secured Identity · {formatClock(client.updatedAt ? new Date(client.updatedAt) : currentTime)} <br/>
                 ID: {client.id}
             </p>
         </div>
