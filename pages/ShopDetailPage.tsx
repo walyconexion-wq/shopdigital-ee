@@ -443,6 +443,28 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     </div>
                 )}
 
+                {/* ---------- B2C CLIENT FIDELITY SUBSCRIPTION TRIGGER (CLUB EXCLUSIVO) ---------- */}
+                <div className="w-full px-5 mb-14 flex flex-col items-center">
+                    <button
+                        onClick={() => {
+                            playNeonClick();
+                            navigate(`${basePath}/${categorySlug}/${shopSlug}/cliente-subscripcion`);
+                        }}
+                        className="glass-action-btn backdrop-blur-md border px-8 py-3.5 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:translate-y-[4px] w-full"
+                        style={{ 
+                            backgroundColor: hexToRgba(themeColor, 0.35),
+                            borderColor: hexToRgba(themeColor, 0.5),
+                            boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 12px 20px ${hexToRgba(themeColor, 0.2)}`
+                        }}
+                    >
+                        <Gift size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
+                        <span style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Obtener Credencial VIP</span>
+                    </button>
+                    <p className="text-[8px] text-center font-bold uppercase tracking-widest mt-4" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>
+                        Sumate a nuestra red de beneficios locales
+                    </p>
+                </div>
+
                 {/* ---------- DASHBOARD DE CONTACTO ---------- */}
                 <div className="w-full px-5 mb-14">
                     <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">

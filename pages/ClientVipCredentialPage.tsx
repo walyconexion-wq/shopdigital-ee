@@ -343,7 +343,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
 
             {/* FOOTER INFO */}
             <p className="text-[8.5px] text-white/10 uppercase tracking-[0.4em] font-black text-center leading-[1.8] mt-12 px-8">
-                Blockchain Secured Identity · {formatClock(client.updatedAt ? new Date(client.updatedAt) : currentTime)} <br/>
+                Blockchain Secured Identity · {formatClock(client.createdAt ? new Date(client.createdAt) : currentTime)} <br/>
                 ID: {client.id}
             </p>
         </div>
