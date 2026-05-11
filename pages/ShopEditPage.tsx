@@ -8,7 +8,7 @@ import {
   MapPin, Phone, Edit3, Trash2, Plus,
   Instagram, Facebook, LayoutDashboard,
   ShoppingCart, Palette, PenTool, ExternalLink,
-  MessageSquare, Star, Sparkles
+  MessageSquare, Star, Sparkles, CheckCircle
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { CATEGORIES } from '../constants';
