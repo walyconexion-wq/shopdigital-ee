@@ -274,8 +274,14 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         ? selectedShop.galleryImages
         : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
 
+    const wallpaperClass = selectedShop.customBackground && selectedShop.customBackground !== 'none' 
+        ? `bg-pattern-${selectedShop.customBackground}` 
+        : '';
+    
+    const isLightWallpaper = ['cuadille-red', 'cuadille-blue'].includes(selectedShop.customBackground || '');
+
     return (
-        <div className="pb-24 animate-in fade-in duration-700 bg-transparent min-h-screen relative">
+        <div className={`pb-24 animate-in fade-in duration-700 min-h-screen relative ${wallpaperClass} ${isLightWallpaper ? 'text-zinc-900' : 'text-white'}`}>
 
             {/* OVERLAY ESTACIONAL - particulas flotantes */}
             {activeSeason && (

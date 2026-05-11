@@ -173,3 +173,50 @@
   opacity: 0.5;
   animation: neon-sign-breathe 3s infinite ease-in-out;
 }
+/* ═══════════════════════════════════════════ */
+/* 🎨 PATRONES DE FONDO PERSONALIZADOS       */
+/* ═══════════════════════════════════════════ */
+
+.bg-pattern-cuadille-red {
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%), linear-gradient(-45deg, #fee2e2 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #fee2e2 75%), linear-gradient(-45deg, transparent 75%, #fee2e2 75%);
+  background-size: 30px 30px;
+  background-position: 0 0, 0 15px, 15px -15px, -15px 0px;
+  background-attachment: fixed;
+}
+
+.bg-pattern-cuadille-blue {
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #e0f2fe 25%, transparent 25%), linear-gradient(-45deg, #e0f2fe 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0f2fe 75%), linear-gradient(-45deg, transparent 75%, #e0f2fe 75%);
+  background-size: 30px 30px;
+  background-position: 0 0, 0 15px, 15px -15px, -15px 0px;
+  background-attachment: fixed;
+}
+
+.bg-pattern-carbon {
+  background-color: #111;
+  background-image: linear-gradient(45deg, #222 25%, transparent 25%), linear-gradient(-45deg, #222 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #222 75%), linear-gradient(-45deg, transparent 75%, #222 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  background-attachment: fixed;
+}
+
+.bg-pattern-dots {
+  background-color: #030712;
+  background-image: radial-gradient(rgba(139, 92, 246, 0.2) 1px, transparent 0);
+  background-size: 24px 24px;
+  background-attachment: fixed;
+}
+
+.bg-pattern-blueprint {
+  background-color: #1e3a8a;
+  background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-attachment: fixed;
+}
+
+.bg-pattern-wood {
+  background-color: #27160c;
+  background-image: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.1) 40px, rgba(0,0,0,0.1) 80px);
+  background-attachment: fixed;
+}

@@ -51,6 +51,16 @@ const THEME_COLORS = [
   { id: 'amber', hex: '#f59e0b', name: 'Ámbar Dorado' }
 ];
 
+const WALLPAPER_PATTERNS = [
+  { id: 'none', label: 'Liso (Cyber-Dark)', className: '', preview: 'bg-[#030712]' },
+  { id: 'cuadille-red', label: 'Cuadillé Rojo', className: 'bg-pattern-cuadille-red', preview: 'bg-pattern-cuadille-red' },
+  { id: 'cuadille-blue', label: 'Cuadillé Azul', className: 'bg-pattern-cuadille-blue', preview: 'bg-pattern-cuadille-blue' },
+  { id: 'carbon', label: 'Fibra de Carbono', className: 'bg-pattern-carbon', preview: 'bg-pattern-carbon' },
+  { id: 'dots', label: 'Puntos Violeta', className: 'bg-pattern-dots', preview: 'bg-pattern-dots' },
+  { id: 'blueprint', label: 'Plano Técnico', className: 'bg-pattern-blueprint', preview: 'bg-pattern-blueprint' },
+  { id: 'wood', label: 'Madera Rústica', className: 'bg-pattern-wood', preview: 'bg-pattern-wood' },
+];
+
 const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
   const { townId = 'esteban-echeverria', shopId, shopSlug } = useParams<{ townId?: string; shopId?: string; shopSlug?: string }>();
   const navigate = useNavigate();
@@ -760,6 +770,39 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   </button>
                 );
               })}
+            </div>
+
+            {/* Selector de Patrones (Fondo) */}
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] mt-6">
+              <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400/70 border-b border-violet-500/10 pb-3 flex items-center gap-2 mb-4">
+                <LayoutDashboard size={14} className="text-violet-400" /> Patrones de Fondo (Wallpaper)
+              </h2>
+              <div className="grid grid-cols-2 gap-3">
+                {WALLPAPER_PATTERNS.map(pat => {
+                  const isSelected = (shop.customBackground || 'none') === pat.id;
+                  return (
+                    <button
+                      key={pat.id}
+                      onClick={() => { playNeonClick(); handleInputChange('customBackground', pat.id); }}
+                      className={`h-24 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 overflow-hidden relative group
+                        ${isSelected ? 'border-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.3)] scale-105' : 'border-white/5 opacity-60 hover:opacity-100 hover:border-white/20'}
+                      `}
+                    >
+                      <div className={`absolute inset-0 ${pat.className || 'bg-[#030712]'} z-0 opacity-40`} />
+                      <div className="relative z-10 text-center px-2">
+                        <p className={`text-[8px] font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-white/40'}`}>
+                          {pat.label}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 w-4 h-4 bg-violet-500 rounded-full flex items-center justify-center z-20">
+                          <CheckCircle size={10} className="text-white" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="h-6" />

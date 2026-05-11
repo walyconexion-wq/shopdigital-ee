@@ -159,4 +159,5 @@ export interface Shop {
   feedImages?: string[];
   feedLikes?: number;
   seasonTheme?: string; // Tema estacional/festivo del catálogo 🎄❄️🌸
+  customBackground?: string; // Fondo o patrón personalizado (Fase Personalización) 🎨
 }
