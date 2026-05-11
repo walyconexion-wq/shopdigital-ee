@@ -10,6 +10,8 @@ import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones } from '../firebase';
 import { RadarScanner } from '../components/RadarScanner';
+import { SaturationPredictor } from '../components/SaturationPredictor';
+import { LayoutGrid, Target, TrendingUp } from 'lucide-react';
 
 // Mock data para el Radar
 const zonesData = [
@@ -46,6 +48,8 @@ export const DirectorBunkerPage: React.FC = () => {
     const [securityStatus, setSecurityStatus] = useState<'green' | 'red'>('green');
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<'radar' | 'predictor'>('radar');
+    const [activeCategory, setActiveCategory] = useState('pizzerias');
 
     const ROOT_EMAIL = 'walyconexion@gmail.com';
     const isAuthorized = user?.email?.trim().toLowerCase() === ROOT_EMAIL;
@@ -215,41 +219,88 @@ export const DirectorBunkerPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Radar de Inteligencia Ari (Fase 3) */}
-                        <div className="bg-[#050505] border border-white/10 rounded-2xl p-5 flex flex-col">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
-                                    <Radar size={18} className="text-cyan-500 animate-pulse" /> Radar Ari
-                                </h2>
-                                <div className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
-                                    <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest">Maps Scan</span>
-                                </div>
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        {/* Panel Táctico Ari (Radar + Predictor) */}
+                        <div className="xl:col-span-2 bg-[#050505] border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                            {/* Tabs Header */}
+                            <div className="flex border-b border-white/10 bg-white/[0.02]">
+                                <button 
+                                    onClick={() => { playNeonClick(); setActiveTab('radar'); }}
+                                    className={`flex-1 py-4 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                                        activeTab === 'radar' 
+                                        ? 'text-cyan-400 bg-cyan-500/5 border-b-2 border-cyan-500' 
+                                        : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                                    }`}
+                                >
+                                    <Target size={14} /> Radar en Vivo
+                                </button>
+                                <button 
+                                    onClick={() => { playNeonClick(); setActiveTab('predictor'); }}
+                                    className={`flex-1 py-4 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                                        activeTab === 'predictor' 
+                                        ? 'text-orange-400 bg-orange-500/5 border-b-2 border-orange-500' 
+                                        : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                                    }`}
+                                >
+                                    <TrendingUp size={14} /> El Predictor (Saturación)
+                                </button>
                             </div>
-                            
-                            <RadarScanner townId={townId} />
+
+                            <div className="p-6">
+                                {activeTab === 'radar' ? (
+                                    <div className="animate-in fade-in duration-500">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
+                                                <Target size={18} className="text-cyan-500 animate-pulse" /> Radar de Inteligencia Ari
+                                            </h2>
+                                            <div className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
+                                                <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest">Fase 3: Maps Scan</span>
+                                            </div>
+                                        </div>
+                                        <RadarScanner townId={townId} />
+                                    </div>
+                                ) : (
+                                    <div className="animate-in fade-in duration-500">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
+                                                <TrendingUp size={18} className="text-orange-500" /> El Predictor de Mercado
+                                            </h2>
+                                            <div className="px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-full">
+                                                <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest">Fase 4: Análisis de Densidad</span>
+                                            </div>
+                                        </div>
+                                        <SaturationPredictor townId={townId} category={activeCategory} />
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Embajadores */}
-                        <div className="bg-[#050505] border border-white/10 rounded-2xl p-5 flex flex-col">
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80 mb-4">
+                        <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 flex flex-col h-fit">
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80 mb-6">
                                 <Users size={14} className="text-violet-500" /> Fuerza de Elite
                             </h2>
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 {embajadores.map(emb => (
-                                    <div key={emb.name} className="flex items-center gap-3 p-3 bg-gradient-to-r from-violet-900/10 to-transparent border-l-2 border-violet-500 rounded-r-xl">
-                                        <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400">
-                                            <Hexagon size={16} />
+                                    <div key={emb.name} className="flex items-center gap-3 p-4 bg-gradient-to-r from-violet-900/10 to-transparent border-l-2 border-violet-500 rounded-r-2xl hover:bg-violet-900/20 transition-all cursor-crosshair">
+                                        <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+                                            <Hexagon size={18} />
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="text-[11px] font-bold text-white uppercase tracking-wider">{emb.name}</h4>
-                                            <p className="text-[8px] text-white/50 tracking-widest uppercase">{emb.zone}</p>
+                                            <h4 className="text-[12px] font-bold text-white uppercase tracking-wider">{emb.name}</h4>
+                                            <p className="text-[9px] text-white/50 tracking-widest uppercase">{emb.zone}</p>
                                         </div>
                                         <span className="text-[8px] font-black text-violet-400 uppercase tracking-widest bg-violet-500/10 px-2 py-1 rounded-md border border-violet-500/20">
                                             {emb.status}
                                         </span>
                                     </div>
                                 ))}
+                            </div>
+                            
+                            <div className="mt-8 p-4 bg-violet-500/5 border border-violet-500/20 rounded-2xl">
+                                <p className="text-[9px] text-violet-300/60 leading-relaxed uppercase tracking-widest font-bold">
+                                    "Director, los embajadores están listos para el despliegue táctico basado en los datos del Predictor."
+                                </p>
                             </div>
                         </div>
                     </div>
