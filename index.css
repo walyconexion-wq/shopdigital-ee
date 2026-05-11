@@ -145,11 +145,11 @@
 
 .neon-sign-title {
   font-family: 'Outfit', 'Inter', sans-serif;
-  font-weight: 300;
+  font-weight: 400; /* Thinner font for glass tube effect */
   color: #fff;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  -webkit-text-stroke: 0px;
+  -webkit-text-stroke: 0.2px rgba(255,255,255,0.2); /* Softer stroke */
   animation:
     neon-sign-flicker 4s infinite alternate,
     neon-sign-breathe 3s infinite ease-in-out;

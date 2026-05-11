@@ -340,14 +340,14 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         {/* Capa de resplandor trasero (profundidad 3D) */}
                         <h1
                             aria-hidden="true"
-                            className="neon-sign-title neon-sign-glow text-[42px] text-center pointer-events-none select-none"
+                            className="neon-sign-title neon-sign-glow text-[36px] text-center pointer-events-none select-none"
                             style={{ color: themeColor }}
                         >
                             {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                         </h1>
                         {/* Capa principal del letrero */}
                         <h1 
-                            className="neon-sign-title neon-warm-up text-[42px] text-center pointer-events-auto cursor-default"
+                            className="neon-sign-title neon-warm-up text-[36px] text-center pointer-events-auto cursor-default"
                             onClick={(e) => e.preventDefault()}
                         >
                             {selectedShop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
@@ -418,7 +418,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                                     : { text: '⚡ HOY', bg: 'bg-rose-500/90', shadow: 'shadow-[0_0_10px_rgba(244,63,94,0.8)]' };
 
                                 return (
-                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center cursor-pointer" onClick={() => { playNeonClick(); setSelectedOfferForModal(offer); logEvento('view_offer', selectedShop.id, { producto: offer.name, precio: offer.price, zona: selectedShop.zone || townId }); }}>
+                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center cursor-pointer" onClick={() => { playNeonClick(); setSelectedOfferForModal(offer); logEvento('view_offer', selectedShop.id, { producto: offer.name }); }}>
                                         <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative">
                                             <img src={offer.image} alt={offer.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
                                             {/* Dynamic Badge */}
@@ -795,7 +795,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                                 <button 
                                     onClick={() => {
                                         playNeonClick();
-                                        logEvento('click_whatsapp', selectedShop.id, { producto: selectedOfferForModal.name, precio: selectedOfferForModal.price, zona: selectedShop.zone || townId });
+                                        logEvento('click_whatsapp', selectedShop.id, { producto: selectedOfferForModal.name, precio: selectedOfferForModal.price });
                                         const msg = `Hola! Vengo de la App Waly. Me interesa la oferta: *${selectedOfferForModal.name}* por *$${selectedOfferForModal.price.toLocaleString('es-AR')}*. ¿Tienen disponibilidad?`;
                                         window.open(`https://wa.me/549${selectedShop.phone!.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
                                     }}
@@ -810,7 +810,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                             <button 
                                 onClick={() => {
                                     playNeonClick();
-                                    logEvento('click_mercadopago', selectedShop.id, { producto: selectedOfferForModal!.name, precio: selectedOfferForModal!.price, zona: selectedShop.zone || townId, tieneLink: !!selectedShop.mercadoPagoUrl });
+                                    logEvento('click_mercadopago', selectedShop.id, { producto: selectedOfferForModal.name, monto: selectedOfferForModal.price });
                                     if (selectedShop.mercadoPagoUrl) {
                                         window.open(selectedShop.mercadoPagoUrl, '_blank', 'noopener,noreferrer');
                                     } else {

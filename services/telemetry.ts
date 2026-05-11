@@ -1,16 +1,11 @@
-// ═══════════════════════════════════════════
-// 🛰️ ARI — Sistema de Telemetría ShopDigital
-// Sensores de eventos para análisis comercial
-// ═══════════════════════════════════════════
-
 import { db } from "../firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 /**
- * Registra un evento de telemetría en Firebase.
- * @param tipo - Tipo de evento: 'view_offer' | 'click_whatsapp' | 'click_mercadopago' | 'view_shop' | etc.
- * @param shopId - ID del comercio asociado
- * @param data - Datos adicionales (producto, precio, zona, etc.)
+ * Función central de Telemetría para Ari
+ * @param tipo - 'view_offer' | 'click_whatsapp' | 'click_mercadopago'
+ * @param shopId - ID del comercio
+ * @param data - Datos extra (nombre del producto, precio, etc.)
  */
 export const logEvento = async (tipo: string, shopId: string, data: any = {}) => {
   try {
@@ -20,14 +15,10 @@ export const logEvento = async (tipo: string, shopId: string, data: any = {}) =>
       ...data,
       fecha: serverTimestamp(),
       plataforma: "ShopDigital_Web",
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+      zona: "Esteban Echeverría" 
     });
-    // Log silencioso en desarrollo
-    if (import.meta.env.DEV) {
-      console.log(`[Ari 🛰️] ${tipo} → ${shopId}`, data);
-    }
+    console.log(`[Ari Sensor] Evento registrado: ${tipo}`);
   } catch (e) {
-    // Fallo silencioso: la telemetría nunca debe romper la experiencia del usuario
-    console.warn("[Ari] Sensor offline:", e);
+    console.error("Error en sensor Ari:", e);
   }
 };
