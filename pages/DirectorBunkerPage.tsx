@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Activity, Anchor, Globe, Users, Database, 
     MessageSquare, Zap, ShieldAlert, Cpu, ChevronLeft, Hexagon,
@@ -9,6 +9,7 @@ import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones } from '../firebase';
+import { RadarScanner } from '../components/RadarScanner';
 
 // Mock data para el Radar
 const zonesData = [
@@ -32,6 +33,7 @@ const getFlag = (code: string) => {
 
 export const DirectorBunkerPage: React.FC = () => {
     const navigate = useNavigate();
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const { user, loading: authLoading } = useAuth();
     const chatEndRef = useRef<HTMLDivElement>(null);
     
@@ -214,32 +216,18 @@ export const DirectorBunkerPage: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Radar */}
+                        {/* Radar de Inteligencia Ari (Fase 3) */}
                         <div className="bg-[#050505] border border-white/10 rounded-2xl p-5 flex flex-col">
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80 mb-4">
-                                <Globe size={14} className="text-cyan-500" /> Radar de Zonas
-                            </h2>
-                            <div className="flex flex-col gap-3">
-                                {zonesData.map(zone => (
-                                    <div key={zone.name} className="flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-xl hover:border-white/10 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-2 h-2 rounded-full ${
-                                                zone.status === 'optimal' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]' : 
-                                                zone.status === 'warning' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.8)]' : 
-                                                'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse'
-                                            }`} />
-                                            <div>
-                                                <h4 className="text-[12px] font-bold text-white uppercase tracking-wider">{zone.name}</h4>
-                                                <p className="text-[8px] text-white/40 tracking-widest uppercase">{zone.activeShops} comercios</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-[12px] font-[1000] text-white">{zone.orders}</p>
-                                            <p className="text-[7px] text-cyan-400 font-bold uppercase tracking-widest">Pedidos</p>
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
+                                    <Radar size={18} className="text-cyan-500 animate-pulse" /> Radar Ari
+                                </h2>
+                                <div className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
+                                    <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest">Maps Scan</span>
+                                </div>
                             </div>
+                            
+                            <RadarScanner townId={townId} />
                         </div>
 
                         {/* Embajadores */}
