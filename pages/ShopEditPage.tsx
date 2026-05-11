@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../components/AuthContext';
 import { CATEGORIES } from '../constants';
 import { useTownLocalities } from '../hooks/useTownLocalities';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 interface ShopEditPageProps {
   allShops: Shop[];
@@ -809,6 +810,9 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
           </div>
         )}
       </div>
+
+      {/* ARI MERCHANT ASSISTANT (Cerebro Operativo) 🦾 */}
+      <AriMerchantAssistant shop={shop} />
 
     </div>
   );
