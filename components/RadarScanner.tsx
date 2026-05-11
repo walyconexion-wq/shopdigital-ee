@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { scanZone, RadarResult } from '../services/radar';
 import { playNeonClick } from '../utils/audio';
+import { generateGhostPitch } from '../services/gemini';
+import { X, Copy, MessageSquare, Send } from 'lucide-react';
 
 interface RadarScannerProps {
     townId: string;
@@ -24,12 +26,18 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
     const [isScanning, setIsScanning] = useState(false);
     const [results, setResults] = useState<RadarResult[]>([]);
     const [scanProgress, setScanProgress] = useState(0);
+    
+    // El Persuader States
+    const [activeGhost, setActiveGhost] = useState<RadarResult | null>(null);
+    const [persuasionScript, setPersuasionScript] = useState('');
+    const [isPersuading, setIsPersuading] = useState(false);
 
     const handleStartScan = async () => {
         playNeonClick();
         setIsScanning(true);
         setResults([]);
         setScanProgress(0);
+        setActiveGhost(null); // Reset persuader
 
         // Simulación de progreso de radar
         const interval = setInterval(() => {
@@ -54,6 +62,36 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
             setIsScanning(false);
             clearInterval(interval);
         }
+    };
+
+    const handlePersuade = async (biz: RadarResult) => {
+        playNeonClick();
+        setActiveGhost(biz);
+        setIsPersuading(true);
+        setPersuasionScript('Analizando ADN del local y redactando guion táctico...');
+        
+        try {
+            const script = await generateGhostPitch(biz.name, biz.category, townId);
+            setPersuasionScript(script);
+        } catch (error) {
+            setPersuasionScript("Error al conectar con Ari para la redacción.");
+        } finally {
+            setIsPersuading(false);
+        }
+    };
+
+    const handleOpenWhatsApp = () => {
+        if (!activeGhost) return;
+        playNeonClick();
+        const phone = activeGhost.phone?.replace(/\D/g, '') || '';
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(persuasionScript)}`;
+        window.open(url, '_blank');
+    };
+
+    const handleCopyScript = () => {
+        playNeonClick();
+        navigator.clipboard.writeText(persuasionScript);
+        alert("¡Guion táctico copiado al portapapeles!");
     };
 
     const ghostsCount = results.filter(r => r.isGhost).length;
@@ -184,7 +222,11 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
                                         </div>
                                     </div>
                                     {biz.isGhost && (
-                                        <button className="p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 transition-all active:scale-90 group" title="Contactar">
+                                        <button 
+                                            onClick={() => handlePersuade(biz)}
+                                            className="p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 transition-all active:scale-90 group" 
+                                            title="Persuadir (Redactar Guion)"
+                                        >
                                             <Zap size={16} className="group-hover:scale-125 group-hover:fill-red-400/20 transition-all" />
                                         </button>
                                     )}
@@ -219,6 +261,76 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
                         <button className="flex items-center gap-2 text-[9px] font-black text-violet-400 uppercase tracking-widest hover:text-violet-300 transition-colors">
                             Ver Estrategia de Contacto <ArrowRight size={12} />
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* ═══════════════════════════════════════════ */}
+            {/* EL PERSUADER MODAL (Guion Táctico)        */}
+            {/* ═══════════════════════════════════════════ */}
+            {activeGhost && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-[#0a0a0a] border border-red-500/30 w-full max-w-md rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(239,68,68,0.2)] animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-red-900/40 to-black p-6 border-b border-red-500/20 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Zap size={20} className="text-red-400 animate-pulse" />
+                                <div>
+                                    <h3 className="text-[14px] font-[1000] text-white uppercase tracking-widest">El Persuader</h3>
+                                    <p className="text-[8px] text-red-400 font-black uppercase tracking-widest">Objetivo: {activeGhost.name}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setActiveGhost(null)}
+                                className="p-2 hover:bg-white/5 rounded-xl transition-colors"
+                            >
+                                <X size={20} className="text-white/40" />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6">
+                            <div className="relative group">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-red-500 to-violet-500 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
+                                <div className="relative bg-black/50 border border-white/5 rounded-2xl p-5 min-h-[200px] flex flex-col">
+                                    {isPersuading ? (
+                                        <div className="flex-1 flex flex-col items-center justify-center gap-4 py-10">
+                                            <RefreshCw size={32} className="text-red-500 animate-spin" />
+                                            <p className="text-[10px] text-red-400 font-bold animate-pulse uppercase tracking-[0.2em]">Redactando Script...</p>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="flex items-center gap-2 mb-3 text-red-400/60 uppercase text-[9px] font-black tracking-widest">
+                                                <MessageSquare size={12} /> Guion de WhatsApp Sugerido
+                                            </div>
+                                            <p className="text-[13px] text-white/80 leading-relaxed whitespace-pre-wrap font-medium italic">
+                                                {persuasionScript}
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 mt-6">
+                                <button 
+                                    onClick={handleCopyScript}
+                                    className="py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/70 transition-all active:scale-95"
+                                >
+                                    <Copy size={16} /> Copiar Script
+                                </button>
+                                <button 
+                                    onClick={handleOpenWhatsApp}
+                                    className="py-4 bg-green-600 hover:bg-green-500 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all active:scale-95"
+                                >
+                                    <Send size={16} /> Ir a WhatsApp
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Footer info */}
+                        <div className="px-6 py-4 bg-black/50 border-t border-white/5 text-center">
+                            <p className="text-[8px] text-white/30 uppercase tracking-[0.2em]">Guion generado dinámicamente por Ari basado en ADN comercial de Maps.</p>
+                        </div>
                     </div>
                 </div>
             )}

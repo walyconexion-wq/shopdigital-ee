@@ -63,3 +63,46 @@ Responde conciso, con vinetas si es necesario. No repitas el contexto ciegamente
     }
     return "Error inesperado en el motor de Ari.";
 };
+
+/**
+ * EL PERSUADER - Fase 3b
+ * Genera un guion de WhatsApp personalizado para un "Fantasma" detectado por el radar
+ */
+export const generateGhostPitch = async (ghostName: string, category: string, townId: string) => {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) return "Error: API Key no detectada.";
+
+    const townName = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    
+    const prompt = `Actuá como ARI, la analista táctica de Shop Digital. 
+Generá un mensaje de WhatsApp corto, persuasivo y profesional para contactar a un local que NO está en nuestra red.
+El local se llama "${ghostName}", es de la categoría "${category}" y está en la zona de "${townName}".
+
+Estrategia:
+1. Saludá cordialmente.
+2. Mencioná que lo vimos en Google Maps y notamos que tiene buenas reseñas pero le falta presencia en el catálogo regional "Shop Digital".
+3. Invitá a sumarse al "Hormiguero" (nuestra red de comercios) para digitalizar sus ofertas.
+4. Usá un tono ejecutivo, porteño/bonaerense y moderno.
+5. Incluí emojis estratégicos.
+
+Formato: Solo devolvé el texto del mensaje de WhatsApp, listo para copiar.`;
+
+    try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.8, maxOutputTokens: 300 }
+            })
+        });
+
+        if (!res.ok) return "No pude redactar el guion, Director. El motor está frío.";
+        
+        const data = await res.json();
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo generar el mensaje.";
+    } catch (error) {
+        console.error("Error en Persuader:", error);
+        return "Fallo en la conexión táctica con el motor de persuasión.";
+    }
+};
