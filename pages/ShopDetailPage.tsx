@@ -217,6 +217,13 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         return () => { if (offersTimerRef.current) clearInterval(offersTimerRef.current); };
     }, [selectedShop]);
 
+    // 🛰️ SENSOR ARI: Tráfico Base (Entrada al Búnker)
+    useEffect(() => {
+        if (selectedShop) {
+            logEvento('view_shop', selectedShop.id, { nombre_local: selectedShop.name });
+        }
+    }, [selectedShop?.id]);
+
     const scrollToCatalog = () => {
         playNeonClick();
         catalogRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -485,6 +492,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                     <button
                         onClick={() => {
                             playNeonClick();
+                            logEvento('click_vip_access', selectedShop.id);
                             navigate(`${basePath}/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
                         className="w-full relative overflow-hidden rounded-[2rem] p-[1px] active:scale-95 transition-transform duration-300 group shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
@@ -536,11 +544,11 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                         </p>
 
                         <div className="grid grid-cols-2 gap-3">
-                            <button onClick={() => handleOpenLink(selectedShop.mapSheetUrl || '#')} className="bg-black/40 border border-violet-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_location', selectedShop.id, { metodo: 'google_maps' }); handleOpenLink(selectedShop.mapSheetUrl || '#'); }} className="bg-black/40 border border-violet-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
                                 <Navigation size={14} className="text-violet-400 drop-shadow-[0_0_5px_rgba(139,92,246,0.8)]" />
                                 <span className="text-[8.5px] font-bold uppercase tracking-wider text-violet-200">Cómo llegar</span>
                             </button>
-                            <button onClick={() => handleOpenLink('https://m.uber.com/ul/')} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_location', selectedShop.id, { metodo: 'uber' }); handleOpenLink('https://m.uber.com/ul/'); }} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
                                 <Car size={14} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" />
                                 <span className="text-[8.5px] font-bold uppercase tracking-wider text-white/90">Pedir Uber</span>
                             </button>
@@ -552,15 +560,15 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <div className="w-full px-5 mb-12">
                     <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] flex flex-col gap-4">
                         <div className="grid grid-cols-3 gap-3">
-                            <button onClick={() => selectedShop.facebook && handleOpenLink(selectedShop.facebook)} className="bg-black/40 border border-[#1877F2]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_social', selectedShop.id, { plataforma: 'facebook' }); selectedShop.facebook && handleOpenLink(selectedShop.facebook); }} className="bg-black/40 border border-[#1877F2]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
                                 <Facebook size={16} className="text-[#1877F2]" fill="currentColor" strokeWidth={0} />
                                 <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">Facebook</span>
                             </button>
-                            <button onClick={() => selectedShop.instagram && handleOpenLink(selectedShop.instagram)} className="bg-black/40 border border-[#E4405F]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_social', selectedShop.id, { plataforma: 'instagram' }); selectedShop.instagram && handleOpenLink(selectedShop.instagram); }} className="bg-black/40 border border-[#E4405F]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
                                 <Instagram size={16} className="text-[#E4405F]" strokeWidth={2.5} />
                                 <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">Instagram</span>
                             </button>
-                            <button onClick={() => selectedShop.tiktok && handleOpenLink(selectedShop.tiktok)} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_social', selectedShop.id, { plataforma: 'tiktok' }); selectedShop.tiktok && handleOpenLink(selectedShop.tiktok); }} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
                                 <Music size={16} className="text-white" strokeWidth={2.5} />
                                 <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">TikTok</span>
                             </button>
