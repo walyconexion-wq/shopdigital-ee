@@ -138,9 +138,9 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
             {!isOpen && (
                 <button 
                     onClick={() => { setIsOpen(true); playNeonClick(); }}
-                    className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4)] hover:scale-110 transition-all border-2 border-white/20 relative group"
+                    className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_15px_rgba(255,255,255,0.4)] hover:scale-110 hover:shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all border border-white/40 relative group"
                 >
-                    <Bot size={32} className="text-white" />
+                    <Bot size={32} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
                     <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center animate-bounce">
                         <span className="text-[8px] font-black text-white">1</span>
                     </div>
@@ -153,12 +153,17 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
 
             {/* Chat Panel */}
             {isOpen && (
-                <div className="w-[340px] h-[500px] bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                <div className="w-[340px] h-[500px] bg-[#050505]/95 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)] flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative">
+                    {/* Background Grid & Glows */}
+                    <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl z-0" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-violet-500/10 rounded-full blur-3xl z-0" />
+
                     {/* Header */}
-                    <div className="p-4 bg-gradient-to-r from-cyan-900/20 to-violet-900/20 border-b border-white/5 flex items-center justify-between">
+                    <div className="p-4 bg-gradient-to-r from-cyan-900/40 to-violet-900/40 border-b border-white/10 flex items-center justify-between relative z-10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30">
-                                <Sparkles size={20} className="text-cyan-400" />
+                            <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                                <Sparkles size={20} className="text-cyan-300" />
                             </div>
                             <div>
                                 <h3 className="text-[12px] font-black text-white uppercase tracking-widest">Ari Assistant</h3>
@@ -176,14 +181,14 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                     </div>
 
                     {/* Messages Body */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar relative z-10">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] p-3 rounded-2xl text-[11px] leading-relaxed ${
+                                <div className={`max-w-[85%] p-3.5 rounded-[1.25rem] text-[11px] leading-relaxed shadow-lg border backdrop-blur-md transition-all ${
                                     msg.role === 'user' 
-                                    ? 'bg-violet-600 text-white rounded-tr-none' 
-                                    : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-none'
-                                } shadow-lg`}>
+                                    ? 'bg-violet-600/80 border-violet-400/30 text-white rounded-tr-sm shadow-[0_4px_15px_rgba(139,92,246,0.3)]' 
+                                    : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.2)]'
+                                }`}>
                                     {msg.text}
                                     <div className="text-[7px] mt-1 opacity-40 uppercase font-black tracking-widest">
                                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -219,26 +224,26 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-4 bg-black border-t border-white/5">
-                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-1 px-3">
+                    <div className="p-4 bg-black/40 backdrop-blur-xl border-t border-white/10 relative z-10">
+                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-1 px-3 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]">
                             <input 
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                                placeholder="Hablá con Ari..."
-                                className="flex-1 bg-transparent border-none text-white text-[11px] py-2.5 focus:outline-none placeholder:text-white/20"
+                                placeholder="Comandá a Ari..."
+                                className="flex-1 bg-transparent border-none text-white text-[11px] py-3 focus:outline-none placeholder:text-white/30 font-medium tracking-wide"
                             />
                             <button 
                                 onClick={handleToggleMic}
-                                className={`p-2 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                                className={`p-2.5 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
                             >
                                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
                             </button>
                             <button 
                                 onClick={() => handleSend()}
                                 disabled={!input.trim() || isLoading}
-                                className="p-2 bg-cyan-500 text-black rounded-xl hover:bg-cyan-400 transition-all disabled:opacity-30 disabled:grayscale"
+                                className="p-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-black rounded-xl hover:scale-105 transition-all disabled:opacity-30 disabled:grayscale disabled:hover:scale-100 shadow-[0_0_15px_rgba(34,211,238,0.3)]"
                             >
                                 <Send size={18} />
                             </button>

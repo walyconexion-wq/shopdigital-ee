@@ -145,11 +145,20 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
       </div>
 
       <div className="bg-black/70 backdrop-blur-2xl border-b border-violet-500/20 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-[0_8px_32px_rgba(0,0,0,0.8),0_0_20px_rgba(139,92,246,0.08)] flex items-center justify-between">
-        {!isMiCatalogoRoute ? (
-          <button onClick={() => { playNeonClick(); navigate(-1); }} className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/10 hover:border-violet-500/30">
-            <ChevronLeft size={20} className="text-white/70" />
-          </button>
-        ) : <div className="w-10" />}
+        <button 
+          onClick={() => { 
+            playNeonClick(); 
+            if (isMiCatalogoRoute) {
+               navigate(`/${townId}/${shop.category || 'pizzerias'}/${shopId || shop.slug || shop.id}`);
+            } else {
+               navigate(-1); 
+            }
+          }} 
+          className="px-3 py-2 bg-white/[0.05] hover:bg-white/10 rounded-xl transition-all border border-white/10 hover:border-violet-500/50 flex items-center gap-2 group shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+        >
+          <ChevronLeft size={18} className="text-white/70 group-hover:text-white group-hover:-translate-x-1 transition-all" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-white/60 group-hover:text-white hidden md:block">Volver</span>
+        </button>
         <div className="flex flex-col items-center flex-1">
           <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.2)]" style={{ background: `linear-gradient(135deg, ${shop.themeColor || '#8b5cf6'}22, transparent)` }}>
             <Edit3 size={20} style={{ color: shop.themeColor || '#8b5cf6' }} />
@@ -209,7 +218,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   type="text" 
                   value={shop.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
 
@@ -218,7 +227,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                 <select 
                   value={shop.category}
                   onChange={(e) => handleInputChange('category', e.target.value)}
-                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                 >
                   {CATEGORIES.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -239,7 +248,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   value={shop.bannerImage || ''}
                   onChange={(e) => handleInputChange('bannerImage', e.target.value)}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
                 {shop.bannerImage && (
                   <div className="mt-3 h-28 rounded-xl overflow-hidden border border-violet-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.5),0_0_15px_rgba(139,92,246,0.1)]">
@@ -279,7 +288,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                 <select 
                   value={shop.zone || ''}
                   onChange={(e) => handleInputChange('zone', e.target.value)}
-                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                 >
                   <option value="">Seleccioná una zona</option>
                   {localities.map(loc => (
@@ -296,7 +305,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   value={shop.address || ''}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   placeholder="Ej: Alem 123"
-                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
 
@@ -307,7 +316,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   onChange={(e) => handleInputChange('mapUrl', e.target.value)}
                   placeholder="<iframe src='...' ></iframe>"
                   rows={4}
-                  className="w-full bg-black/40 border border-white/8 rounded-xl px-4 py-3.5 text-[10px] font-mono text-white/70 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-[10px] font-mono text-white/70 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
             </div>
@@ -323,7 +332,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   value={shop.phone || ''}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="Ej: 5491122334455"
-                  className="w-full bg-black/40 border border-green-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-green-500/50 focus:shadow-[0_0_15px_rgba(34,197,94,0.15)] transition-all placeholder-white/20"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-green-500/30 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-green-500/50 focus:shadow-[0_0_15px_rgba(34,197,94,0.15)] transition-all placeholder-white/20"
                 />
               </div>
             </div>
@@ -381,7 +390,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                           handleInputChange('feedImages', newFeed);
                         }}
                         placeholder="https://...jpg"
-                        className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
+                        className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                       />
                       {imgUrl && (
                          <div className="mt-3 aspect-video rounded-xl overflow-hidden border border-violet-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.5),0_0_10px_rgba(139,92,246,0.1)]">
@@ -412,7 +421,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   value={shop.pedidoYaUrl || ''}
                   onChange={(e) => handleInputChange('pedidoYaUrl', e.target.value)}
                   placeholder="https://www.pedidosya.com.ar/..."
-                  className="w-full bg-black/40 border border-red-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_15px_rgba(239,68,68,0.15)] transition-all placeholder-white/20"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-red-500/30 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_15px_rgba(239,68,68,0.15)] transition-all placeholder-white/20"
                 />
               </div>
 
@@ -423,7 +432,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   value={shop.mercadoPagoUrl || ''}
                   onChange={(e) => handleInputChange('mercadoPagoUrl', e.target.value)}
                   placeholder="Link de pago o alias..."
-                  className="w-full bg-black/40 border border-blue-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:shadow-[0_0_15px_rgba(59,130,246,0.15)] transition-all placeholder-white/20"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-blue-500/30 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:shadow-[0_0_15px_rgba(59,130,246,0.15)] transition-all placeholder-white/20"
                 />
               </div>
             </div>
@@ -439,7 +448,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   type="text" 
                   value={shop.instagram || ''}
                   onChange={(e) => handleInputChange('instagram', e.target.value)}
-                  className="w-full bg-black/40 border border-fuchsia-500/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-fuchsia-500/50 focus:shadow-[0_0_15px_rgba(217,70,239,0.15)] transition-all"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-fuchsia-500/30 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-fuchsia-500/50 focus:shadow-[0_0_15px_rgba(217,70,239,0.15)] transition-all"
                 />
               </div>
               <div className="space-y-1">
@@ -448,7 +457,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   type="text" 
                   value={shop.facebook || ''}
                   onChange={(e) => handleInputChange('facebook', e.target.value)}
-                  className="w-full bg-black/40 border border-blue-600/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-600/50 focus:shadow-[0_0_15px_rgba(37,99,235,0.15)] transition-all"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-blue-600/30 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-600/50 focus:shadow-[0_0_15px_rgba(37,99,235,0.15)] transition-all"
                 />
               </div>
               <div className="space-y-1">
@@ -518,7 +527,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newReviews[index].authorName = e.target.value;
                               handleInputChange('reviews', newReviews);
                             }}
-                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
+                            className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                           />
                         </div>
                         <div className="w-20 space-y-1">
@@ -530,7 +539,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newReviews[index].rating = parseInt(e.target.value);
                               handleInputChange('reviews', newReviews);
                             }}
-                            className="w-full bg-black/40 border border-white/8 rounded-xl px-2 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 transition-all"
+                            className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-2 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 transition-all"
                           >
                             {[1,2,3,4,5].map(v => <option key={v} value={v}>{v} ★</option>)}
                           </select>
@@ -547,7 +556,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                             handleInputChange('reviews', newReviews);
                           }}
                           rows={2}
-                          className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-[10px] text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
+                          className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-3 py-2.5 text-[10px] text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                         />
                       </div>
                     </div>
@@ -616,7 +625,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newOffers[index].name = e.target.value;
                               handleInputChange('offers', newOffers);
                             }}
-                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
+                            className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                           />
                         </div>
                         <div className="w-24 space-y-1">
@@ -629,7 +638,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               newOffers[index].price = parseFloat(e.target.value) || 0;
                               handleInputChange('offers', newOffers);
                             }}
-                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
+                            className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                           />
                         </div>
                       </div>
@@ -645,7 +654,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                             handleInputChange('offers', newOffers);
                           }}
                           placeholder="https://..."
-                          className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
+                          className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
                         />
                       </div>
 
@@ -667,7 +676,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                                 handleInputChange('offers', newOffers);
                               }}
                               placeholder="Ej: Solo por hoy, Promo Relámpago"
-                              className="w-full bg-black/40 border border-orange-500/20 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-orange-500/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all placeholder-white/20"
+                              className="w-full bg-white/[0.04] backdrop-blur-md border border-orange-500/30 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-orange-500/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all placeholder-white/20"
                             />
                           </div>
                           <div className="space-y-1">
@@ -681,7 +690,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                                 handleInputChange('offers', newOffers);
                               }}
                               placeholder="Ej: 3"
-                              className="w-full bg-black/40 border border-orange-500/20 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-orange-500/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all placeholder-white/20"
+                              className="w-full bg-white/[0.04] backdrop-blur-md border border-orange-500/30 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-orange-500/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all placeholder-white/20"
                             />
                           </div>
                         </div>
@@ -697,7 +706,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                               handleInputChange('offers', newOffers);
                             }}
                             placeholder="Ej: Válido solo para take-away abonando en efectivo."
-                            className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2.5 text-[10px] text-white/70 focus:outline-none focus:border-violet-500/50 transition-all placeholder-white/20"
+                            className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-3 py-2.5 text-[10px] text-white/70 focus:outline-none focus:border-violet-500/50 transition-all placeholder-white/20"
                           />
                         </div>
                       </div>
