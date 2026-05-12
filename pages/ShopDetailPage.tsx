@@ -274,14 +274,28 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         ? selectedShop.galleryImages
         : [selectedShop.bannerImage, selectedShop.image, selectedShop.offers[0]?.image].filter(Boolean) as string[];
 
-    const wallpaperClass = selectedShop.customBackground && selectedShop.customBackground !== 'none' 
+    const isCustomColor = selectedShop.customBackground?.startsWith('#');
+    
+    const wallpaperClass = selectedShop.customBackground && selectedShop.customBackground !== 'none' && !isCustomColor
         ? `bg-pattern-${selectedShop.customBackground}` 
         : '';
     
-    const isLightWallpaper = ['cuadille-red', 'cuadille-blue'].includes(selectedShop.customBackground || '');
+    // Función para detectar si un color hexadecimal es claro u oscuro
+    const isLightColor = (hex: string) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 155;
+    };
+
+    const isLightWallpaper = isCustomColor ? isLightColor(selectedShop.customBackground!) : false;
 
     return (
-        <div className={`pb-24 animate-in fade-in duration-700 min-h-screen relative ${wallpaperClass} ${isLightWallpaper ? 'text-zinc-900' : 'text-white'}`}>
+        <div 
+          className={`pb-24 animate-in fade-in duration-700 min-h-screen relative ${wallpaperClass} ${isLightWallpaper ? 'text-zinc-900' : 'text-white'}`}
+          style={isCustomColor ? { backgroundColor: selectedShop.customBackground } : {}}
+        >
 
             {/* OVERLAY ESTACIONAL - particulas flotantes */}
             {activeSeason && (

@@ -54,12 +54,12 @@ const THEME_COLORS = [
 
 const WALLPAPER_PATTERNS = [
   { id: 'none', label: 'Liso (Cyber-Dark)', className: '', preview: 'bg-[#030712]' },
-  { id: 'cuadille-red', label: 'Cuadillé Rojo', className: 'bg-pattern-cuadille-red', preview: 'bg-pattern-cuadille-red' },
-  { id: 'cuadille-blue', label: 'Cuadillé Azul', className: 'bg-pattern-cuadille-blue', preview: 'bg-pattern-cuadille-blue' },
-  { id: 'carbon', label: 'Fibra de Carbono', className: 'bg-pattern-carbon', preview: 'bg-pattern-carbon' },
   { id: 'dots', label: 'Puntos Violeta', className: 'bg-pattern-dots', preview: 'bg-pattern-dots' },
-  { id: 'blueprint', label: 'Plano Técnico', className: 'bg-pattern-blueprint', preview: 'bg-pattern-blueprint' },
-  { id: 'wood', label: 'Madera Rústica', className: 'bg-pattern-wood', preview: 'bg-pattern-wood' },
+  { id: 'metallic-silver', label: 'Acero Inox (Tech)', className: 'bg-pattern-metallic-silver', preview: 'bg-pattern-metallic-silver' },
+  { id: 'metallic-rose', label: 'Rose Gold (Moda)', className: 'bg-pattern-metallic-rose', preview: 'bg-pattern-metallic-rose' },
+  { id: 'black-sobrio', label: 'Negro Sobrio', className: 'bg-pattern-black-sobrio', preview: 'bg-pattern-black-sobrio' },
+  { id: 'futuristic-grey', label: 'Hex Tech (Gris)', className: 'bg-pattern-futuristic-grey', preview: 'bg-pattern-futuristic-grey' },
+  { id: 'modern-cool', label: 'Modern Cool (Bar)', className: 'bg-pattern-modern-cool', preview: 'bg-pattern-modern-cool' },
 ];
 
 const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
