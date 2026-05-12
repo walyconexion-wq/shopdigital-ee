@@ -154,20 +154,20 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                navigate(-1); 
             }
           }} 
-          className="px-3 py-2 bg-white/[0.05] hover:bg-white/10 rounded-xl transition-all border border-white/10 hover:border-violet-500/50 flex items-center gap-2 group shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+          className="w-10 h-10 bg-white/[0.05] hover:bg-white/10 rounded-xl transition-all border border-white/10 hover:border-violet-500/50 flex items-center justify-center group shadow-[0_0_15px_rgba(0,0,0,0.5)]"
         >
-          <ChevronLeft size={18} className="text-white/70 group-hover:text-white group-hover:-translate-x-1 transition-all" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/60 group-hover:text-white hidden md:block">Volver</span>
+          <ChevronLeft size={20} className="text-white/70 group-hover:text-violet-400 group-hover:-translate-x-0.5 transition-all drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
         </button>
         <div className="flex flex-col items-center flex-1">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.2)]" style={{ background: `linear-gradient(135deg, ${shop.themeColor || '#8b5cf6'}22, transparent)` }}>
-            <Edit3 size={20} style={{ color: shop.themeColor || '#8b5cf6' }} />
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.2)] relative overflow-hidden group" style={{ background: `linear-gradient(135deg, ${shop.themeColor || '#8b5cf6'}22, transparent)` }}>
+            <div className="absolute inset-0 bg-gradient-to-t from-violet-500/10 to-transparent animate-pulse" />
+            <Edit3 size={20} className="relative z-10" style={{ color: shop.themeColor || '#8b5cf6', filter: 'drop-shadow(0 0 8px currentColor)' }} />
           </div>
-          <h1 className="text-[13px] font-[1000] uppercase tracking-[0.15em] text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-white to-cyan-300 text-center leading-tight">
-            Mi Catálogo Digital
+          <h1 className="text-[13px] font-[1000] uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-white to-cyan-300 text-center leading-tight drop-shadow-[0_0_12px_rgba(139,92,246,0.4)]">
+            Panel de Gestión
           </h1>
-          <p className="text-[8px] font-black uppercase tracking-[0.3em] mt-1 text-violet-400/50">
-            {townId.replace(/-/g, ' ').toUpperCase()}
+          <p className="text-[8px] font-black uppercase tracking-[0.4em] mt-1 text-violet-400/70 animate-pulse">
+            Sincronización de Datos • {townId.replace(/-/g, ' ').toUpperCase()}
           </p>
         </div>
         <button 

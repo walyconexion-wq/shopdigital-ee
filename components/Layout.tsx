@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import ShopBot from './ShopBot';
 import { Shop } from '../types';
 
@@ -9,9 +9,13 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
+    const location = useLocation();
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
     const bgColor = globalConfig?.bgColor || '#000000';
     
+    // Ocultar ShopBot en páginas de edición para que solo aparezca ARI
+    const isEditPage = location.pathname.includes('/editar') || location.pathname.includes('/mi-catalogo');
+
     // Helper to convert hex to rgba
     const hexToRgba = (hex: string, alpha: number) => {
         const r = parseInt(hex.slice(1, 3), 16);
@@ -46,8 +50,8 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 <Outlet />
             </main>
 
-            {/* ShopBot Floating Assistant */}
-            <ShopBot allShops={allShops} />
+            {/* ShopBot Floating Assistant - Oculto en edición */}
+            {!isEditPage && <ShopBot allShops={allShops} />}
         </div>
     );
 };

@@ -136,19 +136,34 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         <div className="fixed bottom-24 right-6 z-[1000]">
             {/* Bubble Button */}
             {!isOpen && (
-                <button 
-                    onClick={() => { setIsOpen(true); playNeonClick(); }}
-                    className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_15px_rgba(255,255,255,0.4)] hover:scale-110 hover:shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all border border-white/40 relative group"
-                >
-                    <Bot size={32} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center animate-bounce">
-                        <span className="text-[8px] font-black text-white">1</span>
+                <div className="relative group">
+                    {/* Cartelito de ayuda - Siempre visible con animación suave */}
+                    <div className="absolute bottom-full right-0 mb-4 animate-bounce">
+                        <div className="bg-gradient-to-r from-cyan-500 to-violet-600 p-[1px] rounded-2xl shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                            <div className="bg-black/90 backdrop-blur-md px-4 py-2 rounded-2xl whitespace-nowrap">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-white">
+                                    ¡Estoy para ayudarte! 🦾
+                                </span>
+                            </div>
+                        </div>
+                        {/* Triangulito del cartelito */}
+                        <div className="w-3 h-3 bg-violet-600 rotate-45 absolute -bottom-1.5 right-6" />
                     </div>
-                    {/* Tooltip */}
-                    <div className="absolute right-20 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">Consultar a Ari</span>
-                    </div>
-                </button>
+
+                    {/* Efecto de anillo pulsante de atención */}
+                    <div className="absolute inset-0 rounded-full bg-cyan-500/20 animate-ping" />
+                    <div className="absolute inset-0 rounded-full bg-violet-600/10 animate-pulse scale-125" />
+
+                    <button 
+                        onClick={() => { setIsOpen(true); playNeonClick(); }}
+                        className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_15px_rgba(255,255,255,0.4)] hover:scale-110 hover:shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all border border-white/40 relative z-10"
+                    >
+                        <Bot size={32} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
+                            <span className="text-[8px] font-black text-white">1</span>
+                        </div>
+                    </button>
+                </div>
             )}
 
             {/* Chat Panel */}
