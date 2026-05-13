@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth, checkUserAuthorization, loginConGoogle, logout, db } from '../firebase';
 import { doc, setDoc, collection } from 'firebase/firestore';
+import { registrarAccesoExitoso, registrarIntentoFallido, registrarAccesoNoAutorizado } from '../services/doberman';
 
 interface AuthContextType {
     user: User | null;
@@ -36,6 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     setStatus('active');
                     setName(currentUser.displayName || 'Waly Admin (Root)');
                     setLoading(false);
+                    // 🛡️ DOBERMAN: Registrar acceso del Director
+                    registrarAccesoExitoso(userEmail, window.location.pathname, 'admin').catch(() => {});
                     return;
                 }
 
@@ -43,10 +46,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     setRole(authData.role as 'admin' | 'ambassador');
                     setStatus(authData.status as 'active' | 'inactive' | 'pending');
                     setName(authData.name);
+                    // 🛡️ DOBERMAN: Registrar acceso exitoso
+                    if (authData.status === 'active') {
+                        registrarAccesoExitoso(userEmail, window.location.pathname, authData.role).catch(() => {});
+                    }
                 } else {
                     setRole(null);
                     setStatus(null);
                     setName(null);
+                    // 🛡️ DOBERMAN: Email no autorizado intentó entrar
+                    registrarAccesoNoAutorizado(userEmail, window.location.pathname).catch(() => {});
                 }
             } else {
                 setRole(null);
@@ -64,6 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             await loginConGoogle();
         } catch (error: any) {
             console.error("Error details:", error);
+            // 🛡️ DOBERMAN: Registrar intento fallido de login
+            registrarIntentoFallido('desconocido', window.location.pathname).catch(() => {});
             alert("⚠️ Error al ingresar: " + (error.message || "Fallo desconocido. Revisa tu conexión."));
         }
     };
@@ -80,3 +91,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 export const useAuth = () => useContext(AuthContext);
+
