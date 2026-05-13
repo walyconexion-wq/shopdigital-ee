@@ -116,6 +116,16 @@ export interface Offer {
   createdAt: string;
 }
 
+export interface MarketingCampaign {
+  id: string;
+  shopId: string;
+  message: string;
+  scheduledDate: string; // ISO string o formato fecha
+  status: 'pending' | 'executed' | 'cancelled';
+  audience: 'all' | 'vip';
+  createdAt: string;
+}
+
 export interface Shop {
   id: string;
   slug: string;

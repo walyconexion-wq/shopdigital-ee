@@ -5,8 +5,10 @@ import {
     Play, Pause, Volume2, Bot
 } from 'lucide-react';
 import { generateAriResponse } from '../services/gemini';
-import { Shop } from '../types';
+import { Shop, MarketingCampaign } from '../types';
 import { playNeonClick } from '../utils/audio';
+import { guardarCampaniaMarketing, suscribirseACampaniasMarketing, actualizarEstadoCampania } from '../firebase';
+import { Calendar, CheckCircle2, Clock, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'ari';
@@ -30,7 +32,16 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         }
     ]);
     const [isLoading, setIsLoading] = useState(false);
+    const [campaigns, setCampaigns] = useState<MarketingCampaign[]>([]);
+    const [showCampaigns, setShowCampaigns] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const unsubscribe = suscribirseACampaniasMarketing(shop.id, (fbCampaigns) => {
+            setCampaigns(fbCampaigns);
+        });
+        return () => unsubscribe();
+    }, [shop.id]);
 
     // Reconocimiento de Voz (Web Speech API)
     const recognitionRef = useRef<any>(null);
@@ -102,10 +113,15 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 COMERCIO: "${shop.name}".
                 DATA: ${shop.visits || 0} visitas, ${shop.subscribers || 0} suscriptores.
                 OFERTAS: ${shop.offers.map(o => `${o.name} ($${o.price})`).join(', ')}.
+                MISIONES ACTIVAS: ${campaigns.filter(c => c.status === 'pending').map(c => `${c.message} para el ${new Date(c.scheduledDate).toLocaleDateString()}`).join('; ') || 'Ninguna'}.
                 
                 IMPORTANTE: Tu trato es con el COMERCIANTE (Jefe/Socio). 
                 Tu misión es analizar su negocio y proponer campañas de WhatsApp. 
-                Si te piden algo para el 12 de julio, diles que ya tomaste nota y que lo agendarás en la Bitácora de Marketing.
+                
+                SI EL JEFE TE PIDE AGENDAR O PROGRAMAR ALGO: 
+                1. Redacta el mensaje de la campaña.
+                2. Confirma la fecha (ej: 12 de julio).
+                3. Responde siempre incluyendo la frase: "JEFE, ¿QUIERE QUE AGENDE ESTA MISIÓN AHORA MISMO?" al final si estás proponiendo una fecha y mensaje.
             `;
 
             const response = await generateAriResponse([...history, { role: 'director', text: textToSend }], systemContext);
@@ -195,6 +211,57 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                         </button>
                     </div>
 
+                    {/* Bitácora de Marketing (Misiones Programadas) */}
+                    <div className="bg-white/[0.03] border-b border-white/5 relative z-10">
+                        <button 
+                            onClick={() => setShowCampaigns(!showCampaigns)}
+                            className="w-full px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-all"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Calendar size={14} className="text-violet-400" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Misiones Programadas</span>
+                                {campaigns.filter(c => c.status === 'pending').length > 0 && (
+                                    <span className="w-4 h-4 rounded-full bg-violet-600 text-[8px] font-black flex items-center justify-center text-white">
+                                        {campaigns.filter(c => c.status === 'pending').length}
+                                    </span>
+                                )}
+                            </div>
+                            {showCampaigns ? <ChevronUp size={14} className="text-white/40" /> : <ChevronDown size={14} className="text-white/40" />}
+                        </button>
+
+                        {showCampaigns && (
+                            <div className="max-h-[150px] overflow-y-auto p-3 space-y-2 no-scrollbar animate-in slide-in-from-top-2 duration-300">
+                                {campaigns.length === 0 ? (
+                                    <p className="text-[9px] text-white/20 text-center py-2 italic">No hay misiones agendadas todavía, Jefe.</p>
+                                ) : (
+                                    campaigns.map(camp => (
+                                        <div key={camp.id} className="bg-black/40 border border-white/5 rounded-xl p-2.5 flex items-start gap-3 group">
+                                            <div className={`mt-1 w-2 h-2 rounded-full ${camp.status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-tighter flex items-center gap-1">
+                                                        <Clock size={8} /> {new Date(camp.scheduledDate).toLocaleDateString()}
+                                                    </span>
+                                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        {camp.status === 'pending' && (
+                                                            <button onClick={() => actualizarEstadoCampania(camp.id, 'executed')} className="text-green-500 hover:text-green-400">
+                                                                <CheckCircle2 size={12} />
+                                                            </button>
+                                                        )}
+                                                        <button onClick={() => actualizarEstadoCampania(camp.id, 'cancelled')} className="text-red-500/60 hover:text-red-400">
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <p className="text-[9px] text-white/80 leading-tight truncate">{camp.message}</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Messages Body */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar relative z-10">
                         {messages.map((msg, i) => (
@@ -205,6 +272,33 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                                     : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.2)]'
                                 }`}>
                                     {msg.text}
+                                    {msg.role === 'ari' && msg.text.includes('JEFE, ¿QUIERE que agende esta misión'.toUpperCase()) && (
+                                        <div className="mt-3 p-2 bg-white/10 rounded-xl border border-white/20 animate-pulse">
+                                            <button 
+                                                onClick={() => {
+                                                    playNeonClick();
+                                                    // Lógica simple de extracción de fecha y mensaje (esto es una demo, en prod usaríamos un tool call de Gemini)
+                                                    const dateMatch = msg.text.match(/(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i);
+                                                    const day = dateMatch ? dateMatch[1] : '12';
+                                                    const monthStr = dateMatch ? dateMatch[2].toLowerCase() : 'julio';
+                                                    const months: any = { enero:0, febrero:1, marzo:2, abril:3, mayo:4, junio:5, julio:6, agosto:7, septiembre:8, octubre:9, noviembre:10, diciembre:11 };
+                                                    const date = new Date(2026, months[monthStr] || 6, parseInt(day));
+                                                    
+                                                    guardarCampaniaMarketing({
+                                                        shopId: shop.id,
+                                                        message: msg.text.split('\n')[0].substring(0, 100) + '...',
+                                                        scheduledDate: date.toISOString(),
+                                                        status: 'pending',
+                                                        audience: 'all'
+                                                    });
+                                                    setMessages(prev => [...prev, { role: 'ari', text: `✅ ¡MISIÓN RECIBIDA! Archivo guardado en las celdas de cristal para el ${day} de ${monthStr}. Los ratoncitos ya tienen el reloj sincronizado.`, timestamp: new Date() }]);
+                                                }}
+                                                className="w-full py-2 bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg hover:scale-105 transition-all"
+                                            >
+                                                Confirmar Misión
+                                            </button>
+                                        </div>
+                                    )}
                                     <div className="text-[7px] mt-1 opacity-40 uppercase font-black tracking-widest">
                                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </div>

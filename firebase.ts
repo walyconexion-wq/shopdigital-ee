@@ -979,3 +979,53 @@ export const editarBroadcast = async (broadcastId: string, updates: Partial<Broa
         console.error("[BROADCAST] Error editando:", error);
     }
 };
+
+// --- BITÁCORA DE MARKETING (ARI ASSISTANT) ---
+import { MarketingCampaign } from './types';
+
+export const guardarCampaniaMarketing = async (campaignData: Omit<MarketingCampaign, 'id' | 'createdAt'>) => {
+    try {
+        const colRef = collection(db, "bitacora_marketing");
+        const docRef = await addDoc(colRef, {
+            ...campaignData,
+            createdAt: new Date().toISOString()
+        });
+        console.log("Campaña agendada en la Bitácora. ID:", docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error("Error al guardar campaña en Bitácora:", error);
+        throw error;
+    }
+};
+
+export const suscribirseACampaniasMarketing = (shopId: string, callback: (campaigns: MarketingCampaign[]) => void) => {
+    const colRef = collection(db, "bitacora_marketing");
+    const q = query(
+        colRef, 
+        where("shopId", "==", shopId),
+        orderBy("scheduledDate", "asc")
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+        const campaigns = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...(docSnap.data() as any)
+        })) as MarketingCampaign[];
+        callback(campaigns);
+    }, (error) => {
+        console.error("Error en la suscripción de bitácora marketing:", error);
+    });
+};
+
+export const actualizarEstadoCampania = async (campaignId: string, status: 'executed' | 'cancelled') => {
+    try {
+        const docRef = doc(db, "bitacora_marketing", campaignId);
+        await updateDoc(docRef, { status });
+        return true;
+    } catch (error) {
+        console.error("Error al actualizar estado de campaña:", error);
+        throw error;
+    }
+};
+
+export default app;
