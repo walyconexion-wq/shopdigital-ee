@@ -60,6 +60,7 @@ import LiveBroadcastPage from './pages/LiveBroadcastPage';
 import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
 import GlobalHomePage from './pages/GlobalHomePage';
 import RegionSelectPage from './pages/RegionSelectPage';
+import RegionSeedPage from './pages/RegionSeedPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -303,6 +304,9 @@ const App: React.FC = () => {
 
                 {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
                 <Route path="/region/:regionId" element={<RegionSelectPage />} />
+
+                {/* 🌱 SEMILLERO — Inyección de datos regionales (admin only) */}
+                <Route path="/:townId/semillero-regional" element={<ProtectedRoute roles={['admin']}><RegionSeedPage /></ProtectedRoute>} />
 
                 {/* Redirección directa para el Director Global (Tablero Maestro) */}
                 <Route path="/tablero-maestro" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
