@@ -1028,4 +1028,51 @@ export const actualizarEstadoCampania = async (campaignId: string, status: 'exec
     }
 };
 
+// --- EXPANSIÓN REGIONAL ---
+import { Region } from './types';
+
+export const guardarRegion = async (region: Region) => {
+    try {
+        await setDoc(doc(db, 'regiones', region.id), region);
+        console.log(`[EXPANSIÓN] Región ${region.name} forjada con éxito.`);
+    } catch (error) {
+        console.error("[EXPANSIÓN] Error guardando región:", error);
+        throw error;
+    }
+};
+
+export const suscribirseARegiones = (callback: (regions: Region[]) => void) => {
+    const colRef = collection(db, 'regiones');
+    return onSnapshot(colRef, (snapshot) => {
+        const regions = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Region[];
+        callback(regions.filter(r => r.isActive));
+    });
+};
+
+export const obtenerRegionPorId = async (regionId: string): Promise<Region | null> => {
+    try {
+        const docSnap = await getDoc(doc(db, 'regiones', regionId));
+        if (docSnap.exists()) return { id: docSnap.id, ...docSnap.data() } as Region;
+        return null;
+    } catch (error) {
+        console.error("[EXPANSIÓN] Error obteniendo región:", error);
+        return null;
+    }
+};
+
+export const obtenerTownsPorRegion = async (regionId: string) => {
+    try {
+        const region = await obtenerRegionPorId(regionId);
+        if (!region) return [];
+        const colRef = collection(db, 'towns');
+        const snapshot = await getDocs(colRef);
+        const allTowns = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        return allTowns.filter((t: any) => region.towns.includes(t.id));
+    } catch (error) {
+        console.error("[EXPANSIÓN] Error obteniendo towns de región:", error);
+        return [];
+    }
+};
+
 export default app;
+

@@ -126,6 +126,19 @@ export interface MarketingCampaign {
   createdAt: string;
 }
 
+// --- EXPANSIÓN REGIONAL ---
+export interface Region {
+  id: string;                // 'traslasierra', 'buenos-aires-sur'
+  name: string;              // 'Valle de Traslasierra'
+  provinceId: string;        // 'cordoba', 'buenos-aires'
+  type: 'region' | 'zona';  // región turística vs zona urbana
+  towns: string[];           // ['mina-clavero', 'cura-brochero', ...]
+  icon: string;              // 'mountain', 'building', 'palmtree'
+  color: string;             // '#a855f7' violeta para regiones
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface Shop {
   id: string;
   slug: string;

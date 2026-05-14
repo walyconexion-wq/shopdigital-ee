@@ -58,6 +58,8 @@ import EnterpriseSubscriptionPage from './pages/EnterpriseSubscriptionPage';
 import MarketingPanelPage from './pages/MarketingPanelPage';
 import LiveBroadcastPage from './pages/LiveBroadcastPage';
 import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
+import GlobalHomePage from './pages/GlobalHomePage';
+import RegionSelectPage from './pages/RegionSelectPage';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -296,12 +298,15 @@ const App: React.FC = () => {
                 {/* 🏭 Nodo Empresarial Global */}
                 <Route path="/empresas/*" element={<EnterpriseController />} />
 
+                {/* 🌐 HOME GLOBAL — Comando Central del Hormiguero */}
+                <Route path="/" element={<GlobalHomePage />} />
+
+                {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
+                <Route path="/region/:regionId" element={<RegionSelectPage />} />
+
                 {/* Redirección directa para el Director Global (Tablero Maestro) */}
                 <Route path="/tablero-maestro" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
                 <Route path="/tablero-maestro/*" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
-
-                {/* Fallback inteligente: si no hay zona, redirigir a Esteban Echeverría */}
-                <Route path="/" element={<Navigate to="/esteban-echeverria/home" replace />} />
                 
                 {/* Bloqueo dimensional: Erradicar universo paralelo sin zona */}
                 <Route path="/embajador" element={<Navigate to="/" replace />} />
@@ -318,7 +323,7 @@ const App: React.FC = () => {
                 <Route path="/:townId/*" element={<TownController />} />
                 
                 {/* Manejo de rutas huérfanas */}
-                <Route path="*" element={<Navigate to="/esteban-echeverria/home" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>
     );
