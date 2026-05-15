@@ -193,9 +193,9 @@ const GlobalHomePage: React.FC = () => {
                         }}
                     >
                         {/* HUD Superior: Fecha/Hora y Seguridad */}
-                        <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20 pointer-events-none">
-                            {/* Doberman Security Shield */}
-                            <div className="flex flex-col gap-1">
+                        <div className="absolute top-4 left-6 right-6 flex justify-between items-start z-20 pointer-events-none">
+                            {/* Doberman Security Shield — Bájado un poco para no tapar */}
+                            <div className="flex flex-col gap-1 mt-6">
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-green-500/30 bg-green-500/5 backdrop-blur-md">
                                     <Zap size={10} className="text-green-400 animate-pulse" />
                                     <span className="text-[8px] font-black uppercase tracking-widest text-green-400" style={{ textShadow: '0 0 8px rgba(74,222,128,0.5)' }}>
@@ -226,14 +226,15 @@ const GlobalHomePage: React.FC = () => {
                             </div>
                         </div>
 
-                        <p className="text-[8px] font-black uppercase tracking-[0.4em] text-center mb-2 mt-2"
-                            style={{ color: 'rgba(0,251,255,0.5)', textShadow: '0 0 8px rgba(0,251,255,0.3)' }}
+                        {/* Título Centralizado — Subido un poco para despejar */}
+                        <p className="text-[9px] font-black uppercase tracking-[0.5em] text-center mb-1 relative z-30"
+                            style={{ color: 'rgba(0,251,255,0.7)', textShadow: '0 0 12px rgba(0,251,255,0.5)' }}
                         >
-                            <Globe size={10} className="inline mr-1" style={{ color: '#00FBFF', filter: 'drop-shadow(0 0 4px rgba(0,251,255,0.6))' }} />
-                            Radar Nacional · Nodos: {regions.length || 2}
+                            <Globe size={11} className="inline mr-2 mb-0.5" style={{ color: '#00FBFF' }} />
+                            RADAR NACIONAL · NODOS: {regions.length || 2}
                         </p>
                         
-                        <div className="relative py-8">
+                        <div className="relative py-4">
                             <ArgentinaMap
                                 nodes={mapNodes}
                                 onNodeClick={(id) => {
@@ -392,8 +393,37 @@ const GlobalHomePage: React.FC = () => {
                     )}
                 </section>
 
+                {/* Botón de Compartir — Estilo Neón */}
+                <div className="mt-12 flex justify-center animate-in fade-in duration-1000" style={{ animationDelay: '800ms' }}>
+                    <button
+                        onClick={() => {
+                            playNeonClick();
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: 'ShopDigital - Red Comercial Nacional',
+                                    text: 'Explorá la nueva red digital argentina',
+                                    url: window.location.href
+                                });
+                            }
+                        }}
+                        className="flex items-center gap-3 px-8 py-4 rounded-2xl border backdrop-blur-xl transition-all active:scale-95 group"
+                        style={{
+                            backgroundColor: 'rgba(255,255,255,0.05)',
+                            borderColor: 'rgba(0,251,255,0.3)',
+                            boxShadow: '0 0 20px rgba(0,251,255,0.1)'
+                        }}
+                    >
+                        <div className="p-2 rounded-lg bg-cyan-500/20 group-hover:bg-cyan-500/30 transition-colors">
+                            <Search size={18} className="text-cyan-400" />
+                        </div>
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/90">
+                            Compartir Red Nacional
+                        </span>
+                    </button>
+                </div>
+
                 {/* Footer — limpio, sin duplicados */}
-                <footer className="mt-16 text-center border-t pt-6 pb-4" style={{ borderColor: 'rgba(0,251,255,0.08)' }}>
+                <footer className="mt-16 text-center border-t pt-8 pb-12" style={{ borderColor: 'rgba(0,251,255,0.08)' }}>
                     <p
                         className="text-[9px] font-black uppercase tracking-[0.35em]"
                         style={{ color: 'rgba(255,255,255,0.5)', textShadow: '0 0 6px rgba(255,255,255,0.1)' }}
@@ -407,6 +437,33 @@ const GlobalHomePage: React.FC = () => {
                         V.1.5 - COMANDO CENTRAL · ARGENTINA
                     </p>
                 </footer>
+            </main>
+
+            {/* 🤖 BURBUJA DE ARI (Asistente IA) */}
+            <div 
+                className="fixed bottom-6 right-6 z-[100] group cursor-pointer animate-in zoom-in duration-500"
+                style={{ animationDelay: '1s' }}
+                onClick={() => playNeonClick()}
+            >
+                <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-500/40 transition-all duration-500 animate-pulse" />
+                <div 
+                    className="relative w-14 h-14 rounded-full border-2 flex items-center justify-center backdrop-blur-xl transition-transform group-hover:scale-110 active:scale-95"
+                    style={{
+                        borderColor: 'rgba(0,251,255,0.6)',
+                        background: 'linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%)',
+                        boxShadow: '0 0 30px rgba(0,251,255,0.3), inset 0 0 15px rgba(0,251,255,0.2)'
+                    }}
+                >
+                    <div className="relative">
+                        <Zap size={22} className="text-cyan-400 animate-pulse" />
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full border-2 border-black animate-ping" />
+                    </div>
+                </div>
+                {/* Tooltip de ARI */}
+                <div className="absolute right-16 top-1/2 -translate-y-1/2 bg-black/80 border border-cyan-500/30 px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-cyan-400">ARI: En línea</p>
+                </div>
+            </div>
 
             </main>
         </div>
