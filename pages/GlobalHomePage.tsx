@@ -92,14 +92,11 @@ const GlobalHomePage: React.FC = () => {
 
     return (
         <div 
-            className="w-full bg-black text-white font-sans relative selection:bg-cyan-500/30"
-            style={{ 
-                minHeight: '100vh',
-                WebkitOverflowScrolling: 'touch'
-            }}
+            className="h-screen w-full bg-black text-white font-sans overflow-y-auto overflow-x-hidden relative selection:bg-cyan-500/30"
+            style={{ WebkitOverflowScrolling: 'touch' }}
         >
-            {/* Cybernetic Background Mesh — Capa ultra-profunda para no bloquear touches */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden z-[-10]">
+            {/* Cybernetic Background Mesh — Capa visible en el fondo */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
                 {/* Glow Orbs */}
                 <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full blur-[180px] bg-cyan-600/10 animate-pulse" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full blur-[180px] bg-violet-600/10 animate-pulse" style={{ animationDelay: '2s' }} />
@@ -133,7 +130,7 @@ const GlobalHomePage: React.FC = () => {
                 </div>
             </div>
 
-            <main className="relative z-10 max-w-lg mx-auto flex flex-col">
+            <main className="relative z-10 max-w-lg mx-auto flex flex-col pb-32">
                 {/* Header — Logo + título único */}
                 <header className="sticky top-0 z-[100] pt-6 pb-4 flex flex-col items-center gap-2 animate-in fade-in duration-1000 backdrop-blur-xl border-b border-white/5 bg-black/40 px-5 -mx-5">
                     <div
