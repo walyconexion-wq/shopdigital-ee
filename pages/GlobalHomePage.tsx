@@ -464,8 +464,6 @@ const GlobalHomePage: React.FC = () => {
                     <p className="text-[9px] font-black uppercase tracking-widest text-cyan-400">ARI: En línea</p>
                 </div>
             </div>
-
-            </main>
         </div>
     );
 };
