@@ -13,6 +13,12 @@ const GlobalHomePage: React.FC = () => {
     const [filter, setFilter] = useState<'all' | 'region' | 'zona'>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const unsubscribe = suscribirseARegiones((data) => {
@@ -176,30 +182,67 @@ const GlobalHomePage: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Map Section — con más glow */}
+                {/* Map Section — con HUD Tecnológico */}
                 <div className="mb-8 animate-in fade-in duration-1000" style={{ animationDelay: '500ms' }}>
                     <div
-                        className="border rounded-[2rem] p-4 backdrop-blur-xl"
+                        className="border rounded-[2rem] p-4 backdrop-blur-xl relative overflow-hidden"
                         style={{
                             backgroundColor: 'rgba(0,251,255,0.03)',
                             borderColor: 'rgba(0,251,255,0.12)',
                             boxShadow: '0 0 40px rgba(0,251,255,0.06)'
                         }}
                     >
-                        <p className="text-[8px] font-black uppercase tracking-[0.4em] text-center mb-2"
+                        {/* HUD Superior: Fecha/Hora y Seguridad */}
+                        <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20 pointer-events-none">
+                            {/* Doberman Security Shield */}
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-green-500/30 bg-green-500/5 backdrop-blur-md">
+                                    <Zap size={10} className="text-green-400 animate-pulse" />
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-green-400" style={{ textShadow: '0 0 8px rgba(74,222,128,0.5)' }}>
+                                        Doberman 2.0 Active
+                                    </span>
+                                </div>
+                                <p className="text-[6px] uppercase tracking-[0.2em] text-white/20 ml-1">Shield protocol engaged</p>
+                            </div>
+
+                            {/* Digital Clock */}
+                            <div className="text-right">
+                                <p className="text-[10px] font-black tracking-widest text-white/80 tabular-nums" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
+                                    {currentTime.toLocaleTimeString('es-AR', { hour12: false })}
+                                </p>
+                                <p className="text-[7px] uppercase tracking-widest text-cyan-400/50 mt-0.5">
+                                    {currentTime.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* HUD Inferior: Tráfico en Red */}
+                        <div className="absolute bottom-8 left-8 z-20 pointer-events-none">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                                <p className="text-[8px] font-black uppercase tracking-[0.3em] text-cyan-400" style={{ textShadow: '0 0 8px rgba(34,211,238,0.5)' }}>
+                                    Net Traffic: {Math.floor(2100 + Math.random() * 50).toLocaleString()} Active
+                                </p>
+                            </div>
+                        </div>
+
+                        <p className="text-[8px] font-black uppercase tracking-[0.4em] text-center mb-2 mt-2"
                             style={{ color: 'rgba(0,251,255,0.5)', textShadow: '0 0 8px rgba(0,251,255,0.3)' }}
                         >
-                            <Zap size={10} className="inline mr-1" style={{ color: '#00FBFF', filter: 'drop-shadow(0 0 4px rgba(0,251,255,0.6))' }} />
-                            Mapa de la Red · Nodos Activos: {regions.length}
+                            <Globe size={10} className="inline mr-1" style={{ color: '#00FBFF', filter: 'drop-shadow(0 0 4px rgba(0,251,255,0.6))' }} />
+                            Radar Nacional · Nodos: {regions.length || 2}
                         </p>
-                        <ArgentinaMap
-                            nodes={mapNodes}
-                            onNodeClick={(id) => {
-                                const region = regions.find(r => r.id === id);
-                                if (region) handleRegionClick(region);
-                            }}
-                            accentColor="#00FBFF"
-                        />
+                        
+                        <div className="relative py-8">
+                            <ArgentinaMap
+                                nodes={mapNodes}
+                                onNodeClick={(id) => {
+                                    const region = regions.find(r => r.id === id);
+                                    if (region) handleRegionClick(region);
+                                }}
+                                accentColor="#00FBFF"
+                            />
+                        </div>
                     </div>
                 </div>
 
