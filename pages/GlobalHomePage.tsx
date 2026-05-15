@@ -95,13 +95,11 @@ const GlobalHomePage: React.FC = () => {
             className="w-full bg-black text-white font-sans relative selection:bg-cyan-500/30"
             style={{ 
                 minHeight: '100vh',
-                overflowX: 'hidden',
-                overflowY: 'visible',
                 WebkitOverflowScrolling: 'touch'
             }}
         >
-            {/* Cybernetic Background Mesh */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            {/* Cybernetic Background Mesh — Capa ultra-profunda para no bloquear touches */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-[-10]">
                 {/* Glow Orbs */}
                 <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full blur-[180px] bg-cyan-600/10 animate-pulse" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full blur-[180px] bg-violet-600/10 animate-pulse" style={{ animationDelay: '2s' }} />
@@ -110,7 +108,7 @@ const GlobalHomePage: React.FC = () => {
                 <div 
                     className="absolute inset-0 opacity-[0.12]"
                     style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='104' viewBox='0 0 60 104' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 104V102.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V50.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V0h-2v1.34C56.9 1.14 55.78 1 54.63 1c-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37-.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34V104h-2zM0 104V0h2v104H0zm2 0V0h2v104H2zm2 0V0h2v104H4zm2 0V0h2v104H6zm2 0V0h2v104H8zm2 0V0h2v104H10zm2 0V0h2v104H12zm2 0V0h2v104H14zm2 0V0h2v104H16zm2 0V0h2v104H18zm2 0V0h2v104H20zm2 0V0h2v104H22zm2 0V0h2v104H24zm2 0V0h2v104H26zm2 0V0h2v104H28zm2 0V0h2v104H30zm2 0V0h2v104H32zm2 0V0h2v104H34v-1.34c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V50.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V0h2v1.34c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34V104h-2z' fill='%236366f1' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='104' viewBox='0 0 60 104' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 104V102.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V50.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V0h-2v1.34C56.9 1.14 55.78 1 54.63 1c-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37-.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34V104h-2zM0 104V0h2v104H0zm2 0V0h2v104H2zm2 0V0h2v104H4zm2 0V0h2v104H6zm2 0V0h2v104H8zm2 0V0h2v104H10zm2 0V0h2v104H12zm2 0V0h2v104H14zm2 0V0h2v104H16zm2 0V0h2v104H18zm2 0V0h2v104H20zm2 0V0h2v104H22zm2 0V0h2v104H24zm2 0V0h2v104H26zm2 0V0h2v104H28zm2 0V0h2v104H30zm2 0V0h2v104H32zm2 0V0h2v104H34v-1.34c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V50.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V0h2v1.34c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20-8.95-20-20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34V104h-2z' fill='%236366f1' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`,
                         backgroundSize: '80px 140px'
                     }}
                 />
@@ -135,7 +133,7 @@ const GlobalHomePage: React.FC = () => {
                 </div>
             </div>
 
-            <main className="relative z-10 max-w-lg mx-auto pb-16 px-5">
+            <main className="relative z-10 max-w-lg mx-auto flex flex-col">
                 {/* Header — Logo + título único */}
                 <header className="sticky top-0 z-[100] pt-6 pb-4 flex flex-col items-center gap-2 animate-in fade-in duration-1000 backdrop-blur-xl border-b border-white/5 bg-black/40 px-5 -mx-5">
                     <div
