@@ -67,12 +67,39 @@ const GlobalHomePage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-black text-white font-sans overflow-x-hidden relative">
-            {/* Animated background — más brillo */}
+            {/* Cybernetic Background Mesh */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] bg-cyan-500/10 animate-pulse" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] bg-violet-500/8 animate-pulse" style={{ animationDelay: '2s' }} />
-                <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] rounded-full blur-[120px] bg-cyan-400/5 animate-pulse" style={{ animationDelay: '3s' }} />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-15" />
+                {/* Glow Orbs */}
+                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full blur-[180px] bg-cyan-600/10 animate-pulse" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full blur-[180px] bg-violet-600/10 animate-pulse" style={{ animationDelay: '2s' }} />
+                
+                {/* Hexagonal Grid Layer */}
+                <div 
+                    className="absolute inset-0 opacity-[0.12]"
+                    style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='104' viewBox='0 0 60 104' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 104V102.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V50.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V0h-2v1.34C56.9 1.14 55.78 1 54.63 1c-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37-.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34V104h-2zM0 104V0h2v104H0zm2 0V0h2v104H2zm2 0V0h2v104H4zm2 0V0h2v104H6zm2 0V0h2v104H8zm2 0V0h2v104H10zm2 0V0h2v104H12zm2 0V0h2v104H14zm2 0V0h2v104H16zm2 0V0h2v104H18zm2 0V0h2v104H20zm2 0V0h2v104H22zm2 0V0h2v104H24zm2 0V0h2v104H26zm2 0V0h2v104H28zm2 0V0h2v104H30zm2 0V0h2v104H32zm2 0V0h2v104H34v-1.34c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V50.66c-1.1.2-2.22.34-3.37.34-11.05 0-20-8.95-20-20s8.95-20 20-20c1.15 0 2.27.14 3.37.34V0h2v1.34c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34v25.32c-1.1-.2-2.22-.34-3.37-.34-11.05 0-20 8.95-20 20s8.95 20 20 20c1.15 0 2.27-.14 3.37.34V104h-2z' fill='%236366f1' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+                        backgroundSize: '80px 140px'
+                    }}
+                />
+
+                {/* Tech Circles Background */}
+                <div className="absolute inset-0 opacity-[0.05]">
+                    {[...Array(6)].map((_, i) => (
+                        <div 
+                            key={i}
+                            className="absolute rounded-full border border-cyan-500/30 animate-pulse"
+                            style={{
+                                width: `${(i + 1) * 200}px`,
+                                height: `${(i + 1) * 200}px`,
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                animationDelay: `${i * 0.5}s`,
+                                animationDuration: '4s'
+                            }}
+                        />
+                    ))}
+                </div>
             </div>
 
             <main className="relative z-10 max-w-lg mx-auto pb-16 px-5">
