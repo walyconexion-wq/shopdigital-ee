@@ -137,12 +137,12 @@ const GlobalHomePage: React.FC = () => {
 
             <main className="relative z-10 max-w-lg mx-auto pb-16 px-5">
                 {/* Header — Logo + título único */}
-                <header className="pt-10 pb-6 flex flex-col items-center gap-4 animate-in fade-in duration-1000">
+                <header className="sticky top-0 z-[100] pt-6 pb-4 flex flex-col items-center gap-2 animate-in fade-in duration-1000 backdrop-blur-xl border-b border-white/5 bg-black/40 px-5 -mx-5">
                     <div
-                        className="rounded-3xl p-5 border backdrop-blur-md"
+                        className="rounded-2xl p-3.5 border backdrop-blur-md"
                         style={{
-                            borderColor: 'rgba(0,251,255,0.5)',
-                            boxShadow: '0 15px 60px rgba(0,251,255,0.25), 0 0 100px rgba(0,251,255,0.08)',
+                            borderColor: 'rgba(0,251,255,0.4)',
+                            boxShadow: '0 10px 40px rgba(0,251,255,0.15)',
                             background: 'linear-gradient(135deg, rgba(0,251,255,0.18) 0%, rgba(15,23,42,0.6) 100%)'
                         }}
                     >
