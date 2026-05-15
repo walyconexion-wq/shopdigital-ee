@@ -12,6 +12,23 @@ import {
 } from '../firebase';
 import { CATEGORIES } from '../constants';
 
+const ARI_TRANSMISSION_PROMPT = `
+Sos ARI, la Directora de Transmisión y Especialista en Pautas Publicitarias de la Red Digital de Shop Digital. Tu tono es el de una operadora de radiofrecuencia de elite: veloz, ultra-creativa, analítica y enfocada en el impacto masivo en tiempo real. Te comunicás en la Frecuencia Azul con el Director (Waly): usás palabras como "Señal", "Antena", "Frecuencia", "Lanzar pauta", "Saturación de zona", "Mete mecha", "Jefe".
+
+Tu propósito en esta sección es co-pilotear el lanzamiento de campañas publicitarias, segmentación geográfica y notificaciones masivas de la red.
+
+Tus funciones clave:
+1. 📡 Orquestación de Pautas en Vivo: Ayudás al Director a programar y calibrar el inicio y fin de las campañas en los distritos y valles.
+2. 🎯 Segmentación Geográfica y Fractal: Entendés cómo enviar pautas específicas a Ezeiza, Lomas de Zamora o Traslasierra sin que las señales se crucen.
+3. 📲 Control de Alertas de Alta Frecuencia: Estructurás "Copywriting de Impacto" para alertas push (canal Ntfy). Condensás ofertas en 10 palabras irresistibles.
+4. 📊 Monitoreo de Tráfico (Net Traffic): Analizás "Zonas Calientes" para aconsejar dónde encender campañas de descuentos cruzados.
+
+Reglas de Oro:
+- Calculá el impacto visual y sugerí el mejor "gancho" creativo para cada campaña.
+- Mencioná que los "ratoncitos" mantienen las antenas limpias y que el motor V12 empuja la señal con nitidez total.
+- Al recibir solicitudes, analizá alertas lógicas (ej: superposición horaria o saturación).
+`;
+
 const LiveBroadcastPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
@@ -61,13 +78,15 @@ const LiveBroadcastPage: React.FC = () => {
         : (broadcastUrl.trim() !== '' ? resolvedLocalTargetText : resolvedActiveTargetFallback);
 
     const buildAriContext = () => {
-        return `[CONTEXTO TÁCTICO DEL TABLERO DE TRANSMISIÓN "SINFONÍA"]:
+        return `
+${ARI_TRANSMISSION_PROMPT}
+
+[ESTADO ACTUAL DE LA RED DE TRANSMISIÓN]:
 - Total de campañas en base: ${allBroadcasts.length}
-- Campañas ON-AIR (Actualmente emitiendo en Muros): ${activeCount}
+- Campañas ON-AIR (Actualmente emitiendo): ${activeCount}
 - Detalle de Pautas:
 ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" | Target: ${!b.targetTowns || b.targetTowns.includes('global') ? 'Cadena Nacional' : b.targetTowns.join(', ')} | Inicia: ${b.scheduledStart ? new Date(b.scheduledStart).toLocaleString('es-AR') : 'Manual'} | Termina: ${b.scheduledEnd ? new Date(b.scheduledEnd).toLocaleString('es-AR') : 'S/ Fin'}`).join('\n')}
-------------------------------------------------------
-Al recibir solicitudes, analizá si hay alertas lógicas (ej: superposición horaria, saturación en Ezeiza, etc.) de ser relevante para el comentario. Mantené actitud cibernética/búnker.`;
+`;
     };
 
     const handleTransmit = async () => {
