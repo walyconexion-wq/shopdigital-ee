@@ -91,7 +91,15 @@ const GlobalHomePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white font-sans overflow-y-auto overflow-x-hidden relative selection:bg-cyan-500/30">
+        <div 
+            className="w-full bg-black text-white font-sans relative selection:bg-cyan-500/30"
+            style={{ 
+                minHeight: '100vh',
+                overflowX: 'hidden',
+                overflowY: 'visible',
+                WebkitOverflowScrolling: 'touch'
+            }}
+        >
             {/* Cybernetic Background Mesh */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 {/* Glow Orbs */}
