@@ -193,17 +193,60 @@ const GlobalHomePage: React.FC = () => {
                                 Sincronizando la Red...
                             </p>
                         </div>
+                    ) : (filteredRegions.length === 0 && searchQuery === '') ? (
+                        // Muestra zonas por defecto si no hay nada en Firebase aún
+                        <div className="space-y-3">
+                            {[
+                                { id: 'esteban-echeverria', name: 'Esteban Echeverría', type: 'zona', towns: ['esteban-echeverria'], color: '#22d3ee', icon: 'building' },
+                                { id: 'ezeiza', name: 'Ezeiza', type: 'zona', towns: ['ezeiza'], color: '#22d3ee', icon: 'building' }
+                            ].map((region, idx) => (
+                                <button
+                                    key={region.id}
+                                    onClick={() => navigate(`/${region.id}/home`)}
+                                    className="w-full text-left backdrop-blur-xl border p-5 rounded-[1.5rem] transition-all group active:scale-[0.98]"
+                                    style={{
+                                        animation: `fadeUp 0.5s cubic-bezier(0.25,1,0.5,1) ${idx * 80}ms both`,
+                                        backgroundColor: hexToRgba(region.color, 0.06),
+                                        borderColor: hexToRgba(region.color, 0.2),
+                                        borderLeftWidth: 3,
+                                        borderLeftColor: hexToRgba(region.color, 0.7),
+                                        boxShadow: `0 0 25px ${hexToRgba(region.color, 0.08)}`
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div
+                                                className="w-11 h-11 rounded-xl flex items-center justify-center"
+                                                style={{
+                                                    background: hexToRgba(region.color, 0.15),
+                                                    border: `1px solid ${hexToRgba(region.color, 0.4)}`,
+                                                    color: region.color,
+                                                    boxShadow: `0 0 15px ${hexToRgba(region.color, 0.2)}`
+                                                }}
+                                            >
+                                                {getRegionIcon(region.icon)}
+                                            </div>
+                                            <div>
+                                                <h3 className="text-[12px] font-black uppercase tracking-wider group-hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.95)' }}>
+                                                    {region.name}
+                                                </h3>
+                                                <p className="text-[8px] uppercase tracking-widest mt-0.5" style={{ color: hexToRgba(region.color, 0.6) }}>
+                                                    📍 Zona Local · {region.towns.length} localidad
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <ChevronRight size={18} style={{ color: hexToRgba(region.color, 0.5) }} />
+                                    </div>
+                                </button>
+                            ))}
+                            <div className="text-center py-6">
+                                <p className="text-[8px] uppercase tracking-widest text-white/10 italic">Zonas iniciales cargadas por defecto</p>
+                            </div>
+                        </div>
                     ) : filteredRegions.length === 0 ? (
-                        <div className="text-center py-16 border-2 border-dashed rounded-[2rem]"
-                            style={{ borderColor: 'rgba(0,251,255,0.1)' }}
-                        >
+                        <div className="text-center py-16 border-2 border-dashed rounded-[2rem]" style={{ borderColor: 'rgba(0,251,255,0.1)' }}>
                             <Globe size={32} className="mx-auto mb-4" style={{ color: 'rgba(0,251,255,0.15)' }} />
-                            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'rgba(0,251,255,0.3)', textShadow: '0 0 6px rgba(0,251,255,0.2)' }}>
-                                {searchQuery ? 'Sin resultados para esa búsqueda' : 'No hay zonas activas todavía'}
-                            </p>
-                            <p className="text-[8px] mt-2" style={{ color: 'rgba(255,255,255,0.2)' }}>
-                                Las regiones se crean desde el Tablero Maestro → La Fábrica
-                            </p>
+                            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'rgba(0,251,255,0.3)' }}>Sin resultados</p>
                         </div>
                     ) : (
                         filteredRegions.map((region, idx) => (
@@ -291,9 +334,10 @@ const GlobalHomePage: React.FC = () => {
                         className="text-[7px] uppercase tracking-[0.3em] mt-1"
                         style={{ color: 'rgba(0,251,255,0.4)', textShadow: '0 0 10px rgba(0,251,255,0.4)' }}
                     >
-                        Argentina
+                        V.1.5 - COMANDO CENTRAL · ARGENTINA
                     </p>
                 </footer>
+
             </main>
         </div>
     );
