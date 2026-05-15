@@ -23,7 +23,7 @@ const ArgentinaMap: React.FC<ArgentinaMapProps> = ({ nodes, onNodeClick, accentC
     };
 
     return (
-        <div className="relative w-full" style={{ maxWidth: 260, margin: '0 auto' }}>
+        <div className="relative w-full" style={{ maxWidth: 210, margin: '0 auto' }}>
             <svg viewBox="0 0 300 520" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
                 {/* Glow filter */}
                 <defs>

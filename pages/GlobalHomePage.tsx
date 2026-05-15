@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mountain, MapPin, Search, ChevronRight, Globe, Zap, Building2, Palmtree } from 'lucide-react';
 import { suscribirseARegiones } from '../firebase';
-import { Region } from '../types';
+import { Region, Shop } from '../types';
 import { playNeonClick } from '../utils/audio';
 import ArgentinaMap from '../components/ArgentinaMap';
 import Logo from '../components/Logo';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 const GlobalHomePage: React.FC = () => {
     const navigate = useNavigate();
@@ -14,6 +15,24 @@ const GlobalHomePage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
+
+    // Mock Shop para que ARI funcione en la Home Global
+    const globalShop: Shop = {
+        id: 'global-network',
+        name: 'Red Digital Argentina',
+        ownerId: 'admin',
+        townId: 'argentina',
+        category: 'Plataforma',
+        description: 'Centro de mando nacional de ShopDigital',
+        address: 'Nube Digital',
+        phone: '',
+        color: '#00FBFF',
+        visits: 2500,
+        subscribers: 150,
+        offers: [],
+        active: true,
+        whatsapp: ''
+    };
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -72,7 +91,7 @@ const GlobalHomePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white font-sans overflow-x-hidden relative">
+        <div className="min-h-screen bg-black text-white font-sans overflow-y-auto overflow-x-hidden relative selection:bg-cyan-500/30">
             {/* Cybernetic Background Mesh */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 {/* Glow Orbs */}
@@ -422,7 +441,6 @@ const GlobalHomePage: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Footer — limpio, sin duplicados */}
                 <footer className="mt-16 text-center border-t pt-8 pb-12" style={{ borderColor: 'rgba(0,251,255,0.08)' }}>
                     <p
                         className="text-[9px] font-black uppercase tracking-[0.35em]"
@@ -439,31 +457,8 @@ const GlobalHomePage: React.FC = () => {
                 </footer>
             </main>
 
-            {/* 🤖 BURBUJA DE ARI (Asistente IA) */}
-            <div 
-                className="fixed bottom-6 right-6 z-[100] group cursor-pointer animate-in zoom-in duration-500"
-                style={{ animationDelay: '1s' }}
-                onClick={() => playNeonClick()}
-            >
-                <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-500/40 transition-all duration-500 animate-pulse" />
-                <div 
-                    className="relative w-14 h-14 rounded-full border-2 flex items-center justify-center backdrop-blur-xl transition-transform group-hover:scale-110 active:scale-95"
-                    style={{
-                        borderColor: 'rgba(0,251,255,0.6)',
-                        background: 'linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%)',
-                        boxShadow: '0 0 30px rgba(0,251,255,0.3), inset 0 0 15px rgba(0,251,255,0.2)'
-                    }}
-                >
-                    <div className="relative">
-                        <Zap size={22} className="text-cyan-400 animate-pulse" />
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full border-2 border-black animate-ping" />
-                    </div>
-                </div>
-                {/* Tooltip de ARI */}
-                <div className="absolute right-16 top-1/2 -translate-y-1/2 bg-black/80 border border-cyan-500/30 px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-cyan-400">ARI: En línea</p>
-                </div>
-            </div>
+            {/* 🤖 ASISTENTE ARI REAL */}
+            <AriMerchantAssistant shop={globalShop} />
         </div>
     );
 };
