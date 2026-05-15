@@ -39,7 +39,41 @@ const ArgentinaMap: React.FC<ArgentinaMapProps> = ({ nodes, onNodeClick, accentC
                         <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
                         <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
                     </radialGradient>
+                    
+                    {/* Radar Sweep Gradient */}
+                    <linearGradient id="radarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="transparent" />
+                        <stop offset="90%" stopColor={hexToRgba(accentColor, 0.4)} />
+                        <stop offset="100%" stopColor="#ffffff" />
+                    </linearGradient>
+
+                    <style>{`
+                        @keyframes rotateRadar {
+                            from { transform: rotate(0deg); }
+                            to { transform: rotate(360deg); }
+                        }
+                        .radar-sweep {
+                            transform-origin: 150px 220px;
+                            animation: rotateRadar 5s linear infinite;
+                        }
+                    `}</style>
                 </defs>
+
+                {/* Radar Scanning Effect */}
+                <g className="radar-sweep" opacity="0.6">
+                    <path 
+                        d="M150,220 L150,20 A200,200 0 0,1 300,220 Z" 
+                        fill="url(#radarGrad)" 
+                        opacity="0.15"
+                    />
+                    <line 
+                        x1="150" y1="220" x2="150" y2="20" 
+                        stroke="#ffffff" 
+                        strokeWidth="1.5" 
+                        opacity="0.4"
+                        style={{ filter: 'drop-shadow(0 0 5px #ffffff)' }}
+                    />
+                </g>
 
                 {/* Highly Accurate Argentina outline + Provinces */}
                 <g style={{ filter: 'drop-shadow(0 0 10px rgba(0,251,255,0.25))' }}>
