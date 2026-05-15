@@ -41,12 +41,12 @@ const GlobalHomePage: React.FC = () => {
     };
 
     const mapNodes = [
-        { id: 'buenos-aires-sur', label: 'Buenos Aires', x: 155, y: 235, isActive: regions.some(r => r.id === 'buenos-aires-sur') },
-        { id: 'traslasierra', label: 'Traslasierra', x: 120, y: 185, isActive: regions.some(r => r.id === 'traslasierra') },
-        { id: 'calamuchita', label: 'Calamuchita', x: 135, y: 178, isActive: regions.some(r => r.id === 'calamuchita') },
-        { id: 'punilla', label: 'Punilla', x: 130, y: 170, isActive: regions.some(r => r.id === 'punilla') },
-        { id: 'rosario', label: 'Rosario', x: 145, y: 200, isActive: regions.some(r => r.id === 'rosario') },
-        { id: 'siete-lagos', label: '7 Lagos', x: 85, y: 290, isActive: regions.some(r => r.id === 'siete-lagos') },
+        { id: 'buenos-aires-sur', label: 'Buenos Aires', x: 190, y: 260, isActive: regions.some(r => r.id === 'buenos-aires-sur') },
+        { id: 'traslasierra', label: 'Traslasierra', x: 135, y: 180, isActive: regions.some(r => r.id === 'traslasierra') },
+        { id: 'calamuchita', label: 'Calamuchita', x: 140, y: 195, isActive: regions.some(r => r.id === 'calamuchita') },
+        { id: 'punilla', label: 'Punilla', x: 138, y: 170, isActive: regions.some(r => r.id === 'punilla') },
+        { id: 'rosario', label: 'Rosario', x: 175, y: 220, isActive: regions.some(r => r.id === 'rosario') },
+        { id: 'siete-lagos', label: '7 Lagos', x: 100, y: 370, isActive: regions.some(r => r.id === 'siete-lagos') },
     ];
 
     const getRegionIcon = (icon: string) => {

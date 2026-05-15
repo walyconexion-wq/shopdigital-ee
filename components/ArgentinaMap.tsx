@@ -41,13 +41,13 @@ const ArgentinaMap: React.FC<ArgentinaMapProps> = ({ nodes, onNodeClick, accentC
                     </radialGradient>
                 </defs>
 
-                {/* Simplified Argentina outline */}
+                {/* Accurate Argentina outline */}
                 <path
-                    d="M155 15 L170 25 L185 20 L195 30 L200 45 L210 50 L220 48 L225 55 L215 65 L220 80 L230 85 L235 95 L225 105 L230 120 L225 135 L220 145 L225 160 L220 175 L215 190 L220 205 L215 220 L210 235 L205 250 L200 265 L195 280 L190 295 L185 310 L180 325 L175 340 L170 355 L165 370 L160 385 L155 400 L150 415 L145 425 L140 435 L135 440 L125 445 L120 450 L130 460 L145 465 L155 470 L160 480 L150 490 L140 495 L130 490 L120 485 L115 475 L110 465 L105 455 L100 445 L95 435 L90 425 L85 415 L80 400 L75 385 L70 370 L72 355 L75 340 L78 325 L80 310 L83 295 L85 280 L88 265 L90 250 L92 235 L95 220 L98 205 L100 190 L102 175 L105 160 L108 145 L112 130 L115 115 L118 100 L120 85 L125 70 L130 55 L135 45 L140 35 L145 25 L150 18 Z"
-                    stroke={hexToRgba(accentColor, 0.25)}
-                    strokeWidth="1.5"
-                    fill={hexToRgba(accentColor, 0.03)}
-                    filter="url(#neonGlow)"
+                    d="M135,20 L160,25 L185,35 L205,50 L220,70 L230,95 L235,125 L230,155 L220,190 L205,230 L195,270 L185,310 L175,350 L165,390 L155,430 L145,470 L148,495 L135,510 L120,500 L110,475 L100,435 L90,395 L80,355 L75,315 L85,275 L95,235 L105,195 L110,155 L115,115 L120,75 L125,45 Z"
+                    stroke={hexToRgba(accentColor, 0.4)}
+                    strokeWidth="2"
+                    fill={hexToRgba(accentColor, 0.05)}
+                    style={{ filter: 'drop-shadow(0 0 12px rgba(0,251,255,0.4))' }}
                 />
 
                 {/* Connection lines between active nodes */}
@@ -59,7 +59,7 @@ const ArgentinaMap: React.FC<ArgentinaMapProps> = ({ nodes, onNodeClick, accentC
                             key={`line-${node.id}`}
                             x1={prev.x} y1={prev.y}
                             x2={node.x} y2={node.y}
-                            stroke={hexToRgba(accentColor, 0.15)}
+                            stroke={hexToRgba(accentColor, 0.25)}
                             strokeWidth="1"
                             strokeDasharray="4 4"
                         />
@@ -71,27 +71,30 @@ const ArgentinaMap: React.FC<ArgentinaMapProps> = ({ nodes, onNodeClick, accentC
                     <g key={node.id} onClick={() => node.isActive && onNodeClick(node.id)} style={{ cursor: node.isActive ? 'pointer' : 'default' }}>
                         {/* Outer pulse ring */}
                         {node.isActive && (
-                            <circle cx={node.x} cy={node.y} r="14" fill="url(#nodeGrad)" opacity="0.3">
-                                <animate attributeName="r" values="10;18;10" dur="3s" repeatCount="indefinite" />
-                                <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" />
+                            <circle cx={node.x} cy={node.y} r="16" fill="url(#nodeGrad)" opacity="0.4">
+                                <animate attributeName="r" values="12;20;12" dur="2.5s" repeatCount="indefinite" />
+                                <animate attributeName="opacity" values="0.4;0.15;0.4" dur="2.5s" repeatCount="indefinite" />
                             </circle>
                         )}
                         {/* Main dot */}
                         <circle
                             cx={node.x} cy={node.y}
-                            r={node.isActive ? 5 : 3}
+                            r={node.isActive ? 6 : 4}
                             fill={node.isActive ? accentColor : hexToRgba(accentColor, 0.3)}
                             filter={node.isActive ? "url(#dotGlow)" : undefined}
                         />
                         {/* Label */}
                         <text
-                            x={node.x + 10} y={node.y + 4}
+                            x={node.x + 12} y={node.y + 4}
                             fill={node.isActive ? '#ffffff' : hexToRgba('#ffffff', 0.3)}
-                            fontSize="9"
+                            fontSize="10"
                             fontWeight="900"
                             fontFamily="system-ui, sans-serif"
                             letterSpacing="0.05em"
-                            style={{ textTransform: 'uppercase' }}
+                            style={{ 
+                                textTransform: 'uppercase',
+                                textShadow: node.isActive ? '0 0 10px rgba(0,251,255,0.8)' : 'none'
+                            }}
                         >
                             {node.label}
                         </text>
