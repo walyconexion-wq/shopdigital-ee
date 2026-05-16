@@ -156,8 +156,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
 
                 {/* Chips Regionales para Traslasierra */}
                 {isInTraslasierra && (
-                    <div className="w-full mt-6 mb-2 overflow-x-auto no-scrollbar snap-x snap-mandatory">
-                        <div className="flex items-center justify-start gap-2 px-1 pb-2 w-max mx-auto">
+                    <div className="w-full mt-6 mb-2">
+                        <div className="flex flex-wrap justify-center gap-2.5 px-2 pb-2 max-w-[95%] mx-auto">
                             {TRASLASIERRA_REGION.towns.map((town) => {
                                 const isActive = townId === town.id;
                                 return (
@@ -167,17 +167,21 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                             playNeonClick();
                                             if (!isActive) navigate(`/${town.id}/home`);
                                         }}
-                                        className={`snap-center shrink-0 px-4 py-2 rounded-full border transition-all duration-300 text-[9px] font-black uppercase tracking-widest ${
+                                        className={`px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
                                             isActive
-                                                ? 'backdrop-blur-md text-white scale-105'
-                                                : 'bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:bg-white/10'
+                                                ? 'backdrop-blur-md text-white scale-105 animate-pulse'
+                                                : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
                                         }`}
                                         style={isActive ? {
-                                            backgroundColor: hexToRgba(themeColor, 0.2),
-                                            borderColor: hexToRgba(themeColor, 0.6),
-                                            boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.3)}`,
-                                            textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}`
-                                        } : {}}
+                                            backgroundColor: hexToRgba(themeColor, 0.35),
+                                            borderColor: '#ffffff',
+                                            boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
+                                            textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
+                                        } : {
+                                            backgroundColor: hexToRgba(themeColor, 0.1),
+                                            borderColor: hexToRgba(themeColor, 0.3),
+                                            boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
+                                        }}
                                     >
                                         {town.name}
                                     </button>
