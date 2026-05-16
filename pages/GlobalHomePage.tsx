@@ -291,7 +291,8 @@ const GlobalHomePage: React.FC = () => {
                         <div className="space-y-3">
                             {[
                                 { id: 'esteban-echeverria', name: 'Esteban Echeverría', type: 'zona', towns: ['esteban-echeverria'], color: '#22d3ee', icon: 'building' },
-                                { id: 'ezeiza', name: 'Ezeiza', type: 'zona', towns: ['ezeiza'], color: '#22d3ee', icon: 'building' }
+                                { id: 'ezeiza', name: 'Ezeiza', type: 'zona', towns: ['ezeiza'], color: '#22d3ee', icon: 'building' },
+                                { id: 'traslasierra', name: 'Traslasierra', type: 'region', towns: ['mina-clavero', 'nono', 'cura-brochero', 'panaholma', 'villa-dolores', 'villa-las-rosas', 'san-javier', 'las-rabonas'], color: '#0ea5e9', icon: 'mountain' }
                             ].map((region, idx) => (
                                 <button
                                     key={region.id}

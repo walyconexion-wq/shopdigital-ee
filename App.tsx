@@ -61,6 +61,9 @@ import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
 import GlobalHomePage from './pages/GlobalHomePage';
 import RegionSelectPage from './pages/RegionSelectPage';
 import RegionSeedPage from './pages/RegionSeedPage';
+import RegionMasterPanelPage from './pages/RegionMasterPanelPage';
+import { RegionalNavBar } from './components/RegionalNavBar';
+import { TRASLASIERRA_REGION } from './data/regionalTemplates/traslasierraConfig';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -179,10 +182,22 @@ const TownController: React.FC = () => {
         };
     }, [townId]);
 
+    // Verificar si la zona actual pertenece a la región de Traslasierra
+    const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
+
     return (
         <>
             {showLoader && (
                 <LoadingScreen ready={!loading} onDone={() => setShowLoader(false)} />
+            )}
+
+            {isInTraslasierra && (
+                <RegionalNavBar 
+                    regionName={TRASLASIERRA_REGION.name}
+                    currentTownId={townId}
+                    towns={TRASLASIERRA_REGION.towns}
+                    themeColor={TRASLASIERRA_REGION.themeColor}
+                />
             )}
 
             <Routes>
@@ -304,6 +319,10 @@ const App: React.FC = () => {
 
                 {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
                 <Route path="/region/:regionId" element={<RegionSelectPage />} />
+                <Route path="/region/:regionId/tablero-maestro" element={<ProtectedRoute roles={['admin']}><RegionMasterPanelPage /></ProtectedRoute>} />
+                
+                {/* 🏔️ PORTAL IMPERIAL: TRASLASIERRA */}
+                <Route path="/traslasierra" element={<Navigate to="/region/traslasierra" replace />} />
 
                 {/* 🌱 SEMILLERO — Inyección de datos regionales (admin only) */}
                 <Route path="/:townId/semillero-regional" element={<ProtectedRoute roles={['admin']}><RegionSeedPage /></ProtectedRoute>} />

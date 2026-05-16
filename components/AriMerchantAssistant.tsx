@@ -18,7 +18,7 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant';
+    role?: 'home' | 'merchant' | 'baquiana';
 }
 
 const ARI_MERCHANT_PROMPT = `
@@ -56,6 +56,21 @@ Reglas de Oro de Comportamiento:
 - Hablá con orgullo de las "Antenas de Transmisión" en vivo y del diseño futurista cyberpunk de la plataforma, haciendo sentir al usuario que está usando tecnología de vanguardia mundial nacida en Argentina.
 `;
 
+const ARI_BAQUIANA_PROMPT = `
+Sos ARI, la Baquiana Turística y Guía Regional (especialista en Traslasierra y zonas de montaña). Tu tono es cálido, aventurero, con conocimiento profundo del terreno, clima y atracciones (uso de "Che", "Viajero", "Paisano", "Mete mecha").
+
+Tu propósito es asesorar a turistas y visitantes recomendando actividades y comercios acordes a su perfil, clima y localidad.
+
+Tus funciones clave:
+1. 🧭 Recomendación Táctica: Si el clima está fresco, recomendás chocolates calientes, artesanías o paseos. Si hace calor, recomendás ríos, cabañas con pileta y balnearios.
+2. 🗺️ Conocimiento del Terreno: Hablás de Mina Clavero, Nono, Brochero, San Javier, etc., como si hubieras nacido en la sierra.
+3. 🛍️ Conexión Comercial: Siempre derivás las consultas hacia los comercios del "Catálogo Inteligente" local (ej: "Buscá las mejores cabañas en nuestra sección de Hotelería").
+
+Reglas de Oro:
+- Sos una guía experta pero tecnológica, mencionás la "Frecuencia Azul" y el "Radar" como las herramientas supremas del turista moderno.
+- Terminás tus recomendaciones incitando a la acción: "¡Deslizá en el radar y reservá ahora mismo, viajero!"
+`;
+
 export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isListening, setIsListening] = useState(false);
@@ -65,6 +80,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
             role: 'ari', 
             text: role === 'home' 
                 ? `¡Bienvenidos al Comando Central de Shop Digital! 🌐 Soy Ari, tu guía en la red nacional. ¿Querés saber cómo moverte por el radar o cómo buscar los mejores locales de tu zona? ¡Mete mecha, preguntame lo que quieras!`
+                : role === 'baquiana'
+                ? `¡Buenas buenas, viajero! 🏔️ Soy Ari, tu baquiana en la montaña. ¿Buscás una cabaña, un río escondido o dónde comer rico hoy? ¡Avisame y te armo el recorrido en el radar!`
                 : `¡Hola, Jefe! Soy Ari, tu asistente de negocios. Estoy lista para ayudarte con las estadísticas de ${shop.name}, programar campañas o ajustar tu catálogo. ¿En qué puedo darte una mano hoy?`, 
             timestamp: new Date() 
         }
@@ -146,7 +163,11 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
             }));
             
             // 🧠 SELECCIÓN DINÁMICA DE CEREBRO ARI
-            const baseContext = role === 'home' ? ARI_HOME_PROMPT : ARI_MERCHANT_PROMPT;
+            const baseContext = role === 'home' 
+                ? ARI_HOME_PROMPT 
+                : role === 'baquiana'
+                ? ARI_BAQUIANA_PROMPT
+                : ARI_MERCHANT_PROMPT;
             
             const systemContext = `
 ${baseContext}
