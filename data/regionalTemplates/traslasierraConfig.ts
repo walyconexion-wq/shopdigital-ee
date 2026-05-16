@@ -4,6 +4,7 @@ import {
   Compass, Car, Utensils, Beer, ShoppingBag, 
   Palette, Map, Camera
 } from 'lucide-react';
+import { CATEGORIES } from '../../constants';
 
 export const TRASLASIERRA_REGION = {
   id: 'traslasierra',
@@ -45,6 +46,7 @@ export const TRASLASIERRA_REGION = {
     { 
         id: 'taxis_transporte', slug: 'movilidad', name: 'Taxis y Movilidad', iconKey: 'Car',
         subcategories: ['Taxis', 'Remises', 'Combis', 'Alquiler de Autos', 'Traslados al Aeropuerto', 'Auxilio Mecánico / Gomería']
-    }
+    },
+    ...CATEGORIES
   ]
 };
