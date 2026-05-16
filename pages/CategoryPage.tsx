@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CATEGORIES } from '../constants';
+import { CATEGORIES, LOCALITY_COLORS } from '../constants';
 import { Shop } from '../types';
+import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
 import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { incrementarVisitas } from '../firebase';
@@ -12,25 +13,24 @@ interface CategoryPageProps {
     globalConfig?: any;
 }
 
-// Paleta de colores cíclica para las localidades dinámicas
-const LOCALITY_COLORS = [
-    { border: 'border-violet-400/80', bg: 'bg-violet-600/50', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.8)]', pin: 'text-violet-400', line: 'bg-violet-400/30', dot: 'bg-violet-500/20 border-violet-400/50', card: 'card-neon-violet', btn: 'border-violet-400/50 bg-violet-600/30 shadow-[0_4px_0_rgba(139,92,246,0.5)]' },
-    { border: 'border-cyan-400/80',   bg: 'bg-cyan-600/50',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.8)]',  pin: 'text-cyan-400',   line: 'bg-cyan-400/30',   dot: 'bg-cyan-500/20 border-cyan-400/50',   card: 'card-neon-cyan',   btn: 'border-cyan-400/50 bg-cyan-600/30 shadow-[0_4px_0_rgba(34,211,238,0.5)]' },
-    { border: 'border-rose-400/80',   bg: 'bg-rose-600/50',   shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.8)]',   pin: 'text-rose-400',   line: 'bg-rose-400/30',   dot: 'bg-rose-500/20 border-rose-400/50',   card: 'card-neon-red',    btn: 'border-rose-400/50 bg-rose-600/30 shadow-[0_4px_0_rgba(244,63,94,0.5)]' },
-    { border: 'border-green-400/80',  bg: 'bg-green-600/50',  shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.8)]',   pin: 'text-green-400',  line: 'bg-green-400/30',  dot: 'bg-green-500/20 border-green-400/50',  card: 'card-neon-green',  btn: 'border-green-400/50 bg-green-600/30 shadow-[0_4px_0_rgba(34,197,94,0.5)]' },
-    { border: 'border-amber-400/80',  bg: 'bg-amber-600/50',  shadow: 'shadow-[0_0_20px_rgba(245,158,11,0.8)]',  pin: 'text-amber-400',  line: 'bg-amber-400/30',  dot: 'bg-amber-500/20 border-amber-400/50',  card: 'card-neon-amber',  btn: 'border-amber-400/50 bg-amber-600/30 shadow-[0_4px_0_rgba(245,158,11,0.5)]' },
-];
-
 const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) => {
     const { townId = 'esteban-echeverria', categorySlug } = useParams<{ townId: string, categorySlug: string }>();
     const navigate = useNavigate();
     const { localities } = useTownLocalities(townId);
+    
+    // Determinar si estamos en Traslasierra
+    const isInTraslasierra = townId === 'traslasierra' || TRASLASIERRA_REGION.towns.some(t => t.id === townId);
+    
+    // Obtener townName amigable
+    const townName = isInTraslasierra 
+        ? TRASLASIERRA_REGION.towns.find(t => t.id === townId)?.name || townId.replace(/-/g, ' ')
+        : (globalConfig?.townName || 'Esteban Echeverría');
+
     const [activeLocation, setActiveLocation] = useState<string>('');
     const [activeSubcategory, setActiveSubcategory] = useState<string>('');
     const [titleClicks, setTitleClicks] = React.useState(0);
 
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
-    const townName = globalConfig?.townName || 'Esteban Echeverría';
 
     const hexToRgba = (hex: string, alpha: number) => {
         try {
@@ -92,8 +92,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
 
                 // 3. Localidad — busca por shop.zone o por dirección
                 // Para zonas nuevas (Ezeiza) se filtra estrictamente.
-                // Para la zona madre (Esteban Echeverría) se incluyen los sin zone.
-                const isMotherZone = townId === 'esteban-echeverria';
+                // Para la zona madre y Traslasierra se incluyen los sin zone.
+                const isMotherZone = townId === 'esteban-echeverria' || isInTraslasierra;
                 const zoneMatch = isMotherZone
                     ? ((shop.zone === loc) || !shop.zone || normalize(shop.address || '').includes(normalizedLoc))
                     : ((shop.zone === loc) || normalize(shop.address || '').includes(normalizedLoc));
@@ -161,7 +161,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
 
             <div className="flex flex-col gap-8 px-2 pt-4 relative z-10">
                 {/* Pestañas de Localidades — cargadas dinámicamente desde Firebase */}
-                {localities.length > 0 && (
+                {localities.length > 0 && (!isInTraslasierra) && (
                     <div className="flex gap-2 w-full justify-center px-2 mb-2 overflow-x-auto no-scrollbar">
                         {localities.map((loc, idx) => {
                             const isActive = activeLocation === loc;
@@ -186,31 +186,53 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
 
                 {/* Pestañas de Subcategorías */}
                 {selectedCategory.subcategories && selectedCategory.subcategories.length > 0 && (
-                    <div className="flex gap-2 w-full justify-start px-2 mb-2 overflow-x-auto no-scrollbar">
+                    <div className="flex flex-wrap justify-center gap-2.5 px-2 pb-2 max-w-[95%] mx-auto mb-2">
                         <button
                             onClick={() => { playNeonClick(); setActiveSubcategory(''); }}
-                            className={`flex-shrink-0 px-4 py-2.5 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                            className={`px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
                                 !activeSubcategory 
-                                    ? `bg-white/20 border-white text-white shadow-[0_0_15px_rgba(255,255,255,0.2)]` 
-                                    : 'border-white/10 text-white/50 bg-white/5 hover:bg-white/10 hover:text-white/80'
+                                    ? 'backdrop-blur-md text-white scale-105 animate-pulse'
+                                    : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
                             }`}
+                            style={!activeSubcategory ? {
+                                backgroundColor: hexToRgba(themeColor, 0.35),
+                                borderColor: '#ffffff',
+                                boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
+                                textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
+                            } : {
+                                backgroundColor: hexToRgba(themeColor, 0.1),
+                                borderColor: hexToRgba(themeColor, 0.3),
+                                boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
+                            }}
                         >
                             Ver Todo
                         </button>
-                        {selectedCategory.subcategories.map((sub: string) => (
-                            <button
-                                key={sub}
-                                onClick={() => { playNeonClick(); setActiveSubcategory(sub); }}
-                                className={`flex-shrink-0 px-4 py-2.5 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
-                                    activeSubcategory === sub 
-                                        ? `bg-cyan-500/30 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.3)]` 
-                                        : 'border-white/10 text-white/50 bg-white/5 hover:bg-white/10 hover:text-white/80'
-                                }`}
-                                style={activeSubcategory === sub ? { borderColor: themeColor, color: themeColor, backgroundColor: hexToRgba(themeColor, 0.2), boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.3)}` } : {}}
-                            >
-                                {sub}
-                            </button>
-                        ))}
+                        {selectedCategory.subcategories.map((sub: string) => {
+                            const isActive = activeSubcategory === sub;
+                            return (
+                                <button
+                                    key={sub}
+                                    onClick={() => { playNeonClick(); setActiveSubcategory(sub); }}
+                                    className={`px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
+                                        isActive 
+                                            ? 'backdrop-blur-md text-white scale-105 animate-pulse'
+                                            : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
+                                    }`}
+                                    style={isActive ? {
+                                        backgroundColor: hexToRgba(themeColor, 0.35),
+                                        borderColor: '#ffffff',
+                                        boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
+                                        textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
+                                    } : {
+                                        backgroundColor: hexToRgba(themeColor, 0.1),
+                                        borderColor: hexToRgba(themeColor, 0.3),
+                                        boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
+                                    }}
+                                >
+                                    {sub}
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
 
@@ -220,7 +242,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                         <div className={`w-8 h-8 rounded-full backdrop-blur-md border flex items-center justify-center shadow-lg transition-colors ${activeColors.dot}`}>
                             <MapPin size={16} className={activeColors.pin} />
                         </div>
-                        <h3 className="text-[12px] font-black text-white uppercase tracking-[0.4em] text-shadow-premium">{activeLocation}</h3>
+                        <h3 className="text-[12px] font-black text-white uppercase tracking-[0.4em] text-shadow-premium">
+                            {isInTraslasierra ? townName : activeLocation}
+                        </h3>
                         <div className={`h-[1px] flex-1 opacity-50 transition-colors ${activeColors.line}`}></div>
                     </div>
 
