@@ -296,7 +296,14 @@ const GlobalHomePage: React.FC = () => {
                             ].map((region, idx) => (
                                 <button
                                     key={region.id}
-                                    onClick={() => navigate(`/${region.id}/home`)}
+                                    onClick={() => {
+                                        playNeonClick();
+                                        if (region.towns.length === 1) {
+                                            navigate(`/${region.towns[0]}/home`);
+                                        } else {
+                                            navigate(`/region/${region.id}`);
+                                        }
+                                    }}
                                     className="w-full text-left backdrop-blur-xl border p-5 rounded-[1.5rem] transition-all group active:scale-[0.98]"
                                     style={{
                                         animation: `fadeUp 0.5s cubic-bezier(0.25,1,0.5,1) ${idx * 80}ms both`,

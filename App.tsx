@@ -182,8 +182,8 @@ const TownController: React.FC = () => {
         };
     }, [townId]);
 
-    // Verificar si la zona actual pertenece a la región de Traslasierra
-    const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
+    // Verificar si la zona actual pertenece a la región de Traslasierra (incluyendo el portal directo)
+    const isInTraslasierra = townId === 'traslasierra' || TRASLASIERRA_REGION.towns.some(t => t.id === townId);
 
     // Inyectar configuración regional si aplica
     const effectiveGlobalConfig = isInTraslasierra 
