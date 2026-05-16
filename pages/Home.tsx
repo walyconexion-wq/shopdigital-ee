@@ -5,6 +5,8 @@ import { Share2, Store } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 import { resolveIcon } from '../utils/iconResolver';
+import { useAuth } from '../components/AuthContext';
+import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
 
 interface HomeProps {
     globalConfig?: any;
@@ -13,9 +15,10 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
-    const themeColor = globalConfig?.primaryColor || '#22d3ee';
+    const themeColor = globalConfig?.themeColor || '#22d3ee';
+    const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
     const activeTheme = globalConfig?.theme || 'default';
-    const mainSubtitle = globalConfig?.mainSubtitle || 'Tu guía de ofertas locales';
+    const mainSubtitle = globalConfig?.mainSubtitle || `Tu guía de ofertas en ${townId.replace(/-/g, ' ')}`;
     const townName = globalConfig?.townName || 'Esteban Echeverría';
 
     const [logoClicks, setLogoClicks] = React.useState(0);
@@ -150,6 +153,39 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     </div>
                     <div className="h-[1px] w-6" style={{ background: `linear-gradient(90deg, ${hexToRgba(themeColor, 0.3)}, transparent)` }}></div>
                 </div>
+
+                {/* Chips Regionales para Traslasierra */}
+                {isInTraslasierra && (
+                    <div className="w-full mt-6 mb-2 overflow-x-auto no-scrollbar snap-x snap-mandatory">
+                        <div className="flex items-center justify-start gap-2 px-1 pb-2 w-max mx-auto">
+                            {TRASLASIERRA_REGION.towns.map((town) => {
+                                const isActive = townId === town.id;
+                                return (
+                                    <button
+                                        key={town.id}
+                                        onClick={() => {
+                                            playNeonClick();
+                                            if (!isActive) navigate(`/${town.id}/home`);
+                                        }}
+                                        className={`snap-center shrink-0 px-4 py-2 rounded-full border transition-all duration-300 text-[9px] font-black uppercase tracking-widest ${
+                                            isActive
+                                                ? 'backdrop-blur-md text-white scale-105'
+                                                : 'bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:bg-white/10'
+                                        }`}
+                                        style={isActive ? {
+                                            backgroundColor: hexToRgba(themeColor, 0.2),
+                                            borderColor: hexToRgba(themeColor, 0.6),
+                                            boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.3)}`,
+                                            textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}`
+                                        } : {}}
+                                    >
+                                        {town.name}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-3 gap-x-4 gap-y-8 px-5 relative z-10">

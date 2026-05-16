@@ -58,7 +58,9 @@ const GlobalHomePage: React.FC = () => {
 
     const handleRegionClick = (region: Region) => {
         playNeonClick();
-        if (region.towns.length === 1) {
+        if (region.id === 'traslasierra') {
+            navigate('/mina-clavero/home');
+        } else if (region.towns.length === 1) {
             navigate(`/${region.towns[0]}/home`);
         } else {
             navigate(`/region/${region.id}`);
@@ -298,7 +300,9 @@ const GlobalHomePage: React.FC = () => {
                                     key={region.id}
                                     onClick={() => {
                                         playNeonClick();
-                                        if (region.towns.length === 1) {
+                                        if (region.id === 'traslasierra') {
+                                            navigate('/mina-clavero/home');
+                                        } else if (region.towns.length === 1) {
                                             navigate(`/${region.towns[0]}/home`);
                                         } else {
                                             navigate(`/region/${region.id}`);
