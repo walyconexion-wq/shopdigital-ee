@@ -66,9 +66,10 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
         navigate(`/${townId}/tablero-maestro`);
     };
 
-    const selectedCategory = useMemo(() =>
-        CATEGORIES.find(cat => cat.slug === categorySlug),
-        [categorySlug]);
+    const selectedCategory = useMemo(() => {
+        const availableCategories = globalConfig?.categories || CATEGORIES;
+        return availableCategories.find((cat: any) => cat.slug === categorySlug);
+    }, [categorySlug, globalConfig]);
 
     const groupedShops = useMemo(() => {
         if (!selectedCategory || localities.length === 0) return {};
