@@ -461,7 +461,7 @@ const GlobalHomePage: React.FC = () => {
             </main>
 
             {/* 🤖 ASISTENTE ARI REAL */}
-            <AriMerchantAssistant shop={globalShop} />
+            <AriMerchantAssistant shop={globalShop} role="home" />
         </div>
     );
 };
