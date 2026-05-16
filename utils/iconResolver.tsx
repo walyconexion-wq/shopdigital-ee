@@ -7,6 +7,7 @@ import {
     Wrench, PlusSquare, Shirt as WashIcon, Flower2, Baby,
     Coffee, CookingPot, BookOpen, Music2, Bike, Package,
     Stethoscope, HeartPulse, Bus, Globe, Star,
+    Ticket, Wine, Mountain, Tent, Hotel, Compass, Palette, Gift
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -48,6 +49,14 @@ const ICON_MAP: Record<string, React.ReactNode> = {
     Bus: <Bus className="w-8 h-8" />,
     Globe: <Globe className="w-8 h-8" />,
     Star: <Star className="w-8 h-8" />,
+    Ticket: <Ticket className="w-8 h-8" />,
+    Wine: <Wine className="w-8 h-8" />,
+    Mountain: <Mountain className="w-8 h-8" />,
+    Tent: <Tent className="w-8 h-8" />,
+    Hotel: <Hotel className="w-8 h-8" />,
+    Compass: <Compass className="w-8 h-8" />,
+    Palette: <Palette className="w-8 h-8" />,
+    Gift: <Gift className="w-8 h-8" />,
 };
 
 // Available icons for the category picker in GlobalConfigPage

@@ -26,6 +26,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     const navigate = useNavigate();
     const { localities } = useTownLocalities(townId);
     const [activeLocation, setActiveLocation] = useState<string>('');
+    const [activeSubcategory, setActiveSubcategory] = useState<string>('');
     const [titleClicks, setTitleClicks] = React.useState(0);
 
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
@@ -96,7 +97,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                     ? ((shop.zone === loc) || !shop.zone || normalize(shop.address || '').includes(normalizedLoc))
                     : ((shop.zone === loc) || normalize(shop.address || '').includes(normalizedLoc));
 
-                return isActive && categoryMatch && zoneMatch;
+                // 4. Coincidencia de Subcategoría
+                const subMatch = !activeSubcategory || 
+                    (shop.specialty && normalize(shop.specialty).includes(normalize(activeSubcategory))) ||
+                    (shop.description && normalize(shop.description).includes(normalize(activeSubcategory))) ||
+                    (shop.tags && shop.tags.some(tag => normalize(tag).includes(normalize(activeSubcategory))));
+
+                return isActive && categoryMatch && zoneMatch && subMatch;
             });
         });
         return grouped;
@@ -176,7 +183,37 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                     </div>
                 )}
 
-                <div className="flex flex-col gap-6" key={activeLocation}>
+                {/* Pestañas de Subcategorías */}
+                {selectedCategory.subcategories && selectedCategory.subcategories.length > 0 && (
+                    <div className="flex gap-2 w-full justify-start px-2 mb-2 overflow-x-auto no-scrollbar">
+                        <button
+                            onClick={() => { playNeonClick(); setActiveSubcategory(''); }}
+                            className={`flex-shrink-0 px-4 py-2.5 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                                !activeSubcategory 
+                                    ? `bg-white/20 border-white text-white shadow-[0_0_15px_rgba(255,255,255,0.2)]` 
+                                    : 'border-white/10 text-white/50 bg-white/5 hover:bg-white/10 hover:text-white/80'
+                            }`}
+                        >
+                            Ver Todo
+                        </button>
+                        {selectedCategory.subcategories.map((sub: string) => (
+                            <button
+                                key={sub}
+                                onClick={() => { playNeonClick(); setActiveSubcategory(sub); }}
+                                className={`flex-shrink-0 px-4 py-2.5 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                                    activeSubcategory === sub 
+                                        ? `bg-cyan-500/30 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.3)]` 
+                                        : 'border-white/10 text-white/50 bg-white/5 hover:bg-white/10 hover:text-white/80'
+                                }`}
+                                style={activeSubcategory === sub ? { borderColor: themeColor, color: themeColor, backgroundColor: hexToRgba(themeColor, 0.2), boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.3)}` } : {}}
+                            >
+                                {sub}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                <div className="flex flex-col gap-6" key={activeLocation + activeSubcategory}>
                     {/* Título de Sección con ícono */}
                     <div className="flex items-center gap-3 ml-2">
                         <div className={`w-8 h-8 rounded-full backdrop-blur-md border flex items-center justify-center shadow-lg transition-colors ${activeColors.dot}`}>

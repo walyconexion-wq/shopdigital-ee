@@ -20,16 +20,31 @@ export const TRASLASIERRA_REGION = {
     { id: 'san-javier', name: 'San Javier', type: 'boutique_sierras', lat: -32.030, lng: -65.028 },
     { id: 'las-rabonas', name: 'Las Rabonas', type: 'cabanas_tranquilidad', lat: -31.854, lng: -65.015 }
   ],
-  // 🏨 RUBROS DE ORO (Turismo Máximo)
+  // 🏨 MATRIZ TURÍSTICA TOP 6 (2x3 GRID)
   categories: [
-    { id: 'hoteleria', slug: 'hoteleria', name: 'Hoteles y Hostels', iconKey: 'Hotel' },
-    { id: 'cabanas', slug: 'cabanas', name: 'Cabañas y Complejos', iconKey: 'Mountain' },
-    { id: 'camping', slug: 'camping', name: 'Zonas de Camping', iconKey: 'Tent' },
-    { id: 'chocolateria', slug: 'chocolateria', name: 'Chocolaterías y Té', iconKey: 'Coffee' },
-    { id: 'regaleria-reg', slug: 'regaleria', name: 'Regalería Regional', iconKey: 'Gift' },
-    { id: 'artesanias', slug: 'artesanias', name: 'Artesanías y Talleres', iconKey: 'Palette' },
-    { id: 'excursiones', slug: 'excursiones', name: 'Excursiones y Guías', iconKey: 'Compass' },
-    { id: 'traslados', slug: 'traslados', name: 'Traslados y Alquiler', iconKey: 'Car' },
-    { id: 'gastronomia-reg', slug: 'gastronomia', name: 'Sabores del Valle', iconKey: 'Utensils' }
+    { 
+        id: 'hospedaje', slug: 'hospedaje', name: 'Hospedaje', iconKey: 'Hotel',
+        subcategories: ['Hoteles', 'Cabañas', 'Hostels', 'Zonas de Camping', 'Departamentos']
+    },
+    { 
+        id: 'entretenimiento', slug: 'entretenimiento', name: 'Entretenimiento', iconKey: 'Ticket',
+        subcategories: ['Casino', 'Teatro', 'Salas de Juegos', 'Feria Local', 'Pool y Billar', 'Discotecas / Pubs']
+    },
+    { 
+        id: 'excursiones', slug: 'excursiones', name: 'Excursiones', iconKey: 'Compass',
+        subcategories: ['Turismo Aventura', 'Trekking Guiado', 'Cabalgatas', 'Alquiler de Cuatriciclos', 'Paseos en Río']
+    },
+    { 
+        id: 'vinos_regionales', slug: 'vinos-regionales', name: 'Vinos Regionales', iconKey: 'Wine',
+        subcategories: ['Bodegas', 'Degustaciones', 'Viñedos', 'Vinotecas', 'Picadas y Sabores']
+    },
+    { 
+        id: 'chocolaterias', slug: 'chocolaterias', name: 'Chocolaterías', iconKey: 'Coffee',
+        subcategories: ['Chocolates Artesanales', 'Alfajorerías', 'Casas de Té', 'Dulces Regionales', 'Mermeladas']
+    },
+    { 
+        id: 'taxis_transporte', slug: 'movilidad', name: 'Taxis y Movilidad', iconKey: 'Car',
+        subcategories: ['Taxis', 'Remises', 'Combis', 'Alquiler de Autos', 'Traslados al Aeropuerto', 'Auxilio Mecánico / Gomería']
+    }
   ]
 };

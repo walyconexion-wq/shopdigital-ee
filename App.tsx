@@ -185,6 +185,11 @@ const TownController: React.FC = () => {
     // Verificar si la zona actual pertenece a la región de Traslasierra
     const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
 
+    // Inyectar configuración regional si aplica
+    const effectiveGlobalConfig = isInTraslasierra 
+        ? { ...globalConfig, categories: TRASLASIERRA_REGION.categories }
+        : globalConfig;
+
     return (
         <>
             {showLoader && (
@@ -201,10 +206,10 @@ const TownController: React.FC = () => {
             )}
 
             <Routes>
-                <Route path="/" element={<Layout allShops={allShops} globalConfig={globalConfig} />}>
+                <Route path="/" element={<Layout allShops={allShops} globalConfig={effectiveGlobalConfig} />}>
                     <Route index element={<Navigate to="home" replace />} />
-                    <Route path="home" element={<Home globalConfig={globalConfig} />} />
-                    <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={globalConfig} />} />
+                    <Route path="home" element={<Home globalConfig={effectiveGlobalConfig} />} />
+                    <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={effectiveGlobalConfig} />} />
                     <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
