@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CATEGORIES, LOCALITY_COLORS } from '../constants';
+import { CATEGORIES } from '../constants';
 import { Shop } from '../types';
 import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
 import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye } from 'lucide-react';
@@ -12,6 +12,15 @@ interface CategoryPageProps {
     allShops: Shop[];
     globalConfig?: any;
 }
+
+// Paleta de colores cíclica para las localidades dinámicas
+const LOCALITY_COLORS = [
+    { border: 'border-violet-400/80', bg: 'bg-violet-600/50', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.8)]', pin: 'text-violet-400', line: 'bg-violet-400/30', dot: 'bg-violet-500/20 border-violet-400/50', card: 'card-neon-violet', btn: 'border-violet-400/50 bg-violet-600/30 shadow-[0_4px_0_rgba(139,92,246,0.5)]' },
+    { border: 'border-cyan-400/80',   bg: 'bg-cyan-600/50',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.8)]',  pin: 'text-cyan-400',   line: 'bg-cyan-400/30',   dot: 'bg-cyan-500/20 border-cyan-400/50',   card: 'card-neon-cyan',   btn: 'border-cyan-400/50 bg-cyan-600/30 shadow-[0_4px_0_rgba(34,211,238,0.5)]' },
+    { border: 'border-rose-400/80',   bg: 'bg-rose-600/50',   shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.8)]',   pin: 'text-rose-400',   line: 'bg-rose-400/30',   dot: 'bg-rose-500/20 border-rose-400/50',   card: 'card-neon-red',    btn: 'border-rose-400/50 bg-rose-600/30 shadow-[0_4px_0_rgba(244,63,94,0.5)]' },
+    { border: 'border-green-400/80',  bg: 'bg-green-600/50',  shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.8)]',   pin: 'text-green-400',  line: 'bg-green-400/30',  dot: 'bg-green-500/20 border-green-400/50',  card: 'card-neon-green',  btn: 'border-green-400/50 bg-green-600/30 shadow-[0_4px_0_rgba(34,197,94,0.5)]' },
+    { border: 'border-amber-400/80',  bg: 'bg-amber-600/50',  shadow: 'shadow-[0_0_20px_rgba(245,158,11,0.8)]',  pin: 'text-amber-400',  line: 'bg-amber-400/30',  dot: 'bg-amber-500/20 border-amber-400/50',  card: 'card-neon-amber',  btn: 'border-amber-400/50 bg-amber-600/30 shadow-[0_4px_0_rgba(245,158,11,0.5)]' },
+];
 
 const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) => {
     const { townId = 'esteban-echeverria', categorySlug } = useParams<{ townId: string, categorySlug: string }>();
