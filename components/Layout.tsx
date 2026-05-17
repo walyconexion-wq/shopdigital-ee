@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import ShopBot from './ShopBot';
+import { AriMerchantAssistant } from './AriMerchantAssistant';
 import { Shop } from '../types';
 
 interface LayoutProps {
@@ -13,7 +13,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
     const bgColor = globalConfig?.bgColor || '#000000';
     
-    // Ocultar ShopBot en páginas de edición para que solo aparezca ARI
+    // Ocultar ARI en páginas de edición para que solo aparezca la versión del comerciante
     const isEditPage = location.pathname.includes('/editar') || location.pathname.includes('/mi-catalogo');
 
     // Helper to convert hex to rgba
@@ -29,6 +29,23 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
         '--theme-glow': hexToRgba(themeColor, 0.5),
         '--theme-bg-glow': hexToRgba(themeColor, 0.08),
     } as React.CSSProperties;
+
+    // Dummy shop para el contexto de ARI en modo cliente/baquiana
+    const ariContextShop: Shop = {
+        id: 'ari-global',
+        name: 'ShopDigital',
+        category: 'Red Comercial',
+        slug: 'shopdigital',
+        address: 'Argentina',
+        phone: '',
+        description: 'Red Comercial Digital de Argentina',
+        rating: 5,
+        isActive: true,
+        offers: [],
+        visits: 0,
+        subscribers: 0,
+        tags: [],
+    } as unknown as Shop;
 
     return (
         <div 
@@ -50,8 +67,8 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 <Outlet />
             </main>
 
-            {/* ShopBot Floating Assistant - Oculto en edición */}
-            {!isEditPage && <ShopBot allShops={allShops} />}
+            {/* ARI - Asistente Baquiana Global (visible en todas las zonas) */}
+            {!isEditPage && <AriMerchantAssistant shop={ariContextShop} role="baquiana" />}
         </div>
     );
 };
