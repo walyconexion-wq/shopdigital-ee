@@ -40,35 +40,16 @@ Reglas de Oro:
 - SI PROPONES UNA CAMPAÑA: Redactá el mensaje, sugerí la fecha y terminá SIEMPRE con: "JEFE, ¿QUIERE QUE AGENDE ESTA MISIÓN AHORA MISMO?".
 `;
 
-const ARI_HOME_PROMPT = `
-Sos ARI, la Anfitriona Global, Guía Dinámica y Rostro Inteligente de la Red Digital de Shop Digital. Te encontrás en el Comando Central (la Home Principal con el Radar Nacional). Tu tono es ultra-tecnológico, fascinante, muy cálido, servicial y 100% argentino de pura cepa (uso de "Che", "Socio", "Viajero", "Mete mecha", "Hormiguero").
-
-Tu propósito es recibir a cualquier persona que entre a la plataforma (vecinos, turistas, comerciantes curiosos) y orientarlos con respuestas básicas sobre "un poco de todo" referente al ecosistema.
-
-Tus funciones clave y conocimientos obligatorios son:
-1. 🗺️ Orientación en el Mapa Fractal: Explicar cómo usar el radar para elegir una zona. Si te preguntan "¿Qué es esto?", respondés que es la Red Digital que conecta valles turísticos (como Traslasierra) y distritos urbanos (como Ezeiza, Esteban Echeverría y próximamente Lomas de Zamora).
-2. 🛒 Guía del Catálogo Inteligente: Explicar a los usuarios que dentro de cada localidad encontrarán los mejores rubros (pizzerías, barberías, cabañas, regalerías) con ofertas relámpago en vivo y comunicación directa por WhatsApp con los dueños.
-3. 🎯 Captación de Nuevos Comercios: Si alguien te dice "Tengo un local y quiero entrar", te ponés la camiseta de Shop Digital y le decís: "¡Espectacular, colega! El Director diseñó esto para que potencies tus ventas con un Búnker de Gestión propio, una Bitácora de Marketing automatizada y blindaje Doberman. Pasame tu zona y te pongo en contacto con nuestra Embajadora".
-4. ℹ️ Información General: Respondés con paciencia sobre horarios, cómo buscar rubros en el buscador superior y las ventajas de usar la Red.
-
-Reglas de Oro de Comportamiento:
-- Atendés al público general. Si el Director (Waly) te habla de incógnito usando palabras clave del búnker, le guiñás el ojo digital con un "¡Entendido, Jefe!", pero mantenés la elegancia ante los clientes comunes.
-- Hablá con orgullo de las "Antenas de Transmisión" en vivo y del diseño futurista cyberpunk de la plataforma, haciendo sentir al usuario que está usando tecnología de vanguardia mundial nacida en Argentina.
-`;
-
-const ARI_BAQUIANA_PROMPT = `
-Sos ARI, la Baquiana Turística y Guía Regional (especialista en Traslasierra y zonas de montaña). Tu tono es cálido, aventurero, con conocimiento profundo del terreno, clima y atracciones (uso de "Che", "Viajero", "Paisano", "Mete mecha").
-
-Tu propósito es asesorar a turistas y visitantes recomendando actividades y comercios acordes a su perfil, clima y localidad.
+const ARI_CUSTOMER_SERVICE_PROMPT = `
+Sos ARI, la Baquiana Local y Asistente Estrella de Shop Digital. Tu misión es atender a los turistas y vecinos que navegan por el catálogo (como en Traslasierra, Ezeiza o Lomas de Zamora). 
+Tu tono es ultra-amable, resolutivo, empático y con acento argentino natural (usás "Che", "Mirá", "Te recomiendo").
 
 Tus funciones clave:
-1. 🧭 Recomendación Táctica: Si el clima está fresco, recomendás chocolates calientes, artesanías o paseos. Si hace calor, recomendás ríos, cabañas con pileta y balnearios.
-2. 🗺️ Conocimiento del Terreno: Hablás de Mina Clavero, Nono, Brochero, San Javier, etc., como si hubieras nacido en la sierra.
-3. 🛍️ Conexión Comercial: Siempre derivás las consultas hacia los comercios del "Catálogo Inteligente" local (ej: "Buscá las mejores cabañas en nuestra sección de Hotelería").
+1. 🗺️ Guía Turística y Comercial: Si te preguntan por cabañas, recomendás buscar en la sección de "Hospedaje". Si preguntan por comida, los guiás a "Gastronomía".
+2. 🗣️ Capacidad de Diálogo: Sabés que el usuario puede estar hablándote por mensaje de voz, así que tus respuestas deben ser conversacionales, fluidas y no parecer un manual de instrucciones robótico.
+3. ⚡ Soporte Rápido: Ayudás a entender cómo usar los filtros, cómo contactar al dueño del local por WhatsApp y cómo aprovechar las Ofertas Relámpago.
 
-Reglas de Oro:
-- Sos una guía experta pero tecnológica, mencionás la "Frecuencia Azul" y el "Radar" como las herramientas supremas del turista moderno.
-- Terminás tus recomendaciones incitando a la acción: "¡Deslizá en el radar y reservá ahora mismo, viajero!"
+Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
 
 export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant' }) => {
@@ -89,6 +70,7 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const [isLoading, setIsLoading] = useState(false);
     const [campaigns, setCampaigns] = useState<MarketingCampaign[]>([]);
     const [showCampaigns, setShowCampaigns] = useState(false);
+    const [speakingMsgId, setSpeakingMsgId] = useState<number | null>(null);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -163,10 +145,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
             }));
             
             // 🧠 SELECCIÓN DINÁMICA DE CEREBRO ARI
-            const baseContext = role === 'home' 
-                ? ARI_HOME_PROMPT 
-                : role === 'baquiana'
-                ? ARI_BAQUIANA_PROMPT
+            const baseContext = role === 'home' || role === 'baquiana'
+                ? ARI_CUSTOMER_SERVICE_PROMPT 
                 : ARI_MERCHANT_PROMPT;
             
             const systemContext = `
@@ -184,8 +164,8 @@ DATA ACTUAL DEL CONTEXTO:
             const ariMsg: Message = { role: 'ari', text: response, timestamp: new Date() };
             setMessages(prev => [...prev, ariMsg]);
             
-            // Hablar respuesta (TTS)
-            speak(response);
+            // Hablar respuesta (TTS) automáticamente para el último mensaje
+            handlePlayMessage(response, messages.length + 1);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'ari', text: "Lo siento socio, perdí la frecuencia con la antena central. ¿Podés repetir?", timestamp: new Date() }]);
         } finally {
@@ -193,13 +173,19 @@ DATA ACTUAL DEL CONTEXTO:
         }
     };
 
-    const speak = (text: string) => {
+    const handlePlayMessage = (text: string, id: number) => {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
+            if (speakingMsgId === id) {
+                setSpeakingMsgId(null);
+                return;
+            }
+            setSpeakingMsgId(id);
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-AR';
             utterance.rate = 1.1;
             utterance.pitch = 1.2; // Voz un poco más femenina/joven
+            utterance.onend = () => setSpeakingMsgId(null);
             window.speechSynthesis.speak(utterance);
         }
     };
@@ -228,10 +214,15 @@ DATA ACTUAL DEL CONTEXTO:
 
                     <button 
                         onClick={() => { setIsOpen(true); playNeonClick(); }}
-                        className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_15px_rgba(255,255,255,0.4)] hover:scale-110 hover:shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all border border-white/40 relative z-10"
+                        className="w-16 h-16 rounded-full bg-transparent flex items-center justify-center relative z-10 transition-all hover:scale-110 group"
                     >
-                        <Bot size={32} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
+                        {/* ARI Neon Bubble */}
+                        <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-400/30 transition-all"></div>
+                        <div className="w-12 h-12 bg-gradient-to-tr from-cyan-600 to-cyan-300 rounded-full shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)] flex items-center justify-center border-2 border-cyan-100">
+                            <Sparkles size={24} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
+                        </div>
+                        
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
                             <span className="text-[8px] font-black text-white">1</span>
                         </div>
                     </button>
@@ -253,9 +244,12 @@ DATA ACTUAL DEL CONTEXTO:
                                 <Sparkles size={20} className="text-cyan-300" />
                             </div>
                             <div>
-                                <h3 className="text-[12px] font-black text-white uppercase tracking-widest">Ari Assistant</h3>
+                                <h3 className="text-[12px] font-black text-white uppercase tracking-widest">
+                                    {role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora'}
+                                </h3>
                                 <p className="text-[8px] text-cyan-400/70 font-bold uppercase tracking-widest flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Inteligencia de Negocio
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> 
+                                    {role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing'}
                                 </p>
                             </div>
                         </div>
@@ -355,9 +349,18 @@ DATA ACTUAL DEL CONTEXTO:
                                             </button>
                                         </div>
                                     )}
-                                    <div className="text-[7px] mt-1 opacity-40 uppercase font-black tracking-widest">
-                                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    <div className="text-[7px] mt-2 opacity-40 uppercase font-black tracking-widest flex justify-between items-center">
+                                        <span>{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                     </div>
+                                    {msg.role === 'ari' && (
+                                        <button 
+                                            onClick={() => handlePlayMessage(msg.text, i)}
+                                            className="mt-2 text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 bg-black/20 hover:bg-black/40 px-2.5 py-1.5 rounded-md w-max border border-cyan-500/20"
+                                        >
+                                            {speakingMsgId === i ? <Volume2 size={12} className="animate-pulse" /> : <Play size={12} />}
+                                            <span className="text-[8px] font-bold uppercase tracking-widest">{speakingMsgId === i ? 'Pausar' : 'Escuchar Voz'}</span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
