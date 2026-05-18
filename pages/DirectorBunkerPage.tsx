@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Activity, Anchor, Globe, Users, Database, 
     MessageSquare, Zap, ShieldAlert, Cpu, ChevronLeft, Hexagon,
-    Shield, ShieldCheck, Dog, Trash2, RefreshCw, Clock, MapPin
+    Shield, ShieldCheck, Dog, Trash2, RefreshCw, Clock, MapPin,
+    Store, Phone, Star
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
@@ -81,10 +82,10 @@ export const DirectorBunkerPage: React.FC = () => {
     // 🎛️ Métricas dinámicas según la zona activa
     const getZoneMetrics = () => {
         switch(activeZone) {
-            case 'ezeiza': return { orders: 246, revenue: '$4.2M', credits: '85K', embajadores: [{ name: 'Fede', zone: 'Ezeiza Centro', status: 'Pateando' }, { name: 'Mati', zone: 'Carlos Spegazzini', status: 'Reunión' }] };
-            case 'traslasierra': return { orders: 89, revenue: '$1.5M', credits: '12K', embajadores: [{ name: 'Santi', zone: activeSubZone.replace(/-/g, ' '), status: 'Relevamiento' }] };
+            case 'ezeiza': return { orders: 246, revenue: '$4.2M', credits: '85K', subscribedShops: 42, embajadores: [{ name: 'Fede', zone: 'Ezeiza Centro', status: 'Pateando' }, { name: 'Mati', zone: 'Carlos Spegazzini', status: 'Reunión' }], lead: { name: 'Lorena Guzman', email: 'lorena.ezeiza@gmail.com', phone: '+54 9 11 1234-5678' } };
+            case 'traslasierra': return { orders: 89, revenue: '$1.5M', credits: '12K', subscribedShops: 18, embajadores: [{ name: 'Santi', zone: activeSubZone.replace(/-/g, ' '), status: 'Relevamiento' }], lead: { name: 'Mariano Sierra', email: 'mariano.traslasierra@gmail.com', phone: '+54 9 3544 12-3456' } };
             case 'esteban-echeverria':
-            default: return { orders: 184, revenue: '$3.8M', credits: '55K', embajadores: [{ name: 'Mati', zone: 'Monte Grande Sur', status: 'Reunión' }] };
+            default: return { orders: 184, revenue: '$3.8M', credits: '55K', subscribedShops: 36, embajadores: [{ name: 'Mati', zone: 'Monte Grande Sur', status: 'Reunión' }], lead: { name: 'Lorena Guzman', email: 'lorena.guzman@gmail.com', phone: '+54 9 11 9876-5432' } };
         }
     };
     const metrics = getZoneMetrics();
@@ -196,12 +197,14 @@ export const DirectorBunkerPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#020202] text-white font-sans overflow-hidden flex flex-col selection:bg-violet-500/30">
-            {/* Background */}
+        <div className="min-h-screen bg-[#050A15] text-white font-sans overflow-hidden flex flex-col selection:bg-violet-500/30">
+            {/* Background Tecnológico */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-cyan-600/10 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-violet-600/10 rounded-full blur-[120px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-screen"></div>
+                <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-cyan-600/20 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-violet-600/20 rounded-full blur-[120px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050A15]/50 to-[#050A15]/90"></div>
             </div>
 
             {/* Header */}
@@ -290,21 +293,26 @@ export const DirectorBunkerPage: React.FC = () => {
                 <div className="flex-[3] flex flex-col gap-6 xl:overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
                     {/* Contadores */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="bg-gradient-to-br from-cyan-900/40 to-black border border-cyan-500/30 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_15px_rgba(6,182,212,0.1)] group">
                             <Activity className="absolute -top-4 -right-4 w-24 h-24 text-cyan-500/10 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-[10px] text-cyan-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Pedidos Hoy <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
+                            <h3 className="text-[10px] text-cyan-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Pedidos <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
                             <p className="text-3xl font-[1000] text-white">{metrics.orders}</p>
                         </div>
                         <div className="bg-gradient-to-br from-emerald-900/40 to-black border border-emerald-500/30 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.1)] group">
                             <Database className="absolute -top-4 -right-4 w-24 h-24 text-emerald-500/10 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-[10px] text-emerald-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Facturacion <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
+                            <h3 className="text-[10px] text-emerald-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Facturación <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
                             <p className="text-3xl font-[1000] text-white">{metrics.revenue}</p>
                         </div>
                         <div className="bg-gradient-to-br from-violet-900/40 to-black border border-violet-500/30 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.1)] group">
                             <Zap className="absolute -top-4 -right-4 w-24 h-24 text-violet-500/10 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-[10px] text-violet-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Creditos Movidos <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
+                            <h3 className="text-[10px] text-violet-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Créditos <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
                             <p className="text-3xl font-[1000] text-white">{metrics.credits}</p>
+                        </div>
+                        <div className="bg-gradient-to-br from-fuchsia-900/40 to-black border border-fuchsia-500/30 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_15px_rgba(217,70,239,0.1)] group">
+                            <Store className="absolute -top-4 -right-4 w-24 h-24 text-fuchsia-500/10 group-hover:scale-110 transition-transform duration-500" />
+                            <h3 className="text-[10px] text-fuchsia-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Locales <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
+                            <p className="text-3xl font-[1000] text-white">{metrics.subscribedShops}</p>
                         </div>
                     </div>
 
@@ -384,6 +392,33 @@ export const DirectorBunkerPage: React.FC = () => {
                                         </span>
                                     </div>
                                 ))}
+                            </div>
+
+                            {/* Perfil de Embajadora de Zona */}
+                            <div className="mt-4 pt-4 border-t border-white/10">
+                                <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 mb-3 flex items-center gap-1">
+                                    <Star size={10} className="text-cyan-400" /> Líder de Zona
+                                </h3>
+                                <div className="p-4 bg-gradient-to-r from-cyan-900/20 to-transparent border border-cyan-500/30 rounded-2xl flex flex-col gap-3 group relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                    <div className="flex items-center gap-3 relative z-10">
+                                        <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                                            <Star size={18} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-[13px] font-[1000] text-cyan-400 uppercase tracking-widest">{metrics.lead.name}</h4>
+                                            <p className="text-[8px] text-white/50 uppercase tracking-[0.2em]">Supervisión Táctica</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 pl-[52px] relative z-10">
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-white/70 uppercase tracking-widest">
+                                            <Phone size={12} className="text-green-400" /> {metrics.lead.phone}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-white/70 uppercase tracking-widest">
+                                            <MessageSquare size={12} className="text-blue-400" /> {metrics.lead.email}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div className="mt-8 p-4 bg-violet-500/5 border border-violet-500/20 rounded-2xl">

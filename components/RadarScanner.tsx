@@ -235,11 +235,18 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center gap-4 py-12 text-center opacity-30">
-                        <Radar size={64} className="mb-2" />
-                        <div className="flex flex-col">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em]">Radar en Espera</p>
-                            <p className="text-[8px] uppercase tracking-widest mt-1">Seleccioná categoría e iniciá el barrido</p>
+                    <div className="flex flex-col items-center gap-4 py-12 text-center opacity-40 relative w-full h-full justify-center">
+                        {/* Animación de Barrido en Espera */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                             <div className="w-32 h-32 rounded-full border border-cyan-500/20 absolute animate-ping duration-[3000ms]"></div>
+                             <div className="w-48 h-48 rounded-full border border-violet-500/10 absolute animate-ping duration-[4000ms] delay-700"></div>
+                             <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-4 -right-4 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
+                             <div className="w-1.5 h-1.5 bg-violet-400 rounded-full absolute bottom-4 left-8 animate-pulse shadow-[0_0_10px_rgba(139,92,246,0.8)] delay-150"></div>
+                        </div>
+                        <Radar size={64} className="mb-2 text-cyan-500/50 relative z-10" />
+                        <div className="flex flex-col relative z-10">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400/80">Radar en Espera</p>
+                            <p className="text-[8px] uppercase tracking-widest mt-1 text-white/50">Seleccioná categoría e iniciá el barrido</p>
                         </div>
                     </div>
                 )}
