@@ -54,15 +54,26 @@ export const RegionMasterPanelPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-cyan-500/30">
             {/* Background */}
-            <div className="fixed inset-0 pointer-events-none z-0">
+            <div className="fixed inset-0 pointer-events-none z-0 bg-black">
+                {/* Resplandor principal superior */}
                 <div 
-                    className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[100px]"
-                    style={{ backgroundColor: hexToRgba(zoneColor, 0.1) }}
+                    className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full blur-[120px] opacity-60"
+                    style={{ backgroundColor: hexToRgba(zoneColor, 0.15) }}
                 />
+                {/* Resplandor secundario inferior (tono tierra/montaña para Traslasierra) */}
+                {regionId === 'traslasierra' && (
+                    <div 
+                        className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[100px] opacity-50"
+                        style={{ backgroundColor: hexToRgba('#16a34a', 0.12) }}
+                    />
+                )}
+                {/* Grilla tecnológica */}
                 <div 
                     className="absolute inset-0"
-                    style={{ backgroundImage: `linear-gradient(${hexToRgba(zoneColor, 0.03)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(zoneColor, 0.03)} 1px, transparent 1px)`, backgroundSize: '40px 40px' }}
+                    style={{ backgroundImage: `linear-gradient(${hexToRgba(zoneColor, 0.04)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(zoneColor, 0.04)} 1px, transparent 1px)`, backgroundSize: '40px 40px' }}
                 />
+                {/* Textura sutil de ruido para darle un toque "táctico" */}
+                <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/stardust.png")' }} />
             </div>
 
             <div 
@@ -76,10 +87,12 @@ export const RegionMasterPanelPage: React.FC = () => {
                     <ChevronLeft size={24} />
                 </div>
                 <div className="flex flex-col items-center">
-                    <Terminal size={32} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 15px ${hexToRgba(zoneColor, 0.5)})` }} />
-                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Tablero Maestro</h1>
-                    <p className="text-[9px] font-bold uppercase tracking-widest mt-1" style={{ color: zoneColor }}>
-                        {zoneName} · Control General
+                    <Terminal size={36} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 20px ${hexToRgba(zoneColor, 0.6)})` }} />
+                    <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-center drop-shadow-md">
+                        Tablero Maestro
+                    </h1>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] mt-2 text-center" style={{ color: zoneColor, textShadow: `0 0 15px ${hexToRgba(zoneColor, 0.8)}` }}>
+                        {zoneName.toUpperCase()} · CONTROL GENERAL
                     </p>
                     <div className="mt-2">
                         <DobermanBadge />

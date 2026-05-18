@@ -30,13 +30,24 @@ const MasterPanelPage: React.FC = () => {
         return () => unsub();
     }, [townId]);
 
-    const zoneColor = townId === 'ezeiza' ? '#22d3ee' : '#a855f7'; // Cian Neón vs Violeta EE 🎨
-    const zoneName = townId === 'ezeiza' ? 'Ezeiza' : 'Esteban Echeverría';
+    const formatTownName = (id: string) => {
+        if (id === 'ezeiza') return 'Ezeiza';
+        if (id === 'esteban-echeverria') return 'Esteban Echeverría';
+        if (id === 'traslasierra') return 'Traslasierra';
+        return id.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    };
+
+    const zoneName = zoneConfig?.townName || formatTownName(townId);
+    
+    // Lógica de color dinámica: Usa la config global si existe, sino asigna colores por defecto
+    const zoneColor = zoneConfig?.primaryColor || (townId === 'ezeiza' ? '#22d3ee' : townId === 'esteban-echeverria' ? '#a855f7' : '#10b981'); // Verde esmeralda por defecto para Traslasierra
+
     const hexToRgba = (hex: string, alpha: number) => {
         try {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
+            const cleanHex = hex.replace('#', '');
+            const r = parseInt(cleanHex.slice(0, 2), 16) || 34;
+            const g = parseInt(cleanHex.slice(2, 4), 16) || 211;
+            const b = parseInt(cleanHex.slice(4, 6), 16) || 238;
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         } catch { return `rgba(34, 211, 238, ${alpha})`; }
     };
@@ -482,10 +493,12 @@ const MasterPanelPage: React.FC = () => {
                     <ChevronLeft size={24} />
                 </div>
                 <div className="flex flex-col items-center">
-                    <Terminal size={32} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 15px ${hexToRgba(zoneColor, 0.5)})` }} />
-                    <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Tablero Maestro</h1>
-                    <p className="text-[9px] font-bold uppercase tracking-widest mt-1" style={{ color: zoneColor }}>
-                        {zoneName} · Control General
+                    <Terminal size={36} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 20px ${hexToRgba(zoneColor, 0.6)})` }} />
+                    <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-center drop-shadow-md">
+                        Tablero Maestro
+                    </h1>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] mt-2 text-center" style={{ color: zoneColor, textShadow: `0 0 15px ${hexToRgba(zoneColor, 0.8)}` }}>
+                        {zoneName.toUpperCase()} · CONTROL GENERAL
                     </p>
                     <div className="mt-2">
                         <DobermanBadge />
