@@ -197,7 +197,7 @@ export const DirectorBunkerPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050A15] text-white font-sans overflow-hidden flex flex-col selection:bg-violet-500/30">
+        <div className="min-h-screen bg-[#050A15] text-white font-sans overflow-x-hidden flex flex-col selection:bg-violet-500/30">
             {/* Background Tecnológico */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-screen"></div>
@@ -247,7 +247,7 @@ export const DirectorBunkerPage: React.FC = () => {
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 relative z-10 flex flex-col w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)]">
+            <main className="flex-1 relative z-10 flex flex-col w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)]">
                 
                 {/* 🎛️ BOTONERA DE MANDO ESTRATÉGICO (Fase 2.1) */}
                 <div className="flex flex-col gap-3">
@@ -288,9 +288,9 @@ export const DirectorBunkerPage: React.FC = () => {
                     )}
                 </div>
 
-                <div className="flex flex-col xl:flex-row w-full gap-6 flex-1 min-h-0">
+                <div className="flex flex-col xl:flex-row w-full gap-6 flex-1 min-h-0 pb-10">
                 {/* ─── DASHBOARD ─── */}
-                <div className="flex-[3] flex flex-col gap-6 xl:overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
+                <div className="flex-[3] flex flex-col gap-6 pr-0 xl:pr-2">
                     
                     {/* Contadores */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -508,7 +508,7 @@ export const DirectorBunkerPage: React.FC = () => {
                 </div>
 
                 {/* ─── CHAT ARI ─── */}
-                <div className="flex-[2] w-full mt-4 xl:mt-0 bg-black/80 backdrop-blur-2xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(139,92,246,0.15)] h-[600px] xl:h-auto shrink-0">
+                <div className="flex-[2] w-full mt-4 xl:mt-0 bg-black/80 backdrop-blur-2xl border border-violet-500/30 rounded-3xl overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(139,92,246,0.15)] h-[800px] shrink-0 mb-10">
                     <div className="bg-gradient-to-r from-violet-900/50 to-indigo-900/50 p-4 border-b border-violet-500/30 flex items-center gap-4">
                         <div className="relative">
                             <div className="w-12 h-12 rounded-2xl bg-black border border-violet-500/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(139,92,246,0.4)]">
