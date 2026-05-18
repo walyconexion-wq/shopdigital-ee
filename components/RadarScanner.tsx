@@ -235,15 +235,18 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center gap-4 py-12 text-center opacity-40 relative w-full h-full justify-center">
-                        {/* Animación de Barrido en Espera */}
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                             <div className="w-32 h-32 rounded-full border border-cyan-500/20 absolute animate-ping duration-[3000ms]"></div>
-                             <div className="w-48 h-48 rounded-full border border-violet-500/10 absolute animate-ping duration-[4000ms] delay-700"></div>
-                             <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-4 -right-4 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
-                             <div className="w-1.5 h-1.5 bg-violet-400 rounded-full absolute bottom-4 left-8 animate-pulse shadow-[0_0_10px_rgba(139,92,246,0.8)] delay-150"></div>
+                    <div className="flex flex-col items-center gap-4 py-12 text-center opacity-60 relative w-full h-full justify-center">
+                        <div className="relative w-48 h-48 border border-cyan-500/10 rounded-full flex items-center justify-center mb-2">
+                            <div className="absolute inset-0 border-2 border-cyan-500/5 rounded-full animate-ping duration-[4000ms]"></div>
+                            <div className="absolute inset-4 border border-cyan-500/10 rounded-full"></div>
+                            <div className="absolute inset-12 border border-cyan-500/20 rounded-full"></div>
+                            {/* Radar Sweep Line (Passive) */}
+                            <div className="absolute top-1/2 left-1/2 w-24 h-24 origin-top-left -translate-x-full -translate-y-full bg-gradient-to-br from-cyan-500/20 to-transparent rounded-tl-full animate-[spin_4s_linear_infinite]" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}></div>
+                            <Radar size={48} className="text-cyan-500/50 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)] relative z-10" />
+                            {/* Puntos detectados pasivamente */}
+                            <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full absolute top-10 left-16 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)] opacity-50"></div>
+                            <div className="w-1 h-1 bg-violet-400 rounded-full absolute bottom-12 right-12 animate-pulse shadow-[0_0_10px_rgba(139,92,246,0.8)] opacity-30 delay-300"></div>
                         </div>
-                        <Radar size={64} className="mb-2 text-cyan-500/50 relative z-10" />
                         <div className="flex flex-col relative z-10">
                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400/80">Radar en Espera</p>
                             <p className="text-[8px] uppercase tracking-widest mt-1 text-white/50">Seleccioná categoría e iniciá el barrido</p>
