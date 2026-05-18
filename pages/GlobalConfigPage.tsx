@@ -53,12 +53,25 @@ const GlobalConfigPage: React.FC = () => {
         setMessage(null);
         playNeonClick();
         try {
+            // Limpiar categorías: solo datos serializables (sin React elements ni funciones)
+            const cleanConfig = {
+                ...config,
+                categories: (config.categories || []).map((c: any) => ({
+                    id: c.id,
+                    slug: c.slug,
+                    name: c.name,
+                    iconKey: c.iconKey,
+                    isActive: !!c.isActive,
+                    isSystem: !!c.isSystem
+                }))
+            };
             // Guarda SOLO en appConfig/{townId} — aislamiento total
-            await saveGlobalConfig(config, townId);
+            await saveGlobalConfig(cleanConfig, townId);
             setMessage({ type: 'success', text: `¡Sinfonía guardada para ${config.townName || derivedTownName}! 🎻` });
             setTimeout(() => setMessage(null), 3000);
-        } catch (error) {
-            setMessage({ type: 'error', text: `Error al guardar la configuración de ${config.townName || derivedTownName}` });
+        } catch (error: any) {
+            console.error('Error guardando config:', error);
+            setMessage({ type: 'error', text: `Error al guardar: ${error?.message || 'Revise permisos de Firebase.'}` });
         } finally {
             setSaving(false);
         }
@@ -116,12 +129,20 @@ const GlobalConfigPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-cyan-500/30">
-            {/* Ambient background */}
+        <div className="min-h-screen bg-[#050A15] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+            {/* Background Tecnológico — Sinfonía Editor */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-20" style={{ backgroundColor: config.primaryColor }} />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10" style={{ backgroundColor: config.primaryColor }} />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-screen"></div>
+                <div className="absolute top-0 right-0 w-[50vw] h-[50vw] rounded-full blur-[120px] opacity-30" style={{ backgroundColor: config.primaryColor }} />
+                <div className="absolute bottom-0 left-0 w-[50vw] h-[50vw] rounded-full blur-[120px] opacity-15" style={{ backgroundColor: config.primaryColor }} />
+                <div 
+                    className="absolute inset-0"
+                    style={{ 
+                        backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
+                        backgroundSize: '40px 40px'
+                    }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050A15]/50 to-[#050A15]/90"></div>
             </div>
 
             {/* Header Sticky */}
