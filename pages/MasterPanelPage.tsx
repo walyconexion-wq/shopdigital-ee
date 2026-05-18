@@ -530,18 +530,7 @@ const MasterPanelPage: React.FC = () => {
 
                 {/* Botón de Inject Data eliminado por directiva de Operaciones 2.0 */}
 
-                <div 
-                    role="button" tabIndex={0}
-                    onClick={initializeGlobalConfig} 
-                    className="w-full bg-cyan-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.3)] border border-cyan-500/50 hover:bg-cyan-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer"
-                >
-                    <div className="flex items-center gap-2 pointer-events-none">
-                        <Globe size={14} className="text-white/80" />
-                        <span className="text-[14px]">ACTIVAR MODO CAMALEÓN</span>
-                        <Check size={14} className="text-white/80" />
-                    </div>
-                    <span className="text-[8px] text-cyan-200 pointer-events-none">INICIALIZAR CONFIGURACIÓN GLOBAL (RESET MAESTRO)</span>
-                </div>
+                {/* Botón de Reset Maestro eliminado por directiva de Operaciones 2.0 (Prevención de reseteos en producción) */}
 
                 {/* SELECTORES DE ADN ZONAL 🧬 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
