@@ -469,17 +469,26 @@ const MasterPanelPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-cyan-500/30">
-            {/* Background — Modo Camaleón: responde al color de la zona */}
+        <div className="min-h-screen bg-[#050A15] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+            {/* Background Tecnológico — Modo Camaleón: responde al color de la zona */}
             <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-screen"></div>
                 <div 
-                    className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[100px]"
+                    className="absolute top-0 right-0 w-[50vw] h-[50vw] rounded-full blur-[120px]"
+                    style={{ backgroundColor: hexToRgba(zoneColor, 0.15) }}
+                />
+                <div 
+                    className="absolute bottom-0 left-0 w-[50vw] h-[50vw] rounded-full blur-[120px]"
                     style={{ backgroundColor: hexToRgba(zoneColor, 0.1) }}
                 />
                 <div 
                     className="absolute inset-0"
-                    style={{ backgroundImage: `linear-gradient(${hexToRgba(zoneColor, 0.03)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(zoneColor, 0.03)} 1px, transparent 1px)`, backgroundSize: '40px 40px' }}
+                    style={{ 
+                        backgroundImage: `linear-gradient(${hexToRgba(zoneColor, 0.05)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(zoneColor, 0.05)} 1px, transparent 1px)`,
+                        backgroundSize: '40px 40px'
+                    }}
                 />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050A15]/50 to-[#050A15]/90"></div>
             </div>
 
             <div 
@@ -519,18 +528,7 @@ const MasterPanelPage: React.FC = () => {
                     <span className="text-[13px] text-violet-300">BÚNKER CENTRAL DEL DIRECTOR - WALY</span>
                 </div>
 
-                <div 
-                    role="button" tabIndex={0}
-                    onClick={injectTestShops} 
-                    className="w-full bg-red-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.3)] border border-red-500/50 hover:bg-red-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer"
-                >
-                    <div className="flex items-center gap-2 pointer-events-none">
-                        <Terminal size={14} className="text-white/80" />
-                        <span className="text-[14px]">INJECT DATA</span>
-                        <Lock size={14} className="text-white/80" />
-                    </div>
-                    <span className="text-[8px] text-red-200 pointer-events-none">INYECCIÓN MAESTRA A FIREBASE (USO ROOT)</span>
-                </div>
+                {/* Botón de Inject Data eliminado por directiva de Operaciones 2.0 */}
 
                 <div 
                     role="button" tabIndex={0}
