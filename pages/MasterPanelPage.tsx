@@ -13,9 +13,14 @@ import {
 import { Offer } from '../types';
 import { DobermanBadge } from '../components/DobermanBadge';
 import { CATEGORIES } from '../constants';
+import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
 
 const MasterPanelPage: React.FC = () => {
-    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
+    const { townId: paramTownId } = useParams<{ townId: string }>();
+    const townId = paramTownId || window.location.pathname.split('/')[1] || 'esteban-echeverria';
+    
+    // Determinar si es parte de Traslasierra
+    const isTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
     const navigate = useNavigate();
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const [isMigrating, setIsMigrating] = useState(false);
@@ -550,10 +555,10 @@ const MasterPanelPage: React.FC = () => {
                     </button>
                     <button 
                         onClick={() => { playNeonClick(); navigate('/region/traslasierra/tablero-maestro'); }}
-                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${townId === 'traslasierra' ? 'bg-emerald-500/20 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
+                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${isTraslasierra ? 'bg-emerald-500/20 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
                     >
-                        <MapPin size={24} className={townId === 'traslasierra' ? 'text-emerald-400' : 'text-white/40'} />
-                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'traslasierra' ? 'text-white' : 'text-white/20'}`}>Traslasierra</span>
+                        <MapPin size={24} className={isTraslasierra ? 'text-emerald-400' : 'text-white/40'} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isTraslasierra ? 'text-white' : 'text-white/20'}`}>Traslasierra</span>
                     </button>
                 </div>
 

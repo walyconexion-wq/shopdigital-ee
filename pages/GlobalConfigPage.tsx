@@ -11,7 +11,8 @@ import { resolveIcon, AVAILABLE_ICONS_FOR_PICKER } from '../utils/iconResolver';
 import { Trash2, Plus, PowerOff, Power } from 'lucide-react';
 
 const GlobalConfigPage: React.FC = () => {
-    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
+    const { townId: paramTownId } = useParams<{ townId: string }>();
+    const townId = paramTownId || window.location.pathname.split('/')[1] || 'esteban-echeverria';
     const navigate = useNavigate();
     // Derivar nombre visual de ciudad (por si Firebase tarda o no tiene config aún)
     const derivedTownName = townId
