@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Activity, Anchor, Globe, Users, Database, 
     MessageSquare, Zap, ShieldAlert, Cpu, ChevronLeft, Hexagon,
-    Shield, ShieldCheck, Dog, Trash2, RefreshCw
+    Shield, ShieldCheck, Dog, Trash2, RefreshCw, Clock, MapPin
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
@@ -67,6 +67,27 @@ export const DirectorBunkerPage: React.FC = () => {
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'radar' | 'predictor'>('radar');
     const [activeCategory, setActiveCategory] = useState('pizzerias');
+    
+    // 🎛️ Fase 2.1: Búnker Omnipresente (Estados de Zona y Reloj)
+    const [activeZone, setActiveZone] = useState<'ezeiza' | 'esteban-echeverria' | 'traslasierra'>('esteban-echeverria');
+    const [activeSubZone, setActiveSubZone] = useState<string>('mina-clavero');
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // 🎛️ Métricas dinámicas según la zona activa
+    const getZoneMetrics = () => {
+        switch(activeZone) {
+            case 'ezeiza': return { orders: 246, revenue: '$4.2M', credits: '85K', embajadores: [{ name: 'Fede', zone: 'Ezeiza Centro', status: 'Pateando' }, { name: 'Mati', zone: 'Carlos Spegazzini', status: 'Reunión' }] };
+            case 'traslasierra': return { orders: 89, revenue: '$1.5M', credits: '12K', embajadores: [{ name: 'Santi', zone: activeSubZone.replace(/-/g, ' '), status: 'Relevamiento' }] };
+            case 'esteban-echeverria':
+            default: return { orders: 184, revenue: '$3.8M', credits: '55K', embajadores: [{ name: 'Mati', zone: 'Monte Grande Sur', status: 'Reunión' }] };
+        }
+    };
+    const metrics = getZoneMetrics();
 
     const ROOT_EMAIL = 'walyconexion@gmail.com';
     const isAuthorized = user?.email?.trim().toLowerCase() === ROOT_EMAIL;
@@ -191,12 +212,23 @@ export const DirectorBunkerPage: React.FC = () => {
                     </button>
                     <div>
                         <h1 className="text-[14px] font-[1000] uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400 flex items-center gap-2">
-                            <Anchor size={14} className="text-cyan-400" /> Bunker Central
+                            <Anchor size={14} className="text-cyan-400" /> BÚNKER CENTRAL DEL DIRECTOR - WALY
                         </h1>
                         <p className="text-[8px] text-white/50 tracking-[0.3em] font-bold uppercase mt-1">Terminal del Director [Nivel Omega]</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
+                    {/* Reloj Atómico (Fase 2.1) */}
+                    <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
+                        <Clock size={14} className="text-cyan-400" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-cyan-300">
+                            {currentTime.toLocaleTimeString('es-AR')}
+                        </span>
+                        <span className="text-[8px] uppercase tracking-widest text-white/40 ml-1 border-l border-white/20 pl-2">
+                            {currentTime.toLocaleDateString('es-AR')}
+                        </span>
+                    </div>
+
                     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
                         securityStatus === 'green' ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/30 animate-pulse'
                     }`}>
@@ -212,8 +244,48 @@ export const DirectorBunkerPage: React.FC = () => {
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 relative z-10 flex flex-col xl:flex-row w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)]">
+            <main className="flex-1 relative z-10 flex flex-col w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)]">
                 
+                {/* 🎛️ BOTONERA DE MANDO ESTRATÉGICO (Fase 2.1) */}
+                <div className="flex flex-col gap-3">
+                    <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl w-fit backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                        <button 
+                            onClick={() => { playNeonClick(); setActiveZone('ezeiza'); }}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'ezeiza' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
+                        >
+                            <Globe size={14} /> Ezeiza
+                        </button>
+                        <button 
+                            onClick={() => { playNeonClick(); setActiveZone('esteban-echeverria'); }}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'esteban-echeverria' ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
+                        >
+                            <Anchor size={14} /> E. Echeverría
+                        </button>
+                        <button 
+                            onClick={() => { playNeonClick(); setActiveZone('traslasierra'); }}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'traslasierra' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
+                        >
+                            <MapPin size={14} /> Traslasierra
+                        </button>
+                    </div>
+
+                    {/* Sub-Botonera Traslasierra */}
+                    {activeZone === 'traslasierra' && (
+                        <div className="flex gap-2 p-1 bg-emerald-900/10 border border-emerald-500/20 rounded-xl w-fit animate-in fade-in slide-in-from-top-2 duration-300">
+                            {['mina-clavero', 'nono', 'villa-cura-brochero', 'san-javier'].map(loc => (
+                                <button 
+                                    key={loc}
+                                    onClick={() => { playNeonClick(); setActiveSubZone(loc); }}
+                                    className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${activeSubZone === loc ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40' : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'}`}
+                                >
+                                    {loc.replace(/-/g, ' ')}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex flex-col xl:flex-row w-full gap-6 flex-1 min-h-0">
                 {/* ─── DASHBOARD ─── */}
                 <div className="flex-[3] flex flex-col gap-6 xl:overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
@@ -221,18 +293,18 @@ export const DirectorBunkerPage: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-gradient-to-br from-cyan-900/40 to-black border border-cyan-500/30 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_15px_rgba(6,182,212,0.1)] group">
                             <Activity className="absolute -top-4 -right-4 w-24 h-24 text-cyan-500/10 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-[10px] text-cyan-400 font-black uppercase tracking-widest mb-1">Pedidos Hoy</h3>
-                            <p className="text-3xl font-[1000] text-white">246</p>
+                            <h3 className="text-[10px] text-cyan-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Pedidos Hoy <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
+                            <p className="text-3xl font-[1000] text-white">{metrics.orders}</p>
                         </div>
                         <div className="bg-gradient-to-br from-emerald-900/40 to-black border border-emerald-500/30 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.1)] group">
                             <Database className="absolute -top-4 -right-4 w-24 h-24 text-emerald-500/10 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-[10px] text-emerald-400 font-black uppercase tracking-widest mb-1">Facturacion</h3>
-                            <p className="text-3xl font-[1000] text-white">$4.2M</p>
+                            <h3 className="text-[10px] text-emerald-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Facturacion <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
+                            <p className="text-3xl font-[1000] text-white">{metrics.revenue}</p>
                         </div>
                         <div className="bg-gradient-to-br from-violet-900/40 to-black border border-violet-500/30 rounded-2xl p-5 relative overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.1)] group">
                             <Zap className="absolute -top-4 -right-4 w-24 h-24 text-violet-500/10 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-[10px] text-violet-400 font-black uppercase tracking-widest mb-1">Creditos Movidos</h3>
-                            <p className="text-3xl font-[1000] text-white">85K</p>
+                            <h3 className="text-[10px] text-violet-400 font-black uppercase tracking-widest mb-1 flex items-center gap-1">Creditos Movidos <span className="text-white/30 text-[7px]">({activeZone.split('-')[0]})</span></h3>
+                            <p className="text-3xl font-[1000] text-white">{metrics.credits}</p>
                         </div>
                     </div>
 
@@ -298,7 +370,7 @@ export const DirectorBunkerPage: React.FC = () => {
                                 <Users size={14} className="text-violet-500" /> Fuerza de Elite
                             </h2>
                             <div className="space-y-4">
-                                {embajadores.map(emb => (
+                                {metrics.embajadores.map((emb: any) => (
                                     <div key={emb.name} className="flex items-center gap-3 p-4 bg-gradient-to-r from-violet-900/10 to-transparent border-l-2 border-violet-500 rounded-r-2xl hover:bg-violet-900/20 transition-all cursor-crosshair">
                                         <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.2)]">
                                             <Hexagon size={18} />
@@ -455,6 +527,7 @@ export const DirectorBunkerPage: React.FC = () => {
                             </button>
                         </div>
                     </div>
+                </div>
                 </div>
             </main>
         </div>
