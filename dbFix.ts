@@ -64,12 +64,15 @@ export async function populateInvoices() {
 export async function rescueEzeizaData() {
     console.log("🔦 INICIANDO RASTREO DE CLIENTES FANTASMAS EN EZEIZA...");
     
+    const normalize = (str: string) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+    
     // 1. Rescatar Comercios (Asegurar que El Tano es de Ezeiza)
     const shopsSnap = await getDocs(collection(db, "comercios"));
     const batch = writeBatch(db);
     let shopsFixed = 0;
 
     for (const d of shopsSnap.docs) {
+        const data = d.data() as any;
         // Si el nombre o el slug sugieren Ezeiza o es el Tano, o la zona es Spegazzini, forzar townId
         const isTano = normalize(data.name).includes("tano") || normalize(data.slug).includes("tano");
         const isEzeizaZone = normalize(data.zone).includes("ezeiza") || normalize(data.zone).includes("spegazzini") || normalize(data.zone).includes("union") || normalize(data.zone).includes("suarez");
