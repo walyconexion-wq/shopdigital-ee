@@ -337,6 +337,40 @@ const GlobalConfigPage: React.FC = () => {
                     </div>
                 </section>
 
+                {/* Section: Fondos Tecnológicos */}
+                <section className="space-y-4">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <Globe size={14} /> Fondo Tecnológico de la App
+                    </h2>
+                    
+                    <div className="bg-zinc-900/40 p-5 rounded-[2rem] border border-white/5 space-y-3">
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                { id: 'none', name: 'Sin Fondo', emoji: '🚫', desc: 'Limpio' },
+                                { id: 'stardust', name: 'Stardust', emoji: '✨', desc: 'Polvo estelar' },
+                                { id: 'circuit', name: 'Circuitos', emoji: '🔌', desc: 'Placa madre' },
+                                { id: 'matrix', name: 'Matrix', emoji: '🟩', desc: 'Mosaico digital' },
+                                { id: 'nebula', name: 'Nebulosa', emoji: '🌌', desc: 'Asfalto cósmico' },
+                                { id: 'hex', name: 'Hexágonos', emoji: '⬡', desc: 'Panal tech' },
+                                { id: 'cyber', name: 'Fibra Carbono', emoji: '🛡️', desc: 'Blindaje cyber' },
+                            ].map(bg => (
+                                <button
+                                    key={bg.id}
+                                    onClick={() => { playNeonClick(); setConfig({ ...config, techBg: bg.id }); }}
+                                    className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1.5 ${(config.techBg || 'none') === bg.id ? 'border-white/50 ring-2 ring-white/10 bg-white/10' : 'border-white/10 hover:border-white/20'}`}
+                                >
+                                    <span className="text-2xl">{bg.emoji}</span>
+                                    <span className="text-[7px] font-black text-white/70 uppercase tracking-wider">{bg.name}</span>
+                                    <span className="text-[6px] text-white/30 uppercase tracking-wider">{bg.desc}</span>
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-[8px] text-white/30 uppercase tracking-widest text-center pt-2 border-t border-white/5">
+                            Este fondo se aplica como textura tecnológica sobre el color de fondo elegido
+                        </p>
+                    </div>
+                </section>
+
                 {/* Section: Gestión de Rubros */}
                 <section className="space-y-4">
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">

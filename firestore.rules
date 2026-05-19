@@ -69,17 +69,24 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     
-    // Logs de seguridad: escritura pública (para registrar intrusos), 
-    // lectura solo autenticados, no se pueden borrar
+    // Logs de seguridad (Doberman): escritura pública, lectura autenticados
     match /logs_seguridad/{logId} {
       allow create: if true;
       allow read: if request.auth != null;
       allow update, delete: if false;
     }
     
-    // Bloquear todo lo demás por defecto
-    match /{document=**} {
-      allow read, write: if false;
+    // SecurityLogs (Doberman v2): escritura pública, lectura/borrado autenticados
+    match /securityLogs/{logId} {
+      allow create: if true;
+      allow read: if request.auth != null;
+      allow update, delete: if request.auth != null;
+    }
+    
+    // Reclutamiento de embajadores: lectura y escritura pública para formularios
+    match /reclutamiento/{docId} {
+      allow read: if true;
+      allow write: if true;
     }
   }
 }
