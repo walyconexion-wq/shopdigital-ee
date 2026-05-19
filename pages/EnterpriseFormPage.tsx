@@ -33,6 +33,8 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
         specialty: '',
         reach: 'national' as 'national' | 'regional' | 'local',
         zone: '',
+        province: '',
+        region: '',
         address: '',
         phone: '',
         ownerName: '',
@@ -97,6 +99,8 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
                 entityType: 'enterprise',
                 reach: formData.reach,
                 zone: formData.zone,
+                province: formData.province,
+                region: formData.region,
                 address: formData.address || formData.zone,
                 phone: formData.phone,
                 ownerName: formData.ownerName,
@@ -204,6 +208,28 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
                 <div>
                     <label className={labelClass}><MapPin size={12} /> Ubicación / Ciudad</label>
                     <input type="text" className={inputClass} placeholder="Ej: Buenos Aires, CABA, Zona Sur" value={formData.zone} onChange={e => handleChange('zone', e.target.value)} />
+                </div>
+
+                {/* Provincia */}
+                <div>
+                    <label className={labelClass}><Globe size={12} /> Provincia</label>
+                    <select className={inputClass} value={(formData as any).province || ''} onChange={e => handleChange('province', e.target.value)}>
+                        <option value="">Seleccionar Provincia...</option>
+                        <option value="buenos-aires">Buenos Aires</option>
+                        <option value="cordoba">Córdoba</option>
+                        <option value="santa-fe">Santa Fe</option>
+                        <option value="mendoza">Mendoza</option>
+                        <option value="tucuman">Tucumán</option>
+                        <option value="entre-rios">Entre Ríos</option>
+                        <option value="misiones">Misiones</option>
+                        <option value="neuquen">Neuquén</option>
+                    </select>
+                </div>
+
+                {/* Región */}
+                <div>
+                    <label className={labelClass}><Landmark size={12} /> Región / Zona Geográfica</label>
+                    <input type="text" className={inputClass} placeholder="Ej: Zona Sur, Traslasierra, CABA" value={(formData as any).region || ''} onChange={e => handleChange('region', e.target.value)} />
                 </div>
 
                 {/* Dirección */}

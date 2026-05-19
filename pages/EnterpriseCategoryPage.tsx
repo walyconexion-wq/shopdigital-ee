@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { Shop } from '../types';
-import { ChevronLeft, Factory, MapPin, Star, BookOpen, ArrowLeft, Globe, Landmark } from 'lucide-react';
+import { ChevronLeft, Factory, MapPin, Star, BookOpen, ArrowLeft, Globe, Landmark, Phone } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
 interface EnterpriseCategoryPageProps {
@@ -118,10 +118,10 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                             <div
                                 key={enterprise.id}
                                 style={{ animationDelay: `${index * 80}ms` }}
-                                className="glass-card-3d overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[180px] border-amber-500/20"
+                                className="glass-card-3d overflow-hidden flex flex-col cursor-default fade-up-item w-full border-amber-500/20"
                             >
-                                {/* Imagen */}
-                                <div className="relative w-32 flex-shrink-0 overflow-hidden border-r border-amber-500/20">
+                                {/* Banner + Badge */}
+                                <div className="relative w-full h-[140px] flex-shrink-0 overflow-hidden border-b border-amber-500/20">
                                     <img
                                         src={enterprise.bannerImage || enterprise.image}
                                         alt={enterprise.name}
@@ -132,39 +132,67 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                         ${enterprise.reach === 'national' ? 'bg-amber-500/30 border-amber-500/50 text-amber-300' : 'bg-white/10 border-white/20 text-white/60'}`}>
                                         {enterprise.reach === 'national' ? '🌎 Nacional' : enterprise.reach === 'regional' ? '📍 Regional' : '📍 Local'}
                                     </div>
+                                    {/* Badge Verificado */}
+                                    <div className="absolute top-2 right-2 px-2.5 py-1 rounded-full text-[7px] font-black uppercase tracking-widest border backdrop-blur-md bg-emerald-500/30 border-emerald-500/50 text-emerald-300 flex items-center gap-1">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                        Verificado
+                                    </div>
                                 </div>
 
                                 {/* Info */}
-                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-white/[0.04]">
-                                    <div className="space-y-1.5 overflow-hidden p-4 pb-2">
-                                        <h3 className="font-[1000] text-[17px] text-white uppercase tracking-tighter leading-none text-shadow-premium">
-                                            {enterprise.name}
-                                        </h3>
-                                        {enterprise.zone && (
-                                            <div className="flex items-start gap-1 text-amber-400/70 uppercase text-[9px] font-bold tracking-tight">
-                                                <MapPin size={11} strokeWidth={3} className="flex-shrink-0 mt-0.5" />
-                                                <span>{enterprise.zone}</span>
-                                            </div>
-                                        )}
-                                        <div className="flex items-center gap-1 mt-1">
-                                            {[1, 2, 3, 4, 5].map(star => (
-                                                <Star key={star} size={10} className={`${star <= Math.round(enterprise.rating) ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-white/20'}`} />
-                                            ))}
-                                            <span className="text-[8px] font-bold text-amber-400/80 ml-1">{enterprise.rating}</span>
+                                <div className="flex-1 flex flex-col text-left min-w-0 bg-white/[0.04] p-4 space-y-2">
+                                    <h3 className="font-[1000] text-[17px] text-white uppercase tracking-tighter leading-none text-shadow-premium">
+                                        {enterprise.name}
+                                    </h3>
+                                    {enterprise.zone && (
+                                        <div className="flex items-start gap-1 text-amber-400/70 uppercase text-[9px] font-bold tracking-tight">
+                                            <MapPin size={11} strokeWidth={3} className="flex-shrink-0 mt-0.5" />
+                                            <span>{enterprise.zone}{(enterprise as any).province ? ` · ${(enterprise as any).province}` : ''}</span>
                                         </div>
-                                        {enterprise.specialty && (
-                                            <p className="text-[8px] font-bold text-white/40 italic tracking-wide leading-tight line-clamp-1">"{enterprise.specialty}"</p>
-                                        )}
+                                    )}
+                                    <div className="flex items-center gap-1">
+                                        {[1, 2, 3, 4, 5].map(star => (
+                                            <Star key={star} size={10} className={`${star <= Math.round(enterprise.rating) ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-white/20'}`} />
+                                        ))}
+                                        <span className="text-[8px] font-bold text-amber-400/80 ml-1">{enterprise.rating}</span>
                                     </div>
+                                    {enterprise.specialty && (
+                                        <p className="text-[8px] font-bold text-white/40 italic tracking-wide leading-tight line-clamp-2">"{enterprise.specialty}"</p>
+                                    )}
+                                </div>
 
-                                    <div className="w-full flex justify-center py-3 px-4">
-                                        <button
-                                            onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory.slug}/${enterprise.slug || enterprise.id}`); }}
-                                            className="py-2.5 px-6 text-[9px] text-white font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all duration-75 rounded-full border backdrop-blur-md active:translate-y-[2px] border-amber-400/50 bg-amber-600/30 shadow-[0_4px_0_rgba(245,158,11,0.5)]"
-                                        >
-                                            <BookOpen size={14} strokeWidth={3} className="text-white drop-shadow-md" />VER CATÁLOGO
-                                        </button>
+                                {/* Google Maps Embed */}
+                                {(enterprise as any).mapUrl && (
+                                    <div className="w-full h-[120px] border-t border-amber-500/10 overflow-hidden">
+                                        <iframe
+                                            src={(enterprise as any).mapUrl}
+                                            className="w-full h-full border-0 opacity-80 hover:opacity-100 transition-opacity"
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            title={`Mapa ${enterprise.name}`}
+                                        />
                                     </div>
+                                )}
+
+                                {/* Acciones: Catálogo + WhatsApp */}
+                                <div className="w-full flex gap-2 p-3 border-t border-amber-500/10">
+                                    <button
+                                        onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory!.slug}/${enterprise.slug || enterprise.id}`); }}
+                                        className="flex-1 py-2.5 text-[8px] text-white font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-1.5 transition-all rounded-xl border backdrop-blur-md active:scale-95 border-amber-400/40 bg-amber-600/20"
+                                    >
+                                        <BookOpen size={12} strokeWidth={3} />VER CATÁLOGO
+                                    </button>
+                                    {enterprise.phone && (
+                                        <a
+                                            href={`https://wa.me/549${enterprise.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola! Soy comerciante de ShopDigital y me interesa consultar precios mayoristas. 🏭`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={() => playNeonClick()}
+                                            className="flex-1 py-2.5 text-[8px] text-white font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-1.5 transition-all rounded-xl border backdrop-blur-md active:scale-95 border-emerald-400/40 bg-emerald-600/20"
+                                        >
+                                            <Phone size={12} strokeWidth={3} />WHATSAPP
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         ))}

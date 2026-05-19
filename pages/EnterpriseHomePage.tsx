@@ -50,17 +50,51 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
         }
     };
 
+    // 🗺️ Filtro Provincial/Regional
+    const [selectedProvince, setSelectedProvince] = React.useState('all');
+    const [selectedRegion, setSelectedRegion] = React.useState('all');
+
+    const PROVINCES = [
+        { id: 'all', name: '🌎 Todas las Provincias' },
+        { id: 'buenos-aires', name: '🏙️ Buenos Aires' },
+        { id: 'cordoba', name: '🏔️ Córdoba' },
+        { id: 'santa-fe', name: '🌾 Santa Fe' },
+        { id: 'mendoza', name: '🍇 Mendoza' },
+        { id: 'tucuman', name: '🌿 Tucumán' },
+        { id: 'entre-rios', name: '🌊 Entre Ríos' },
+        { id: 'misiones', name: '🌴 Misiones' },
+        { id: 'neuquen', name: '⛽ Neuquén' },
+    ];
+
+    const REGIONS: Record<string, { id: string; name: string }[]> = {
+        'buenos-aires': [
+            { id: 'all', name: '📍 Todas las Zonas' },
+            { id: 'zona-sur', name: '🔵 Zona Sur (E. Echeverría, Ezeiza, Lomas)' },
+            { id: 'zona-norte', name: '🟢 Zona Norte (Tigre, San Isidro)' },
+            { id: 'zona-oeste', name: '🟠 Zona Oeste (Morón, Merlo)' },
+            { id: 'la-plata', name: '🏛️ La Plata y alrededores' },
+        ],
+        'cordoba': [
+            { id: 'all', name: '📍 Todas las Zonas' },
+            { id: 'traslasierra', name: '🏔️ Traslasierra' },
+            { id: 'capital', name: '🏙️ Córdoba Capital' },
+            { id: 'punilla', name: '⛰️ Punilla' },
+        ],
+    };
+
+    const currentRegions = REGIONS[selectedProvince] || [];
+
     return (
         <div className="flex flex-col pt-6 pb-12 animate-in fade-in duration-700 relative overflow-hidden min-h-screen" style={{ backgroundColor: bgColor }}>
             {/* HUD Background — Estética Industrial Dinámica */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full blur-[120px]" style={{ backgroundColor: hexToRgba(primaryColor, 0.05) }} />
                 <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full blur-[100px]" style={{ backgroundColor: hexToRgba(primaryColor, 0.05) }} />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(245,158,11,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(245,158,11,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" style={{ backgroundImage: `linear-gradient(${hexToRgba(primaryColor, 0.02)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(primaryColor, 0.02)} 1px, transparent 1px)` }} />
+                <div className="absolute inset-0" style={{ backgroundImage: `linear-gradient(${hexToRgba(primaryColor, 0.02)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(primaryColor, 0.02)} 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
             </div>
 
             {/* Header Industrial */}
-            <header className="flex flex-col items-center relative z-10 px-6 mb-8">
+            <header className="flex flex-col items-center relative z-10 px-6 mb-4">
                 <button
                     onClick={() => { playNeonClick(); navigate(-1); }}
                     className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center transition-all shadow-lg active:scale-95"
@@ -84,6 +118,31 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                     <div className="h-[1px] w-8 bg-gradient-to-l from-transparent" style={{ backgroundImage: `linear-gradient(to left, transparent, ${hexToRgba(primaryColor, 0.5)})` }} />
                 </div>
             </header>
+
+            {/* 🗺️ Selector Provincial / Regional */}
+            <div className="px-5 mb-6 relative z-10 space-y-3">
+                <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-center" style={{ color: hexToRgba(primaryColor, 0.6) }}>
+                    📍 Filtrar por Zona Geográfica
+                </h3>
+                <select
+                    value={selectedProvince}
+                    onChange={(e) => { playNeonClick(); setSelectedProvince(e.target.value); setSelectedRegion('all'); }}
+                    className="w-full bg-zinc-900/60 border rounded-2xl p-3 text-white text-[11px] font-bold focus:outline-none transition-all appearance-none text-center uppercase tracking-widest"
+                    style={{ borderColor: hexToRgba(primaryColor, 0.3) }}
+                >
+                    {PROVINCES.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+                {currentRegions.length > 0 && (
+                    <select
+                        value={selectedRegion}
+                        onChange={(e) => { playNeonClick(); setSelectedRegion(e.target.value); }}
+                        className="w-full bg-zinc-900/60 border rounded-2xl p-3 text-white text-[11px] font-bold focus:outline-none transition-all appearance-none text-center uppercase tracking-widest"
+                        style={{ borderColor: hexToRgba(primaryColor, 0.2) }}
+                    >
+                        {currentRegions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                    </select>
+                )}
+            </div>
 
             {/* Grid de 21 Rubros Industriales */}
             <div className="grid grid-cols-3 gap-x-4 gap-y-7 px-5 relative z-10">
