@@ -52,17 +52,17 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     const getTechBgStyles = () => {
         switch (techBg) {
             case 'stardust':
-                return { texture: "url('https://www.transparenttextures.com/patterns/stardust.png')", opacity: 0.15, grid: true };
+                return { texture: "url('https://www.transparenttextures.com/patterns/stardust.png')", opacity: 0.35, grid: true, glow: 0.12 };
             case 'circuit':
-                return { texture: "url('https://www.transparenttextures.com/patterns/circuits.png')", opacity: 0.08, grid: false };
+                return { texture: "url('https://www.transparenttextures.com/patterns/circuits.png')", opacity: 0.25, grid: false, glow: 0.1 };
             case 'matrix':
-                return { texture: "url('https://www.transparenttextures.com/patterns/dark-mosaic.png')", opacity: 0.12, grid: true };
+                return { texture: "url('https://www.transparenttextures.com/patterns/dark-mosaic.png')", opacity: 0.3, grid: true, glow: 0.1 };
             case 'nebula':
-                return { texture: "url('https://www.transparenttextures.com/patterns/asfalt-dark.png')", opacity: 0.2, grid: false };
+                return { texture: "url('https://www.transparenttextures.com/patterns/asfalt-dark.png')", opacity: 0.4, grid: false, glow: 0.15 };
             case 'hex':
-                return { texture: "url('https://www.transparenttextures.com/patterns/hexellence.png')", opacity: 0.1, grid: true };
+                return { texture: "url('https://www.transparenttextures.com/patterns/hexellence.png')", opacity: 0.25, grid: true, glow: 0.1 };
             case 'cyber':
-                return { texture: "url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png')", opacity: 0.12, grid: false };
+                return { texture: "url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png')", opacity: 0.3, grid: false, glow: 0.12 };
             default:
                 return null;
         }
@@ -85,14 +85,15 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 {/* Fondo Tecnológico Dinámico */}
                 {techStyle && (
                     <>
-                        <div className="absolute inset-0 mix-blend-screen" style={{ backgroundImage: techStyle.texture, opacity: techStyle.opacity }} />
+                        <div className="absolute inset-0" style={{ backgroundImage: techStyle.texture, opacity: techStyle.opacity }} />
                         {techStyle.grid && (
                             <div className="absolute inset-0" style={{
-                                backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.04)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.04)} 1px, transparent 1px)`,
-                                backgroundSize: '30px 30px'
+                                backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.07)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.07)} 1px, transparent 1px)`,
+                                backgroundSize: '35px 35px'
                             }} />
                         )}
-                        <div className="absolute top-0 right-0 w-[60%] h-[60%] rounded-full blur-[100px]" style={{ backgroundColor: hexToRgba(themeColor, 0.06) }} />
+                        <div className="absolute top-0 right-0 w-[70%] h-[70%] rounded-full blur-[120px]" style={{ backgroundColor: hexToRgba(themeColor, techStyle.glow) }} />
+                        <div className="absolute bottom-0 left-0 w-[50%] h-[50%] rounded-full blur-[100px]" style={{ backgroundColor: hexToRgba(themeColor, techStyle.glow * 0.6) }} />
                     </>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
