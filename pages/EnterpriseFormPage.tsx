@@ -59,6 +59,8 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
                     specialty: enterprise.specialty || '',
                     reach: (enterprise.reach as any) || 'national',
                     zone: enterprise.zone || '',
+                    province: enterprise.province || '',
+                    region: (enterprise as any).region || '',
                     address: enterprise.address || '',
                     phone: enterprise.phone || '',
                     ownerName: enterprise.ownerName || '',

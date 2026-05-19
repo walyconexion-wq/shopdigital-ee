@@ -95,6 +95,7 @@ export interface Client {
   pointsHistory?: PointsTransaction[];
   creditsHistory?: any[];
   locality?: string; // Sello geográfico del socio 📍
+  updatedAt?: string; // Última actualización del perfil
 }
 
 export interface Offer {
@@ -114,6 +115,9 @@ export interface Offer {
   pointsPrice?: number;
   isActive: boolean;
   createdAt: string;
+  townId?: string; // Zona del comercio que publica la oferta
+  shopId?: string; // ID del comercio que publica la oferta
+  ownerId?: string; // Owner del recurso
 }
 
 export interface MarketingCampaign {
@@ -183,4 +187,11 @@ export interface Shop {
   feedLikes?: number;
   seasonTheme?: string; // Tema estacional/festivo del catálogo 🎄❄️🌸
   customBackground?: string; // Fondo o patrón personalizado (Fase Personalización) 🎨
+  description?: string; // Descripción completa del comercio
+  tags?: string[]; // Etiquetas para búsqueda y filtrado
+  updatedAt?: string; // Última actualización del registro
+  province?: string; // Provincia (para nodo B2B)
+  verified?: boolean; // Empresa verificada por embajador
+  ownerId?: string; // Owner del comercio
+  color?: string; // Color temático del comercio
 }

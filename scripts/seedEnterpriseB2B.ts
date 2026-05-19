@@ -4,7 +4,7 @@
  * 
  * Para ejecutar: importar y llamar desde la consola del navegador o desde el MasterPanel.
  */
-import { guardarComercio } from './firebase';
+import { guardarComercio } from '../firebase';
 
 export const inyectarEmpresaPruebaB2B = async () => {
     const empresaPrueba = {

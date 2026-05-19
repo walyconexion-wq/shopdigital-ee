@@ -30,8 +30,13 @@ const GlobalHomePage: React.FC = () => {
         visits: 2500,
         subscribers: 150,
         offers: [],
-        active: true,
-        whatsapp: ''
+        isActive: true,
+        rating: 5,
+        specialty: 'Red Nacional',
+        image: '',
+        bannerImage: '',
+        mapUrl: '',
+        slug: 'red-digital-argentina',
     };
 
     useEffect(() => {
