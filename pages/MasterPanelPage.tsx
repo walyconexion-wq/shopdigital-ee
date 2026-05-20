@@ -14,7 +14,6 @@ import { Offer } from '../types';
 import { DobermanBadge } from '../components/DobermanBadge';
 import { CATEGORIES } from '../constants';
 import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
-import { inyectarEmpresaPruebaB2B } from '../scripts/seedEnterpriseB2B';
 
 const MasterPanelPage: React.FC = () => {
     const { townId: paramTownId } = useParams<{ townId: string }>();
@@ -474,8 +473,6 @@ const MasterPanelPage: React.FC = () => {
         { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: `/${townId}/subscripcion` },
     ];
 
-    const [seedingB2B, setSeedingB2B] = useState(false);
-
     return (
         <div className="min-h-screen bg-[#050A15] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
             {/* Background Tecnológico — Modo Camaleón: responde al color de la zona */}
@@ -632,30 +629,6 @@ const MasterPanelPage: React.FC = () => {
                     </div>
                     <span className="text-[8px] text-cyan-200/70 italic pointer-events-none">CEREBRO DEL BOT · CAMPAÑAS · FIDELIZACIÓN</span>
                 </div>
-
-                {/* 🏭 INYECTOR EMPRESA B2B DE PRUEBA */}
-                <button
-                    onClick={async () => {
-                        playNeonClick();
-                        if (seedingB2B) return;
-                        const confirmed = window.confirm('¿Inyectar empresa de prueba B2B?\n\n"Distribuidora Del Sur — Bebidas"\nLuis Guillón, Esteban Echeverría\n\nEsto cargará la primera empresa de demostración en el Nodo Industrial.');
-                        if (!confirmed) return;
-                        setSeedingB2B(true);
-                        const ok = await inyectarEmpresaPruebaB2B();
-                        setSeedingB2B(false);
-                        if (ok) alert('✅ ¡Empresa B2B de prueba inyectada! Entrá al Directorio Industrial → Bebidas para verla.');
-                        else alert('❌ Error al inyectar. Revisá la consola.');
-                    }}
-                    disabled={seedingB2B}
-                    className="w-full bg-gradient-to-r from-amber-600/70 to-orange-600/70 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-500/40 hover:from-amber-500 hover:to-orange-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer disabled:opacity-50"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                    <div className="flex items-center gap-2 pointer-events-none">
-                        <Factory size={14} className="text-amber-200" />
-                        <span className="text-[13px]">{seedingB2B ? '⏳ INYECTANDO...' : '🏭 INYECTAR EMPRESA B2B DEMO'}</span>
-                    </div>
-                    <span className="text-[8px] text-amber-200/70 italic pointer-events-none">EMBUTIDOS MONTE GRANDE S.R.L. · MONTE GRANDE · ALIMENTOS</span>
-                </button>
 
                 {/* Public Landings & Sections */}
                 <section>
