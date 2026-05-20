@@ -293,7 +293,7 @@ const EnterpriseController: React.FC = () => {
                 <Route path="inscripcion" element={<EnterpriseSubscriptionPage />} />
                 <Route path="configuracion" element={<ProtectedRoute roles={['admin']}><EnterpriseGlobalConfigPage /></ProtectedRoute>} />
                 <Route path=":categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
-                <Route path=":categorySlug/:enterpriseSlug" element={<EnterpriseDetailPage allShops={allShops} globalConfig={enterpriseGlobalConfig} />} />
+                <Route path=":categorySlug/:enterpriseSlug" element={<EnterpriseDetailPage allShops={allShops} />} />
                 <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
                 <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
             </Route>
