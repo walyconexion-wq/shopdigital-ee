@@ -666,9 +666,9 @@ const MasterPanelPage: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
                     <div className="flex items-center gap-2 pointer-events-none">
                         <Factory size={14} className="text-amber-200" />
-                        <span className="text-[13px]">{seedingB2B ? '⏳ INYECTANDO...' : '🏭 INYECTAR EMPRESA B2B DE PRUEBA'}</span>
+                        <span className="text-[13px]">{seedingB2B ? '⏳ INYECTANDO...' : '🏭 INYECTAR EMPRESA B2B DEMO'}</span>
                     </div>
-                    <span className="text-[8px] text-amber-200/70 italic pointer-events-none">DISTRIBUIDORA DEL SUR · BEBIDAS · LUIS GUILLÓN</span>
+                    <span className="text-[8px] text-amber-200/70 italic pointer-events-none">EMBUTIDOS MONTE GRANDE S.R.L. · MONTE GRANDE · ALIMENTOS</span>
                 </button>
 
                 {/* Public Landings & Sections */}
