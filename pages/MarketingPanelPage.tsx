@@ -115,20 +115,14 @@ const MarketingPanelPage: React.FC = () => {
     };
 
     // Public pages to share
-    const b2cLinks = [
-        { title: 'Landing Descubrir', desc: 'Presentación de ofertas para Clientes B2C de la zona.', path: `/${townId}/descubrir`, icon: <Users size={16} /> },
-        { title: 'Ofertas B2C VIP', desc: 'Descuentos exclusivos y beneficios para clientes locales.', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={16} /> },
-    ];
-
-    const b2bLinks = [
-        { title: 'Landing Nosotros', desc: 'Presentación institucional de la plataforma.', path: `/${townId}/nosotros`, icon: <Globe size={16} /> },
-        { title: 'Ofertas B2B Red', desc: 'Descuentos y beneficios cruzados exclusivos entre comercios.', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={16} /> },
-        { title: 'Directorio Industrial', desc: 'Catálogo B2B público de Proveedores y Mayoristas.', path: `/empresas`, icon: <Factory size={16} /> },
-    ];
-
-    const captacionLinks = [
-        { title: 'Landing Unirse', desc: 'Formulario de registro rápido para nuevos comercios o embajadores.', path: `/${townId}/unirse`, icon: <Store size={16} /> },
-        { title: 'Reclutamiento Público', desc: 'Paso 1 del embudo para postulantes a embajadores.', path: `/${townId}/reclutamiento`, icon: <Globe size={16} /> },
+    const publicPages = [
+        { title: 'Landing Nosotros', desc: 'Presentación de la empresa', path: `/${townId}/nosotros`, icon: <Globe size={18} />, color: 'cyan', target: 'clientes' as AudienceType },
+        { title: 'Landing Unirse', desc: 'Registro para comercios / Embajador', path: `/${townId}/unirse`, icon: <Store size={18} />, color: 'amber', target: 'comerciantes' as AudienceType },
+        { title: 'Landing Descubrir', desc: 'Presentación para Clientes B2C', path: `/${townId}/descubrir`, icon: <Users size={18} />, color: 'cyan', target: 'clientes' as AudienceType },
+        { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={18} />, color: 'amber', target: 'comerciantes' as AudienceType },
+        { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={18} />, color: 'cyan', target: 'clientes' as AudienceType },
+        { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: `/${townId}/reclutamiento`, icon: <Globe size={18} />, color: 'violet', target: 'comerciantes' as AudienceType },
+        { title: 'Directorio Industrial', desc: 'Portal B2B de Proveedores y Mayoristas', path: `/empresas`, icon: <Factory size={18} />, color: 'amber', target: 'comerciantes' as AudienceType },
     ];
 
     const handleShare = async (path: string, titleStr: string, desc: string) => {
@@ -410,150 +404,60 @@ const MarketingPanelPage: React.FC = () => {
                 {/* ─── TAB 2: CENTRAL DE LANZAMIENTOS (ENLACES PÚBLICOS) ─── */}
                 {activeTab === 'lanzamiento' && (
                     <div className="space-y-6">
-                        {/* Campañas B2C */}
+                        {/* Interfaces Públicas */}
                         <div className={`glass-card-3d bg-white/[0.02] border rounded-2xl p-5 transition-colors duration-1000 ${borderTheme}`}>
-                            <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 ${textTheme}`}>
-                                <Users size={14} /> Campañas B2C (Clientes Locales)
-                            </h3>
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                                <Globe size={12} /> Interfaces Públicas
+                            </h2>
                             <div className="space-y-3">
-                                {b2cLinks.map((link, idx) => (
-                                    <div key={idx} className="bg-zinc-900/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 hover:border-cyan-500/30 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/20">
-                                                {link.icon}
+                                {publicPages.map((page, idx) => {
+                                    const colorMap: Record<string, { bg: string; border: string; text: string; hoverBorder: string }> = {
+                                        cyan: { bg: 'bg-cyan-500/10', border: 'border-cyan-400/20', text: 'text-cyan-400', hoverBorder: 'hover:border-cyan-500/30' },
+                                        amber: { bg: 'bg-amber-500/10', border: 'border-amber-400/20', text: 'text-amber-400', hoverBorder: 'hover:border-amber-500/30' },
+                                        violet: { bg: 'bg-violet-500/10', border: 'border-violet-400/20', text: 'text-violet-400', hoverBorder: 'hover:border-violet-500/30' },
+                                    };
+                                    const c = colorMap[page.color] || colorMap.cyan;
+                                    return (
+                                        <div key={idx} className="bg-zinc-900/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 hover:border-cyan-500/30 transition-colors">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-10 h-10 rounded-xl ${c.bg} flex items-center justify-center ${c.text} border ${c.border}`}>
+                                                    {page.icon}
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-[12px] font-[1000] text-white uppercase tracking-wider">{page.title.toUpperCase()}</h3>
+                                                    <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">{page.desc.toUpperCase()}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h3 className="text-[12px] font-[1000] text-white uppercase tracking-wider">{link.title}</h3>
-                                                <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">{link.desc}</p>
+                                            <div className="grid grid-cols-3 gap-2 mt-2">
+                                                <button 
+                                                    onClick={() => { playNeonClick(); window.open(page.path, '_blank'); }}
+                                                    className="bg-white/5 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-white/10 active:scale-95 transition-all text-white/80 cursor-pointer"
+                                                >
+                                                    <ExternalLink size={12} /> Ver App
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleShare(page.path, page.title, page.desc)}
+                                                    className={`${c.bg} border ${c.border} py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-opacity-20 active:scale-95 transition-all ${c.text} cursor-pointer`}
+                                                >
+                                                    <Share2 size={12} /> Compartir
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleCopy(page.path)}
+                                                    className={`${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest active:scale-95 transition-all cursor-pointer`}
+                                                >
+                                                    {copiedPath === page.path ? <Check size={12} /> : <Copy size={12} />} 
+                                                    {copiedPath === page.path ? 'Copiado' : 'Copiar'}
+                                                </button>
                                             </div>
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-2 mt-1">
                                             <button 
-                                                onClick={() => { playNeonClick(); window.open(link.path, '_blank'); }}
-                                                className="bg-white/5 border border-white/10 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest hover:bg-white/10 text-white/80 cursor-pointer"
+                                                onClick={() => autoRedactarCampania(page.title, page.path, page.target)}
+                                                className={`w-full ${c.bg} border ${c.border} py-2 rounded-xl flex items-center justify-center gap-2 text-[9px] uppercase font-black tracking-widest ${c.text} ${c.hoverBorder} active:scale-95 transition-all cursor-pointer mt-1`}
                                             >
-                                                <ExternalLink size={11} /> Ver
-                                            </button>
-                                            <button 
-                                                onClick={() => handleShare(link.path, link.title, link.desc)}
-                                                className="bg-cyan-500/10 border border-cyan-500/30 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest hover:bg-cyan-500/20 text-cyan-400 cursor-pointer"
-                                            >
-                                                <Share2 size={11} /> Compartir
-                                            </button>
-                                            <button 
-                                                onClick={() => handleCopy(link.path)}
-                                                className={`${copiedPath === link.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest transition-all cursor-pointer`}
-                                            >
-                                                {copiedPath === link.path ? <Check size={11} /> : <Copy size={11} />} 
-                                                {copiedPath === link.path ? 'Copiado' : 'Copiar'}
-                                            </button>
-                                        </div>
-                                        <button 
-                                            onClick={() => autoRedactarCampania(link.title, link.path, 'clientes')}
-                                            className="w-full bg-cyan-500/10 border border-cyan-500/20 py-2.5 rounded-xl flex items-center justify-center gap-2 text-[9px] uppercase font-black tracking-widest text-cyan-400 hover:bg-cyan-500/20 active:scale-95 transition-all cursor-pointer"
-                                        >
-                                            <Megaphone size={12} /> Redactar Campaña B2C
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Campañas B2B */}
-                        <div className={`glass-card-3d bg-white/[0.02] border rounded-2xl p-5 transition-colors duration-1000 ${borderTheme}`}>
-                            <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 ${textTheme}`}>
-                                <Factory size={14} /> Campañas B2B (Red de Comercios)
-                            </h3>
-                            <div className="space-y-3">
-                                {b2bLinks.map((link, idx) => (
-                                    <div key={idx} className="bg-zinc-900/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 hover:border-amber-500/30 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/20">
-                                                {link.icon}
-                                            </div>
-                                            <div>
-                                                <h3 className="text-[12px] font-[1000] text-white uppercase tracking-wider">{link.title}</h3>
-                                                <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">{link.desc}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-2 mt-1">
-                                            <button 
-                                                onClick={() => { playNeonClick(); window.open(link.path, '_blank'); }}
-                                                className="bg-white/5 border border-white/10 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest hover:bg-white/10 text-white/80 cursor-pointer"
-                                            >
-                                                <ExternalLink size={11} /> Ver
-                                            </button>
-                                            <button 
-                                                onClick={() => handleShare(link.path, link.title, link.desc)}
-                                                className="bg-amber-500/10 border border-amber-500/30 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest hover:bg-amber-500/20 text-amber-400 cursor-pointer"
-                                            >
-                                                <Share2 size={11} /> Compartir
-                                            </button>
-                                            <button 
-                                                onClick={() => handleCopy(link.path)}
-                                                className={`${copiedPath === link.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest transition-all cursor-pointer`}
-                                            >
-                                                {copiedPath === link.path ? <Check size={11} /> : <Copy size={11} />} 
-                                                {copiedPath === link.path ? 'Copiado' : 'Copiar'}
+                                                <Megaphone size={12} /> Redactar Campaña
                                             </button>
                                         </div>
-                                        <button 
-                                            onClick={() => autoRedactarCampania(link.title, link.path, 'comerciantes')}
-                                            className="w-full bg-amber-500/10 border border-amber-500/20 py-2.5 rounded-xl flex items-center justify-center gap-2 text-[9px] uppercase font-black tracking-widest text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer"
-                                        >
-                                            <Megaphone size={12} /> Redactar Campaña B2B
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Reclutamiento & Captación */}
-                        <div className={`glass-card-3d bg-white/[0.02] border rounded-2xl p-5 transition-colors duration-1000 ${borderTheme}`}>
-                            <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 ${textTheme}`}>
-                                <Store size={14} /> Reclutamiento & Captación
-                            </h3>
-                            <div className="space-y-3">
-                                {captacionLinks.map((link, idx) => (
-                                    <div key={idx} className="bg-zinc-900/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 hover:border-violet-500/30 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 border border-violet-400/20">
-                                                {link.icon}
-                                            </div>
-                                            <div>
-                                                <h3 className="text-[12px] font-[1000] text-white uppercase tracking-wider">{link.title}</h3>
-                                                <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">{link.desc}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-2 mt-1">
-                                            <button 
-                                                onClick={() => { playNeonClick(); window.open(link.path, '_blank'); }}
-                                                className="bg-white/5 border border-white/10 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest hover:bg-white/10 text-white/80 cursor-pointer"
-                                            >
-                                                <ExternalLink size={11} /> Ver
-                                            </button>
-                                            <button 
-                                                onClick={() => handleShare(link.path, link.title, link.desc)}
-                                                className="bg-violet-500/10 border border-violet-500/30 py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest hover:bg-violet-500/20 text-violet-400 cursor-pointer"
-                                            >
-                                                <Share2 size={11} /> Compartir
-                                            </button>
-                                            <button 
-                                                onClick={() => handleCopy(link.path)}
-                                                className={`${copiedPath === link.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2 rounded-xl flex items-center justify-center gap-1.5 text-[8px] uppercase font-black tracking-widest transition-all cursor-pointer`}
-                                            >
-                                                {copiedPath === link.path ? <Check size={11} /> : <Copy size={11} />} 
-                                                {copiedPath === link.path ? 'Copiado' : 'Copiar'}
-                                            </button>
-                                        </div>
-                                        <button 
-                                            onClick={() => autoRedactarCampania(link.title, link.path, 'comerciantes')}
-                                            className="w-full bg-violet-500/10 border border-violet-500/20 py-2.5 rounded-xl flex items-center justify-center gap-2 text-[9px] uppercase font-black tracking-widest text-violet-400 hover:bg-violet-500/20 active:scale-95 transition-all cursor-pointer"
-                                        >
-                                            <Megaphone size={12} /> Redactar Campaña Captación
-                                        </button>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
