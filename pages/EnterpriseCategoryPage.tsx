@@ -2,8 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { Shop } from '../types';
-import { ChevronLeft, Factory, MapPin, Star, BookOpen, Globe, Landmark, Phone } from 'lucide-react';
+import { ChevronLeft, Factory, MapPin, Star, BookOpen, Globe, Landmark, Phone, Zap } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { inyectarEmpresaPruebaB2B } from '../scripts/seedEnterpriseB2B';
 
 interface EnterpriseCategoryPageProps {
     allShops: Shop[];
@@ -43,17 +44,34 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
 
     const filteredEnterprises = useMemo(() => {
         if (!selectedCategory) return [];
-        return allShops.filter(shop => {
-            // Hacemos el filtro robusto: verificamos entityType o si la categoría empieza con 'ent-'
+        // 🔍 DEBUG: Log para diagnosticar el filtro de empresas
+        console.log('[B2B DEBUG] allShops total:', allShops.length);
+        console.log('[B2B DEBUG] selectedCategory:', selectedCategory.id, selectedCategory.slug);
+        console.log('[B2B DEBUG] activeProvince:', activeProvince, '| activeReach:', activeReach);
+        
+        const enterprises = allShops.filter(shop => {
             const isEnterprise = shop.entityType === 'enterprise' || (shop.category && shop.category.startsWith('ent-'));
+            if (isEnterprise) {
+                console.log('[B2B DEBUG] Found enterprise:', shop.name, '| cat:', shop.category, '| prov:', (shop as any).province, '| reach:', shop.reach);
+            }
+            return isEnterprise;
+        });
+
+        console.log('[B2B DEBUG] Total enterprises found:', enterprises.length);
+
+        return enterprises.filter(shop => {
             const categoryMatch =
                 shop.category === selectedCategory.id ||
                 shop.category === selectedCategory.slug;
             const reachMatch = activeReach === 'all' || shop.reach === activeReach;
-            // Filtro por provincia si viene seleccionada (asumimos 'buenos-aires' por defecto si falta el dato para compatibilidad)
             const shopProv = (shop as any).province || 'buenos-aires';
             const provinceMatch = activeProvince === 'all' || shopProv === activeProvince;
-            return isEnterprise && categoryMatch && reachMatch && provinceMatch;
+            
+            if (!categoryMatch) console.log('[B2B DEBUG] REJECTED by category:', shop.name, shop.category, 'vs', selectedCategory.id, '/', selectedCategory.slug);
+            if (!reachMatch) console.log('[B2B DEBUG] REJECTED by reach:', shop.name);
+            if (!provinceMatch) console.log('[B2B DEBUG] REJECTED by province:', shop.name, shopProv, 'vs', activeProvince);
+            
+            return categoryMatch && reachMatch && provinceMatch;
         });
     }, [selectedCategory, allShops, activeReach, activeProvince]);
 
@@ -230,8 +248,24 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                             No hay proveedores adheridos<br />en {selectedCategory?.name}
                         </p>
                         <p className="text-[8px] text-white/30 uppercase tracking-widest mt-3">
-                            Próximamente se inyectarán empresas testigo
+                            Total shops cargados: {allShops.length}
                         </p>
+                        {/* Botón de inyección directa para cargar empresa de prueba */}
+                        <button
+                            onClick={async () => {
+                                playNeonClick();
+                                try {
+                                    await inyectarEmpresaPruebaB2B();
+                                    alert('✅ Empresa "Embutidos Monte Grande" inyectada con éxito. Recargá la página.');
+                                    window.location.reload();
+                                } catch (e: any) {
+                                    alert('❌ Error al inyectar: ' + e.message);
+                                }
+                            }}
+                            className="mt-5 px-6 py-3 rounded-2xl border border-amber-500/40 bg-amber-600/20 text-amber-300 text-[9px] font-black uppercase tracking-widest flex items-center gap-2 mx-auto active:scale-95 transition-all"
+                        >
+                            <Zap size={14} /> Inyectar Empresa de Prueba
+                        </button>
                     </div>
                 )}
 
