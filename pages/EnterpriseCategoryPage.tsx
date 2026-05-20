@@ -155,102 +155,80 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                     })}
                 </div>
 
-                {/* Tarjetas de Empresa */}
+                {/* Tarjetas de Empresa — Diseño Fractal (espejo de CategoryPage) */}
                 {filteredEnterprises.length > 0 ? (
-                    <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-6" key={activeReach + activeProvince}>
                         {filteredEnterprises.map((enterprise, index) => (
                             <div
                                 key={enterprise.id}
                                 style={{ animationDelay: `${index * 80}ms` }}
-                                className="glass-card-3d overflow-hidden flex flex-col cursor-default fade-up-item w-full border-amber-500/20"
+                                className="glass-card-3d card-neon-amber overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]"
                             >
-                                {/* Banner + Badge */}
-                                <div className="relative w-full h-[140px] flex-shrink-0 overflow-hidden border-b border-amber-500/20">
+                                {/* Imagen lateral */}
+                                <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-amber-500/20">
                                     <img
                                         src={enterprise.bannerImage || enterprise.image}
                                         alt={enterprise.name}
                                         className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110"
                                     />
-                                    {/* Badge de Alcance */}
-                                    <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-[7px] font-black uppercase tracking-widest border backdrop-blur-md
-                                        ${enterprise.reach === 'national' ? 'bg-amber-500/30 border-amber-500/50 text-amber-300' : 'bg-white/10 border-white/20 text-white/60'}`}>
-                                        {enterprise.reach === 'national' ? '🌎 Nacional' : enterprise.reach === 'regional' ? '📍 Regional' : '📍 Local'}
-                                    </div>
                                     {/* Badge Verificado */}
-                                    <div className="absolute top-2 right-2 px-2.5 py-1 rounded-full text-[7px] font-black uppercase tracking-widest border backdrop-blur-md bg-emerald-500/30 border-emerald-500/50 text-emerald-300 flex items-center gap-1">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                        Verificado
+                                    <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[6px] font-black uppercase tracking-wider border backdrop-blur-md bg-emerald-500/40 border-emerald-400/50 text-emerald-200 flex items-center gap-0.5">
+                                        <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+                                        OK
                                     </div>
                                 </div>
 
-                                {/* Info */}
-                                <div className="flex-1 flex flex-col text-left min-w-0 bg-white/[0.04] p-4 space-y-2">
-                                    <h3 className="font-[1000] text-[17px] text-white uppercase tracking-tighter leading-none text-shadow-premium">
-                                        {enterprise.name}
-                                    </h3>
-                                    {enterprise.zone && (
-                                        <div className="flex items-start gap-1 text-amber-400/70 uppercase text-[9px] font-bold tracking-tight">
-                                            <MapPin size={11} strokeWidth={3} className="flex-shrink-0 mt-0.5" />
-                                            <span>{enterprise.zone}{(enterprise as any).province ? ` · ${(enterprise as any).province}` : ''}</span>
+                                {/* Info — espejo fractal de CategoryPage */}
+                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-white/[0.04]">
+                                    <div className="space-y-1.5 overflow-hidden p-4 pb-2">
+                                        <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">
+                                            {enterprise.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
+                                        </h3>
+                                        <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
+                                            <MapPin size={12} strokeWidth={3} className="flex-shrink-0 mt-0.5 text-amber-400" />
+                                            <span className="break-words line-clamp-2">{enterprise.address || enterprise.zone}</span>
                                         </div>
-                                    )}
-                                    <div className="flex items-center gap-1">
-                                        {[1, 2, 3, 4, 5].map(star => (
-                                            <Star key={star} size={10} className={`${star <= Math.round(enterprise.rating) ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-white/20'}`} />
-                                        ))}
-                                        <span className="text-[8px] font-bold text-amber-400/80 ml-1">{enterprise.rating}</span>
+                                        <div className="flex justify-between items-end mt-auto pt-1">
+                                            <div className="flex flex-col gap-0.5 min-w-0 pr-2">
+                                                <div className="flex items-center gap-1">
+                                                    {[1, 2, 3, 4, 5].map(star => (
+                                                        <Star key={star} size={11} className={`${star <= Math.round(enterprise.rating) ? 'fill-yellow-400 text-yellow-400' : 'fill-transparent text-white/20'}`} />
+                                                    ))}
+                                                    <span className="text-[9px] font-bold text-yellow-400/80 ml-1">{enterprise.rating}</span>
+                                                </div>
+                                                {enterprise.specialty && <p className="text-[8px] font-bold text-white/50 italic tracking-wide leading-tight line-clamp-1">"{enterprise.specialty}"</p>}
+                                            </div>
+                                            {/* Badge Alcance */}
+                                            <div className="flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-md border shadow-inner bg-amber-500/20 border-amber-500/30">
+                                                <Globe size={10} className="text-amber-400" />
+                                                <span className="text-[7px] font-black text-amber-400 uppercase tracking-wider">
+                                                    {enterprise.reach === 'national' ? 'Nacional' : enterprise.reach === 'regional' ? 'Regional' : 'Local'}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    {enterprise.specialty && (
-                                        <p className="text-[8px] font-bold text-white/40 italic tracking-wide leading-tight line-clamp-2">"{enterprise.specialty}"</p>
-                                    )}
-                                </div>
-
-                                {/* Google Maps Embed */}
-                                {(enterprise as any).mapUrl && (
-                                    <div className="w-full h-[120px] border-t border-amber-500/10 overflow-hidden">
-                                        <iframe
-                                            src={(enterprise as any).mapUrl}
-                                            className="w-full h-full border-0 opacity-80 hover:opacity-100 transition-opacity"
-                                            loading="lazy"
-                                            referrerPolicy="no-referrer-when-downgrade"
-                                            title={`Mapa ${enterprise.name}`}
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Acciones: Catálogo + WhatsApp */}
-                                <div className="w-full flex gap-2 p-3 border-t border-amber-500/10">
-                                    <button
-                                        onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory!.slug}/${enterprise.slug || enterprise.id}`); }}
-                                        className="flex-1 py-2.5 text-[8px] text-white font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-1.5 transition-all rounded-xl border backdrop-blur-md active:scale-95 border-amber-400/40 bg-amber-600/20"
-                                    >
-                                        <BookOpen size={12} strokeWidth={3} />VER CATÁLOGO
-                                    </button>
-                                    {enterprise.phone && (
-                                        <a
-                                            href={`https://wa.me/549${enterprise.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola! Soy comerciante de ShopDigital y me interesa consultar precios mayoristas. 🏭`)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={() => playNeonClick()}
-                                            className="flex-1 py-2.5 text-[8px] text-white font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-1.5 transition-all rounded-xl border backdrop-blur-md active:scale-95 border-emerald-400/40 bg-emerald-600/20"
+                                    {/* Botón VER CATÁLOGO — espejo fractal */}
+                                    <div className="w-full flex justify-center py-3 px-4">
+                                        <button
+                                            onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory!.slug}/${enterprise.slug || enterprise.id}`); }}
+                                            className="py-2.5 px-6 text-[9px] text-white font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all duration-75 rounded-full border backdrop-blur-md active:translate-y-[4px] border-amber-400/50 bg-amber-600/30 shadow-[0_4px_0_rgba(245,158,11,0.5)]"
                                         >
-                                            <Phone size={12} strokeWidth={3} />WHATSAPP
-                                        </a>
-                                    )}
+                                            <BookOpen size={14} strokeWidth={3} className="text-white drop-shadow-md" />VER CATÁLOGO
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="py-16 px-6 text-center glass-card-3d bg-white/5 border-amber-500/10 rounded-3xl">
-                        <Factory size={36} className="mx-auto text-amber-500/20 mb-4" />
+                    <div className="py-12 px-6 text-center glass-card-3d bg-white/5 border-white/10 rounded-3xl mt-4">
+                        <Factory size={32} className="mx-auto text-amber-500/20 mb-3" />
                         <p className="text-[10px] font-black text-white/50 uppercase tracking-widest leading-relaxed">
                             No hay proveedores adheridos<br />en {selectedCategory?.name}
                         </p>
                         <p className="text-[8px] text-white/30 uppercase tracking-widest mt-3">
                             Total shops cargados: {allShops.length}
                         </p>
-                        {/* Botón de inyección directa para cargar empresa de prueba */}
                         <button
                             onClick={async () => {
                                 playNeonClick();
