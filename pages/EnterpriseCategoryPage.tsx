@@ -44,7 +44,8 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
     const filteredEnterprises = useMemo(() => {
         if (!selectedCategory) return [];
         return allShops.filter(shop => {
-            const isEnterprise = shop.entityType === 'enterprise';
+            // Hacemos el filtro robusto: verificamos entityType o si la categoría empieza con 'ent-'
+            const isEnterprise = shop.entityType === 'enterprise' || (shop.category && shop.category.startsWith('ent-'));
             const categoryMatch =
                 shop.category === selectedCategory.id ||
                 shop.category === selectedCategory.slug;
