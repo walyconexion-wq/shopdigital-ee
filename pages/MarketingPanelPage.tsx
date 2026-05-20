@@ -37,6 +37,19 @@ const MarketingPanelPage: React.FC = () => {
     // State for tabs navigation
     const [activeTab, setActiveTab] = useState<'automatizador' | 'lanzamiento' | 'bases'>('automatizador');
 
+    // ⏱️ Reloj en tiempo real
+    const [now, setNow] = useState(new Date());
+    const [colonVisible, setColonVisible] = useState(true);
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setNow(new Date());
+            setColonVisible(v => !v);
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+    const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const dateStr = now.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+
     const [audience, setAudience] = useState<AudienceType>('clientes');
     const [campaignType, setCampaignType] = useState<CampaignType>('persuasion');
     const [message, setMessage] = useState('');
@@ -204,27 +217,89 @@ const MarketingPanelPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden transition-colors duration-1000">
-            {/* Background HUD Dynamic */}
-            <div className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000">
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[100px] transition-colors duration-1000" style={{ backgroundColor: hexToRgba(themeColor, 0.08) }} />
-                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full blur-[100px] transition-colors duration-1000" style={{ backgroundColor: hexToRgba(themeColor, 0.05) }} />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
-            </div>
 
-            {/* Header */}
-            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b mb-6 sticky top-0 z-50 transition-colors duration-1000" style={{ borderColor: hexToRgba(themeColor, 0.2) }}>
-                <button onClick={() => { playNeonClick(); navigate(basePath); }}
-                    className="self-start mb-4 w-10 h-10 rounded-2xl flex items-center justify-center border transition-all"
-                    style={{ backgroundColor: hexToRgba(themeColor, 0.1), borderColor: hexToRgba(themeColor, 0.3), color: themeColor }}>
-                    <ChevronLeft size={20} />
-                </button>
-                <Megaphone size={28} className="mb-2 transition-colors duration-1000" style={{ color: themeColor, filter: `drop-shadow(0 0 15px ${hexToRgba(themeColor, 0.6)})` }} />
-                <h1 className="text-[18px] font-black text-white uppercase tracking-[0.2em] text-center" style={{ textShadow: `0 0 10px ${hexToRgba(themeColor, 0.4)}` }}>
-                    Panel de Marketing
-                </h1>
-                <p className={`text-[8px] font-bold uppercase tracking-widest mt-1 italic transition-colors duration-1000 ${textTheme}`}>
-                    Cerebro B2C / B2B · {headerTitle}
-                </p>
+
+            {/* ════════════ FONDO TECNOLÓGICO PREMIUM ════════════ */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                {/* Base oscura */}
+                <div className="absolute inset-0 bg-[#020810]"></div>
+                {/* Gradiente radial central */}
+                <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(6,182,212,0.07) 0%, transparent 70%)' }} />
+                {/* Grid de circuitos fino */}
+                <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(6,182,212,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.04) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                {/* Grid secundario más grueso */}
+                <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)', backgroundSize: '160px 160px' }} />
+                {/* Punto de intersección (nodos de circuito) */}
+                <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, rgba(6,182,212,0.15) 1px, transparent 1px)', backgroundSize: '160px 160px' }} />
+                {/* Glow orbs de color según audiencia */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] transition-colors duration-1000" style={{ backgroundColor: hexToRgba(themeColor, 0.07) }} />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full blur-[120px] transition-colors duration-1000" style={{ backgroundColor: hexToRgba(themeColor, 0.05) }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full blur-[80px] bg-emerald-500/5" />
+                {/* Scanline sutil */}
+                <div className="absolute inset-0" style={{ background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px)' }} />
+            </div>
+            {/* ════════════ HEADER — BÚNKER DE PUBLICIDAD ════════════ */}
+            <div
+                className="backdrop-blur-xl pt-6 pb-5 px-5 flex flex-col items-center border-b mb-6 sticky top-0 z-50 transition-colors duration-1000 relative overflow-hidden"
+                style={{ 
+                    background: `linear-gradient(135deg, rgba(2,8,16,0.94) 0%, ${hexToRgba(themeColor, 0.06)} 100%)`,
+                    borderColor: hexToRgba(themeColor, 0.25),
+                    boxShadow: `0 4px 40px ${hexToRgba(themeColor, 0.12)}, 0 1px 0 ${hexToRgba(themeColor, 0.2)}`
+                }}
+            >
+                {/* Línea de acento superior */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] transition-colors duration-1000" style={{ background: `linear-gradient(90deg, transparent, ${themeColor}, transparent)` }} />
+                {/* Grid interno del header */}
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+
+                {/* Fila superior: botón volver + reloj + badge */}
+                <div className="w-full flex items-center justify-between mb-3 relative z-10">
+                    <button onClick={() => { playNeonClick(); navigate(basePath); }}
+                        className="w-9 h-9 rounded-xl flex items-center justify-center border transition-all hover:scale-110 active:scale-95"
+                        style={{ backgroundColor: hexToRgba(themeColor, 0.1), borderColor: hexToRgba(themeColor, 0.3), color: themeColor }}>
+                        <ChevronLeft size={18} />
+                    </button>
+
+                    {/* ⏱️ RELOJ DIGITAL */}
+                    <div className="flex flex-col items-center gap-0.5">
+                        <div
+                            className="font-mono font-black tracking-[0.1em] leading-none"
+                            style={{ 
+                                fontSize: '20px',
+                                color: themeColor,
+                                textShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, 0 0 40px ${hexToRgba(themeColor, 0.4)}`
+                            }}
+                        >
+                            {timeStr.slice(0,2)}
+                            <span style={{ opacity: colonVisible ? 1 : 0.15, transition: 'opacity 0.1s' }}>:</span>
+                            {timeStr.slice(3,5)}
+                            <span style={{ fontSize: '13px', opacity: 0.55 }}>:{timeStr.slice(6,8)}</span>
+                        </div>
+                        <span className="text-[7px] font-black uppercase tracking-[0.15em] opacity-50" style={{ color: themeColor }}>{dateStr}</span>
+                    </div>
+
+                    {/* 🟢 BADGE SISTEMA ONLINE */}
+                    <div className="flex items-center gap-1.5 bg-black/50 border border-emerald-500/30 rounded-full px-2 py-1.5 backdrop-blur-sm">
+                        <div className="relative flex h-2 w-2 flex-shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </div>
+                        <span className="text-[6.5px] font-black uppercase tracking-[0.12em] text-emerald-400" style={{ textShadow: '0 0 8px rgba(52,211,153,0.6)' }}>ONLINE</span>
+                    </div>
+                </div>
+
+                {/* Centro: Ícono + Título */}
+                <div className="flex flex-col items-center gap-1 relative z-10">
+                    <div className="relative mb-0.5">
+                        <Megaphone size={28} className="transition-colors duration-1000" style={{ color: themeColor, filter: `drop-shadow(0 0 16px ${hexToRgba(themeColor, 0.7)})` }} />
+                    </div>
+                    <h1 className="text-[16px] font-black text-white uppercase tracking-[0.22em] text-center" style={{ textShadow: `0 0 20px ${hexToRgba(themeColor, 0.5)}` }}>
+                        Búnker de Publicidad
+                    </h1>
+                    <p className={`text-[8px] font-bold uppercase tracking-[0.25em] mt-0.5 transition-colors duration-1000 ${textTheme}`}>
+                        Inteligente · {headerTitle} · Cañón Activo 🚀
+                    </p>
+                </div>
             </div>
 
             <div className="px-5 space-y-6 relative z-10 max-w-lg mx-auto">
