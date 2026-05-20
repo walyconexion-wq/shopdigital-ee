@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { Shop } from '../types';
-import { ChevronLeft, Factory, MapPin, Star, BookOpen, ArrowLeft, Globe, Landmark, Phone } from 'lucide-react';
+import { ChevronLeft, Factory, MapPin, Star, BookOpen, Globe, Landmark, Phone } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
 interface EnterpriseCategoryPageProps {
@@ -19,13 +19,28 @@ const REACH_FILTERS = [
 const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShops }) => {
     const { categorySlug } = useParams<{ categorySlug: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const [activeReach, setActiveReach] = useState('all');
+
+    // Leer provincia del query param (viene del Home cuando se seleccionó una cápsula)
+    const searchParams = new URLSearchParams(location.search);
+    const activeProvince = searchParams.get('provincia') || 'all';
+
+    const PROVINCE_LABELS: Record<string, string> = {
+        'buenos-aires': '🏙️ Buenos Aires',
+        'cordoba': '🏔️ Córdoba',
+        'santa-fe': '🌾 Santa Fe',
+        'mendoza': '🍇 Mendoza',
+        'tucuman': '🌿 Tucumán',
+        'entre-rios': '🌊 Entre Ríos',
+        'misiones': '🌴 Misiones',
+        'neuquen': '⛽ Neuquén',
+    };
 
     const selectedCategory = useMemo(() =>
         ENTERPRISE_CATEGORIES.find(cat => cat.slug === categorySlug),
         [categorySlug]);
 
-    // Filtrar empresas: entityType === 'enterprise' + categoría coincidente
     const filteredEnterprises = useMemo(() => {
         if (!selectedCategory) return [];
         return allShops.filter(shop => {
@@ -34,9 +49,11 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                 shop.category === selectedCategory.id ||
                 shop.category === selectedCategory.slug;
             const reachMatch = activeReach === 'all' || shop.reach === activeReach;
-            return isEnterprise && categoryMatch && reachMatch;
+            // Filtro por provincia si viene seleccionada
+            const provinceMatch = activeProvince === 'all' || (shop as any).province === activeProvince;
+            return isEnterprise && categoryMatch && reachMatch && provinceMatch;
         });
-    }, [selectedCategory, allShops, activeReach]);
+    }, [selectedCategory, allShops, activeReach, activeProvince]);
 
     if (!selectedCategory) {
         return (
@@ -61,17 +78,17 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
 
             {/* Header */}
             <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
-                <div className="w-full px-6 flex flex-col pb-4">
+                <div className="w-full px-6 flex flex-col pb-2">
                     <button
                         onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                         className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-amber-500/20 active:scale-90 transition-all hover:bg-black/50 shadow-lg"
                     >
-                        <ArrowLeft size={22} className="text-amber-400 drop-shadow-md pr-0.5" />
+                        <ChevronLeft size={22} className="text-amber-400 drop-shadow-md" />
                     </button>
 
                     <div className="flex justify-center w-full px-2">
                         <div className="glass-header rounded-3xl w-full py-3 px-5 flex flex-col items-center border backdrop-blur-md border-amber-500/30 bg-gradient-to-br from-amber-500/15 to-orange-600/10 shadow-[0_15px_40px_rgba(245,158,11,0.2)]">
-                            <p className="text-[8px] font-black text-amber-400/60 uppercase tracking-widest mb-1 italic">ADN {formattedTown}</p>
+                            <p className="text-[8px] font-black text-amber-400/60 uppercase tracking-widest mb-1 italic">ADN NACIONAL</p>
                             <div className="flex items-center gap-2 mb-2">
                                 <Factory size={18} className="text-amber-400" />
                                 <h2 className="text-[18px] font-[900] text-white uppercase tracking-[0.15em] leading-none text-center drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]">
@@ -82,6 +99,13 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                             <p className="text-[8.5px] font-bold text-white/70 uppercase tracking-[0.15em] text-center">
                                 Encontrá tu proveedor industrial ideal
                             </p>
+                            {/* Badge de Provincia activa */}
+                            {activeProvince !== 'all' && (
+                                <div className="mt-2 px-3 py-1 rounded-full border border-amber-400/40 bg-amber-500/10 text-[8px] font-black uppercase tracking-widest text-amber-300 flex items-center gap-1">
+                                    <MapPin size={9} />
+                                    {PROVINCE_LABELS[activeProvince] || activeProvince}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -215,7 +239,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                         onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                         className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-full flex items-center gap-2 shadow-lg active:translate-y-[2px] transition-all bg-amber-500/15 border-amber-500/30 text-amber-400"
                     >
-                        <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
+                        <ChevronLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
                     </button>
                 </div>
             </div>

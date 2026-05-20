@@ -49,6 +49,7 @@ import FactoryPanelPage from './pages/FactoryPanelPage';
 import ClientVipCredentialPage from './pages/ClientVipCredentialPage';
 import EnterpriseHomePage from './pages/EnterpriseHomePage';
 import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
+import EnterpriseDetailPage from './pages/EnterpriseDetailPage';
 import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
 import EnterpriseFormPage from './pages/EnterpriseFormPage';
 import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
@@ -292,7 +293,7 @@ const EnterpriseController: React.FC = () => {
                 <Route path="inscripcion" element={<EnterpriseSubscriptionPage />} />
                 <Route path="configuracion" element={<ProtectedRoute roles={['admin']}><EnterpriseGlobalConfigPage /></ProtectedRoute>} />
                 <Route path=":categorySlug" element={<EnterpriseCategoryPage allShops={allShops} />} />
-                <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
+                <Route path=":categorySlug/:enterpriseSlug" element={<EnterpriseDetailPage allShops={allShops} globalConfig={enterpriseGlobalConfig} />} />
                 <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
                 <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
             </Route>
