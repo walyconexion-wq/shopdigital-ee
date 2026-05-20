@@ -9,7 +9,6 @@ interface EnterpriseHomePageProps {
 }
 
 const PROVINCES = [
-    { id: 'all',          name: 'ARGENTINA',    emoji: '🌎' },
     { id: 'buenos-aires', name: 'BUENOS AIRES',  emoji: '🏙️' },
     { id: 'cordoba',      name: 'CÓRDOBA',       emoji: '🏔️' },
     { id: 'santa-fe',     name: 'SANTA FE',      emoji: '🌾' },
@@ -37,7 +36,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
         } catch { return `rgba(245,158,11,${alpha})`; }
     };
 
-    const [selectedProvince, setSelectedProvince] = React.useState('all');
+    const [selectedProvince, setSelectedProvince] = React.useState('buenos-aires');
 
     // 🔐 5-Click Búnker
     const [bunkerClicks, setBunkerClicks] = React.useState(0);

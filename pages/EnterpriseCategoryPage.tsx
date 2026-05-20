@@ -49,8 +49,9 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                 shop.category === selectedCategory.id ||
                 shop.category === selectedCategory.slug;
             const reachMatch = activeReach === 'all' || shop.reach === activeReach;
-            // Filtro por provincia si viene seleccionada
-            const provinceMatch = activeProvince === 'all' || (shop as any).province === activeProvince;
+            // Filtro por provincia si viene seleccionada (asumimos 'buenos-aires' por defecto si falta el dato para compatibilidad)
+            const shopProv = (shop as any).province || 'buenos-aires';
+            const provinceMatch = activeProvince === 'all' || shopProv === activeProvince;
             return isEnterprise && categoryMatch && reachMatch && provinceMatch;
         });
     }, [selectedCategory, allShops, activeReach, activeProvince]);
