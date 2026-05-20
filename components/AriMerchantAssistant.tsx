@@ -22,6 +22,7 @@ interface AriMerchantAssistantProps {
     allShops?: Shop[];
     townId?: string;
     publicPages?: Array<{ title: string; desc: string; path: string; target: string }>;
+    inline?: boolean;
 }
 
 const ARI_MERCHANT_PROMPT = `
@@ -102,7 +103,7 @@ Tus funciones clave:
 Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [] }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
@@ -197,8 +198,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     };
 
     useEffect(() => {
-        if (isOpen) scrollToBottom();
-    }, [messages, isOpen]);
+        if (isOpen || inline) scrollToBottom();
+    }, [messages, isOpen, inline]);
 
     const handleToggleMic = () => {
         if (isListening) {
@@ -302,9 +303,163 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
     };
 
     return (
-        <div className="fixed bottom-24 right-6 z-[1000]">
-            {/* Bubble Button */}
-            {!isOpen && (
+        <div className={inline ? 'w-full' : 'fixed bottom-24 right-6 z-[1000]'}>
+            {/* ═══ MODO INLINE: Panel siempre abierto, empotrado en la página ═══ */}
+            {inline && (
+                <div
+                    className={`w-full bg-[#020810]/95 backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
+                    style={{ borderColor: isMarketing ? 'rgba(16,185,129,0.2)' : isIndustrial ? 'rgba(245,158,11,0.2)' : 'rgba(34,211,238,0.2)', minHeight: '420px' }}
+                >
+                    {/* Background grid */}
+                    <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
+                    <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0`} />
+                    <div className={`absolute bottom-0 left-0 w-32 h-32 ${styles.accentGlow2} rounded-full blur-3xl z-0`} />
+                    {/* Línea de acento superior */}
+                    <div className="absolute top-0 left-0 right-0 h-[2px] z-10" style={{ background: `linear-gradient(90deg, transparent, ${isMarketing ? '#10b981' : isIndustrial ? '#f59e0b' : '#22d3ee'}, transparent)` }} />
+
+                    {/* Header inline */}
+                    <div className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center gap-3 relative z-10`}>
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center border flex-shrink-0 ${styles.headerGlow}`}>
+                            <Sparkles size={18} className={styles.headerIconColor} />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-[11px] font-black text-white uppercase tracking-widest">{styles.headerTitle}</h3>
+                            <p className={`text-[8px] ${styles.headerStatusText} font-bold uppercase tracking-widest flex items-center gap-1`}>
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                {styles.headerSubtitle}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 bg-black/40 border border-emerald-500/20 rounded-full px-2 py-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
+                            <span className="text-[7px] font-black uppercase tracking-widest text-emerald-400">ACTIVA</span>
+                        </div>
+                    </div>
+
+                    {/* Misiones Programadas (colapsable) */}
+                    <div className="bg-white/[0.03] border-b border-white/5 relative z-10">
+                        <button
+                            onClick={() => setShowCampaigns(!showCampaigns)}
+                            className="w-full px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-all"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Calendar size={13} className="text-violet-400" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Misiones Programadas</span>
+                                {campaigns.filter(c => c.status === 'pending').length > 0 && (
+                                    <span className="w-4 h-4 rounded-full bg-violet-600 text-[8px] font-black flex items-center justify-center text-white">
+                                        {campaigns.filter(c => c.status === 'pending').length}
+                                    </span>
+                                )}
+                            </div>
+                            {showCampaigns ? <ChevronUp size={13} className="text-white/40" /> : <ChevronDown size={13} className="text-white/40" />}
+                        </button>
+                        {showCampaigns && (
+                            <div className="max-h-[120px] overflow-y-auto p-3 space-y-2 no-scrollbar">
+                                {campaigns.length === 0 ? (
+                                    <p className="text-[9px] text-white/20 text-center py-2 italic">No hay misiones agendadas todavía, Jefe.</p>
+                                ) : campaigns.map(camp => (
+                                    <div key={camp.id} className="bg-black/40 border border-white/5 rounded-xl p-2.5 flex items-start gap-3 group">
+                                        <div className={`mt-1 w-2 h-2 rounded-full ${camp.status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
+                                        <div className="flex-1 min-w-0">
+                                            <span className="text-[8px] font-black text-white/40 uppercase flex items-center gap-1"><Clock size={8} /> {new Date(camp.scheduledDate).toLocaleDateString()}</span>
+                                            <p className="text-[9px] text-white/80 leading-tight truncate">{camp.message}</p>
+                                        </div>
+                                        <button onClick={() => actualizarEstadoCampania(camp.id, 'cancelled')} className="text-red-500/60 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={11} /></button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Mensajes */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar relative z-10" style={{ maxHeight: '280px' }}>
+                        {messages.map((msg, i) => (
+                            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`max-w-[88%] p-3 rounded-[1.1rem] text-[11px] leading-relaxed border backdrop-blur-md ${
+                                    msg.role === 'user'
+                                    ? styles.userMsgBg + ' text-white rounded-tr-sm'
+                                    : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm'
+                                }`}>
+                                    {msg.text}
+                                    {msg.role === 'ari' && (
+                                        <button
+                                            onClick={() => handlePlayMessage(msg.text, i)}
+                                            className={`mt-2 ${styles.speechBtnColor} transition-colors flex items-center gap-1 bg-black/20 hover:bg-black/40 px-2 py-1 rounded-md w-max`}
+                                        >
+                                            {speakingMsgId === i ? <Volume2 size={11} className="animate-pulse" /> : <Play size={11} />}
+                                            <span className="text-[8px] font-bold uppercase tracking-widest">{speakingMsgId === i ? 'Pausar' : 'Escuchar'}</span>
+                                        </button>
+                                    )}
+                                    <div className="text-[7px] mt-1 opacity-30 uppercase font-black tracking-widest">{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                </div>
+                            </div>
+                        ))}
+                        {isLoading && (
+                            <div className="flex justify-start">
+                                <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none">
+                                    <div className="flex gap-1">
+                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce`}></div>
+                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.2s]`}></div>
+                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.4s]`}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    {/* Quick chips inline */}
+                    <div className="px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t border-white/5 bg-white/[0.02] relative z-10">
+                        {isMarketing ? (
+                            <>
+                                <button onClick={() => { setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5`}><Megaphone size={9} /> Copy B2B</button>
+                                <button onClick={() => { setInput('Armame una campaña para el fin de semana con las Ofertas VIP'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9} /> B2C VIP</button>
+                                <button onClick={() => { setInput('Quiero captar Embajadores, redactame el texto de Reclutamiento'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Bot size={9} /> Reclutar</button>
+                                <button onClick={() => { setInput('¿Qué landing conviene disparar primero esta semana?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5"><BarChart3 size={9} /> Estrategia</button>
+                            </>
+                        ) : isIndustrial ? (
+                            <>
+                                <button onClick={() => setInput('¿Cuántas empresas hay registradas?')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5"><BarChart3 size={9} /> B2B Total</button>
+                                <button onClick={() => setInput('Recomendame proveedores')} className="whitespace-nowrap px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-[8px] font-black text-yellow-400 uppercase tracking-widest hover:bg-yellow-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9} /> Proveedores</button>
+                            </>
+                        ) : (
+                            <>
+                                <button onClick={() => setInput('Crear campaña WhatsApp')} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5"><Megaphone size={9} /> Campaña</button>
+                                <button onClick={() => setInput('Sugerencias para vender más')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9} /> Consejos</button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Input inline */}
+                    <div className="p-3 bg-black/40 backdrop-blur-xl border-t border-white/10 relative z-10">
+                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-1 px-3">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={e => setInput(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleSend()}
+                                placeholder="Comandale a ARI una campaña..."
+                                className="flex-1 bg-transparent border-none text-white text-[11px] py-2.5 focus:outline-none placeholder:text-white/25 font-medium"
+                            />
+                            <button
+                                onClick={handleToggleMic}
+                                className={`p-2 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
+                            >
+                                {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                            </button>
+                            <button
+                                onClick={() => handleSend()}
+                                disabled={!input.trim() || isLoading}
+                                className={`p-2 bg-gradient-to-r ${styles.sendBtn} text-black rounded-xl hover:scale-105 transition-all disabled:opacity-30 disabled:grayscale disabled:hover:scale-100`}
+                            >
+                                <Send size={16} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ═══ MODO FLOTANTE: Burbuja + panel emergente ═══ */}
+            {!inline && (
                 <div className="relative group">
                     {/* Cartelito de ayuda - Siempre visible con animación suave */}
                     <div className="absolute bottom-full right-0 mb-4 animate-bounce">

@@ -633,8 +633,34 @@ const MarketingPanelPage: React.FC = () => {
                 )}
             </div>
             
+            {/* ════════════ ARI INLINE — CEREBRO DEL BÚNKER ════════════ */}
+            <div className="px-5 relative z-10 max-w-lg mx-auto mt-8 mb-6">
+                {/* Separador con título de sección */}
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, transparent, ${hexToRgba(themeColor, 0.4)})` }} />
+                    <div
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-sm"
+                        style={{ borderColor: hexToRgba(themeColor, 0.3), backgroundColor: hexToRgba(themeColor, 0.06) }}
+                    >
+                        <span className="text-[7px] font-black uppercase tracking-[0.3em]" style={{ color: themeColor }}>
+                            ⚡ ARI · INTELIGENCIA DE CAMPAÑA
+                        </span>
+                    </div>
+                    <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${hexToRgba(themeColor, 0.4)}, transparent)` }} />
+                </div>
+
+                {/* ARI Panel Inline — siempre abierto */}
+                <AriMerchantAssistant 
+                    inline={true}
+                    role={isEnterprisePath ? 'industrial' : 'marketing'} 
+                    shop={marketingShop} 
+                    townId={townId}
+                    publicPages={publicPages.map(p => ({ title: p.title, desc: p.desc, path: p.path, target: p.target }))}
+                />
+            </div>
+
             {/* Footer */}
-            <footer className={`w-full flex-col flex items-center gap-2 pt-8 pb-6 mt-8 border-t transition-colors duration-1000 relative z-10 ${borderTheme}`}>
+            <footer className={`w-full flex-col flex items-center gap-2 pt-4 pb-8 border-t transition-colors duration-1000 relative z-10 ${borderTheme}`}>
                 <p className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none">
                     © 2026 · Automator Bot
                 </p>
@@ -642,14 +668,6 @@ const MarketingPanelPage: React.FC = () => {
                     🚀 Departamento de Fidelización
                 </p>
             </footer>
-
-            {/* ARI Assistant Widget */}
-            <AriMerchantAssistant 
-                role={isEnterprisePath ? 'industrial' : 'marketing'} 
-                shop={marketingShop} 
-                townId={townId}
-                publicPages={publicPages.map(p => ({ title: p.title, desc: p.desc, path: p.path, target: p.target }))}
-            />
         </div>
     );
 };
