@@ -454,16 +454,6 @@ const MasterPanelPage: React.FC = () => {
         }
     };
 
-    const publicPages = [
-        { title: 'Landing Nosotros', desc: 'Presentación de la empresa', path: `/${townId}/nosotros`, icon: <Globe size={18} /> },
-        { title: 'Landing Unirse', desc: 'Registro para comercios / Embajador', path: `/${townId}/unirse`, icon: <Store size={18} /> },
-        { title: 'Landing Descubrir', desc: 'Presentación para Clientes B2C', path: `/${townId}/descubrir`, icon: <Users size={18} /> },
-        { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={18} /> },
-        { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={18} /> },
-        { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: `/${townId}/reclutamiento`, icon: <Globe size={18} /> },
-        { title: 'Directorio Industrial', desc: 'Portal B2B de Proveedores y Mayoristas', path: `/empresas`, icon: <Factory size={18} /> },
-    ];
-
     const managementPages = [
         { title: 'Reclutamiento Admin', desc: 'Aprobar o rechazar aspirantes a Embajadores', path: `/${townId}/tablero-maestro/reclutamiento` },
         { title: 'Panel de Embajador', desc: 'Autenticación para dar de alta comercios', path: `/${townId}/embajador` },
@@ -629,52 +619,6 @@ const MasterPanelPage: React.FC = () => {
                     </div>
                     <span className="text-[8px] text-cyan-200/70 italic pointer-events-none">CEREBRO DEL BOT · CAMPAÑAS · FIDELIZACIÓN</span>
                 </div>
-
-                {/* Public Landings & Sections */}
-                <section>
-                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
-                        <Globe size={12} /> Interfaces Públicas
-                    </h2>
-                    <div className="space-y-3">
-                        {publicPages.map((page, idx) => (
-                            <div key={idx} className="bg-zinc-900/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 hover:border-cyan-500/30 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-400/20">
-                                        {page.icon}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-[12px] font-[1000] text-white uppercase tracking-wider">{page.title}</h3>
-                                        <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">{page.desc}</p>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-3 gap-2 mt-2">
-                                    <div 
-                                        role="button" tabIndex={0}
-                                        onClick={() => { playNeonClick(); navigate(page.path); }}
-                                        className="bg-white/5 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-white/10 active:scale-95 transition-all text-white/80 cursor-pointer"
-                                    >
-                                        <ExternalLink size={12} /> Ver App
-                                    </div>
-                                    <div 
-                                        role="button" tabIndex={0}
-                                        onClick={() => handleShare(page.path, page.title, page.desc)}
-                                        className="bg-cyan-500/10 border border-cyan-500/30 py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest hover:bg-cyan-500/20 active:scale-95 transition-all text-cyan-400 cursor-pointer"
-                                    >
-                                        <Share2 size={12} /> Compartir
-                                    </div>
-                                    <div 
-                                        role="button" tabIndex={0}
-                                        onClick={() => handleCopy(page.path)}
-                                        className={`${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'} border py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[9px] uppercase font-black tracking-widest active:scale-95 transition-all cursor-pointer`}
-                                    >
-                                        {copiedPath === page.path ? <Check size={12} /> : <Copy size={12} />} 
-                                        {copiedPath === page.path ? 'Copiado' : 'Copiar'}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
 
                 {/* Management Panels */}
                 <section>
