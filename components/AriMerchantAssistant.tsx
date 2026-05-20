@@ -18,8 +18,10 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant' | 'baquiana' | 'industrial';
+    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing';
     allShops?: Shop[];
+    townId?: string;
+    publicPages?: Array<{ title: string; desc: string; path: string; target: string }>;
 }
 
 const ARI_MERCHANT_PROMPT = `
@@ -59,6 +61,35 @@ Reglas de Oro:
 - Respuestas claras, concisas y con fuerte impronta de liderazgo estratégico.
 `;
 
+const ARI_MARKETING_PROMPT = `
+Sos ARI, la Directora de Campañas Inteligentes del Búnker de Publicidad de Shop Digital. Tu tono es estratégico, dinámico, con mentalidad de "growth hacker" y siempre orientado a resultados concretos. Usás términos como "Director", "Cañón Publicitario", "Disparo de Campaña", "Térmica de Lanzamiento", "Frecuencia de Captación".
+
+Tu propósito es ayudar al Director (Waly) a planificar, redactar y ejecutar campañas de marketing para la red ShopDigital.
+
+ARSENAL DISPONIBLE — Las 7 Térmicas de Lanzamiento:
+1. 🌐 LANDING NOSOTROS → Presentación institucional de Shop Digital. TARGET: Clientes B2C.
+2. 🏪 LANDING UNIRSE → Registro para comercios y Embajadores. TARGET: Comerciantes / Captación B2B.
+3. 👥 LANDING DESCUBRIR → Portal de descubrimiento para clientes locales. TARGET: Clientes B2C.
+4. 🏷️ OFERTAS B2B RED → Descuentos exclusivos entre comercios de la red. TARGET: Comerciantes.
+5. 🛍️ OFERTAS B2C VIP → Ofertas flash para la red de clientes locales. TARGET: Clientes.
+6. 🎯 RECLUTAMIENTO PÚBLICO → Formulario Paso 1 para captar Embajadores. TARGET: Captación.
+7. 🏭 DIRECTORIO INDUSTRIAL → Portal B2B de Proveedores y Mayoristas. TARGET: Empresas.
+
+Tus funciones clave:
+1. ✍️ Redacción de Copy Persuasivo: Si el Director te pide un texto, armás UN mensaje para WhatsApp o Redes con gancho emocional, beneficio claro y CTA (call to action) directo. Incluís el enlace de la landing correspondiente en el copy.
+2. 📅 Planificación de Campañas: Sugerís fechas estratégicas (fines de semana, fechas comerciales, lunes de arranque) y armás un plan de disparo.
+3. 🎯 Segmentación Inteligente: Sabés qué mensaje va para B2C (clientes), qué va para B2B (comercios/embajadores) y qué va para Captación. Nunca mezclés audiencias.
+4. 📋 Conexión con Listas de Difusión: Entendés que el Director tiene listas de números en la pestaña "Base de Redes". Podés sugerir qué lista usar (B2C o B2B) según la campaña.
+5. 🔥 Automatizador: Cuando el Director quiera programar un disparo, lo guiás a la pestaña "Automatizador" y le explicás cómo configurar el mensaje, audiencia y fecha.
+
+Reglas de Oro:
+- Cuando el Director te pide un copy, lo redactás COMPLETO y listo para pegar en WhatsApp. Nunca le dejás el trabajo a medias.
+- Terminá SIEMPRE que propongas una campaña con: "🚀 JEFE, ¿AGENDO ESTA MISIÓN EN EL AUTOMATIZADOR?"
+- Si el Director no especifica la landing, preguntale: "¿Disparamos esto para B2C, B2B o Captación?"
+- La "Frecuencia de Captación" es el canal para traer nuevos Embajadores. Prioridad máxima.
+- Cada zona tiene su color: Cyan para Ezeiza, Violeta para Esteban Echeverría, Verde Esmeralda para Traslasierra.
+`;
+
 const ARI_CUSTOMER_SERVICE_PROMPT = `
 Sos ARI, la Baquiana Local y Asistente Estrella de Shop Digital. Tu misión es atender a los turistas y vecinos que navegan por el catálogo (como en Traslasierra, Ezeiza o Lomas de Zamora). 
 Tu tono es ultra-amable, resolutivo, empático y con acento argentino natural (usás "Che", "Mirá", "Te recomiendo").
@@ -71,34 +102,35 @@ Tus funciones clave:
 Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
     const isIndustrial = role === 'industrial';
+    const isMarketing = role === 'marketing';
     
     // Theme styles
     const styles = {
-        glowRing: isIndustrial ? 'bg-amber-500/20' : 'bg-cyan-500/20',
-        pulseGlow: isIndustrial ? 'bg-amber-600/10' : 'bg-violet-600/10',
-        blurBg: isIndustrial ? 'bg-amber-500/20' : 'bg-cyan-500/20',
-        bubbleGradient: isIndustrial ? 'from-amber-600 to-amber-300' : 'from-cyan-600 to-cyan-300',
-        bubbleGlow: isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
-        bubbleBorder: isIndustrial ? 'border-amber-100' : 'border-cyan-100',
-        cardShadow: isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)]',
-        accentGlow1: isIndustrial ? 'bg-amber-500/10' : 'bg-cyan-500/10',
-        accentGlow2: isIndustrial ? 'bg-yellow-500/10' : 'bg-violet-500/10',
-        headerGradient: isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : 'from-cyan-900/40 to-violet-900/40',
-        headerGlow: isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
-        headerIconColor: isIndustrial ? 'text-amber-300' : 'text-cyan-300',
-        headerStatusText: isIndustrial ? 'text-amber-400/70' : 'text-cyan-400/70',
-        headerTitle: isIndustrial ? 'ARI - Inteligencia B2B' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
-        headerSubtitle: isIndustrial ? 'Frecuencia Ámbar Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
-        helpTextGradient: isIndustrial ? 'from-amber-300 to-white' : 'from-cyan-300 to-white',
-        helpTextBorderGlow: isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
-        helpTextTriangle: isIndustrial ? 'bg-yellow-600' : 'bg-violet-600',
-        userMsgBg: isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
-        loadingDot: isIndustrial ? 'bg-amber-500' : 'bg-cyan-500',
-        speechBtnColor: isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
-        sendBtn: isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
+        glowRing: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : 'bg-cyan-500/20',
+        pulseGlow: isIndustrial ? 'bg-amber-600/10' : isMarketing ? 'bg-emerald-600/10' : 'bg-violet-600/10',
+        blurBg: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : 'bg-cyan-500/20',
+        bubbleGradient: isIndustrial ? 'from-amber-600 to-amber-300' : isMarketing ? 'from-emerald-600 to-green-300' : 'from-cyan-600 to-cyan-300',
+        bubbleGlow: isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : isMarketing ? 'shadow-[0_0_30px_#10b981,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
+        bubbleBorder: isIndustrial ? 'border-amber-100' : isMarketing ? 'border-emerald-100' : 'border-cyan-100',
+        cardShadow: isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : isMarketing ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(16,185,129,0.2)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)]',
+        accentGlow1: isIndustrial ? 'bg-amber-500/10' : isMarketing ? 'bg-emerald-500/10' : 'bg-cyan-500/10',
+        accentGlow2: isIndustrial ? 'bg-yellow-500/10' : isMarketing ? 'bg-green-500/10' : 'bg-violet-500/10',
+        headerGradient: isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : isMarketing ? 'from-emerald-900/40 to-green-900/40' : 'from-cyan-900/40 to-violet-900/40',
+        headerGlow: isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
+        headerIconColor: isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : 'text-cyan-300',
+        headerStatusText: isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : 'text-cyan-400/70',
+        headerTitle: isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
+        headerSubtitle: isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
+        helpTextGradient: isIndustrial ? 'from-amber-300 to-white' : isMarketing ? 'from-emerald-300 to-white' : 'from-cyan-300 to-white',
+        helpTextBorderGlow: isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
+        helpTextTriangle: isIndustrial ? 'bg-yellow-600' : isMarketing ? 'bg-emerald-600' : 'bg-violet-600',
+        userMsgBg: isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'bg-emerald-700/80 border-emerald-400/30 shadow-[0_4px_15px_rgba(16,185,129,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
+        loadingDot: isIndustrial ? 'bg-amber-500' : isMarketing ? 'bg-emerald-500' : 'bg-cyan-500',
+        speechBtnColor: isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : isMarketing ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
+        sendBtn: isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
     };
     const [isListening, setIsListening] = useState(false);
     const [input, setInput] = useState('');
@@ -111,6 +143,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? `¡Buenas buenas, viajero! 🏔️ Soy Ari, tu baquiana en la montaña. ¿Buscás una cabaña, un río escondido o dónde comer rico hoy? ¡Avisame y te armo el recorrido en el radar!`
                 : role === 'industrial'
                 ? `¡Saludos, Director! 🏭 Soy Ari, tu Analista de Inteligencia B2B. El Búnker Industrial está operativo bajo la Frecuencia Ámbar. ¿Querés analizar la distribución de rubros, ver el alcance de las empresas o planificar la red de proveedores? ¡Mete mecha!`
+                : role === 'marketing'
+                ? `¡Director, el Cañón Publicitario está cargado y apuntando! 🚀🎯 Soy ARI, tu Directora de Campañas. Tengo las 7 Térmicas de Lanzamiento listas:\n\n🌐 B2C: Nosotros · Descubrir · Ofertas VIP\n🏪 B2B: Unirse · Ofertas Red · Industrial\n🎯 Captación: Reclutamiento Embajadores\n\n¿Armamos una campaña para WhatsApp, te redacto el copy de una landing o programamos un disparo masivo? ¡Dame la orden, Comandante!`
                 : `¡Hola, Jefe! Soy Ari, tu asistente de negocios. Estoy lista para ayudarte con las estadísticas de ${shop.name}, programar campañas o ajustar tu catálogo. ¿En qué puedo darte una mano hoy?`, 
             timestamp: new Date() 
         }
@@ -198,6 +232,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? ARI_CUSTOMER_SERVICE_PROMPT 
                 : role === 'industrial'
                 ? ARI_INDUSTRIAL_PROMPT
+                : role === 'marketing'
+                ? ARI_MARKETING_PROMPT
                 : ARI_MERCHANT_PROMPT;
             
             const industrialContext = role === 'industrial' ? `
@@ -208,12 +244,26 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
 - Distribución de Empresas cargadas: ${JSON.stringify(allShops?.filter(s => s.entityType === 'enterprise').map(e => ({ name: e.name, category: e.category, reach: e.reach, zone: e.zone })) || [])}
             ` : '';
 
+            const marketingContext = role === 'marketing' ? `
+- Zona activa: "${townId || shop.name}"
+- URL base de la zona: ${window.location.origin}/${townId || 'zona'}
+- TÉRMICAS DISPONIBLES:
+  1. LANDING NOSOTROS → ${window.location.origin}/${townId}/nosotros (B2C)
+  2. LANDING UNIRSE → ${window.location.origin}/${townId}/unirse (B2B/Captación)
+  3. LANDING DESCUBRIR → ${window.location.origin}/${townId}/descubrir (B2C)
+  4. OFERTAS B2B RED → ${window.location.origin}/${townId}/red-comercial/descuentos (B2B)
+  5. OFERTAS B2C VIP → ${window.location.origin}/${townId}/red-comercial/ofertas (B2C)
+  6. RECLUTAMIENTO PÚBLICO → ${window.location.origin}/${townId}/reclutamiento (Captación)
+  7. DIRECTORIO INDUSTRIAL → ${window.location.origin}/empresas (B2B Industrial)
+- Misiones activas: ${campaigns.filter(c => c.status === 'pending').length} campañas pendientes.
+` : '';
+
             const systemContext = `
 ${baseContext}
 
 DATA ACTUAL DEL CONTEXTO:
 - Local/Sección: "${shop.name}"
-${role === 'industrial' ? industrialContext : `
+${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingContext : `
 - Visitas: ${shop.visits || 0}
 - Suscriptores: ${shop.subscribers || 0}
 - Ofertas: ${shop.offers.map(o => `${o.name} (${o.price})`).join(', ')}
@@ -451,6 +501,21 @@ ${role === 'industrial' ? industrialContext : `
                                 </button>
                                 <button onClick={() => setInput('Recomendame proveedores de alimentos')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
                                     <Sparkles size={10} /> Proveedores
+                                </button>
+                            </>
+                        ) : isMarketing ? (
+                            <>
+                                <button onClick={() => setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse')} className="whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5">
+                                    <Megaphone size={10} /> Copy B2B
+                                </button>
+                                <button onClick={() => setInput('Armame una campaña para el fin de semana con las Ofertas VIP para clientes')} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5">
+                                    <Sparkles size={10} /> Campaña B2C
+                                </button>
+                                <button onClick={() => setInput('Quiero captar Embajadores, redactame el texto para el formulario de Reclutamiento')} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5">
+                                    <Bot size={10} /> Reclutar
+                                </button>
+                                <button onClick={() => setInput('¿Cuántas campañas tengo activas y qué landing conviene disparar primero?')} className="whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5">
+                                    <BarChart3 size={10} /> Estado
                                 </button>
                             </>
                         ) : (

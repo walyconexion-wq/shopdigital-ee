@@ -569,7 +569,12 @@ const MarketingPanelPage: React.FC = () => {
             </footer>
 
             {/* ARI Assistant Widget */}
-            <AriMerchantAssistant role={isEnterprisePath ? 'industrial' : 'merchant'} shop={marketingShop} />
+            <AriMerchantAssistant 
+                role={isEnterprisePath ? 'industrial' : 'marketing'} 
+                shop={marketingShop} 
+                townId={townId}
+                publicPages={publicPages.map(p => ({ title: p.title, desc: p.desc, path: p.path, target: p.target }))}
+            />
         </div>
     );
 };
