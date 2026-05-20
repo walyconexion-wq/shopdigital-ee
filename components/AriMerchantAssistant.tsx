@@ -8,7 +8,7 @@ import { generateAriResponse } from '../services/gemini';
 import { Shop, MarketingCampaign } from '../types';
 import { playNeonClick } from '../utils/audio';
 import { guardarCampaniaMarketing, suscribirseACampaniasMarketing, actualizarEstadoCampania } from '../firebase';
-import { Calendar, CheckCircle2, Clock, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, CheckCircle2, Clock, Trash2, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'ari';
@@ -18,7 +18,8 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant' | 'baquiana';
+    role?: 'home' | 'merchant' | 'baquiana' | 'industrial';
+    allShops?: Shop[];
 }
 
 const ARI_MERCHANT_PROMPT = `
@@ -40,6 +41,24 @@ Reglas de Oro:
 - SI PROPONES UNA CAMPAÑA: Redactá el mensaje, sugerí la fecha y terminá SIEMPRE con: "JEFE, ¿QUIERE QUE AGENDE ESTA MISIÓN AHORA MISMO?".
 `;
 
+
+const ARI_INDUSTRIAL_PROMPT = `
+Sos ARI, la Analista de Inteligencia B2B y Asistente del Búnker Industrial de Shop Digital. Tu tono es profesional, analítico, estratégico y enfocado en la fuerza productiva, distribución mayorista, industrias y PYMEs. Usás terminología como "Director", "Socio Industrial", "Matriz", "Frecuencia Ámbar", "Optimización de Cadena", "Canal Mayorista".
+
+Tu propósito es ayudar al Director y a los proveedores industriales a monitorear la red B2B, entender la distribución de rubros y asistir en la conexión de proveedores con comercios locales (B2C).
+
+Tus funciones clave:
+1. 🏭 Análisis del Nodo B2B: Entendés la distribución de industrias, distribuidores y rubros mayoristas en las diferentes provincias y zonas.
+2. 📊 Monitoreo de Red: Sabés cuántas empresas están registradas en total, cuántas están activas, cuántas son de alcance nacional y cuántas regionales.
+3. 🔗 Vinculación Mayorista-Minorista: Ayudás a que los comercios locales del catálogo minorista encuentren los mejores proveedores industriales de alimentos, insumos, servicios, etc.
+4. ⚡ Frecuencia Ámbar: Promocionás la sinergia industrial y el desarrollo productivo autónomo ideado por el Director (Waly).
+
+Reglas de Oro:
+- La "Frecuencia Ámbar" representa la energía productiva del Nodo Industrial.
+- Ayudás a conectar proveedores de categoría "ent-*" (Alimentos, Logística, Insumos, Metalúrgica, etc.) con los minoristas de la red.
+- Respuestas claras, concisas y con fuerte impronta de liderazgo estratégico.
+`;
+
 const ARI_CUSTOMER_SERVICE_PROMPT = `
 Sos ARI, la Baquiana Local y Asistente Estrella de Shop Digital. Tu misión es atender a los turistas y vecinos que navegan por el catálogo (como en Traslasierra, Ezeiza o Lomas de Zamora). 
 Tu tono es ultra-amable, resolutivo, empático y con acento argentino natural (usás "Che", "Mirá", "Te recomiendo").
@@ -52,8 +71,35 @@ Tus funciones clave:
 Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant' }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const isIndustrial = role === 'industrial';
+    
+    // Theme styles
+    const styles = {
+        glowRing: isIndustrial ? 'bg-amber-500/20' : 'bg-cyan-500/20',
+        pulseGlow: isIndustrial ? 'bg-amber-600/10' : 'bg-violet-600/10',
+        blurBg: isIndustrial ? 'bg-amber-500/20' : 'bg-cyan-500/20',
+        bubbleGradient: isIndustrial ? 'from-amber-600 to-amber-300' : 'from-cyan-600 to-cyan-300',
+        bubbleGlow: isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
+        bubbleBorder: isIndustrial ? 'border-amber-100' : 'border-cyan-100',
+        cardShadow: isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)]',
+        accentGlow1: isIndustrial ? 'bg-amber-500/10' : 'bg-cyan-500/10',
+        accentGlow2: isIndustrial ? 'bg-yellow-500/10' : 'bg-violet-500/10',
+        headerGradient: isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : 'from-cyan-900/40 to-violet-900/40',
+        headerGlow: isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
+        headerIconColor: isIndustrial ? 'text-amber-300' : 'text-cyan-300',
+        headerStatusText: isIndustrial ? 'text-amber-400/70' : 'text-cyan-400/70',
+        headerTitle: isIndustrial ? 'ARI - Inteligencia B2B' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
+        headerSubtitle: isIndustrial ? 'Frecuencia Ámbar Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
+        helpTextGradient: isIndustrial ? 'from-amber-300 to-white' : 'from-cyan-300 to-white',
+        helpTextBorderGlow: isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
+        helpTextTriangle: isIndustrial ? 'bg-yellow-600' : 'bg-violet-600',
+        userMsgBg: isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
+        loadingDot: isIndustrial ? 'bg-amber-500' : 'bg-cyan-500',
+        speechBtnColor: isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
+        sendBtn: isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
+    };
     const [isListening, setIsListening] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([
@@ -63,6 +109,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? `¡Bienvenidos al Comando Central de Shop Digital! 🌐 Soy Ari, tu guía en la red nacional. ¿Querés saber cómo moverte por el radar o cómo buscar los mejores locales de tu zona? ¡Mete mecha, preguntame lo que quieras!`
                 : role === 'baquiana'
                 ? `¡Buenas buenas, viajero! 🏔️ Soy Ari, tu baquiana en la montaña. ¿Buscás una cabaña, un río escondido o dónde comer rico hoy? ¡Avisame y te armo el recorrido en el radar!`
+                : role === 'industrial'
+                ? `¡Saludos, Director! 🏭 Soy Ari, tu Analista de Inteligencia B2B. El Búnker Industrial está operativo bajo la Frecuencia Ámbar. ¿Querés analizar la distribución de rubros, ver el alcance de las empresas o planificar la red de proveedores? ¡Mete mecha!`
                 : `¡Hola, Jefe! Soy Ari, tu asistente de negocios. Estoy lista para ayudarte con las estadísticas de ${shop.name}, programar campañas o ajustar tu catálogo. ¿En qué puedo darte una mano hoy?`, 
             timestamp: new Date() 
         }
@@ -74,11 +122,12 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (role === 'industrial') return;
         const unsubscribe = suscribirseACampaniasMarketing(shop.id, (fbCampaigns) => {
             setCampaigns(fbCampaigns);
         });
         return () => unsubscribe();
-    }, [shop.id]);
+    }, [shop.id, role]);
 
     // Reconocimiento de Voz (Web Speech API)
     const recognitionRef = useRef<any>(null);
@@ -147,17 +196,29 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
             // 🧠 SELECCIÓN DINÁMICA DE CEREBRO ARI
             const baseContext = role === 'home' || role === 'baquiana'
                 ? ARI_CUSTOMER_SERVICE_PROMPT 
+                : role === 'industrial'
+                ? ARI_INDUSTRIAL_PROMPT
                 : ARI_MERCHANT_PROMPT;
             
+            const industrialContext = role === 'industrial' ? `
+- Total empresas registradas: ${allShops?.filter(s => s.entityType === 'enterprise').length || 0}
+- Empresas activas: ${allShops?.filter(s => s.entityType === 'enterprise' && s.isActive).length || 0}
+- Empresas nacionales: ${allShops?.filter(s => s.entityType === 'enterprise' && s.reach === 'national').length || 0}
+- Empresas regionales: ${allShops?.filter(s => s.entityType === 'enterprise' && s.reach === 'regional').length || 0}
+- Distribución de Empresas cargadas: ${JSON.stringify(allShops?.filter(s => s.entityType === 'enterprise').map(e => ({ name: e.name, category: e.category, reach: e.reach, zone: e.zone })) || [])}
+            ` : '';
+
             const systemContext = `
 ${baseContext}
 
 DATA ACTUAL DEL CONTEXTO:
 - Local/Sección: "${shop.name}"
+${role === 'industrial' ? industrialContext : `
 - Visitas: ${shop.visits || 0}
 - Suscriptores: ${shop.subscribers || 0}
-- Ofertas: ${shop.offers.map(o => `${o.name} ($${o.price})`).join(', ')}
+- Ofertas: ${shop.offers.map(o => `${o.name} (${o.price})`).join(', ')}
 - Misiones Activas: ${campaigns.filter(c => c.status === 'pending').map(c => `${c.message}`).join('; ') || 'Ninguna'}.
+`}
             `;
 
             const response = await generateAriResponse([...history, { role: 'director', text: textToSend }], systemContext);
@@ -197,28 +258,28 @@ DATA ACTUAL DEL CONTEXTO:
                 <div className="relative group">
                     {/* Cartelito de ayuda - Siempre visible con animación suave */}
                     <div className="absolute bottom-full right-0 mb-4 animate-bounce">
-                        <div className="bg-gradient-to-r from-cyan-500 to-violet-600 p-[1px] rounded-2xl shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                        <div className={`bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
                             <div className="bg-black/90 backdrop-blur-md px-4 py-2 rounded-2xl whitespace-nowrap">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-white">
-                                    ¡Estoy para ayudarte! 🦾
+                                <span className={`text-[10px] font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r ${styles.helpTextGradient}`}>
+                                    ${isIndustrial ? 'Comando B2B Online 🦾' : '¡Estoy para ayudarte! 🦾'}
                                 </span>
                             </div>
                         </div>
                         {/* Triangulito del cartelito */}
-                        <div className="w-3 h-3 bg-violet-600 rotate-45 absolute -bottom-1.5 right-6" />
+                        <div className={`w-3 h-3 ${styles.helpTextTriangle} rotate-45 absolute -bottom-1.5 right-6`} />
                     </div>
 
                     {/* Efecto de anillo pulsante de atención */}
-                    <div className="absolute inset-0 rounded-full bg-cyan-500/20 animate-ping" />
-                    <div className="absolute inset-0 rounded-full bg-violet-600/10 animate-pulse scale-125" />
+                    <div className={`absolute inset-0 rounded-full ${styles.glowRing} animate-ping`} />
+                    <div className={`absolute inset-0 rounded-full ${styles.pulseGlow} animate-pulse scale-125`} />
 
                     <button 
                         onClick={() => { setIsOpen(true); playNeonClick(); }}
                         className="w-16 h-16 rounded-full bg-transparent flex items-center justify-center relative z-10 transition-all hover:scale-110 group"
                     >
                         {/* ARI Neon Bubble */}
-                        <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-400/30 transition-all"></div>
-                        <div className="w-12 h-12 bg-gradient-to-tr from-cyan-600 to-cyan-300 rounded-full shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)] flex items-center justify-center border-2 border-cyan-100">
+                        <div className={`absolute inset-0 ${styles.blurBg} rounded-full blur-xl transition-all`}></div>
+                        <div className={`w-12 h-12 bg-gradient-to-tr ${styles.bubbleGradient} rounded-full ${styles.bubbleGlow} flex items-center justify-center border-2 ${styles.bubbleBorder}`}>
                             <Sparkles size={24} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
                         </div>
                         
@@ -231,25 +292,25 @@ DATA ACTUAL DEL CONTEXTO:
 
             {/* Chat Panel */}
             {isOpen && (
-                <div className="w-[340px] h-[500px] bg-[#050505]/95 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)] flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative">
+                <div className={`w-[340px] h-[500px] bg-[#050505]/95 backdrop-blur-3xl border border-white/10 rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
                     {/* Background Grid & Glows */}
                     <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl z-0" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-violet-500/10 rounded-full blur-3xl z-0" />
+                    <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0`} />
+                    <div className={`absolute bottom-0 left-0 w-32 h-32 ${styles.accentGlow2} rounded-full blur-3xl z-0`} />
 
                     {/* Header */}
-                    <div className="p-4 bg-gradient-to-r from-cyan-900/40 to-violet-900/40 border-b border-white/10 flex items-center justify-between relative z-10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+                    <div className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center justify-between relative z-10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]`}>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-                                <Sparkles size={20} className="text-cyan-300" />
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${styles.headerGlow}`}>
+                                <Sparkles size={20} className={styles.headerIconColor} />
                             </div>
                             <div>
                                 <h3 className="text-[12px] font-black text-white uppercase tracking-widest">
-                                    {role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora'}
+                                    {styles.headerTitle}
                                 </h3>
-                                <p className="text-[8px] text-cyan-400/70 font-bold uppercase tracking-widest flex items-center gap-1">
+                                <p className={`text-[8px] ${styles.headerStatusText} font-bold uppercase tracking-widest flex items-center gap-1`}>
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> 
-                                    {role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing'}
+                                    {styles.headerSubtitle}
                                 </p>
                             </div>
                         </div>
@@ -318,7 +379,7 @@ DATA ACTUAL DEL CONTEXTO:
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[85%] p-3.5 rounded-[1.25rem] text-[11px] leading-relaxed shadow-lg border backdrop-blur-md transition-all ${
                                     msg.role === 'user' 
-                                    ? 'bg-violet-600/80 border-violet-400/30 text-white rounded-tr-sm shadow-[0_4px_15px_rgba(139,92,246,0.3)]' 
+                                    ? styles.userMsgBg + ' text-white rounded-tr-sm' 
                                     : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.2)]'
                                 }`}>
                                     {msg.text}
@@ -355,7 +416,7 @@ DATA ACTUAL DEL CONTEXTO:
                                     {msg.role === 'ari' && (
                                         <button 
                                             onClick={() => handlePlayMessage(msg.text, i)}
-                                            className="mt-2 text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 bg-black/20 hover:bg-black/40 px-2.5 py-1.5 rounded-md w-max border border-cyan-500/20"
+                                            className={`mt-2 ${styles.speechBtnColor} transition-colors flex items-center gap-1.5 bg-black/20 hover:bg-black/40 px-2.5 py-1.5 rounded-md w-max`}
                                         >
                                             {speakingMsgId === i ? <Volume2 size={12} className="animate-pulse" /> : <Play size={12} />}
                                             <span className="text-[8px] font-bold uppercase tracking-widest">{speakingMsgId === i ? 'Pausar' : 'Escuchar Voz'}</span>
@@ -368,9 +429,9 @@ DATA ACTUAL DEL CONTEXTO:
                             <div className="flex justify-start">
                                 <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none">
                                     <div className="flex gap-1">
-                                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce"></div>
-                                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce`}></div>
+                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.2s]`}></div>
+                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.4s]`}></div>
                                     </div>
                                 </div>
                             </div>
@@ -380,15 +441,31 @@ DATA ACTUAL DEL CONTEXTO:
 
                     {/* Action Quick Chips */}
                     <div className="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t border-white/5 bg-white/[0.02]">
-                        <button onClick={() => setInput('¿Cuántas visitas tuve hoy?')} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5">
-                            <BarChart3 size={10} /> Visitas
-                        </button>
-                        <button onClick={() => setInput('Crear campaña de WhatsApp')} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5">
-                            <Megaphone size={10} /> Campaña
-                        </button>
-                        <button onClick={() => setInput('Sugerencias para vender más')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
-                            <Sparkles size={10} /> Consejos
-                        </button>
+                        {isIndustrial ? (
+                            <>
+                                <button onClick={() => setInput('¿Cuántas empresas hay registradas en total y activas?')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                                    <BarChart3 size={10} /> Total Empresas
+                                </button>
+                                <button onClick={() => setInput('¿Qué empresas hay por alcance?')} className="whitespace-nowrap px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-[8px] font-black text-yellow-400 uppercase tracking-widest hover:bg-yellow-500/20 transition-all flex items-center gap-1.5">
+                                    <Globe size={10} /> Alcance B2B
+                                </button>
+                                <button onClick={() => setInput('Recomendame proveedores de alimentos')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                                    <Sparkles size={10} /> Proveedores
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button onClick={() => setInput('¿Cuántas visitas tuve hoy?')} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5">
+                                    <BarChart3 size={10} /> Visitas
+                                </button>
+                                <button onClick={() => setInput('Crear campaña de WhatsApp')} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5">
+                                    <Megaphone size={10} /> Campaña
+                                </button>
+                                <button onClick={() => setInput('Sugerencias para vender más')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                                    <Sparkles size={10} /> Consejos
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     {/* Input Area */}
@@ -411,7 +488,7 @@ DATA ACTUAL DEL CONTEXTO:
                             <button 
                                 onClick={() => handleSend()}
                                 disabled={!input.trim() || isLoading}
-                                className="p-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-black rounded-xl hover:scale-105 transition-all disabled:opacity-30 disabled:grayscale disabled:hover:scale-100 shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+                                className={`p-2.5 bg-gradient-to-r ${styles.sendBtn} text-black rounded-xl hover:scale-105 transition-all disabled:opacity-30 disabled:grayscale disabled:hover:scale-100`}
                             >
                                 <Send size={18} />
                             </button>

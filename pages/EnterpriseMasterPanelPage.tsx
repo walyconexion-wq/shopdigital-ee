@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 const EnterpriseMasterPanelPage: React.FC = () => {
 
@@ -73,6 +74,32 @@ const EnterpriseMasterPanelPage: React.FC = () => {
         { title: '📢 Marketing Industrial', desc: 'Automatización y Campañas', path: `/empresas/marketing-inteligente`, icon: <Megaphone size={16} />, color: 'amber' },
         { title: '🎨 Editor de Tema', desc: 'Colores · Estaciones · Fondo', path: `/empresas/configuracion`, icon: <Settings size={16} />, color: 'violet' },
     ];
+
+    // Dummy Shop object for the B2B Node
+    const bunkerShop = useMemo<Shop>(() => ({
+        id: 'bunker-industrial',
+        slug: 'bunker-industrial',
+        name: 'Búnker Industrial B2B',
+        entityType: 'enterprise',
+        isActive: true,
+        visits: 0,
+        subscribers: 0,
+        offers: [],
+        address: '',
+        category: '',
+        phone: '',
+        whatsapp: '',
+        instagram: '',
+        facebook: '',
+        tiktok: '',
+        website: '',
+        mapUrl: '',
+        rating: 5,
+        specialty: 'Industrial B2B',
+        image: '',
+        bannerImage: '',
+        createdAt: new Date().toISOString()
+    }), []);
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-amber-500/30">
@@ -249,6 +276,9 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                     🏭 Búnker Industrial · Control B2B
                 </p>
             </footer>
+            
+            {/* ARI industrial assistant widget */}
+            <AriMerchantAssistant role="industrial" shop={bunkerShop} allShops={allShops} />
         </div>
     );
 };
