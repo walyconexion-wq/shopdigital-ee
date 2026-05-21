@@ -179,7 +179,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                     style={{ backgroundColor: secondaryColor }}
                 />
                 <div className="absolute inset-0 w-full h-[10vh] opacity-5 pointer-events-none" 
-                     style={{ background: \`linear-gradient(to bottom, transparent, \${primaryColor}, transparent)\`, animation: 'scanline 6s linear infinite' }} />
+                     style={{ background: `linear-gradient(to bottom, transparent, ${primaryColor}, transparent)`, animation: 'scanline 6s linear infinite' }} />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/50 to-[#020617]/90"></div>
             </div>
 
@@ -193,7 +193,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             >
                 <div 
                     role="button" tabIndex={0} 
-                    onClick={() => { playNeonClick(); navigate(\`/empresas/control-maestro?provincia=\${provinciaParam}\`); }} 
+                    onClick={() => { playNeonClick(); navigate(`/empresas/control-maestro?provincia=${provinciaParam}`); }} 
                     className="absolute top-10 left-6 hover:opacity-70 cursor-pointer transition-transform hover:scale-110 active:scale-95" 
                     style={{ color: primaryColor }}
                 >
@@ -204,7 +204,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                     <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-cyan-400 to-blue-500 text-center drop-shadow-md">
                         BÚNKER INDUSTRIAL
                     </h1>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] mt-2 text-center text-cyan-400 flex items-center justify-center gap-1 opacity-80" style={{ textShadow: \`0 0 10px \${hexToRgba(primaryColor, 0.5)}\` }}>
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] mt-2 text-center text-cyan-400 flex items-center justify-center gap-1 opacity-80" style={{ textShadow: `0 0 10px ${hexToRgba(primaryColor, 0.5)}` }}>
                         PROVINCIA: {currentProvince.name} <span className="text-[12px]">{currentProvince.emoji}</span>
                     </p>
                     <div className="mt-3 drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]">
@@ -245,10 +245,10 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                 <button 
                                     key={town.id}
                                     onClick={() => handleSelectTown(town.id)}
-                                    className={\`py-5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer \${isSelected ? town.activeBg : 'bg-white/[0.02] border-white/10 opacity-60 hover:opacity-100 hover:border-cyan-500/30'}\`}
+                                    className={`py-5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-white/[0.02] border-white/10 opacity-60 hover:opacity-100 hover:border-cyan-500/30'}`}
                                 >
                                     <Icon size={20} className={isSelected ? town.iconClass : 'text-white/40'} />
-                                    <span className={\`text-[9px] font-black uppercase tracking-[0.2em] \${isSelected ? 'text-white' : 'text-white/40'}\`}>
+                                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${isSelected ? 'text-white' : 'text-white/40'}`}>
                                         {town.label}
                                     </span>
                                 </button>
@@ -262,20 +262,20 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                         {/* 🛡️ ACCESO DIRECTO AL BÚNKER CENTRAL */}
                         <div 
                             role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/bunker-waly\`); }}
+                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/bunker-waly`); }}
                             className="glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group"
                             style={{ borderColor: hexToRgba(secondaryColor, 0.5) }}
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
                             <Zap size={18} className="text-blue-400 animate-pulse" />
-                            <span className="text-[12px] text-blue-200" style={{ textShadow: \`0 0 10px \${hexToRgba(secondaryColor, 0.8)}\` }}>BÚNKER CENTRAL B2C</span>
+                            <span className="text-[12px] text-blue-200" style={{ textShadow: `0 0 10px ${hexToRgba(secondaryColor, 0.8)}` }}>BÚNKER CENTRAL B2C</span>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             {/* 🎨 DISEÑADOR DE INTERFAZ */}
                             <div 
                                 role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/tablero-maestro/configuracion\`); }} 
+                                onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/configuracion`); }} 
                                 className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
                             >
                                 <Palette size={20} className="text-pink-400" />
@@ -286,7 +286,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             {/* 🏭 LA FÁBRICA */}
                             <div 
                                 role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/tablero-maestro/fabrica\`); }} 
+                                onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/fabrica`); }} 
                                 className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
                             >
                                 <Factory size={20} className="text-emerald-400" />
@@ -298,17 +298,17 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                         {/* 🏭 NODO EMPRESARIAL B2B MAIN BUTTON */}
                         <div 
                             role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(\`/empresas\`); }} 
+                            onClick={() => { playNeonClick(); navigate(`/empresas`); }} 
                             className="w-full glass-card-neon p-6 rounded-3xl font-[1000] uppercase tracking-widest shadow-[0_0_30px_rgba(6,182,212,0.15)] active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
                             style={{ 
-                                background: \`linear-gradient(145deg, \${hexToRgba(secondaryColor, 0.2)}, \${hexToRgba(primaryColor, 0.1)})\`,
+                                background: `linear-gradient(145deg, ${hexToRgba(secondaryColor, 0.2)}, ${hexToRgba(primaryColor, 0.1)})`,
                                 borderColor: primaryColor
                             }}
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
                             <div className="flex items-center gap-3 pointer-events-none">
-                                <Globe size={24} className="text-cyan-300" style={{ filter: \`drop-shadow(0 0 10px \${primaryColor})\` }} />
-                                <span className="text-[16px] text-white" style={{ textShadow: \`0 0 15px \${primaryColor}\` }}>NODO B2B MAESTRO</span>
+                                <Globe size={24} className="text-cyan-300" style={{ filter: `drop-shadow(0 0 10px ${primaryColor})` }} />
+                                <span className="text-[16px] text-white" style={{ textShadow: `0 0 15px ${primaryColor}` }}>NODO B2B MAESTRO</span>
                             </div>
                             <span className="text-[9px] text-cyan-200/80 uppercase tracking-[0.3em] pointer-events-none mt-1">Directorio · Mayoristas</span>
                         </div>
@@ -317,7 +317,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             {/* 🎨 EDITOR DE TEMA Y FONDO */}
                             <div 
                                 role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(\`/empresas/configuracion\`); }} 
+                                onClick={() => { playNeonClick(); navigate(`/empresas/configuracion`); }} 
                                 className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
                             >
                                 <Palette size={16} className="text-violet-400" />
@@ -327,7 +327,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             {/* 📢 MARKETING INTELIGENTE */}
                             <div 
                                 role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(\`/empresas/marketing-inteligente\`); }} 
+                                onClick={() => { playNeonClick(); navigate(`/empresas/marketing-inteligente`); }} 
                                 className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
                             >
                                 <Megaphone size={16} className="text-blue-400" />
@@ -364,7 +364,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                             <div 
                                                 role="button" tabIndex={0}
                                                 onClick={(e) => { e.stopPropagation(); handleCopy(page.path); }}
-                                                className={\`w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer \${copiedPath === page.path ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'}\`}
+                                                className={`w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${copiedPath === page.path ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'}`}
                                             >
                                                 {copiedPath === page.path ? <Check size={12} /> : <Copy size={12} />}
                                             </div>
@@ -379,17 +379,17 @@ const EnterpriseMasterBoardPage: React.FC = () => {
 
                         {/* 📡 ACCESO AL CENTRO DE TRANSMISIÓN */}
                         <button 
-                            onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/director/transmision-en-vivo\`); }}
+                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/director/transmision-en-vivo`); }}
                             className="w-full mt-6 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all"
                             style={{
-                                background: \`linear-gradient(135deg, \${hexToRgba('#ef4444', 0.2)}, \${hexToRgba('#b91c1c', 0.3)})\`,
-                                border: \`1px solid \${hexToRgba('#ef4444', 0.4)}\`,
-                                boxShadow: \`0 0 25px \${hexToRgba('#ef4444', 0.15)}\`
+                                background: `linear-gradient(135deg, ${hexToRgba('#ef4444', 0.2)}, ${hexToRgba('#b91c1c', 0.3)})`,
+                                border: `1px solid ${hexToRgba('#ef4444', 0.4)}`,
+                                boxShadow: `0 0 25px ${hexToRgba('#ef4444', 0.15)}`
                             }}
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-400/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
                             <Megaphone size={18} className="text-red-400 animate-pulse" />
-                            <span style={{ textShadow: \`0 0 10px \${hexToRgba('#ef4444', 0.8)}\` }}>CENTRO DE TRANSMISIÓN EN VIVO</span>
+                            <span style={{ textShadow: `0 0 10px ${hexToRgba('#ef4444', 0.8)}` }}>CENTRO DE TRANSMISIÓN EN VIVO</span>
                         </button>
                     </div>
                 )}
