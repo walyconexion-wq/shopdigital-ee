@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Lock, ChevronLeft, Factory, Zap, Globe, ExternalLink,
-    Check, Copy, Megaphone, MapPin, Palette, Terminal
+    Check, Copy, Megaphone, MapPin, Palette, Terminal, ShieldAlert
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
@@ -20,9 +20,9 @@ const PROVINCES = [
 ];
 
 const STATIC_TOWNS = [
-    { id: 'ezeiza', name: 'Ezeiza', label: 'Ezeiza', icon: Globe, color: '#22d3ee', activeBg: 'bg-cyan-500/20 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.2)]', iconClass: 'text-cyan-400' },
-    { id: 'esteban-echeverria', name: 'Esteban Echeverría', label: 'E. Echeverría', icon: Lock, color: '#a855f7', activeBg: 'bg-violet-500/20 border-violet-500 shadow-[0_0_30px_rgba(139,92,246,0.2)]', iconClass: 'text-violet-400' },
-    { id: 'mina-clavero', name: 'Traslasierra', label: 'Traslasierra', icon: MapPin, color: '#10b981', activeBg: 'bg-emerald-500/20 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.2)]', iconClass: 'text-emerald-400' }
+    { id: 'ezeiza', name: 'Ezeiza', label: 'Ezeiza', icon: Globe, color: '#06b6d4', activeBg: 'bg-cyan-500/20 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.3)]', iconClass: 'text-cyan-400' },
+    { id: 'esteban-echeverria', name: 'Esteban Echeverría', label: 'E. Echeverría', icon: Lock, color: '#3b82f6', activeBg: 'bg-blue-500/20 border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.3)]', iconClass: 'text-blue-400' },
+    { id: 'mina-clavero', name: 'Traslasierra', label: 'Traslasierra', icon: MapPin, color: '#10b981', activeBg: 'bg-emerald-500/20 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)]', iconClass: 'text-emerald-400' }
 ];
 
 const EnterpriseMasterBoardPage: React.FC = () => {
@@ -44,9 +44,6 @@ const EnterpriseMasterBoardPage: React.FC = () => {
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
 
-    // Chameleon Config for visual style based on the selected town
-    const [zoneConfig, setZoneConfig] = useState<any>({ primaryColor: '#a855f7', townName: 'Esteban Echeverría' });
-
     // Sync selectedTownId state with URL query param if changed externally
     useEffect(() => {
         if (provinciaParam === 'cordoba') {
@@ -55,22 +52,6 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             setSelectedTownId(prev => (prev === 'ezeiza' || prev === 'esteban-echeverria') ? prev : 'esteban-echeverria');
         }
     }, [provinciaParam]);
-
-    // Subscribe to selected town config for theme colors
-    useEffect(() => {
-        if (!selectedTownId) return;
-        const unsub = subscribeToGlobalConfig((cfg) => {
-            if (cfg) setZoneConfig(cfg);
-        }, selectedTownId);
-        return () => unsub();
-    }, [selectedTownId]);
-
-    const activeTownName = useMemo(() => {
-        if (selectedTownId === 'mina-clavero') return 'Traslasierra';
-        if (selectedTownId === 'ezeiza') return 'Ezeiza';
-        if (selectedTownId === 'esteban-echeverria') return 'Esteban Echeverría';
-        return selectedTownId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    }, [selectedTownId]);
 
     const handleSelectTown = (townId: string) => {
         playNeonClick();
@@ -87,21 +68,6 @@ const EnterpriseMasterBoardPage: React.FC = () => {
         setTimeout(() => setCopiedPath(null), 2000);
     };
 
-    // Color conversion helper for HUD glows
-    const hexToRgba = (hex: string, alpha: number) => {
-        try {
-            const cleanHex = hex.replace('#', '');
-            const r = parseInt(cleanHex.slice(0, 2), 16) || 168;
-            const g = parseInt(cleanHex.slice(2, 4), 16) || 85;
-            const b = parseInt(cleanHex.slice(4, 6), 16) || 247;
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        } catch {
-            return `rgba(168, 85, 247, ${alpha})`;
-        }
-    };
-
-    const zoneColor = zoneConfig?.primaryColor || (selectedTownId === 'ezeiza' ? '#22d3ee' : selectedTownId === 'esteban-echeverria' ? '#a855f7' : '#10b981');
-
     // Filter static selector towns based on search term
     const filteredStaticTowns = useMemo(() => {
         if (!searchTerm.trim()) return STATIC_TOWNS;
@@ -110,6 +76,23 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             town.label.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [searchTerm]);
+
+    // Paleta Tech Neon Forzada para B2B
+    const primaryColor = '#06b6d4'; // Cyan
+    const secondaryColor = '#3b82f6'; // Azul Royal
+    const bgColor = '#020617'; // Slate 950
+
+    const hexToRgba = (hex: string, alpha: number) => {
+        try {
+            const cleanHex = hex.replace('#', '');
+            const r = parseInt(cleanHex.slice(0, 2), 16) || 6;
+            const g = parseInt(cleanHex.slice(2, 4), 16) || 182;
+            const b = parseInt(cleanHex.slice(4, 6), 16) || 212;
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        } catch {
+            return `rgba(6, 182, 212, ${alpha})`;
+        }
+    };
 
     // Management pages under Sistemas Internos (combining B2C and B2B specific tools)
     const managementPages = [
@@ -156,88 +139,97 @@ const EnterpriseMasterBoardPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#050A15] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
-            {/* Background Tecnológico — Modo Camaleón: responde al color de la zona */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-screen"></div>
+        <div className="min-h-screen text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30" style={{ backgroundColor: bgColor }}>
+            
+            <style>{`
+                @keyframes pulseGlow {
+                    0%, 100% { filter: drop-shadow(0 0 15px ${hexToRgba(primaryColor, 0.4)}); }
+                    50% { filter: drop-shadow(0 0 35px ${hexToRgba(primaryColor, 0.8)}); }
+                }
+                @keyframes scanline {
+                    0% { transform: translateY(-100%); }
+                    100% { transform: translateY(200%); }
+                }
+                .tech-grid-bg {
+                    background-size: 30px 30px;
+                    background-image: 
+                        linear-gradient(to right, ${hexToRgba(secondaryColor, 0.04)} 1px, transparent 1px),
+                        linear-gradient(to bottom, ${hexToRgba(secondaryColor, 0.04)} 1px, transparent 1px);
+                }
+                .glass-card-neon {
+                    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.4));
+                    backdrop-filter: blur(12px);
+                    border: 1px solid ${hexToRgba(primaryColor, 0.3)};
+                    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+                }
+                .glass-card-neon:hover {
+                    box-shadow: 0 0 20px ${hexToRgba(primaryColor, 0.2)};
+                    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(0,0,0,0.6));
+                }
+            `}</style>
+
+            {/* Background Tecnológico */}
+            <div className="fixed inset-0 pointer-events-none z-0 tech-grid-bg">
                 <div 
-                    className="absolute top-0 right-0 w-[50vw] h-[50vw] rounded-full blur-[120px]"
-                    style={{ backgroundColor: hexToRgba(zoneColor, 0.15) }}
+                    className="absolute top-0 right-0 w-[50vw] h-[50vw] rounded-full blur-[150px] opacity-20 mix-blend-screen"
+                    style={{ backgroundColor: primaryColor }}
                 />
                 <div 
-                    className="absolute bottom-0 left-0 w-[50vw] h-[50vw] rounded-full blur-[120px]"
-                    style={{ backgroundColor: hexToRgba(zoneColor, 0.1) }}
+                    className="absolute bottom-0 left-0 w-[50vw] h-[50vw] rounded-full blur-[150px] opacity-20 mix-blend-screen"
+                    style={{ backgroundColor: secondaryColor }}
                 />
-                <div 
-                    className="absolute inset-0"
-                    style={{ 
-                        backgroundImage: `linear-gradient(${hexToRgba(zoneColor, 0.05)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(zoneColor, 0.05)} 1px, transparent 1px)`,
-                        backgroundSize: '40px 40px'
-                    }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050A15]/50 to-[#050A15]/90"></div>
+                <div className="absolute inset-0 w-full h-[10vh] opacity-5 pointer-events-none" 
+                     style={{ background: \`linear-gradient(to bottom, transparent, \${primaryColor}, transparent)\`, animation: 'scanline 6s linear infinite' }} />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/50 to-[#020617]/90"></div>
             </div>
 
             {/* Header Sticky Console */}
             <div 
                 className="backdrop-blur-xl border-b pt-10 pb-6 px-6 relative z-10 sticky top-0 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                 style={{ 
-                    background: 'rgba(24,24,27,0.80)',
-                    borderBottomColor: hexToRgba(zoneColor, 0.3)
+                    background: 'rgba(2, 6, 23, 0.85)',
+                    borderBottomColor: hexToRgba(primaryColor, 0.3)
                 }}
             >
                 <div 
                     role="button" tabIndex={0} 
-                    onClick={() => { playNeonClick(); navigate(`/empresas/control-maestro?provincia=${provinciaParam}`); }} 
-                    className="absolute top-10 left-6 hover:opacity-70 cursor-pointer" 
-                    style={{ color: zoneColor }}
+                    onClick={() => { playNeonClick(); navigate(\`/empresas/control-maestro?provincia=\${provinciaParam}\`); }} 
+                    className="absolute top-10 left-6 hover:opacity-70 cursor-pointer transition-transform hover:scale-110 active:scale-95" 
+                    style={{ color: primaryColor }}
                 >
                     <ChevronLeft size={24} />
                 </div>
                 <div className="flex flex-col items-center">
-                    <Terminal size={36} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 20px ${hexToRgba(zoneColor, 0.6)})` }} />
-                    <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-center drop-shadow-md">
-                        TABLERO MAESTRO INDUSTRIAL
+                    <Terminal size={36} className="mb-2" style={{ color: primaryColor, animation: 'pulseGlow 4s infinite alternate' }} />
+                    <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-cyan-400 to-blue-500 text-center drop-shadow-md">
+                        BÚNKER INDUSTRIAL
                     </h1>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] mt-2 text-center text-sky-400 drop-shadow-[0_0_10px_rgba(56,189,248,0.5)] flex items-center justify-center gap-1">
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] mt-2 text-center text-cyan-400 flex items-center justify-center gap-1 opacity-80" style={{ textShadow: \`0 0 10px \${hexToRgba(primaryColor, 0.5)}\` }}>
                         PROVINCIA: {currentProvince.name} <span className="text-[12px]">{currentProvince.emoji}</span>
                     </p>
-                    <div className="mt-2">
+                    <div className="mt-3 drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]">
                         <DobermanBadge />
                     </div>
-                    {/* Green Outline Search Capsule */}
-                    <div className="mt-4 w-full max-w-[280px] relative">
+                    {/* Search Capsule */}
+                    <div className="mt-5 w-full max-w-[280px] relative">
                         <input 
                             type="text" 
                             placeholder="🔍 BUSCAR LOCALIDAD..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-[#050A15]/60 text-emerald-400 placeholder-emerald-500/40 border-2 border-emerald-500/40 rounded-full py-2 px-4 text-[10px] font-bold text-center tracking-widest uppercase outline-none focus:border-emerald-400 focus:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all"
+                            className="w-full bg-[#020617]/80 text-cyan-300 placeholder-cyan-500/40 border border-cyan-500/40 rounded-full py-2.5 px-4 text-[10px] font-bold text-center tracking-widest uppercase outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all backdrop-blur-md"
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="px-6 mt-8 space-y-10 relative z-10 pb-20 max-w-lg mx-auto">
+            <div className="px-6 mt-8 space-y-6 relative z-10 pb-20 max-w-lg mx-auto">
                 
-                {/* 🛡️ ACCESO DIRECTO AL BÚNKER CENTRAL (Solo Director) */}
-                {selectedTownId && (
-                    <div 
-                        role="button" tabIndex={0}
-                        onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/bunker-waly`); }}
-                        className="w-full bg-gradient-to-r from-violet-900/50 to-indigo-900/50 text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(139,92,246,0.2)] relative overflow-hidden group"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/0 via-white/5 to-violet-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                        <Zap size={18} className="text-violet-400" />
-                        <span className="text-[13px] text-violet-300">BÚNKER CENTRAL DEL DIRECTOR - WALY</span>
-                    </div>
-                )}
-
                 {/* SELECTORES DE LOCALIDADES ACTIVAS */}
                 {filteredStaticTowns.length === 0 ? (
-                    <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 text-center animate-in fade-in duration-300">
-                        <MapPin size={20} className="text-emerald-400 mx-auto mb-2 opacity-50" />
-                        <p className="text-[11px] font-black text-emerald-400 uppercase tracking-wider">
+                    <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-2xl p-6 text-center animate-in fade-in duration-300">
+                        <MapPin size={20} className="text-cyan-400 mx-auto mb-2 opacity-50" />
+                        <p className="text-[11px] font-black text-cyan-400 uppercase tracking-wider">
                             No se encontraron localidades
                         </p>
                         <p className="text-[8px] text-white/50 uppercase tracking-widest mt-1">
@@ -245,7 +237,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 animate-in fade-in slide-in-from-top-4 duration-1000">
                         {filteredStaticTowns.map((town) => {
                             const isSelected = town.id === selectedTownId;
                             const Icon = town.icon;
@@ -253,11 +245,11 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                 <button 
                                     key={town.id}
                                     onClick={() => handleSelectTown(town.id)}
-                                    className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
+                                    className={\`py-5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer \${isSelected ? town.activeBg : 'bg-white/[0.02] border-white/10 opacity-60 hover:opacity-100 hover:border-cyan-500/30'}\`}
                                 >
-                                    <Icon size={24} className={isSelected ? town.iconClass : 'text-white/40'} />
-                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isSelected ? 'text-white' : 'text-white/20'}`}>
-                                        Zona {town.label}
+                                    <Icon size={20} className={isSelected ? town.iconClass : 'text-white/40'} />
+                                    <span className={\`text-[9px] font-black uppercase tracking-[0.2em] \${isSelected ? 'text-white' : 'text-white/40'}\`}>
+                                        {town.label}
                                     </span>
                                 </button>
                             );
@@ -266,82 +258,90 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                 )}
 
                 {selectedTownId && (
-                    <>
-                        {/* 🎨 DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR */}
+                    <div className="flex flex-col gap-4">
+                        {/* 🛡️ ACCESO DIRECTO AL BÚNKER CENTRAL */}
                         <div 
                             role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/configuracion`); }} 
-                            className="w-full bg-zinc-900/40 text-white p-6 rounded-3xl font-[1000] uppercase tracking-widest border transition-all flex flex-col items-center justify-center gap-2 cursor-pointer group hover:bg-zinc-800"
-                            style={{ borderColor: hexToRgba(zoneColor, 0.3) }}
+                            onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/bunker-waly\`); }}
+                            className="glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group"
+                            style={{ borderColor: hexToRgba(secondaryColor, 0.5) }}
                         >
-                            <div className="flex items-center gap-3">
-                                <Palette size={20} style={{ color: zoneColor }} />
-                                <span className="text-[14px]">DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR</span>
-                            </div>
-                            <span className="text-[8px] opacity-40 uppercase tracking-[0.3em]">Control visual total · Colores · Temas · Identidad</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
+                            <Zap size={18} className="text-blue-400 animate-pulse" />
+                            <span className="text-[12px] text-blue-200" style={{ textShadow: \`0 0 10px \${hexToRgba(secondaryColor, 0.8)}\` }}>BÚNKER CENTRAL B2C</span>
                         </div>
 
-                        {/* 🏭 NODO EMPRESARIAL B2B */}
-                        <div 
-                            role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(`/empresas`); }} 
-                            className="w-full bg-gradient-to-r from-amber-700/80 to-orange-600/80 text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.25)] border border-amber-500/40 hover:from-amber-600 hover:to-orange-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                            <div className="flex items-center gap-2 pointer-events-none">
-                                <Factory size={18} className="text-amber-200" />
-                                <span className="text-[14px]">🏭 NODO EMPRESARIAL B2B</span>
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* 🎨 DISEÑADOR DE INTERFAZ */}
+                            <div 
+                                role="button" tabIndex={0}
+                                onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/tablero-maestro/configuracion\`); }} 
+                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
+                            >
+                                <Palette size={20} className="text-pink-400" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-center text-pink-200">SINFONÍA EDITOR</span>
+                                <span className="text-[7px] text-center text-white/40 uppercase tracking-widest leading-tight">Configuración Visual</span>
                             </div>
-                            <span className="text-[8px] text-amber-200/80 italic pointer-events-none">DIRECTORIO INDUSTRIAL · PROVEEDORES · MAYORISTAS</span>
+
+                            {/* 🏭 LA FÁBRICA */}
+                            <div 
+                                role="button" tabIndex={0}
+                                onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/tablero-maestro/fabrica\`); }} 
+                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
+                            >
+                                <Factory size={20} className="text-emerald-400" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-center text-emerald-200">LA FÁBRICA</span>
+                                <span className="text-[7px] text-center text-white/40 uppercase tracking-widest leading-tight">Gestión Global</span>
+                            </div>
                         </div>
 
-                        {/* 🏭 LA FÁBRICA - VISIÓN GLOBAL */}
+                        {/* 🏭 NODO EMPRESARIAL B2B MAIN BUTTON */}
                         <div 
                             role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/fabrica`); }} 
-                            className="w-full bg-gradient-to-r from-amber-600/90 to-yellow-600/90 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.3)] border border-yellow-500/50 hover:from-amber-500 hover:to-yellow-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
+                            onClick={() => { playNeonClick(); navigate(\`/empresas\`); }} 
+                            className="w-full glass-card-neon p-6 rounded-3xl font-[1000] uppercase tracking-widest shadow-[0_0_30px_rgba(6,182,212,0.15)] active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
+                            style={{ 
+                                background: \`linear-gradient(145deg, \${hexToRgba(secondaryColor, 0.2)}, \${hexToRgba(primaryColor, 0.1)})\`,
+                                borderColor: primaryColor
+                            }}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                            <div className="flex items-center gap-2 pointer-events-none">
-                                <Factory size={14} className="text-white/80" />
-                                <span className="text-[14px]">🏭 LA FÁBRICA · VISIÓN GLOBAL</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-3 pointer-events-none">
+                                <Globe size={24} className="text-cyan-300" style={{ filter: \`drop-shadow(0 0 10px \${primaryColor})\` }} />
+                                <span className="text-[16px] text-white" style={{ textShadow: \`0 0 15px \${primaryColor}\` }}>NODO B2B MAESTRO</span>
                             </div>
-                            <span className="text-[8px] text-yellow-100 italic pointer-events-none">VER Y SALTAR A CUALQUIER ZONA · FORJAR NUEVAS CIUDADES</span>
+                            <span className="text-[9px] text-cyan-200/80 uppercase tracking-[0.3em] pointer-events-none mt-1">Directorio · Mayoristas</span>
                         </div>
 
-                        {/* 🎨 EDITOR DE TEMA Y FONDO */}
-                        <div 
-                            role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(`/empresas/configuracion`); }} 
-                            className="w-full bg-gradient-to-r from-purple-600/70 to-pink-600/70 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(168,85,247,0.2)] border border-purple-500/40 hover:from-purple-500 hover:to-pink-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                            <div className="flex items-center gap-2 pointer-events-none">
-                                <Palette size={14} className="text-purple-200" />
-                                <span className="text-[13px]">🎨 EDITOR DE TEMA Y FONDO</span>
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* 🎨 EDITOR DE TEMA Y FONDO */}
+                            <div 
+                                role="button" tabIndex={0}
+                                onClick={() => { playNeonClick(); navigate(\`/empresas/configuracion\`); }} 
+                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
+                            >
+                                <Palette size={16} className="text-violet-400" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-center text-violet-200">Editor B2B</span>
                             </div>
-                            <span className="text-[8px] text-purple-200/70 italic pointer-events-none">COLORES · ESTACIONES · BORDES · FONDO DE APP</span>
-                        </div>
 
-                        {/* 📢 MARKETING INTELIGENTE */}
-                        <div 
-                            role="button" tabIndex={0}
-                            onClick={() => { playNeonClick(); navigate(`/empresas/marketing-inteligente`); }} 
-                            className="w-full bg-gradient-to-r from-cyan-600/70 to-blue-600/70 text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.2)] border border-cyan-500/40 hover:from-cyan-500 hover:to-blue-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                            <div className="flex items-center gap-2 pointer-events-none">
-                                <Megaphone size={14} className="text-cyan-200" />
-                                <span className="text-[13px]">📢 MARKETING INTELIGENTE</span>
+                            {/* 📢 MARKETING INTELIGENTE */}
+                            <div 
+                                role="button" tabIndex={0}
+                                onClick={() => { playNeonClick(); navigate(\`/empresas/marketing-inteligente\`); }} 
+                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
+                            >
+                                <Megaphone size={16} className="text-blue-400" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-center text-blue-200">Marketing Bot</span>
                             </div>
-                            <span className="text-[8px] text-cyan-200/70 italic pointer-events-none">CEREBRO DEL BOT · CAMPAÑAS · FIDELIZACIÓN</span>
                         </div>
 
                         {/* SISTEMAS INTERNOS */}
-                        <section>
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4 flex items-center gap-2 border-b border-white/10 pb-2 mt-10">
-                                <Lock size={12} /> Sistemas Internos
-                            </h2>
+                        <section className="mt-8">
+                            <div className="flex items-center justify-center gap-2 mb-6 opacity-60">
+                                <ShieldAlert size={14} className="text-red-400" />
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-red-400/80">Sistemas Internos</h2>
+                                <div className="h-[1px] flex-1 bg-gradient-to-r from-red-500/20 to-transparent ml-2" />
+                            </div>
                             
                             <div className="grid grid-cols-1 gap-3">
                                 {managementPages.map((page, idx) => (
@@ -349,13 +349,14 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                         key={idx}
                                         role="button" tabIndex={0}
                                         onClick={() => { playNeonClick(); navigate(page.path); }}
-                                        className="bg-gradient-to-r from-red-500/10 to-orange-500/5 border border-red-500/20 rounded-2xl p-4 flex items-center justify-between group hover:border-red-400/40 active:scale-95 transition-all cursor-pointer"
+                                        className="glass-card-neon p-4 rounded-2xl flex items-center justify-between group active:scale-95 transition-all cursor-pointer"
+                                        style={{ borderColor: 'rgba(239, 68, 68, 0.2)', backgroundColor: 'rgba(239, 68, 68, 0.02)' }}
                                     >
                                         <div className="flex flex-col items-start text-left flex-1 pointer-events-none">
-                                            <h3 className="text-[12px] font-[1000] text-red-400 uppercase tracking-wider group-hover:text-red-300 transition-colors">
+                                            <h3 className="text-[11px] font-[1000] text-white/90 uppercase tracking-widest group-hover:text-cyan-300 transition-colors">
                                                 {page.title}
                                             </h3>
-                                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-1">
+                                            <p className="text-[8px] text-white/40 uppercase tracking-[0.2em] mt-1 line-clamp-1">
                                                 {page.desc}
                                             </p>
                                         </div>
@@ -363,12 +364,12 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                             <div 
                                                 role="button" tabIndex={0}
                                                 onClick={(e) => { e.stopPropagation(); handleCopy(page.path); }}
-                                                className={`w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                                                className={\`w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer \${copiedPath === page.path ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'}\`}
                                             >
-                                                {copiedPath === page.path ? <Check size={14} /> : <Copy size={14} />}
+                                                {copiedPath === page.path ? <Check size={12} /> : <Copy size={12} />}
                                             </div>
-                                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30 text-red-400 group-hover:bg-red-500/30 transition-colors">
-                                                <ExternalLink size={14} />
+                                            <div className="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/30 text-cyan-400 group-hover:bg-cyan-500/30 transition-colors">
+                                                <ExternalLink size={12} />
                                             </div>
                                         </div>
                                     </div>
@@ -378,24 +379,29 @@ const EnterpriseMasterBoardPage: React.FC = () => {
 
                         {/* 📡 ACCESO AL CENTRO DE TRANSMISIÓN */}
                         <button 
-                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/director/transmision-en-vivo`); }}
-                            className="w-full mt-8 py-5 bg-gradient-to-r from-red-700 via-red-600 to-red-700 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[12px] shadow-[0_6px_0_rgba(127,29,29,1),0_12px_40px_rgba(239,68,68,0.2)] active:translate-y-[6px] active:shadow-[0_0_0_rgba(127,29,29,1),0_5px_15px_rgba(239,68,68,0.1)] transition-all duration-75 flex items-center justify-center gap-3 relative overflow-hidden group border-2 border-red-500/20 cursor-pointer"
+                            onClick={() => { playNeonClick(); navigate(\`/\${selectedTownId}/director/transmision-en-vivo\`); }}
+                            className="w-full mt-6 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all"
+                            style={{
+                                background: \`linear-gradient(135deg, \${hexToRgba('#ef4444', 0.2)}, \${hexToRgba('#b91c1c', 0.3)})\`,
+                                border: \`1px solid \${hexToRgba('#ef4444', 0.4)}\`,
+                                boxShadow: \`0 0 25px \${hexToRgba('#ef4444', 0.15)}\`
+                            }}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                            <Megaphone size={20} className="drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-                            <span className="drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]">📡 Entrar al Centro de Transmisión en Vivo</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-400/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
+                            <Megaphone size={18} className="text-red-400 animate-pulse" />
+                            <span style={{ textShadow: \`0 0 10px \${hexToRgba('#ef4444', 0.8)}\` }}>CENTRO DE TRANSMISIÓN EN VIVO</span>
                         </button>
-                    </>
+                    </div>
                 )}
             </div>
 
             {/* Footer console */}
-            <footer className="w-full flex flex-col items-center gap-2 pt-10 pb-6 mt-12 border-t border-white/5 relative z-10">
-                <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.35em] text-center select-none">
-                    © 2026 · ShopDigital Network
+            <footer className="w-full flex flex-col items-center gap-2 pt-10 pb-6 mt-6 relative z-10 opacity-60">
+                <p className="text-[8px] font-black text-cyan-200/50 uppercase tracking-[0.35em] text-center select-none">
+                    SHOPDIGITAL NETWORKS © 2026
                 </p>
-                <p className="text-[7.5px] font-black text-amber-500/50 uppercase tracking-[0.25em] select-none" style={{ textShadow: '0 0 10px rgba(245,158,11,0.2)' }}>
-                    🏭 Nodo Industrial · Panel Maestro
+                <p className="text-[7.5px] font-black text-blue-400/50 uppercase tracking-[0.25em] select-none">
+                    NODO INDUSTRIAL · BÚNKER DE CONTROL
                 </p>
             </footer>
         </div>
