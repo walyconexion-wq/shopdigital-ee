@@ -163,7 +163,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                             </div>
                         </div>
                         <button
-                            onClick={() => { playNeonClick(); navigate(`/esteban-echeverria/embajador/empresas?provincia=${provinciaParam}`); }}
+                            onClick={() => { playNeonClick(); navigate(`/empresas/tablero-maestro?provincia=${provinciaParam}`); }}
                             className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] active:scale-95 hover:scale-105"
                         >
                             Ingresar
