@@ -44,85 +44,112 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
 
     const filteredEnterprises = useMemo(() => {
         if (!selectedCategory) return [];
-        // 🔍 DEBUG: Log para diagnosticar el filtro de empresas
-        console.log('[B2B DEBUG] allShops total:', allShops.length);
-        console.log('[B2B DEBUG] selectedCategory:', selectedCategory.id, selectedCategory.slug);
-        console.log('[B2B DEBUG] activeProvince:', activeProvince, '| activeReach:', activeReach);
         
         const enterprises = allShops.filter(shop => {
-            const isEnterprise = shop.entityType === 'enterprise' || (shop.category && shop.category.startsWith('ent-'));
-            if (isEnterprise) {
-                console.log('[B2B DEBUG] Found enterprise:', shop.name, '| cat:', shop.category, '| prov:', (shop as any).province, '| reach:', shop.reach);
-            }
-            return isEnterprise;
+            return shop.entityType === 'enterprise' || (shop.category && shop.category.startsWith('ent-'));
         });
 
-        console.log('[B2B DEBUG] Total enterprises found:', enterprises.length);
-
         return enterprises.filter(shop => {
-            const categoryMatch =
-                shop.category === selectedCategory.id ||
-                shop.category === selectedCategory.slug;
+            const categoryMatch = shop.category === selectedCategory.id || shop.category === selectedCategory.slug;
             const reachMatch = activeReach === 'all' || shop.reach === activeReach;
             const shopProv = (shop as any).province || 'buenos-aires';
             const provinceMatch = activeProvince === 'all' || shopProv === activeProvince;
-            
-            if (!categoryMatch) console.log('[B2B DEBUG] REJECTED by category:', shop.name, shop.category, 'vs', selectedCategory.id, '/', selectedCategory.slug);
-            if (!reachMatch) console.log('[B2B DEBUG] REJECTED by reach:', shop.name);
-            if (!provinceMatch) console.log('[B2B DEBUG] REJECTED by province:', shop.name, shopProv, 'vs', activeProvince);
-            
             return categoryMatch && reachMatch && provinceMatch;
         });
     }, [selectedCategory, allShops, activeReach, activeProvince]);
 
+    // Paleta Tech Neon
+    const primaryColor = '#06b6d4'; // Cyan
+    const secondaryColor = '#3b82f6'; // Azul Royal
+    const bgColor = '#020617'; // Slate 950
+
+    const hexToRgba = (hex: string, alpha: number) => {
+        try {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        } catch { return `rgba(6,182,212,${alpha})`; }
+    };
+
     if (!selectedCategory) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-white min-h-screen">
-                <Factory size={48} className="text-amber-400/30 mb-4" />
-                <p className="text-white/50 uppercase tracking-widest text-[10px] font-black">Sector Industrial no encontrado</p>
-                <button onClick={() => { playNeonClick(); navigate(`/empresas`); }} className="mt-4 text-amber-400 font-bold uppercase tracking-widest text-[10px]">Volver al Directorio</button>
+            <div className="flex flex-col items-center justify-center h-full text-white min-h-screen" style={{ backgroundColor: bgColor }}>
+                <Factory size={48} className="text-cyan-400/30 mb-4" />
+                <p className="text-cyan-100/50 uppercase tracking-widest text-[10px] font-black">Sector Industrial no encontrado</p>
+                <button onClick={() => { playNeonClick(); navigate(`/empresas`); }} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al Directorio</button>
             </div>
         );
     }
 
-    const formattedTown = 'NACIONAL';
-
     return (
-        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-transparent pb-10">
-            {/* HUD Background Industrial */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-40 right-[-10%] w-72 h-72 bg-amber-500/5 rounded-full blur-[100px]" />
-                <div className="absolute bottom-40 left-[-10%] w-72 h-72 bg-orange-500/5 rounded-full blur-[100px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(245,158,11,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(245,158,11,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-1000 relative overflow-hidden min-h-screen pb-10" style={{ backgroundColor: bgColor }}>
+            {/* ── CSS Animations Inline ── */}
+            <style>{`
+                @keyframes levitate {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-8px); }
+                }
+                @keyframes pulseGlow {
+                    0%, 100% { filter: drop-shadow(0 0 15px ${hexToRgba(primaryColor, 0.4)}); }
+                    50% { filter: drop-shadow(0 0 35px ${hexToRgba(primaryColor, 0.8)}); }
+                }
+                @keyframes scanline {
+                    0% { transform: translateY(-100%); }
+                    100% { transform: translateY(200%); }
+                }
+                .tech-grid-bg {
+                    background-size: 30px 30px;
+                    background-image: 
+                        linear-gradient(to right, ${hexToRgba(secondaryColor, 0.04)} 1px, transparent 1px),
+                        linear-gradient(to bottom, ${hexToRgba(secondaryColor, 0.04)} 1px, transparent 1px);
+                }
+                .glass-card-neon {
+                    background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.4));
+                    backdrop-filter: blur(12px);
+                    border: 1px solid ${hexToRgba(primaryColor, 0.2)};
+                    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+                }
+            `}</style>
+
+            {/* ── HUD Background Tech ── */}
+            <div className="fixed inset-0 pointer-events-none z-0 tech-grid-bg">
+                <div className="absolute top-40 right-[-10%] w-72 h-72 rounded-full blur-[120px] opacity-30 mix-blend-screen" style={{ backgroundColor: primaryColor }} />
+                <div className="absolute bottom-40 left-[-10%] w-72 h-72 rounded-full blur-[120px] opacity-40 mix-blend-screen" style={{ backgroundColor: secondaryColor }} />
+                
+                {/* Scanline Effect */}
+                <div className="absolute inset-0 w-full h-[20vh] opacity-10 pointer-events-none" 
+                     style={{ background: `linear-gradient(to bottom, transparent, ${primaryColor}, transparent)`, animation: 'scanline 8s linear infinite' }} />
             </div>
 
             {/* Header */}
-            <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
+            <header className="pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
                 <div className="w-full px-6 flex flex-col pb-2">
                     <button
-                        onClick={() => { playNeonClick(); navigate(`/empresas`); }}
-                        className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-amber-500/20 active:scale-90 transition-all hover:bg-black/50 shadow-lg"
+                        onClick={() => { playNeonClick(); navigate(-1); }}
+                        className="absolute top-6 left-5 z-[60] w-11 h-11 flex items-center justify-center rounded-2xl glass-card-neon transition-all hover:scale-105 active:scale-95 group overflow-hidden"
                     >
-                        <ChevronLeft size={22} className="text-amber-400 drop-shadow-md" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ChevronLeft size={24} style={{ color: primaryColor }} />
                     </button>
 
-                    <div className="flex justify-center w-full px-2">
-                        <div className="glass-header rounded-3xl w-full py-3 px-5 flex flex-col items-center border backdrop-blur-md border-amber-500/30 bg-gradient-to-br from-amber-500/15 to-orange-600/10 shadow-[0_15px_40px_rgba(245,158,11,0.2)]">
-                            <p className="text-[8px] font-black text-amber-400/60 uppercase tracking-widest mb-1 italic">ADN NACIONAL</p>
+                    <div className="flex justify-center w-full px-2 mt-2">
+                        <div className="glass-card-neon rounded-3xl w-full py-4 px-5 flex flex-col items-center border-t border-l" style={{ borderTopColor: hexToRgba(primaryColor, 0.4), borderLeftColor: hexToRgba(primaryColor, 0.2) }}>
+                            <p className="text-[9px] font-bold text-cyan-200/60 uppercase tracking-widest mb-1 italic">SECTOR PRODUCTIVO</p>
                             <div className="flex items-center gap-2 mb-2">
-                                <Factory size={18} className="text-amber-400" />
-                                <h2 className="text-[18px] font-[900] text-white uppercase tracking-[0.15em] leading-none text-center drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                                <Factory size={22} style={{ color: primaryColor, animation: 'pulseGlow 3s infinite alternate' }} />
+                                <h2 className="text-[18px] font-bold text-white uppercase tracking-[0.2em] leading-none text-center" style={{ textShadow: `0 0 15px ${hexToRgba(primaryColor, 0.5)}` }}>
                                     {selectedCategory.name}
                                 </h2>
                             </div>
-                            <div className="h-[1px] w-16 mb-2 bg-amber-500/40 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-                            <p className="text-[8.5px] font-bold text-white/70 uppercase tracking-[0.15em] text-center">
-                                Encontrá tu proveedor industrial ideal
+                            <div className="h-[2px] w-16 mb-2 rounded-full" style={{ backgroundImage: `linear-gradient(to right, transparent, ${primaryColor}, transparent)` }} />
+                            <p className="text-[9px] font-medium text-cyan-100 uppercase tracking-[0.2em] text-center opacity-80">
+                                Listado de Proveedores
                             </p>
                             {/* Badge de Provincia activa */}
                             {activeProvince !== 'all' && (
-                                <div className="mt-2 px-3 py-1 rounded-full border border-amber-400/40 bg-amber-500/10 text-[8px] font-black uppercase tracking-widest text-amber-300 flex items-center gap-1">
-                                    <MapPin size={9} />
+                                <div className="mt-3 px-3 py-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 text-[9px] font-bold uppercase tracking-widest text-cyan-200 flex items-center gap-1.5" style={{ boxShadow: `inset 0 0 10px ${hexToRgba(primaryColor, 0.2)}` }}>
+                                    <MapPin size={10} className="text-cyan-400" />
                                     {PROVINCE_LABELS[activeProvince] || activeProvince}
                                 </div>
                             )}
@@ -140,14 +167,21 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                             <button
                                 key={filter.id}
                                 onClick={() => { playNeonClick(); setActiveReach(filter.id); }}
-                                className={`flex-1 min-w-[80px] py-3 px-2 rounded-2xl border flex items-center justify-center gap-1.5 transition-all duration-300 active:scale-95
-                                    ${isActive
-                                        ? 'bg-amber-500/20 border-amber-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.3)] scale-105 z-10'
-                                        : 'border-white/10 text-white/40 bg-white/5 hover:bg-white/10'
-                                    }`}
+                                className="flex-1 min-w-[80px] py-3 px-2 rounded-2xl border flex items-center justify-center gap-1.5 transition-all duration-300 active:scale-95 relative overflow-hidden"
+                                style={isActive ? {
+                                    backgroundColor: hexToRgba(secondaryColor, 0.3),
+                                    borderColor: primaryColor,
+                                    color: '#ffffff',
+                                    boxShadow: `0 0 20px ${hexToRgba(primaryColor, 0.4)}`,
+                                } : {
+                                    backgroundColor: 'rgba(255,255,255,0.02)',
+                                    borderColor: 'rgba(255,255,255,0.1)',
+                                    color: 'rgba(255,255,255,0.5)',
+                                }}
                             >
-                                <span className={isActive ? 'text-amber-400' : 'text-white/30'}>{filter.icon}</span>
-                                <span className={`text-[9px] font-[1000] uppercase tracking-widest ${isActive ? 'text-shadow-premium' : ''}`}>
+                                {isActive && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]" />}
+                                <span style={{ color: isActive ? primaryColor : 'rgba(255,255,255,0.3)' }}>{filter.icon}</span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest">
                                     {filter.label}
                                 </span>
                             </button>
@@ -155,65 +189,75 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                     })}
                 </div>
 
-                {/* Tarjetas de Empresa — Diseño Fractal (espejo de CategoryPage) */}
+                {/* Tarjetas de Empresa */}
                 {filteredEnterprises.length > 0 ? (
-                    <div className="flex flex-col gap-6" key={activeReach + activeProvince}>
+                    <div className="flex flex-col gap-5" key={activeReach + activeProvince}>
                         {filteredEnterprises.map((enterprise, index) => (
                             <div
                                 key={enterprise.id}
                                 style={{ animationDelay: `${index * 80}ms` }}
-                                className="glass-card-3d card-neon-amber overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]"
+                                className="glass-card-neon overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px] rounded-2xl relative group"
                             >
+                                {/* Brillo interactivo de la tarjeta */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+                                     style={{ background: `radial-gradient(circle at center, ${hexToRgba(primaryColor, 0.1)} 0%, transparent 70%)` }} />
+
                                 {/* Imagen lateral */}
-                                <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-amber-500/20">
+                                <div className="relative w-32 flex-shrink-0 overflow-hidden border-r" style={{ borderColor: hexToRgba(primaryColor, 0.2) }}>
                                     <img
                                         src={enterprise.bannerImage || enterprise.image}
                                         alt={enterprise.name}
-                                        className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110 opacity-90"
                                     />
                                     {/* Badge Verificado */}
-                                    <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[6px] font-black uppercase tracking-wider border backdrop-blur-md bg-emerald-500/40 border-emerald-400/50 text-emerald-200 flex items-center gap-0.5">
-                                        <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-                                        OK
+                                    <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider border backdrop-blur-md bg-cyan-500/30 border-cyan-400/50 text-cyan-100 flex items-center gap-1 shadow-lg">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                                        ACTIVO
                                     </div>
                                 </div>
 
-                                {/* Info — espejo fractal de CategoryPage */}
-                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-white/[0.04]">
+                                {/* Info */}
+                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-transparent z-10">
                                     <div className="space-y-1.5 overflow-hidden p-4 pb-2">
-                                        <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">
+                                        <h3 className="font-bold text-[17px] text-white uppercase tracking-tighter leading-none" style={{ textShadow: `0 0 10px ${hexToRgba(primaryColor, 0.5)}` }}>
                                             {enterprise.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                                         </h3>
-                                        <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
-                                            <MapPin size={12} strokeWidth={3} className="flex-shrink-0 mt-0.5 text-amber-400" />
+                                        <div className="flex items-start gap-1 pb-1 text-cyan-100/80 uppercase text-[9px] font-semibold tracking-tight leading-snug overflow-hidden">
+                                            <MapPin size={11} strokeWidth={2.5} className="flex-shrink-0 mt-[1px]" style={{ color: primaryColor }} />
                                             <span className="break-words line-clamp-2">{enterprise.address || enterprise.zone}</span>
                                         </div>
                                         <div className="flex justify-between items-end mt-auto pt-1">
                                             <div className="flex flex-col gap-0.5 min-w-0 pr-2">
                                                 <div className="flex items-center gap-1">
                                                     {[1, 2, 3, 4, 5].map(star => (
-                                                        <Star key={star} size={11} className={`${star <= Math.round(enterprise.rating) ? 'fill-yellow-400 text-yellow-400' : 'fill-transparent text-white/20'}`} />
+                                                        <Star key={star} size={10} className={`${star <= Math.round(enterprise.rating) ? 'fill-cyan-400 text-cyan-400' : 'fill-transparent text-white/20'}`} />
                                                     ))}
-                                                    <span className="text-[9px] font-bold text-yellow-400/80 ml-1">{enterprise.rating}</span>
+                                                    <span className="text-[9px] font-bold text-cyan-400/90 ml-1">{enterprise.rating}</span>
                                                 </div>
-                                                {enterprise.specialty && <p className="text-[8px] font-bold text-white/50 italic tracking-wide leading-tight line-clamp-1">"{enterprise.specialty}"</p>}
+                                                {enterprise.specialty && <p className="text-[8px] font-medium text-cyan-200/50 italic tracking-wide leading-tight line-clamp-1">"{enterprise.specialty}"</p>}
                                             </div>
                                             {/* Badge Alcance */}
-                                            <div className="flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-md border shadow-inner bg-amber-500/20 border-amber-500/30">
-                                                <Globe size={10} className="text-amber-400" />
-                                                <span className="text-[7px] font-black text-amber-400 uppercase tracking-wider">
+                                            <div className="flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-md border shadow-inner" style={{ backgroundColor: hexToRgba(secondaryColor, 0.2), borderColor: hexToRgba(primaryColor, 0.3) }}>
+                                                <Globe size={9} style={{ color: primaryColor }} />
+                                                <span className="text-[7px] font-bold uppercase tracking-wider" style={{ color: primaryColor }}>
                                                     {enterprise.reach === 'national' ? 'Nacional' : enterprise.reach === 'regional' ? 'Regional' : 'Local'}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
-                                    {/* Botón VER CATÁLOGO — espejo fractal */}
+                                    {/* Botón VER CATÁLOGO */}
                                     <div className="w-full flex justify-center py-3 px-4">
                                         <button
                                             onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory!.slug}/${enterprise.slug || enterprise.id}`); }}
-                                            className="py-2.5 px-6 text-[9px] text-white font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all duration-75 rounded-full border backdrop-blur-md active:translate-y-[4px] border-amber-400/50 bg-amber-600/30 shadow-[0_4px_0_rgba(245,158,11,0.5)]"
+                                            className="w-full py-2.5 px-4 text-[9px] text-white font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 rounded-xl border relative overflow-hidden group hover:scale-[1.02] active:scale-95"
+                                            style={{
+                                                background: `linear-gradient(135deg, ${hexToRgba(secondaryColor, 0.5)}, ${hexToRgba(primaryColor, 0.4)})`,
+                                                borderColor: primaryColor,
+                                                boxShadow: `0 5px 20px -5px ${primaryColor}`,
+                                            }}
                                         >
-                                            <BookOpen size={14} strokeWidth={3} className="text-white drop-shadow-md" />VER CATÁLOGO
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out pointer-events-none" />
+                                            <BookOpen size={14} className="text-white" />VER CATÁLOGO
                                         </button>
                                     </div>
                                 </div>
@@ -221,13 +265,10 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                         ))}
                     </div>
                 ) : (
-                    <div className="py-12 px-6 text-center glass-card-3d bg-white/5 border-white/10 rounded-3xl mt-4">
-                        <Factory size={32} className="mx-auto text-amber-500/20 mb-3" />
-                        <p className="text-[10px] font-black text-white/50 uppercase tracking-widest leading-relaxed">
+                    <div className="py-12 px-6 text-center glass-card-neon rounded-3xl mt-4">
+                        <Factory size={32} className="mx-auto text-cyan-500/30 mb-4" />
+                        <p className="text-[10px] font-bold text-cyan-100/60 uppercase tracking-widest leading-relaxed">
                             No hay proveedores adheridos<br />en {selectedCategory?.name}
-                        </p>
-                        <p className="text-[8px] text-white/30 uppercase tracking-widest mt-3">
-                            Total shops cargados: {allShops.length}
                         </p>
                         <button
                             onClick={async () => {
@@ -240,29 +281,25 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                     alert('❌ Error al inyectar: ' + e.message);
                                 }
                             }}
-                            className="mt-5 px-6 py-3 rounded-2xl border border-amber-500/40 bg-amber-600/20 text-amber-300 text-[9px] font-black uppercase tracking-widest flex items-center gap-2 mx-auto active:scale-95 transition-all"
+                            className="mt-6 px-6 py-3 rounded-xl border flex items-center gap-2 mx-auto active:scale-95 transition-all text-[9px] font-bold uppercase tracking-widest"
+                            style={{ backgroundColor: hexToRgba(primaryColor, 0.1), borderColor: hexToRgba(primaryColor, 0.4), color: primaryColor }}
                         >
-                            <Zap size={14} /> Inyectar Empresa de Prueba
+                            <Zap size={14} /> Inyectar Empresa Demo
                         </button>
                     </div>
                 )}
-
-                {/* Botón Regresar */}
-                <div className="w-full flex justify-center mb-8 mt-4">
-                    <button
-                        onClick={() => { playNeonClick(); navigate(`/empresas`); }}
-                        className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-full flex items-center gap-2 shadow-lg active:translate-y-[2px] transition-all bg-amber-500/15 border-amber-500/30 text-amber-400"
-                    >
-                        <ChevronLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
-                    </button>
-                </div>
             </div>
 
             {/* Footer */}
-            <footer className="w-full flex flex-col items-center gap-2 pt-6 pb-6 mt-auto border-t border-amber-500/10 relative z-10">
-                <p className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none">© 2026 · ShopDigital</p>
-                <p className="text-[8px] font-bold text-amber-400 uppercase tracking-[0.25em] text-center select-none" style={{ textShadow: '0 0 10px rgba(245,158,11,0.5)' }}>
-                    🏭 Nodo Empresarial B2B
+            <footer className="w-full flex flex-col items-center gap-2 pt-8 pb-6 mt-auto relative z-10">
+                <div className="flex items-center gap-2 opacity-50">
+                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                    <p className="text-[9px] font-bold text-cyan-200 uppercase tracking-widest cursor-default select-none">
+                        SHOPDIGITAL NETWORKS © 2026
+                    </p>
+                </div>
+                <p className="text-[8px] font-medium uppercase tracking-[0.25em]" style={{ color: hexToRgba(secondaryColor, 0.7) }}>
+                    NODO EMPRESARIAL SECURE LINK
                 </p>
             </footer>
         </div>
