@@ -83,7 +83,9 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
         allShops.find(shop => (shop.slug || shop.id) === enterpriseSlug),
         [enterpriseSlug, allShops]);
 
-    const themeColor = enterprise?.themeColor || '#f59e0b';
+    const themeColor = '#06b6d4'; // Forzamos Tech Neon
+    const secondaryColor = '#3b82f6';
+    const bgColor = '#020617';
     const hexToRgba = (hex: string, alpha: number) => {
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
@@ -265,7 +267,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                 <button onClick={() => {
                     playNeonClick();
                     navigate(isEnterprisePath ? '/empresas' : `/${townId}/home`);
-                }} className="mt-4 text-amber-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
+                }} className="mt-4 text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Volver al inicio</button>
             </div>
         );
     }
@@ -293,9 +295,36 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
 
     return (
         <div 
-          className={`pb-24 animate-in fade-in duration-700 min-h-screen relative ${wallpaperClass} ${isLightWallpaper ? 'text-zinc-900' : 'text-white'}`}
-          style={isCustomColor ? { backgroundColor: enterprise.customBackground } : {}}
+          className="pb-24 animate-in fade-in duration-1000 min-h-screen relative text-white tech-grid-bg"
+          style={{ backgroundColor: bgColor }}
         >
+            {/* ── CSS Animations Inline ── */}
+            <style>{`
+                @keyframes levitate {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-8px); }
+                }
+                @keyframes pulseGlow {
+                    0%, 100% { filter: drop-shadow(0 0 15px ${hexToRgba(themeColor, 0.4)}); }
+                    50% { filter: drop-shadow(0 0 35px ${hexToRgba(themeColor, 0.8)}); }
+                }
+                @keyframes scanline {
+                    0% { transform: translateY(-100%); }
+                    100% { transform: translateY(200%); }
+                }
+                .tech-grid-bg {
+                    background-size: 30px 30px;
+                    background-image: 
+                        linear-gradient(to right, ${hexToRgba(secondaryColor, 0.04)} 1px, transparent 1px),
+                        linear-gradient(to bottom, ${hexToRgba(secondaryColor, 0.04)} 1px, transparent 1px);
+                }
+                .glass-card-neon {
+                    background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.4));
+                    backdrop-filter: blur(12px);
+                    border: 1px solid ${hexToRgba(themeColor, 0.2)};
+                    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+                }
+            `}</style>
 
             {/* OVERLAY ESTACIONAL - particulas flotantes */}
             {activeSeason && (
@@ -413,7 +442,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                                 playNeonClick();
                                 navigate(`${basePath}/${categorySlug}/${enterpriseSlug}/menu`);
                             }}
-                            className="w-full glass-action-btn backdrop-blur-md border py-4 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:scale-95 group shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+                            className="w-full glass-card-neon py-4 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:scale-95 group shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
                             style={{ 
                                 backgroundColor: hexToRgba(themeColor, 0.2),
                                 borderColor: hexToRgba(themeColor, 0.4),
@@ -426,7 +455,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                     </div>
 
                     <div className="w-full relative">
-                        <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/5 blur-3xl rounded-full pointer-events-none" />
+                        <div className="absolute top-0 left-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
                         <div 
                             className="flex gap-4 px-4 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar relative z-10" 
                             ref={offersCarouselRef}
@@ -445,7 +474,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                                     : { text: '⚡ HOY', bg: 'bg-rose-500/90', shadow: 'shadow-[0_0_10px_rgba(244,63,94,0.8)]' };
 
                                 return (
-                                    <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center cursor-pointer" onClick={() => { playNeonClick(); setSelectedOfferForModal(offer); logEvento('view_offer', enterprise.id, { producto: offer.name }); }}>
+                                    <div key={`${offer.id}-${idx}`} className="glass-card-neon group hover:scale-[1.02] transition-transform duration-300 flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center cursor-pointer" onClick={() => { playNeonClick(); setSelectedOfferForModal(offer); logEvento('view_offer', enterprise.id, { producto: offer.name }); }}>
                                         <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative">
                                             <img src={offer.image} alt={offer.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
                                             {/* Dynamic Badge */}
@@ -518,20 +547,20 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                         className="w-full relative overflow-hidden rounded-[2rem] p-[1px] active:scale-95 transition-transform duration-300 group shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                     >
                         {/* Golden Border Glow */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-yellow-600 to-yellow-900 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-300 via-blue-600 to-blue-900 opacity-50 group-hover:opacity-100 transition-opacity"></div>
                         
                         {/* Inner Metallic Card */}
                         <div className="relative w-full h-full bg-gradient-to-br from-zinc-900 via-black to-zinc-900 rounded-[2rem] p-6 flex flex-col items-center justify-center gap-3 border border-white/5 backdrop-blur-xl z-10" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent)', backgroundSize: '6px 6px' }}>
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none"></div>
                             <div className="flex items-center gap-2">
-                                <Star size={16} className="text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)] fill-yellow-500/50" />
-                                <h3 className="font-black text-[12px] uppercase tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600">Club Exclusivo</h3>
+                                <Star size={16} className="text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.8)] fill-cyan-500/50" />
+                                <h3 className="font-black text-[12px] uppercase tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-cyan-400 to-blue-500">Club Exclusivo</h3>
                             </div>
                             <p className="text-[8px] text-center font-bold uppercase tracking-widest text-zinc-400 mt-1">
                                 Beneficios locales para clientes
                             </p>
-                            <div className="mt-3 bg-yellow-500/10 border border-yellow-500/30 px-6 py-2.5 rounded-full backdrop-blur-md group-hover:bg-yellow-500/20 transition-colors">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-yellow-500">Obtener Credencial</span>
+                            <div className="mt-3 bg-cyan-500/10 border border-cyan-500/30 px-6 py-2.5 rounded-full backdrop-blur-md group-hover:bg-cyan-500/20 transition-colors">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400">Obtener Credencial</span>
                             </div>
                         </div>
                     </button>
@@ -605,7 +634,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                                 handleLockTap();
                             }} className={`flex items-center justify-center gap-1.5 py-2 transition-all duration-300 ${
                                 lockClicks >= 4 
-                                ? 'text-amber-400 scale-110 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' 
+                                ? 'text-cyan-400 scale-110 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' 
                                 : lockClicks >= 2 
                                 ? 'text-white/25'
                                 : 'text-white/15'
@@ -663,7 +692,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                                 </>
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center bg-black/50 text-white/40 relative">
-                                    <div className="absolute inset-0 bg-amber-500/5 blur-3xl pointer-events-none" />
+                                    <div className="absolute inset-0 bg-cyan-500/10 blur-3xl pointer-events-none" />
                                     <ImageIcon size={32} className="mb-2 opacity-50" />
                                     <p className="text-[10px] uppercase font-black tracking-widest text-center px-4">Próximamente nuevas publicidades</p>
                                 </div>
@@ -796,7 +825,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                         
                         <div className="w-full aspect-square rounded-[1.5rem] overflow-hidden border border-white/10 mb-5 relative">
                             <img src={selectedOfferForModal.image} alt={selectedOfferForModal.name} className="w-full h-full object-cover" />
-                            <div className={`absolute top-3 left-3 ${selectedOfferForModal.scarcityLabel ? 'bg-orange-500/90 shadow-[0_0_15px_rgba(249,115,22,0.8)]' : 'bg-amber-500/90 shadow-[0_0_15px_rgba(6,182,212,0.8)]'} text-white text-[9px] font-black px-3 py-1 rounded-full uppercase backdrop-blur-md`}>
+                            <div className={`absolute top-3 left-3 ${selectedOfferForModal.scarcityLabel ? 'bg-orange-500/90 shadow-[0_0_15px_rgba(249,115,22,0.8)]' : 'bg-cyan-500/90 shadow-[0_0_15px_rgba(6,182,212,0.8)]'} text-white text-[9px] font-black px-3 py-1 rounded-full uppercase backdrop-blur-md`}>
                                 {selectedOfferForModal.scarcityLabel || 'Oferta Especial'}
                             </div>
                             {selectedOfferForModal.stockCount && selectedOfferForModal.stockCount > 0 && (
