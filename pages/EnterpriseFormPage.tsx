@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Shop } from '../types';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { guardarComercio } from '../firebase';
@@ -25,7 +25,12 @@ interface EnterpriseFormPageProps {
 const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }) => {
     const { townId = 'esteban-echeverria', enterpriseId } = useParams<{ townId: string; enterpriseId: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const isEditing = !!enterpriseId;
+
+    // Leer provincia activa del query parameter
+    const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+    const provinciaParam = queryParams.get('provincia');
 
     const [formData, setFormData] = useState({
         name: '',
@@ -48,9 +53,9 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
     });
     const [saving, setSaving] = useState(false);
 
-    // Cargar datos si estamos editando
+    // Cargar datos si estamos editando, o pre-cargar provincia si es nueva creación
     useEffect(() => {
-        if (isEditing && allShops) {
+        if (isEditing && allShops && allShops.length > 0) {
             const enterprise = allShops.find(s => s.id === enterpriseId);
             if (enterprise) {
                 setFormData({
@@ -73,8 +78,13 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
                     description: enterprise.description || '',
                 });
             }
+        } else if (!isEditing && provinciaParam) {
+            setFormData(prev => ({
+                ...prev,
+                province: provinciaParam
+            }));
         }
-    }, [isEditing, enterpriseId, allShops]);
+    }, [isEditing, enterpriseId, allShops, provinciaParam]);
 
     const handleChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -122,7 +132,7 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
             await guardarComercio(enterpriseData, townId);
             playSuccessSound();
             alert(`✅ ¡Empresa "${formData.name}" ${isEditing ? 'actualizada' : 'asociada'} con éxito al Nodo Industrial!`);
-            navigate(`/${townId}/embajador/empresas`);
+            navigate(`/${townId}/embajador/empresas${provinciaParam ? `?provincia=${provinciaParam}` : ''}`);
         } catch (error: any) {
             console.error("Error al guardar empresa:", error);
             alert('❌ Error: ' + (error.message || 'No se pudo guardar.'));
@@ -143,7 +153,10 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
 
             {/* Header */}
             <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-amber-500/20 mb-6 sticky top-0 z-50">
-                <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/empresas`); }}
+                <button onClick={() => { 
+                    playNeonClick(); 
+                    navigate(`/${townId}/embajador/empresas${provinciaParam ? `?provincia=${provinciaParam}` : ''}`); 
+                }}
                     className="self-start mb-4 w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/30 hover:bg-amber-500/20 transition-all">
                     <ChevronLeft size={20} />
                 </button>

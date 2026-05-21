@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Shop } from '../types';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { guardarComercio, eliminarComercio } from '../firebase';
@@ -27,14 +27,25 @@ interface EnterpriseManagementPageProps {
 const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ allShops }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
+    
+    // Leer provincia activa del query parameter
+    const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+    const provinciaParam = queryParams.get('provincia');
+
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [reachFilter, setReachFilter] = useState<string>('all');
 
-    // Filtrar solo empresas
-    const allEnterprises = useMemo(() =>
-        allShops.filter(s => s.entityType === 'enterprise'),
-    [allShops]);
+    // Filtrar solo empresas y además por provincia si provinciaParam está presente
+    const allEnterprises = useMemo(() => {
+        let enterprises = allShops.filter(s => s.entityType === 'enterprise');
+        if (provinciaParam) {
+            const queryProv = provinciaParam.toLowerCase().trim();
+            enterprises = enterprises.filter(s => s.province && s.province.toLowerCase().trim() === queryProv);
+        }
+        return enterprises;
+    }, [allShops, provinciaParam]);
 
     const selectedCategory = ENTERPRISE_CATEGORIES.find(c => c.id === selectedCategoryId);
 
@@ -117,7 +128,14 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                 </div>
 
                 <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-amber-500/20 mb-6 sticky top-0 z-50">
-                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }}
+                    <button onClick={() => { 
+                        playNeonClick(); 
+                        if (provinciaParam) {
+                            navigate(`/empresas/control-maestro?provincia=${provinciaParam}`);
+                        } else {
+                            navigate(`/${townId}/embajador`); 
+                        }
+                    }}
                         className="self-start mb-4 w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/30 hover:bg-amber-500/20 transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)]">
                         <ChevronLeft size={20} />
                     </button>
@@ -131,7 +149,10 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                         Nodo Empresarial B2B · {allEnterprises.length} asociadas
                     </p>
                     <button
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/empresas/nueva`); }}
+                        onClick={() => { 
+                            playNeonClick(); 
+                            navigate(`/${townId}/embajador/empresas/nueva${provinciaParam ? `?provincia=${provinciaParam}` : ''}`); 
+                        }}
                         className="mt-4 w-full max-w-xs bg-amber-500 text-black py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)]"
                     >
                         <Plus size={16} /> Alta de Nueva Empresa
@@ -222,7 +243,10 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                             No hay empresas de {selectedCategory?.name} registradas
                         </p>
                         <button
-                            onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/empresas/nueva`); }}
+                            onClick={() => { 
+                                playNeonClick(); 
+                                navigate(`/${townId}/embajador/empresas/nueva${provinciaParam ? `?provincia=${provinciaParam}` : ''}`); 
+                            }}
                             className="mt-2 bg-amber-500 text-black py-2.5 px-6 rounded-xl font-black uppercase tracking-widest text-[9px] active:scale-95 transition-all"
                         >
                             <Plus size={14} className="inline mr-1" /> Crear Primera Empresa
@@ -277,7 +301,10 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                                 {/* Botones de Control */}
                                 <div className="flex gap-2 pt-2 border-t border-white/5">
                                     <button
-                                        onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/empresas/editar/${enterprise.id}`); }}
+                                        onClick={() => { 
+                                            playNeonClick(); 
+                                            navigate(`/${townId}/embajador/empresas/editar/${enterprise.id}${provinciaParam ? `?provincia=${provinciaParam}` : ''}`); 
+                                        }}
                                         className="flex-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-amber-500/20"
                                     >
                                         <Edit3 size={14} /> Editar

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Shop } from '../types';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { suscribirseAComercios } from '../firebase';
@@ -12,10 +12,26 @@ import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
+const PROVINCES = [
+    { id: 'buenos-aires', name: 'BUENOS AIRES',  emoji: '🏙️' },
+    { id: 'cordoba',      name: 'CÓRDOBA',       emoji: '🏔️' },
+    { id: 'santa-fe',     name: 'SANTA FE',      emoji: '🌾' },
+    { id: 'mendoza',      name: 'MENDOZA',       emoji: '🍇' },
+    { id: 'tucuman',      name: 'TUCUMÁN',       emoji: '🌿' },
+    { id: 'entre-rios',   name: 'ENTRE RÍOS',   emoji: '🌊' },
+    { id: 'misiones',     name: 'MISIONES',      emoji: '🌴' },
+    { id: 'neuquen',      name: 'NEUQUÉN',       emoji: '⛽' },
+];
+
 const EnterpriseMasterPanelPage: React.FC = () => {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const [allShops, setAllShops] = useState<Shop[]>([]);
+
+    const queryParams = new URLSearchParams(location.search);
+    const provinciaParam = queryParams.get('provincia') || 'buenos-aires';
+    const currentProvince = PROVINCES.find(p => p.id === provinciaParam) || PROVINCES[0];
 
     // Suscripción a datos en tiempo real
     useEffect(() => {
@@ -26,8 +42,8 @@ const EnterpriseMasterPanelPage: React.FC = () => {
     }, []);
 
     const enterprises = useMemo(() =>
-        allShops.filter(s => s.entityType === 'enterprise'),
-    [allShops]);
+        allShops.filter(s => s.entityType === 'enterprise' && s.province === provinciaParam),
+    [allShops, provinciaParam]);
 
     const activeEnterprises = enterprises.filter(e => e.isActive === true);
     const inactiveEnterprises = enterprises.filter(e => e.isActive !== true);
@@ -62,15 +78,15 @@ const EnterpriseMasterPanelPage: React.FC = () => {
     // ============================
     // CONSOLA AMBER PRINCIPAL
     // ============================
-    const formattedTown = 'NACIONAL';
+    const formattedTown = currentProvince.name;
 
     const quickLinks = [
         { title: '🛡️ Búnker Central · ARI', desc: 'Terminal del Director · Chat IA', path: `/esteban-echeverria/bunker-waly`, icon: <Zap size={16} />, color: 'violet' },
         { title: 'Centro de Mando Ezeiza', desc: 'Tablero Maestro · Zona Ezeiza', path: `/ezeiza/tablero-maestro`, icon: <Zap size={16} />, color: 'cyan' },
         { title: 'Centro de Mando Echeverría', desc: 'Tablero Maestro · Zona E. Echeverría', path: `/esteban-echeverria/tablero-maestro`, icon: <Zap size={16} />, color: 'violet' },
         { title: 'Directorio Industrial', desc: 'Portal público de rubros', path: `/empresas`, icon: <Factory size={16} />, color: 'amber' },
-        { title: 'Gestión de Empresas', desc: 'Alta, edición y control (Central)', path: `/esteban-echeverria/embajador/empresas`, icon: <Settings size={16} />, color: 'amber' },
-        { title: 'Nueva Empresa', desc: 'Formulario de alta B2B', path: `/esteban-echeverria/embajador/empresas/nueva`, icon: <FileText size={16} />, color: 'amber' },
+        { title: 'Gestión de Empresas', desc: `Control · ${currentProvince.name}`, path: `/esteban-echeverria/embajador/empresas?provincia=${provinciaParam}`, icon: <Settings size={16} />, color: 'amber' },
+        { title: 'Nueva Empresa', desc: `Alta B2B · ${currentProvince.name}`, path: `/esteban-echeverria/embajador/empresas/nueva?provincia=${provinciaParam}`, icon: <FileText size={16} />, color: 'amber' },
         { title: '📢 Marketing Industrial', desc: 'Automatización y Campañas', path: `/empresas/marketing-inteligente`, icon: <Megaphone size={16} />, color: 'amber' },
         { title: '🎨 Editor de Tema', desc: 'Colores · Estaciones · Fondo', path: `/empresas/configuracion`, icon: <Settings size={16} />, color: 'violet' },
     ];
@@ -129,6 +145,32 @@ const EnterpriseMasterPanelPage: React.FC = () => {
             </div>
 
             <div className="px-6 space-y-6 relative z-10 max-w-lg mx-auto">
+                {/* ─── Botón Premium Panel Central ─── */}
+                <div className="glass-card-3d bg-gradient-to-r from-amber-500/10 to-amber-500/5 border border-amber-400/40 rounded-2xl p-5 relative overflow-hidden group shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] animate-pulse">
+                                <Settings size={22} className="animate-spin" style={{ animationDuration: '6s' }} />
+                            </div>
+                            <div>
+                                <h3 className="text-[12px] font-black text-white uppercase tracking-widest leading-none">
+                                    PANEL CENTRAL DE GESTIÓN
+                                </h3>
+                                <p className="text-[8px] text-amber-400/80 uppercase tracking-widest mt-1.5 font-bold italic">
+                                    Administración · {currentProvince.name}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => { playNeonClick(); navigate(`/esteban-echeverria/embajador/empresas?provincia=${provinciaParam}`); }}
+                            className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] active:scale-95 hover:scale-105"
+                        >
+                            Ingresar
+                        </button>
+                    </div>
+                </div>
+
                 {/* ─── KPI Dashboard ─── */}
                 <div className="grid grid-cols-2 gap-3">
                     <div className="glass-card-3d bg-amber-500/5 border-amber-500/20 rounded-2xl p-4 flex flex-col items-center gap-1">
