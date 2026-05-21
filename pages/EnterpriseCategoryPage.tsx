@@ -126,7 +126,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
             <header className="pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
                 <div className="w-full px-6 flex flex-col pb-2">
                     <button
-                        onClick={() => { playNeonClick(); navigate(-1); }}
+                        onClick={() => { playNeonClick(); navigate(`/empresas`); }}
                         className="absolute top-6 left-5 z-[60] w-11 h-11 flex items-center justify-center rounded-2xl glass-card-neon transition-all hover:scale-105 active:scale-95 group overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
