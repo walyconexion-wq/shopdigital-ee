@@ -251,10 +251,11 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                     </h3>
                     <div className="space-y-2">
                         {quickLinks.map((link, i) => {
-                            const colorMap: Record<string, { bg: string; border: string; text: string; hoverBg: string }> = {
+                            const colorMap: any = {
+                                emerald: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400', hoverBg: 'hover:bg-emerald-500/20' },
+                                amber: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'text-amber-400', hoverBg: 'hover:bg-amber-500/20' },
                                 cyan: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', text: 'text-cyan-400', hoverBg: 'hover:bg-cyan-500/20' },
-                                violet: { bg: 'bg-violet-500/10', border: 'border-violet-500/20', text: 'text-violet-400', hoverBg: 'hover:bg-violet-500/20' },
-                                cyan: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', text: 'text-cyan-400', hoverBg: 'hover:bg-cyan-500/20' },
+                                violet: { bg: 'bg-violet-500/10', border: 'border-violet-500/20', text: 'text-violet-400', hoverBg: 'hover:bg-violet-500/20' }
                             };
                             const c = colorMap[link.color] || colorMap.cyan;
                             return (
