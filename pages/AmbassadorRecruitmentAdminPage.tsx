@@ -181,7 +181,7 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="px-6 mt-6 relative z-10 pb-20 w-full max-w-[1400px] mx-auto">
+            <div className="px-6 mt-6 relative z-10 pb-20 w-full max-w-full mx-auto">
                 {loading ? (
                     <div className="flex justify-center p-12">
                         <div className="w-12 h-12 border-4 rounded-full animate-spin" style={{ borderColor: hexToRgba(zoneColor, 0.2), borderTopColor: zoneColor }} />
@@ -191,7 +191,7 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                         {FUNNEL_STAGES.map((stage) => {
                             const colAspirantes = getAspirantesByStage(stage.id);
                             return (
-                                <div key={stage.id} className="min-w-[320px] max-w-[320px] w-full snap-center shrink-0 flex flex-col h-full bg-black/40 border border-white/5 rounded-3xl overflow-hidden backdrop-blur-md">
+                                <div key={stage.id} className="flex-1 min-w-[280px] snap-center flex flex-col h-full bg-black/40 border border-white/5 rounded-3xl overflow-hidden backdrop-blur-md">
                                     {/* Column Header */}
                                     <div className="p-4 border-b border-white/10" style={{ backgroundColor: hexToRgba(stage.color, 0.1) }}>
                                         <div className="flex justify-between items-center">
