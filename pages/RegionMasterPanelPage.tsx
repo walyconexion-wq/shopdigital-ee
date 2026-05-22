@@ -87,8 +87,8 @@ export const RegionMasterPanelPage: React.FC = () => {
                     <ChevronLeft size={24} />
                 </div>
                 <div className="flex flex-col items-center">
-                    <Terminal size={36} className="mb-2" style={{ color: zoneColor, filter: `drop-shadow(0 0 20px ${hexToRgba(zoneColor, 0.6)})` }} />
-                    <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-center drop-shadow-md">
+                    <Terminal size={36} className="mb-2" style={{ color: zoneColor, animation: 'pulseGlow 4s infinite alternate' }} />
+                    <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-center drop-shadow-md" style={{ color: zoneColor, textShadow: `0 0 20px ${hexToRgba(zoneColor, 0.5)}` }}>
                         Tablero Maestro
                     </h1>
                     <p className="text-[10px] font-black uppercase tracking-[0.4em] mt-2 text-center" style={{ color: zoneColor, textShadow: `0 0 15px ${hexToRgba(zoneColor, 0.8)}` }}>
@@ -140,7 +140,7 @@ export const RegionMasterPanelPage: React.FC = () => {
                 <div 
                     role="button" tabIndex={0}
                     onClick={() => { playNeonClick(); navigate(`/${regionData.towns[0].id}/bunker-waly`); }}
-                    className="w-full bg-gradient-to-r from-violet-900/50 to-indigo-900/50 text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(139,92,246,0.2)] relative overflow-hidden group mt-10"
+                    className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(139,92,246,0.2)] relative overflow-hidden group mt-10"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-violet-500/0 via-white/5 to-violet-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     <Zap size={18} className="text-violet-400" />
