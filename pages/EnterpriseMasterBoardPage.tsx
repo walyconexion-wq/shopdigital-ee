@@ -56,8 +56,15 @@ const EnterpriseMasterBoardPage: React.FC = () => {
     const handleSelectTown = (townId: string) => {
         playNeonClick();
         setSelectedTownId(townId);
-        const prov = townId === 'mina-clavero' ? 'cordoba' : 'buenos-aires';
-        navigate(`/empresas/tablero-maestro?provincia=${prov}`, { replace: true });
+        
+        // Redirigir a los Tableros Maestros B2C correspondientes
+        if (townId === 'ezeiza') {
+            navigate('/ezeiza/tablero-maestro');
+        } else if (townId === 'mina-clavero') {
+            navigate('/region/traslasierra/tablero-maestro');
+        } else {
+            navigate('/esteban-echeverria/tablero-maestro');
+        }
     };
 
     const handleCopy = (path: string) => {
