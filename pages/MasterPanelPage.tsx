@@ -545,7 +545,22 @@ const MasterPanelPage: React.FC = () => {
                     <span className="text-[13px] text-violet-300">BÚNKER CENTRAL DEL DIRECTOR - WALY</span>
                 </div>
 
-                {/* Botón de Inject Data eliminado por directiva de Operaciones 2.0 */}
+                
+                {/* 🛡️ ACCESO DIRECTO AL BÚNKER INDUSTRIAL */}
+                <div 
+                    role="button" tabIndex={0}
+                    onClick={() => { 
+                        playNeonClick(); 
+                        const prov = townId === 'traslasierra' || (typeof isTraslasierra !== 'undefined' && isTraslasierra) ? 'cordoba' : 'buenos-aires';
+                        navigate(`/empresas/tablero-maestro?provincia=${prov}`); 
+                    }}
+                    className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-cyan-500/40 hover:border-cyan-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(6,182,212,0.2)] relative overflow-hidden group"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/5 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <Terminal size={18} className="text-cyan-400" />
+                    <span className="text-[13px] text-cyan-300">BÚNKER INDUSTRIAL (B2B)</span>
+                </div>
+\n                {/* Botón de Inject Data eliminado por directiva de Operaciones 2.0 */}
 
                 {/* Botón de Reset Maestro eliminado por directiva de Operaciones 2.0 (Prevención de reseteos en producción) */}
 

@@ -146,6 +146,20 @@ export const RegionMasterPanelPage: React.FC = () => {
                     <Zap size={18} className="text-violet-400" />
                     <span className="text-[13px] text-violet-300">Búnker Central · ARI</span>
                 </div>
+
+                {/* 🛡️ ACCESO DIRECTO AL BÚNKER INDUSTRIAL */}
+                <div 
+                    role="button" tabIndex={0}
+                    onClick={() => { 
+                        playNeonClick(); 
+                        navigate('/empresas/tablero-maestro?provincia=cordoba'); 
+                    }}
+                    className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-cyan-500/40 hover:border-cyan-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(6,182,212,0.2)] relative overflow-hidden group mt-4"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/5 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <Terminal size={18} className="text-cyan-400" />
+                    <span className="text-[13px] text-cyan-300">BÚNKER INDUSTRIAL (B2B)</span>
+                </div>
             </div>
         </div>
     );
