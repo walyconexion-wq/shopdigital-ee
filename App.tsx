@@ -340,6 +340,9 @@ const App: React.FC = () => {
                 <Route path="/director/transmision-en-vivo" element={<Navigate to="/esteban-echeverria/director/transmision-en-vivo" replace />} />
                 <Route path="/bunker-waly" element={<Navigate to="/esteban-echeverria/bunker-waly" replace />} />
 
+                {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}
+                <Route path="/:townId/tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
+
                 {/* Ruteo Dinámico Multi-Zona */}
                 <Route path="/:townId/*" element={<TownController />} />
                 
