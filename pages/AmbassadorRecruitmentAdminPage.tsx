@@ -388,16 +388,29 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedCandidate(null)} />
                     
-                    <div className="relative w-full max-w-2xl bg-zinc-950 border rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
-                         style={{ borderColor: hexToRgba(zoneColor, 0.4) }}>
+                    <div className="relative w-full max-w-2xl bg-zinc-950 border rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] max-h-[90vh] flex flex-col"
+                         style={{ borderColor: hexToRgba(zoneColor, 0.4), animation: 'fadeIn 0.15s ease-out' }}>
                         
                         {/* Modal Header */}
                         <div className="p-6 border-b flex justify-between items-start" style={{ borderColor: hexToRgba(zoneColor, 0.2), backgroundColor: hexToRgba(zoneColor, 0.05) }}>
-                            <div>
-                                <h2 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white flex items-center gap-3">
-                                    <User style={{ color: zoneColor }} /> {selectedCandidate.name}
-                                </h2>
-                                <p className="text-[10px] uppercase tracking-widest text-white/50 mt-1">ID: {selectedCandidate.id} | FASE: {FUNNEL_STAGES.find(s => s.id === selectedCandidate.status)?.label}</p>
+                            <div className="flex items-center gap-4">
+                                {/* Foto del candidato */}
+                                <div className="w-16 h-16 rounded-full overflow-hidden border-2 flex-shrink-0" style={{ borderColor: hexToRgba(zoneColor, 0.6) }}>
+                                    {selectedCandidate.photoUrl ? (
+                                        <img src={selectedCandidate.photoUrl} alt={selectedCandidate.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-2xl font-black" style={{ backgroundColor: hexToRgba(zoneColor, 0.15), color: zoneColor }}>
+                                            {selectedCandidate.name?.charAt(0)?.toUpperCase() || '?'}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">
+                                        {selectedCandidate.name}
+                                    </h2>
+                                    <p className="text-[10px] uppercase tracking-widest text-white/50 mt-1">FASE: {FUNNEL_STAGES.find(s => s.id === selectedCandidate.status)?.label || selectedCandidate.status}</p>
+                                    <p className="text-[9px] uppercase tracking-widest mt-0.5" style={{ color: hexToRgba(zoneColor, 0.7) }}>{selectedCandidate.location || ''}</p>
+                                </div>
                             </div>
                             <button onClick={() => setSelectedCandidate(null)} className="text-white/50 hover:text-white"><XCircle size={24} /></button>
                         </div>
@@ -467,7 +480,9 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                                     <button 
                                         onClick={() => {
                                             playNeonClick();
-                                            window.open(`https://wa.me/${selectedCandidate.phone.replace(/\D/g, '')}?text=Hola ${selectedCandidate.name}, somos del equipo de ShopDigital VIP.`, '_blank');
+                                            const phone = selectedCandidate.phone?.replace(/\D/g, '') || '';
+                                            if (!phone) { alert('Sin teléfono registrado'); return; }
+                                            window.open(`https://wa.me/${phone}?text=Hola ${selectedCandidate.name}, somos del equipo de ShopDigital VIP.`, '_blank');
                                         }}
                                         className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-green-500/20 transition-all active:scale-95"
                                     >
