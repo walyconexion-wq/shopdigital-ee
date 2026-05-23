@@ -202,6 +202,36 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                         NODO: {townId.replace('-', ' ')}
                     </p>
                 </div>
+
+                {/* 🚨 Barra de Acciones Rápidas */}
+                <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
+                    {/* Botón: Ir al Formulario de Captación Publica */}
+                    <button
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/reclutamiento`); }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-white border transition-all hover:scale-105 active:scale-95"
+                        style={{ backgroundColor: hexToRgba('#f59e0b', 0.15), borderColor: hexToRgba('#f59e0b', 0.4), color: '#f59e0b' }}
+                    >
+                        <FileText size={14} /> Formulario Captación
+                    </button>
+
+                    {/* Botón: Acceder a la Academia */}
+                    <button
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/academia-embajadores`); }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-white border transition-all hover:scale-105 active:scale-95"
+                        style={{ backgroundColor: hexToRgba('#3b82f6', 0.15), borderColor: hexToRgba('#3b82f6', 0.4), color: '#3b82f6' }}
+                    >
+                        <Terminal size={14} /> Academia / Bóveda
+                    </button>
+
+                    {/* Botón: Refrescar */}
+                    <button
+                        onClick={() => { playNeonClick(); fetchAspirantes(); }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all hover:scale-105 active:scale-95"
+                        style={{ backgroundColor: hexToRgba(zoneColor, 0.1), borderColor: hexToRgba(zoneColor, 0.3), color: zoneColor }}
+                    >
+                        <ArrowRight size={14} /> Actualizar
+                    </button>
+                </div>
             </div>
 
             <div className="px-6 mt-6 relative z-10 pb-20 w-full max-w-full mx-auto">
@@ -256,12 +286,37 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
 
                                                     <div className="flex gap-2 pl-2 mt-auto">
                                                         <button 
-                                                            className="flex-1 py-1.5 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-colors"
-                                                            style={{ backgroundColor: hexToRgba(stage.color, 0.1), color: stage.color, border: `1px solid ${hexToRgba(stage.color, 0.3)}` }}
+                                                            onClick={(e) => { e.stopPropagation(); playNeonClick(); setSelectedCandidate(aspirante); }}
+                                                            className="flex-1 py-2 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95"
+                                                            style={{ backgroundColor: hexToRgba(stage.color, 0.15), color: stage.color, border: `1px solid ${hexToRgba(stage.color, 0.4)}`, boxShadow: `0 0 10px ${hexToRgba(stage.color, 0.1)}` }}
                                                         >
-                                                            Ver Ficha
+                                                            📄 Ver Ficha Completa
                                                         </button>
                                                     </div>
+                                                    
+                                                    {/* Acciones rápidas por columna */}
+                                                    {stage.id === 'entrevista' && (
+                                                        <div className="pl-2 mt-2">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleCopyLink(aspirante.id); }}
+                                                                className="w-full py-1.5 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95 flex items-center justify-center gap-1"
+                                                                style={{ backgroundColor: 'rgba(139,92,246,0.1)', color: '#8b5cf6', border: '1px solid rgba(139,92,246,0.3)' }}
+                                                            >
+                                                                <Zap size={10}/> {copiedId === aspirante.id ? '✅ Copiado!' : 'Copiar Enlace Alta'}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {stage.id === 'academia' && (
+                                                        <div className="pl-2 mt-2">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); playNeonClick(); navigate(`/${townId}/academia-embajadores?id=${aspirante.id}`); }}
+                                                                className="w-full py-1.5 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95 flex items-center justify-center gap-1"
+                                                                style={{ backgroundColor: 'rgba(59,130,246,0.1)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.3)' }}
+                                                            >
+                                                                <BookOpen size={10}/> Ver Academia
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))
                                         )}
