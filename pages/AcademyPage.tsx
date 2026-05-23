@@ -228,7 +228,10 @@ const AcademyPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="relative z-10 max-w-4xl mx-auto px-6 py-8 space-y-8">
+            <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Left Column: Modules & Progress */}
+                    <div className="lg:col-span-7 space-y-8">
                 {/* Bienvenida */}
                 <div className="p-6 rounded-3xl border text-center" style={{ backgroundColor: hexToRgba(zoneColor, 0.05), borderColor: hexToRgba(zoneColor, 0.2) }}>
                     <div className="text-4xl mb-3">🎓</div>
@@ -238,7 +241,7 @@ const AcademyPage: React.FC = () => {
                     </p>
                 {/* ARI Badge */}
                     <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold uppercase tracking-widest" style={{ backgroundColor: hexToRgba(zoneColor, 0.1), borderColor: hexToRgba(zoneColor, 0.3), color: zoneColor }}>
-                        <Star size={12} /> ARI — tu mentora de R.R.H.H. está esperándote abajo 👇
+                        <Star size={12} /> ARI — tu mentora de R.R.H.H. lista en línea 👉
                     </div>
                 </div>
 
@@ -307,35 +310,6 @@ const AcademyPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* ARI INLINE — Mentora R.R.H.H. */}
-                <div>
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2" style={{ color: zoneColor }}>
-                        <Star size={12} /> ARI · Agente de R.R.H.H.
-                    </h3>
-                    <AriMerchantAssistant
-                        shop={{
-                            id: 'academy-placeholder',
-                            name: 'Academia ShopDigital',
-                            category: 'academy',
-                            description: '',
-                            address: '',
-                            phone: '',
-                            email: '',
-                            logo: '',
-                            images: [],
-                            offers: [],
-                            isActive: true,
-                            visits: 0,
-                            subscribers: 0,
-                            townId: townId,
-                        } as any}
-                        role="academy"
-                        townId={townId}
-                        inline={true}
-                        candidateName={candidateId || ''}
-                    />
-                </div>
-
                 {/* Exam Button */}
                 {allModulesCompleted ? (
                     <button
@@ -350,6 +324,42 @@ const AcademyPage: React.FC = () => {
                         <Lock size={18} /> Completá todos los módulos para habilitar el examen
                     </div>
                 )}
+                    </div>
+
+                    {/* Right Column: ARI Assistant */}
+                    <div className="lg:col-span-5 h-[600px] flex flex-col">
+                {/* ARI INLINE — Mentora R.R.H.H. */}
+                <div className="h-full flex flex-col">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2" style={{ color: zoneColor }}>
+                        <Star size={12} /> ARI · Agente de R.R.H.H.
+                    </h3>
+                    <div className="flex-1">
+                        <AriMerchantAssistant
+                            shop={{
+                                id: 'academy-placeholder',
+                                name: 'Academia ShopDigital',
+                                category: 'academy',
+                                description: '',
+                                address: '',
+                                phone: '',
+                                email: '',
+                                logo: '',
+                                images: [],
+                                offers: [],
+                                isActive: true,
+                                visits: 0,
+                                subscribers: 0,
+                                townId: townId,
+                            } as any}
+                            role="academy"
+                            townId={townId}
+                            inline={true}
+                            candidateName={candidateId || ''}
+                        />
+                    </div>
+                </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
