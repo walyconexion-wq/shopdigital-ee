@@ -26,6 +26,7 @@ import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
 import AmbassadorRecruitPage1 from './pages/AmbassadorRecruitPage1';
 import AmbassadorRecruitPage2 from './pages/AmbassadorRecruitPage2';
 import AmbassadorRecruitmentAdminPage from './pages/AmbassadorRecruitmentAdminPage';
+import AcademyPage from './pages/AcademyPage';
 import ClientSubscriptionPage from './pages/ClientSubscriptionPage';
 import ClientsDatabasePage from './pages/ClientsDatabasePage';
 import ClientOffersPage from './pages/ClientOffersPage';
@@ -342,6 +343,9 @@ const App: React.FC = () => {
 
                 {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}
                 <Route path="/:townId/tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
+
+                {/* 🏫 ACADEMIA SHOPDIGITAL — Bóveda de Entrenamiento */}
+                <Route path="/:townId/academia-embajadores" element={<AcademyPage />} />
 
                 {/* Ruteo Dinámico Multi-Zona */}
                 <Route path="/:townId/*" element={<TownController />} />

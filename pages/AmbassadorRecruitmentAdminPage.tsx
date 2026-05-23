@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, Users, CheckCircle, XCircle, Copy, Check, FileText, Zap, ShieldAlert, Terminal, MessageCircle, ArrowRight, ArrowLeft } from 'lucide-react';
-import { playNeonClick, playSuccessSound, playErrorSound } from '../utils/audio';
+import { ChevronLeft, Users, CheckCircle, XCircle, Copy, Check, FileText, Zap, ShieldAlert, Terminal, MessageCircle, ArrowRight, ArrowLeft, Shield, Star, BookOpen } from 'lucide-react';
+import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { db, eliminarAutorizado, actualizarAutorizado } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
@@ -111,6 +111,29 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
             playSuccessSound();
         } catch (error) {
             console.error("Error updating status:", error);
+        }
+    };
+
+    const authorizeRole = async (id: string, role: 'ambassador' | 'director') => {
+        playNeonClick();
+        const label = role === 'ambassador' ? 'EMBAJADOR' : 'DIRECTOR DE ZONA';
+        if (window.confirm(`¿CONFIRMAR AUTORIZACIÓN DE ROL: ${label} para ${selectedCandidate?.name?.toUpperCase()}?`)) {
+            try {
+                await actualizarAutorizado(id, {
+                    role,
+                    status: 'active',
+                    authorizedAt: new Date().toISOString()
+                });
+                setAspirantes(aspirantes.map(a => a.id === id ? { ...a, status: 'active', role } : a));
+                if (selectedCandidate?.id === id) {
+                    setSelectedCandidate({ ...selectedCandidate, status: 'active', role });
+                }
+                playSuccessSound();
+                alert(`✅ ¡${selectedCandidate?.name} ha sido autorizado como ${label}! Su cuenta ya está activa.`);
+                setSelectedCandidate(null);
+            } catch (error) {
+                console.error('Error authorizing role:', error);
+            }
         }
     };
 
@@ -341,20 +364,47 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                                         <MessageCircle size={16}/> Iniciar WhatsApp
                                     </button>
                                     
-                                    {selectedCandidate.status === 'aprobados' ? (
+                                    {/* Botón: Generar enlace de alta */}
+                                    {selectedCandidate.status === 'entrevista' && (
                                         <button 
                                             onClick={() => handleCopyLink(selectedCandidate.id)}
-                                            className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all active:scale-95"
+                                            className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-violet-500/10 text-violet-400 border border-violet-500/30 hover:bg-violet-500/20 transition-all active:scale-95"
                                         >
-                                            <Zap size={16}/> Enlace Protocolo de Práctica
+                                            <Zap size={16}/> {copiedId === selectedCandidate.id ? '✅ Enlace Copiado!' : 'Copiar Enlace de Alta'}
                                         </button>
-                                    ) : (
+                                    )}
+
+                                    {/* Botón: Ver Academia */}
+                                    {(selectedCandidate.status === 'academia') && (
                                         <button 
-                                            disabled
-                                            className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white/5 text-white/30 border border-white/10 cursor-not-allowed"
+                                            onClick={() => { playNeonClick(); navigate(`/${townId}/academia-embajadores?id=${selectedCandidate.id}`); }}
+                                            className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 transition-all active:scale-95"
                                         >
-                                            <ShieldAlert size={16}/> Esperando Graduación
+                                            <BookOpen size={16}/> Ver Bóveda de Entrenamiento
                                         </button>
+                                    )}
+
+                                    {/* Botones de Autorización de Rol */}
+                                    {selectedCandidate.status === 'aprobados' && (
+                                        <div className="w-full space-y-2">
+                                            <p className="text-[9px] uppercase tracking-widest font-bold text-emerald-400 mb-2 flex items-center gap-1"><Star size={10}/> Candidato aprobado — Asignar Rol Oficial:</p>
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    onClick={() => authorizeRole(selectedCandidate.id, 'ambassador')}
+                                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest text-white transition-all active:scale-95"
+                                                    style={{ background: 'linear-gradient(90deg, rgba(16,185,129,0.8), #10b981)', boxShadow: '0 0 20px rgba(16,185,129,0.3)' }}
+                                                >
+                                                    <Shield size={16}/> Autorizar como Embajador
+                                                </button>
+                                                <button 
+                                                    onClick={() => authorizeRole(selectedCandidate.id, 'director')}
+                                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest text-white transition-all active:scale-95"
+                                                    style={{ background: 'linear-gradient(90deg, rgba(139,92,246,0.8), #8b5cf6)', boxShadow: '0 0 20px rgba(139,92,246,0.3)' }}
+                                                >
+                                                    <Star size={16}/> Autorizar como Director
+                                                </button>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             </div>
