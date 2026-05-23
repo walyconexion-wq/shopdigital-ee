@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, Send, Share2, User, Phone, MapPin, Calendar, CheckCircle, Mail, Briefcase, Cpu, Smartphone, Monitor } from 'lucide-react';
+import { ChevronLeft, Send, Share2, User, Phone, MapPin, Calendar, CheckCircle, Mail, Briefcase, Cpu, Smartphone, Monitor, Camera } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { crearAspirante } from '../firebase';
 
@@ -19,12 +19,13 @@ const AmbassadorRecruitPage1: React.FC = () => {
         phone: '',
         email: '',
         motivation: '',
-        photoUrl: '', // Opcional por ahora, podría ser un input file luego
+        photoUrl: '',
         hasSmartphone: false,
         hasPC: false,
         hasSalesExperience: false,
         hasDevKnowledge: false
     });
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
     const getZoneColor = () => {
         if (townId === 'ezeiza') return '#06b6d4'; // Cyan
@@ -49,6 +50,19 @@ const AmbassadorRecruitPage1: React.FC = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
         setFormData({ ...formData, [e.target.name]: value });
+    };
+
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { alert('La foto debe pesar menos de 2MB.'); return; }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64 = reader.result as string;
+            setPhotoPreview(base64);
+            setFormData(prev => ({ ...prev, photoUrl: base64 }));
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -148,6 +162,26 @@ const AmbassadorRecruitPage1: React.FC = () => {
                         
                         <h3 className="text-[10px] font-black uppercase tracking-[0.3em] border-b border-white/10 pb-2 mb-4" style={{ color: zoneColor }}>1. Datos Personales</h3>
 
+                        {/* 📸 Foto de Perfil */}
+                        <div className="flex flex-col items-center mb-4">
+                            <label htmlFor="photo-upload" className="cursor-pointer group">
+                                <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 mx-auto transition-all group-hover:scale-105" style={{ borderColor: hexToRgba(zoneColor, 0.5), backgroundColor: hexToRgba(zoneColor, 0.1) }}>
+                                    {photoPreview ? (
+                                        <img src={photoPreview} alt="Foto" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center gap-1">
+                                            <Camera size={24} style={{ color: zoneColor }} />
+                                            <span className="text-[8px] font-bold uppercase tracking-widest" style={{ color: zoneColor }}>Tu Foto</span>
+                                        </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <Camera size={20} className="text-white" />
+                                    </div>
+                                </div>
+                                <p className="text-[9px] uppercase tracking-widest text-white/40 text-center mt-2 font-bold">Tocar para subir foto</p>
+                            </label>
+                            <input id="photo-upload" type="file" accept="image/*" capture="user" onChange={handlePhotoChange} className="hidden" />
+                        </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-2 flex items-center gap-2"><User size={12} style={{ color: zoneColor }} /> Nombre Completo</label>
                             <input required name="name" value={formData.name} onChange={handleChange} placeholder="Ej. Juan Pérez" className="w-full bg-black/60 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white focus:outline-none transition-colors" style={{ outlineColor: zoneColor }} />

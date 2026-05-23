@@ -266,35 +266,88 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                                             </div>
                                         ) : (
                                             colAspirantes.map((aspirante) => (
-                                                <div 
-                                                    key={aspirante.id} 
+                                                <div key={aspirante.id} 
                                                     className="bg-zinc-900/80 border rounded-2xl p-4 cursor-pointer hover:-translate-y-1 transition-transform shadow-lg relative overflow-hidden group"
                                                     style={{ borderColor: hexToRgba(stage.color, 0.3) }}
-                                                    onClick={() => setSelectedCandidate(aspirante)}
                                                 >
                                                     <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: stage.color }} />
-                                                    <h3 className="text-[13px] font-black uppercase tracking-widest text-white mb-1 pl-2 truncate">{aspirante.name}</h3>
-                                                    <p className="text-[10px] text-white/50 uppercase tracking-widest pl-2 mb-3 truncate">{aspirante.location || 'Localidad N/A'}</p>
-                                                    
+
+                                                    {/* Foto + Nombre */}
+                                                    <div className="flex items-center gap-3 pl-2 mb-3">
+                                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 flex-shrink-0" style={{ borderColor: hexToRgba(stage.color, 0.5) }}>
+                                                            {aspirante.photoUrl ? (
+                                                                <img src={aspirante.photoUrl} alt={aspirante.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-lg font-black" style={{ backgroundColor: hexToRgba(stage.color, 0.15), color: stage.color }}>
+                                                                    {aspirante.name?.charAt(0)?.toUpperCase() || '?'}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h3 className="text-[13px] font-black uppercase tracking-widest text-white truncate">{aspirante.name}</h3>
+                                                            <p className="text-[9px] text-white/50 uppercase tracking-widest truncate">{aspirante.location || 'Localidad N/A'}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Datos Básicos */}
+                                                    <div className="pl-2 space-y-1 mb-3">
+                                                        {aspirante.age && (
+                                                            <p className="text-[10px] text-white/60 flex items-center gap-1">
+                                                                <span style={{ color: stage.color }}>▸</span> {aspirante.age} años · {aspirante.gender === 'M' ? 'Masculino' : aspirante.gender === 'F' ? 'Femenino' : aspirante.gender || ''}
+                                                            </p>
+                                                        )}
+                                                        {aspirante.phone && (
+                                                            <p className="text-[10px] text-white/60 flex items-center gap-1 truncate">
+                                                                <span style={{ color: stage.color }}>▸</span> 📱 {aspirante.phone}
+                                                            </p>
+                                                        )}
+                                                        {aspirante.email && (
+                                                            <p className="text-[10px] text-white/60 flex items-center gap-1 truncate">
+                                                                <span style={{ color: stage.color }}>▸</span> ✉️ {aspirante.email}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
                                                     {/* Skills mini-badges */}
-                                                    <div className="flex gap-1 pl-2 mb-4">
+                                                    <div className="flex gap-1 pl-2 mb-3 flex-wrap">
                                                         {aspirante.hasSmartphone && <span className="bg-cyan-500/20 text-cyan-400 text-[8px] px-1.5 py-0.5 rounded border border-cyan-500/30" title="Smartphone">📱</span>}
                                                         {aspirante.hasPC && <span className="bg-blue-500/20 text-blue-400 text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30" title="PC">💻</span>}
                                                         {aspirante.hasSalesExperience && <span className="bg-emerald-500/20 text-emerald-400 text-[8px] px-1.5 py-0.5 rounded border border-emerald-500/30" title="Ventas">💼</span>}
                                                         {aspirante.hasDevKnowledge && <span className="bg-violet-500/20 text-violet-400 text-[8px] px-1.5 py-0.5 rounded border border-violet-500/30" title="Programación">⌨️</span>}
                                                     </div>
 
-                                                    <div className="flex gap-2 pl-2 mt-auto">
+                                                    {/* Botón: Ver Ficha Completa */}
+                                                    <div className="pl-2 mb-2">
                                                         <button 
                                                             onClick={(e) => { e.stopPropagation(); playNeonClick(); setSelectedCandidate(aspirante); }}
-                                                            className="flex-1 py-2 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95"
-                                                            style={{ backgroundColor: hexToRgba(stage.color, 0.15), color: stage.color, border: `1px solid ${hexToRgba(stage.color, 0.4)}`, boxShadow: `0 0 10px ${hexToRgba(stage.color, 0.1)}` }}
+                                                            className="w-full py-2 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95"
+                                                            style={{ backgroundColor: hexToRgba(stage.color, 0.15), color: stage.color, border: `1px solid ${hexToRgba(stage.color, 0.4)}` }}
                                                         >
                                                             📄 Ver Ficha Completa
                                                         </button>
                                                     </div>
-                                                    
-                                                    {/* Acciones rápidas por columna */}
+
+                                                    {/* Botones Aprobar / Deshacer — solo en columna "nuevos" */}
+                                                    {stage.id === 'nuevos' && (
+                                                        <div className="pl-2 flex gap-2">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); playNeonClick(); changeStatus(aspirante.id, 'entrevista'); }}
+                                                                className="flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 flex items-center justify-center gap-1"
+                                                                style={{ background: 'linear-gradient(90deg, rgba(16,185,129,0.3), rgba(16,185,129,0.5))', color: '#10b981', border: '1px solid rgba(16,185,129,0.5)' }}
+                                                            >
+                                                                ✅ Aprobar
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleDelete(aspirante.id, aspirante.name); }}
+                                                                className="flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 flex items-center justify-center gap-1"
+                                                                style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}
+                                                            >
+                                                                ❌ Deshacer
+                                                            </button>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Botón Copiar Enlace en Entrevista */}
                                                     {stage.id === 'entrevista' && (
                                                         <div className="pl-2 mt-2">
                                                             <button
@@ -306,6 +359,8 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                                                             </button>
                                                         </div>
                                                     )}
+
+                                                    {/* Ver Academia */}
                                                     {stage.id === 'academia' && (
                                                         <div className="pl-2 mt-2">
                                                             <button
