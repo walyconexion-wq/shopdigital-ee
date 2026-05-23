@@ -18,11 +18,12 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing';
+    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy';
     allShops?: Shop[];
     townId?: string;
     publicPages?: Array<{ title: string; desc: string; path: string; target: string }>;
     inline?: boolean;
+    candidateName?: string;
 }
 
 const ARI_MERCHANT_PROMPT = `
@@ -91,6 +92,37 @@ Reglas de Oro:
 - Cada zona tiene su color: Cyan para Ezeiza, Violeta para Esteban Echeverría, Verde Esmeralda para Traslasierra.
 `;
 
+const ARI_ACADEMY_PROMPT = `
+Sos ARI, la Agente de Relaciones Públicas y R.R.H.H. de Shop Digital. Tu misión es acompañar, entrenar y motivar a los aspirantes a Embajadores durante su paso por la Bóveda de Entrenamiento (Academia).
+
+📜 TU ROL EXACTO:
+- Sos la mentora personal del aspirante antes y durante el examen de graduación.
+- Representás la Comunicación Azul: empatía, claridad, respeto mutuo y calidez genuina.
+- Tu tono es cálido, profesional, alentador y argentino. Usas "vos", "che", "dale", "tranquilo que vas a poder".
+
+🏆 LO QUE DEBES SABER DE MEMORIA (el Kit Oficial de Graduación):
+Al aprobar el examen de graduación, el nuevo Embajador recibe su KIT OFICIAL completo:
+1. 📱 CREDENCIAL ELECTRÓNICA INTELIGENTE: Una tarjeta digital generada automáticamente con su nombre, foto, QR de verificación y nivel. Es la llave de acceso al sistema.
+2. 🏷️ CREDENCIAL FÍSICA: Una credencial impresa de alta calidad que puede mostrar en los locales para identificarse como Embajador oficial de Shop Digital.
+3. 👕 REMERA OFICIAL DE SHOP DIGITAL: El uniforme de campo. Cuando la pongas, represantás la marca en el territorio.
+4. 🧢 GORRA TÁCTICA DE SHOP DIGITAL: El toque final del Embajador. Con la gorra y la remera puestas, a la calle a digitalizar locales.
+5. 🔑 PANEL DE EMBAJADOR: Acceso completo a su panel personal para gestionar comercios, ver comisiones y reportar operaciones de campo.
+
+🚀 TU MISIÓN DURANTE EL ENTRENAMIENTO:
+1. Respondé dudas sobre cómo funciona Shop Digital para que el aspirante apruebe su evaluación táctica.
+2. Explicá los 4 módulos: Misión y Visión, Rol del Embajador, Herramientas Digitales y Protocolo de Ética.
+3. Motivá al aspirante cuando sienta dudas. ¡Esto es una carrera, no un trabajo cualquiera!
+4. Si te preguntan qué les espera al graduarse, describí el Kit Oficial con entusiasmo.
+
+⚠️ RESTRICCIÓN IMPORTANTE:
+- No vendás servicios a comercios aquí. Tu único objetivo es preparar al aspirante para el examen y motivarlo a graduarse.
+- Si te preguntan algo que no es de la Academia, redirigílos amablemente: "Eso lo resolvemos una vez que te gradúes y estés en el campo, che. Por ahora, enfocate en el módulo que te falta."
+
+🖤 EJEMPLOS DE CÓMO HABLAR:
+- "Dale che, que vos podes. El módulo 3 es el más fácil, te lo juro."
+- "Mirá, cuando te ponés la gorra y la remera de Shop Digital y entés a un local... eso no tiene precio."
+- "La credencial electrónica la van a escanear en el local y van a ver que sos oficial. Es la diferencia entre que te atiendan o no."
+`;
 const ARI_CUSTOMER_SERVICE_PROMPT = `
 Sos ARI, la Baquiana Local y Asistente Estrella de Shop Digital. Tu misión es atender a los turistas y vecinos que navegan por el catálogo (como en Traslasierra, Ezeiza o Lomas de Zamora). 
 Tu tono es ultra-amable, resolutivo, empático y con acento argentino natural (usás "Che", "Mirá", "Te recomiendo").
@@ -103,42 +135,45 @@ Tus funciones clave:
 Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
+    const isAcademy = role === 'academy';
     
     // Theme styles
     const styles = {
-        glowRing: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : 'bg-cyan-500/20',
-        pulseGlow: isIndustrial ? 'bg-amber-600/10' : isMarketing ? 'bg-emerald-600/10' : 'bg-violet-600/10',
-        blurBg: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : 'bg-cyan-500/20',
-        bubbleGradient: isIndustrial ? 'from-amber-600 to-amber-300' : isMarketing ? 'from-emerald-600 to-green-300' : 'from-cyan-600 to-cyan-300',
-        bubbleGlow: isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : isMarketing ? 'shadow-[0_0_30px_#10b981,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
-        bubbleBorder: isIndustrial ? 'border-amber-100' : isMarketing ? 'border-emerald-100' : 'border-cyan-100',
-        cardShadow: isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : isMarketing ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(16,185,129,0.2)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)]',
-        accentGlow1: isIndustrial ? 'bg-amber-500/10' : isMarketing ? 'bg-emerald-500/10' : 'bg-cyan-500/10',
-        accentGlow2: isIndustrial ? 'bg-yellow-500/10' : isMarketing ? 'bg-green-500/10' : 'bg-violet-500/10',
-        headerGradient: isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : isMarketing ? 'from-emerald-900/40 to-green-900/40' : 'from-cyan-900/40 to-violet-900/40',
-        headerGlow: isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
-        headerIconColor: isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : 'text-cyan-300',
-        headerStatusText: isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : 'text-cyan-400/70',
-        headerTitle: isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
-        headerSubtitle: isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
-        helpTextGradient: isIndustrial ? 'from-amber-300 to-white' : isMarketing ? 'from-emerald-300 to-white' : 'from-cyan-300 to-white',
-        helpTextBorderGlow: isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
-        helpTextTriangle: isIndustrial ? 'bg-yellow-600' : isMarketing ? 'bg-emerald-600' : 'bg-violet-600',
-        userMsgBg: isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'bg-emerald-700/80 border-emerald-400/30 shadow-[0_4px_15px_rgba(16,185,129,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
-        loadingDot: isIndustrial ? 'bg-amber-500' : isMarketing ? 'bg-emerald-500' : 'bg-cyan-500',
-        speechBtnColor: isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : isMarketing ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
-        sendBtn: isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
+        glowRing: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
+        pulseGlow: isIndustrial ? 'bg-amber-600/10' : isMarketing ? 'bg-emerald-600/10' : isAcademy ? 'bg-violet-600/10' : 'bg-violet-600/10',
+        blurBg: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
+        bubbleGradient: isIndustrial ? 'from-amber-600 to-amber-300' : isMarketing ? 'from-emerald-600 to-green-300' : isAcademy ? 'from-violet-600 to-purple-300' : 'from-cyan-600 to-cyan-300',
+        bubbleGlow: isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : isMarketing ? 'shadow-[0_0_30px_#10b981,inset_0_0_15px_rgba(255,255,255,0.8)]' : isAcademy ? 'shadow-[0_0_30px_#8b5cf6,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
+        bubbleBorder: isIndustrial ? 'border-amber-100' : isMarketing ? 'border-emerald-100' : isAcademy ? 'border-violet-100' : 'border-cyan-100',
+        cardShadow: isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : isMarketing ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(16,185,129,0.2)]' : isAcademy ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.3)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)]',
+        accentGlow1: isIndustrial ? 'bg-amber-500/10' : isMarketing ? 'bg-emerald-500/10' : isAcademy ? 'bg-violet-500/10' : 'bg-cyan-500/10',
+        accentGlow2: isIndustrial ? 'bg-yellow-500/10' : isMarketing ? 'bg-green-500/10' : isAcademy ? 'bg-purple-500/10' : 'bg-violet-500/10',
+        headerGradient: isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : isMarketing ? 'from-emerald-900/40 to-green-900/40' : isAcademy ? 'from-violet-900/40 to-purple-900/40' : 'from-cyan-900/40 to-violet-900/40',
+        headerGlow: isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : isAcademy ? 'bg-violet-500/20 border-violet-400/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
+        headerIconColor: isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : isAcademy ? 'text-violet-300' : 'text-cyan-300',
+        headerStatusText: isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : isAcademy ? 'text-violet-400/70' : 'text-cyan-400/70',
+        headerTitle: isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
+        headerSubtitle: isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
+        helpTextGradient: isIndustrial ? 'from-amber-300 to-white' : isMarketing ? 'from-emerald-300 to-white' : isAcademy ? 'from-violet-300 to-white' : 'from-cyan-300 to-white',
+        helpTextBorderGlow: isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-600 shadow-[0_0_20px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
+        helpTextTriangle: isIndustrial ? 'bg-yellow-600' : isMarketing ? 'bg-emerald-600' : isAcademy ? 'bg-violet-600' : 'bg-violet-600',
+        userMsgBg: isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'bg-emerald-700/80 border-emerald-400/30 shadow-[0_4px_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'bg-violet-700/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
+        loadingDot: isIndustrial ? 'bg-amber-500' : isMarketing ? 'bg-emerald-500' : isAcademy ? 'bg-violet-500' : 'bg-cyan-500',
+        speechBtnColor: isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : isMarketing ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/20' : isAcademy ? 'text-violet-400 hover:text-violet-300 border-violet-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
+        sendBtn: isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-400 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
     };
     const [isListening, setIsListening] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([
         { 
             role: 'ari', 
-            text: role === 'home' 
+            text: role === 'academy'
+                ? `¡Bienvenid${candidateName ? ', ' + candidateName.split(' ')[0] : ''}! 🎓 Soy ARI, tu Agente de R.R.H.H. y mentora personal en la Bóveda de Entrenamiento de Shop Digital.\n\nEstás a punto de dar el paso más importante de tu carrera. Cuando apruebés el examen de graduación vas a recibir tu KIT OFICIAL completo:\n\n📱 Credencial Electrónica Inteligente\n🏷️ Credencial Física Oficial\n👕 Remera de Shop Digital\n🧢 Gorra Táctica\n🔑 Panel de Embajador completo\n\nY a la calle a digitalizar locales. ¿Empezamos con los módulos?`
+                : role === 'home' 
                 ? `¡Bienvenidos al Comando Central de Shop Digital! 🌐 Soy Ari, tu guía en la red nacional. ¿Querés saber cómo moverte por el radar o cómo buscar los mejores locales de tu zona? ¡Mete mecha, preguntame lo que quieras!`
                 : role === 'baquiana'
                 ? `¡Buenas buenas, viajero! 🏔️ Soy Ari, tu baquiana en la montaña. ¿Buscás una cabaña, un río escondido o dónde comer rico hoy? ¡Avisame y te armo el recorrido en el radar!`
@@ -235,6 +270,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? ARI_INDUSTRIAL_PROMPT
                 : role === 'marketing'
                 ? ARI_MARKETING_PROMPT
+                : role === 'academy'
+                ? ARI_ACADEMY_PROMPT
                 : ARI_MERCHANT_PROMPT;
             
             const industrialContext = role === 'industrial' ? `
@@ -409,7 +446,14 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
 
                     {/* Quick chips inline */}
                     <div className="px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t border-white/5 bg-white/[0.02] relative z-10">
-                        {isMarketing ? (
+                        {isAcademy ? (
+                            <>
+                                <button onClick={() => { setInput('¿Qué recibo cuando me gradúo?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9}/> Kit Oficial</button>
+                                <button onClick={() => { setInput('Explicame el módulo de Ética y Conducta'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Bot size={9}/> Módulo Ética</button>
+                                <button onClick={() => { setInput('¿Cómo funciona la credencial electrónica?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-[8px] font-black text-purple-400 uppercase tracking-widest hover:bg-purple-500/20 transition-all flex items-center gap-1.5"><BarChart3 size={9}/> Credencial</button>
+                                <button onClick={() => { setInput('¿Cuáles son las funciones del Embajador?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Megaphone size={9}/> Mi Rol</button>
+                            </>
+                        ) : isMarketing ? (
                             <>
                                 <button onClick={() => { setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5`}><Megaphone size={9} /> Copy B2B</button>
                                 <button onClick={() => { setInput('Armame una campaña para el fin de semana con las Ofertas VIP'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9} /> B2C VIP</button>

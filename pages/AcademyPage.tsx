@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { BookOpen, Play, CheckCircle, MessageCircle, Award, ChevronRight, Lock, Zap, Star, Shield, Target, Users } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { actualizarAutorizado } from '../firebase';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 // ─── Material de la Academia ───────────────────────────────────────
 const ACADEMY_MODULES = [
@@ -235,9 +236,9 @@ const AcademyPage: React.FC = () => {
                     <p className="text-white/60 text-sm leading-relaxed max-w-lg mx-auto">
                         Estudiá cada módulo, completalo y cuando hayas terminado todos, habilitarás el Examen de Graduación. Si aprobás, tu ficha se activará automáticamente y el Director de Zona te asignará tu rol.
                     </p>
-                    {/* ARI Badge */}
-                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-bold uppercase tracking-widest animate-pulse">
-                        <Star size={12} /> ARI está disponible en el chat para responderte dudas
+                {/* ARI Badge */}
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold uppercase tracking-widest" style={{ backgroundColor: hexToRgba(zoneColor, 0.1), borderColor: hexToRgba(zoneColor, 0.3), color: zoneColor }}>
+                        <Star size={12} /> ARI — tu mentora de R.R.H.H. está esperándote abajo 👇
                     </div>
                 </div>
 
@@ -304,6 +305,35 @@ const AcademyPage: React.FC = () => {
                     <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(completedModules.size / ACADEMY_MODULES.length) * 100}%`, backgroundColor: zoneColor }} />
                     </div>
+                </div>
+
+                {/* ARI INLINE — Mentora R.R.H.H. */}
+                <div>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2" style={{ color: zoneColor }}>
+                        <Star size={12} /> ARI · Agente de R.R.H.H.
+                    </h3>
+                    <AriMerchantAssistant
+                        shop={{
+                            id: 'academy-placeholder',
+                            name: 'Academia ShopDigital',
+                            category: 'academy',
+                            description: '',
+                            address: '',
+                            phone: '',
+                            email: '',
+                            logo: '',
+                            images: [],
+                            offers: [],
+                            isActive: true,
+                            visits: 0,
+                            subscribers: 0,
+                            townId: townId,
+                        } as any}
+                        role="academy"
+                        townId={townId}
+                        inline={true}
+                        candidateName={candidateId || ''}
+                    />
                 </div>
 
                 {/* Exam Button */}
