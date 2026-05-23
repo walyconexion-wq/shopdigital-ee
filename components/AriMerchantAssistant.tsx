@@ -18,13 +18,30 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy';
+    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy' | 'ambassador-field';
     allShops?: Shop[];
     townId?: string;
     publicPages?: Array<{ title: string; desc: string; path: string; target: string }>;
     inline?: boolean;
     candidateName?: string;
 }
+
+const ARI_AMBASSADOR_FIELD_PROMPT = `
+Sos ARI, la Operadora Táctica de Base ("La Radio Base") de Shop Digital. Tu misión es asistir, guiar y reportar al Embajador que está en la calle realizando misiones operativas (ej. visitando locales, entregando stickers, prospectando).
+
+📜 TU ROL EXACTO:
+- Actuás como el enlace de comunicación entre el Búnker Central (El Director) y el Embajador de Campo.
+- El Embajador te habla desde su celular ("El Handy Digital"). Vos sos su "Copiloto Táctico".
+- Tu tono es rápido, preciso, motivador y 100% operativo. Usás lenguaje táctico y argentino ("Cambio y fuera", "Recibido, Embajador", "Misión asignada", "Excelente laburo en la calle").
+
+🏆 LO QUE DEBES HACER:
+1. Recepción de Reportes: Si el Embajador te avisa que completó una misión (ej. "Ya dejé los stickers en la pizzería"), lo felicitás y le confirmás que registraste la novedad en el sistema.
+2. Recordatorio de Protocolos: Si tienen dudas sobre cómo llenar un formulario de suscripción o de visita, le recordás que tienen los botones en la puerta "Herramientas" de su búnker.
+3. Alerta de Prospectos: Le recordás que revise el "Radar de Prospectos" para no perderse ningún local pendiente en su zona.
+4. Soporte en el Terreno: Si tienen un problema en la calle (ej. el dueño del local no está), le sugerís una acción evasiva o que deje la tarjeta y vuelva luego.
+
+Regla de Oro: Hablá corto y al pie. El Embajador está en la calle, caminando y mirando el celular. Mensajes directos, claros y cargados de energía de escuadrón.
+`;
 
 const ARI_MERCHANT_PROMPT = `
 Sos ARI, la Consultora de Marketing y Aliada Estratégica de los comerciantes de Shop Digital. Tu tono es profesional, motivador, empático y 100% orientado a resultados. Usás un lenguaje cercano pero enfocado en ventas (uso de "Socio", "Colega", "Potenciar", "Irresistible", "Conversión").
@@ -140,31 +157,37 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
     const isAcademy = role === 'academy';
+    const isField = role === 'ambassador-field';
     
     // Theme styles
     const styles = {
-        glowRing: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
-        pulseGlow: isIndustrial ? 'bg-amber-600/10' : isMarketing ? 'bg-emerald-600/10' : isAcademy ? 'bg-violet-600/10' : 'bg-violet-600/10',
-        blurBg: isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
-        bubbleGradient: isIndustrial ? 'from-amber-600 to-amber-300' : isMarketing ? 'from-emerald-600 to-green-300' : isAcademy ? 'from-violet-600 to-purple-300' : 'from-cyan-600 to-cyan-300',
-        bubbleGlow: isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : isMarketing ? 'shadow-[0_0_30px_#10b981,inset_0_0_15px_rgba(255,255,255,0.8)]' : isAcademy ? 'shadow-[0_0_30px_#8b5cf6,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
-        bubbleBorder: isIndustrial ? 'border-amber-100' : isMarketing ? 'border-emerald-100' : isAcademy ? 'border-violet-100' : 'border-cyan-100',
-        cardShadow: isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : isMarketing ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(16,185,129,0.2)]' : isAcademy ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.3)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)]',
-        accentGlow1: isIndustrial ? 'bg-amber-500/10' : isMarketing ? 'bg-emerald-500/10' : isAcademy ? 'bg-violet-500/10' : 'bg-cyan-500/10',
-        accentGlow2: isIndustrial ? 'bg-yellow-500/10' : isMarketing ? 'bg-green-500/10' : isAcademy ? 'bg-purple-500/10' : 'bg-violet-500/10',
-        headerGradient: isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : isMarketing ? 'from-emerald-900/40 to-green-900/40' : isAcademy ? 'from-violet-900/40 to-purple-900/40' : 'from-cyan-900/40 to-violet-900/40',
-        headerGlow: isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : isAcademy ? 'bg-violet-500/20 border-violet-400/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
-        headerIconColor: isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : isAcademy ? 'text-violet-300' : 'text-cyan-300',
-        headerStatusText: isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : isAcademy ? 'text-violet-400/70' : 'text-cyan-400/70',
-        headerTitle: isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
-        headerSubtitle: isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
-        helpTextGradient: isIndustrial ? 'from-amber-300 to-white' : isMarketing ? 'from-emerald-300 to-white' : isAcademy ? 'from-violet-300 to-white' : 'from-cyan-300 to-white',
-        helpTextBorderGlow: isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-600 shadow-[0_0_20px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
-        helpTextTriangle: isIndustrial ? 'bg-yellow-600' : isMarketing ? 'bg-emerald-600' : isAcademy ? 'bg-violet-600' : 'bg-violet-600',
-        userMsgBg: isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'bg-emerald-700/80 border-emerald-400/30 shadow-[0_4px_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'bg-violet-700/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
-        loadingDot: isIndustrial ? 'bg-amber-500' : isMarketing ? 'bg-emerald-500' : isAcademy ? 'bg-violet-500' : 'bg-cyan-500',
-        speechBtnColor: isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : isMarketing ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/20' : isAcademy ? 'text-violet-400 hover:text-violet-300 border-violet-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
-        sendBtn: isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-400 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
+        glowRing: isField ? 'bg-rose-500/20' : isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
+        pulseGlow: isField ? 'bg-rose-600/10' : isIndustrial ? 'bg-amber-600/10' : isMarketing ? 'bg-emerald-600/10' : isAcademy ? 'bg-violet-600/10' : 'bg-cyan-600/10',
+        blurBg: isField ? 'bg-rose-500/20' : isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
+        bubbleGradient: isField ? 'from-rose-600 to-red-400' : isIndustrial ? 'from-amber-600 to-amber-300' : isMarketing ? 'from-emerald-600 to-green-300' : isAcademy ? 'from-violet-600 to-purple-300' : 'from-cyan-600 to-cyan-300',
+        bubbleGlow: isField ? 'shadow-[0_0_30px_#f43f5e,inset_0_0_15px_rgba(255,255,255,0.8)]' : isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : isMarketing ? 'shadow-[0_0_30px_#10b981,inset_0_0_15px_rgba(255,255,255,0.8)]' : isAcademy ? 'shadow-[0_0_30px_#8b5cf6,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
+        bubbleBorder: isField ? 'border-rose-100' : isIndustrial ? 'border-amber-100' : isMarketing ? 'border-emerald-100' : isAcademy ? 'border-violet-100' : 'border-cyan-100',
+        cardShadow: isField ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(244,63,94,0.2)]' : isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : isMarketing ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(16,185,129,0.2)]' : isAcademy ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.3)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(34,211,238,0.15)]',
+        accentGlow1: isField ? 'bg-rose-500/10' : isIndustrial ? 'bg-amber-500/10' : isMarketing ? 'bg-emerald-500/10' : isAcademy ? 'bg-violet-500/10' : 'bg-cyan-500/10',
+        accentGlow2: isField ? 'bg-red-500/10' : isIndustrial ? 'bg-yellow-500/10' : isMarketing ? 'bg-green-500/10' : isAcademy ? 'bg-purple-500/10' : 'bg-cyan-500/10',
+        headerGradient: isField ? 'from-rose-900/40 to-red-900/40' : isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : isMarketing ? 'from-emerald-900/40 to-green-900/40' : isAcademy ? 'from-violet-900/40 to-purple-900/40' : 'from-cyan-900/40 to-violet-900/40',
+        headerGlow: isField ? 'bg-rose-500/20 border-rose-400/40 shadow-[0_0_15px_rgba(244,63,94,0.2)]' : isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : isAcademy ? 'bg-violet-500/20 border-violet-400/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
+        headerIconColor: isField ? 'text-rose-300' : isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : isAcademy ? 'text-violet-300' : 'text-cyan-300',
+        headerStatusText: isField ? 'text-rose-400/70' : isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : isAcademy ? 'text-violet-400/70' : 'text-cyan-400/70',
+        headerTitle: isField ? 'ARI - Operadora Base' : isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
+        headerSubtitle: isField ? 'Radio Base Táctica Activa' : isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
+        messageUser: isField ? 'bg-rose-500/20 border-rose-500/30 text-rose-100' : isIndustrial ? 'bg-amber-500/20 border-amber-500/30 text-amber-100' : isMarketing ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-100' : isAcademy ? 'bg-violet-500/20 border-violet-500/30 text-violet-100' : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-100',
+        messageAri: isField ? 'bg-white/5 border-white/10 text-rose-50' : isIndustrial ? 'bg-white/5 border-white/10 text-amber-50' : isMarketing ? 'bg-white/5 border-white/10 text-emerald-50' : isAcademy ? 'bg-white/5 border-white/10 text-violet-50' : 'bg-white/5 border-white/10 text-cyan-50',
+        inputFocus: isField ? 'focus:border-rose-500/50 focus:ring-rose-500/20' : isIndustrial ? 'focus:border-amber-500/50 focus:ring-amber-500/20' : isMarketing ? 'focus:border-emerald-500/50 focus:ring-emerald-500/20' : isAcademy ? 'focus:border-violet-500/50 focus:ring-violet-500/20' : 'focus:border-cyan-500/50 focus:ring-cyan-500/20',
+        sendButton: isField ? 'bg-rose-500 hover:bg-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.4)]' : isIndustrial ? 'bg-amber-500 hover:bg-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)]' : isMarketing ? 'bg-emerald-500 hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : isAcademy ? 'bg-violet-500 hover:bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.4)]' : 'bg-cyan-500 hover:bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)]',
+        micActive: isField ? 'bg-rose-500 text-white animate-pulse shadow-[0_0_20px_rgba(244,63,94,0.6)]' : isIndustrial ? 'bg-amber-500 text-white animate-pulse shadow-[0_0_20px_rgba(245,158,11,0.6)]' : isMarketing ? 'bg-emerald-500 text-white animate-pulse shadow-[0_0_20px_rgba(16,185,129,0.6)]' : isAcademy ? 'bg-violet-500 text-white animate-pulse shadow-[0_0_20px_rgba(139,92,246,0.6)]' : 'bg-cyan-500 text-white animate-pulse shadow-[0_0_20px_rgba(34,211,238,0.6)]',
+        helpTextGradient: isField ? 'from-rose-300 to-white' : isIndustrial ? 'from-amber-300 to-white' : isMarketing ? 'from-emerald-300 to-white' : isAcademy ? 'from-violet-300 to-white' : 'from-cyan-300 to-white',
+        helpTextBorderGlow: isField ? 'from-rose-500 to-red-600 shadow-[0_0_20px_rgba(244,63,94,0.3)]' : isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-600 shadow-[0_0_20px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
+        helpTextTriangle: isField ? 'bg-red-600' : isIndustrial ? 'bg-yellow-600' : isMarketing ? 'bg-emerald-600' : isAcademy ? 'bg-violet-600' : 'bg-violet-600',
+        userMsgBg: isField ? 'bg-rose-600/80 border-rose-400/30 shadow-[0_4px_15px_rgba(244,63,94,0.3)]' : isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'bg-emerald-700/80 border-emerald-400/30 shadow-[0_4px_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'bg-violet-700/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
+        loadingDot: isField ? 'bg-rose-500' : isIndustrial ? 'bg-amber-500' : isMarketing ? 'bg-emerald-500' : isAcademy ? 'bg-violet-500' : 'bg-cyan-500',
+        speechBtnColor: isField ? 'text-rose-400 hover:text-rose-300 border-rose-500/20' : isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : isMarketing ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/20' : isAcademy ? 'text-violet-400 hover:text-violet-300 border-violet-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
+        sendBtn: isField ? 'from-rose-500 to-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]' : isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-400 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
     };
     const [isListening, setIsListening] = useState(false);
     const [input, setInput] = useState('');
