@@ -4,6 +4,7 @@ import { ChevronLeft, Users, CheckCircle, XCircle, Copy, Check, FileText, Zap, S
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { db, eliminarAutorizado, actualizarAutorizado } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 // Definición de las Fases del Embudo
 const FUNNEL_STAGES = [
@@ -561,6 +562,29 @@ const AmbassadorRecruitmentAdminPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* ARI Assistant Floating */}
+            <AriMerchantAssistant
+                shop={{
+                    id: 'radar-reclutas',
+                    name: 'Radar de Reclutas',
+                    category: 'admin',
+                    description: '',
+                    address: '',
+                    phone: '',
+                    email: '',
+                    logo: '',
+                    images: [],
+                    offers: [],
+                    isActive: true,
+                    visits: 0,
+                    subscribers: 0,
+                    townId: townId,
+                } as any}
+                role="marketing"
+                townId={townId}
+                inline={false}
+            />
         </div>
     );
 };
