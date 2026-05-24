@@ -9,10 +9,10 @@ import {
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
-import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones } from '../firebase';
+import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker } from '../firebase';
 import { RadarScanner } from '../components/RadarScanner';
 import { SaturationPredictor } from '../components/SaturationPredictor';
-import { LayoutGrid, Target, TrendingUp } from 'lucide-react';
+import { LayoutGrid, Target, TrendingUp, Radio, CheckCircle2 } from 'lucide-react';
 
 // Mock data para el Radar
 const zonesData = [
@@ -66,8 +66,15 @@ export const DirectorBunkerPage: React.FC = () => {
     const [securityStatus, setSecurityStatus] = useState<'green' | 'red'>('green');
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'radar' | 'predictor'>('radar');
+    const [activeTab, setActiveTab] = useState<'radar' | 'predictor' | 'comunicaciones'>('radar');
     const [activeCategory, setActiveCategory] = useState('pizzerias');
+    
+    // --- Estado para Comunicaciones Directivas ---
+    const [ambassadorsList, setAmbassadorsList] = useState<any[]>([]);
+    const [selectedAmbassadors, setSelectedAmbassadors] = useState<string[]>([]);
+    const [msgText, setMsgText] = useState('');
+    const [isSendingMsg, setIsSendingMsg] = useState(false);
+    const [sentMessages, setSentMessages] = useState<any[]>([]);
     
     // 🎛️ Fase 2.1: Búnker Omnipresente (Estados de Zona y Reloj)
     const [activeZone, setActiveZone] = useState<'ezeiza' | 'esteban-echeverria' | 'traslasierra'>('esteban-echeverria');
@@ -115,7 +122,25 @@ export const DirectorBunkerPage: React.FC = () => {
     };
 
     useEffect(() => {
-        if (isAuthorized) loadIntrusiones();
+        if (isAuthorized) {
+            loadIntrusiones();
+            
+            // Suscribirse a los embajadores (autorizados activos)
+            const unsubAmbassadors = suscribirseAAutorizados((data) => {
+                const actives = data.filter((a: any) => a.role === 'ambassador' && a.status === 'active');
+                setAmbassadorsList(actives);
+            });
+            
+            // Suscribirse al historial de mensajes enviados por el Búnker
+            const unsubMessages = suscribirseAMensajesBunker('director-view', (mensajes) => {
+                setSentMessages(mensajes);
+            });
+
+            return () => {
+                unsubAmbassadors();
+                unsubMessages();
+            };
+        }
     }, [isAuthorized]);
 
     useEffect(() => {
@@ -145,6 +170,43 @@ export const DirectorBunkerPage: React.FC = () => {
         if (!window.confirm('¿Limpiar TODOS los registros de intrusión? El Doberman empezará de cero.')) return;
         await limpiarTodasIntrusiones();
         await loadIntrusiones();
+    };
+
+    // Enviar Mensaje Directivo
+    const handleSendMessage = async () => {
+        if (!msgText.trim() || selectedAmbassadors.length === 0) return;
+        
+        setIsSendingMsg(true);
+        try {
+            if (selectedAmbassadors.includes('all')) {
+                await enviarMensajeBunker({
+                    text: msgText,
+                    sender: 'director',
+                    recipientId: 'all',
+                    recipientName: 'Todos los Embajadores'
+                });
+            } else {
+                for (const ambId of selectedAmbassadors) {
+                    const amb = ambassadorsList.find(a => a.id === ambId);
+                    if (amb) {
+                        await enviarMensajeBunker({
+                            text: msgText,
+                            sender: 'director',
+                            recipientId: amb.id,
+                            recipientName: amb.name || amb.email
+                        });
+                    }
+                }
+            }
+            setMsgText('');
+            setSelectedAmbassadors([]);
+            alert('¡Orden transmitida a la red de Embajadores!');
+        } catch (error) {
+            console.error(error);
+            alert('Error enviando el mensaje');
+        } finally {
+            setIsSendingMsg(false);
+        }
     };
 
     // ═══════════════════════════════════════════
@@ -341,6 +403,16 @@ export const DirectorBunkerPage: React.FC = () => {
                                 >
                                     <TrendingUp size={14} /> El Predictor (Saturación)
                                 </button>
+                                <button 
+                                    onClick={() => { playNeonClick(); setActiveTab('comunicaciones'); }}
+                                    className={`flex-1 py-4 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                                        activeTab === 'comunicaciones' 
+                                        ? 'text-emerald-400 bg-emerald-500/5 border-b-2 border-emerald-500' 
+                                        : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                                    }`}
+                                >
+                                    <Radio size={14} /> Comunicaciones
+                                </button>
                             </div>
 
                             <div className="p-6">
@@ -356,7 +428,7 @@ export const DirectorBunkerPage: React.FC = () => {
                                         </div>
                                         <RadarScanner townId={townId} />
                                     </div>
-                                ) : (
+                                ) : activeTab === 'predictor' ? (
                                     <div className="animate-in fade-in duration-500">
                                         <div className="flex items-center justify-between mb-6">
                                             <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
@@ -367,6 +439,125 @@ export const DirectorBunkerPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <SaturationPredictor townId={townId} category={activeCategory} />
+                                    </div>
+                                ) : (
+                                    <div className="animate-in fade-in duration-500 flex flex-col gap-6">
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
+                                                <Radio size={18} className="text-emerald-500 animate-pulse" /> Frecuencia Directiva
+                                            </h2>
+                                            <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                                                <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">Transmisión Cifrada</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {/* Panel de Redacción */}
+                                            <div className="bg-[#050A15] border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Redactar Orden</h3>
+                                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            className="accent-emerald-500 w-3 h-3 cursor-pointer"
+                                                            checked={selectedAmbassadors.includes('all')}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) setSelectedAmbassadors(['all']);
+                                                                else setSelectedAmbassadors([]);
+                                                            }}
+                                                        />
+                                                        <span className="text-[10px] font-black text-emerald-400/70 group-hover:text-emerald-400 uppercase tracking-widest transition-colors">SELECCIONAR TODOS</span>
+                                                    </label>
+                                                </div>
+
+                                                <div className="flex flex-col gap-2 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
+                                                    {ambassadorsList.map((amb) => (
+                                                        <label key={amb.id} className={`flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer ${
+                                                            selectedAmbassadors.includes(amb.id) || selectedAmbassadors.includes('all')
+                                                            ? 'bg-emerald-500/10 border-emerald-500/30'
+                                                            : 'bg-white/5 border-white/5 hover:border-white/10'
+                                                        }`}>
+                                                            <input 
+                                                                type="checkbox" 
+                                                                className="accent-emerald-500 w-3 h-3"
+                                                                checked={selectedAmbassadors.includes(amb.id) || selectedAmbassadors.includes('all')}
+                                                                onChange={(e) => {
+                                                                    if (selectedAmbassadors.includes('all')) return;
+                                                                    if (e.target.checked) {
+                                                                        setSelectedAmbassadors([...selectedAmbassadors, amb.id]);
+                                                                    } else {
+                                                                        setSelectedAmbassadors(selectedAmbassadors.filter(id => id !== amb.id));
+                                                                    }
+                                                                }}
+                                                                disabled={selectedAmbassadors.includes('all')}
+                                                            />
+                                                            <div className="flex-1 flex justify-between items-center">
+                                                                <span className="text-[11px] font-bold text-white">{amb.name || amb.email}</span>
+                                                                {amb.phone && (
+                                                                    <a 
+                                                                        href={`https://wa.me/${amb.phone.replace(/[^0-9]/g, '')}`} 
+                                                                        target="_blank" 
+                                                                        rel="noopener noreferrer"
+                                                                        className="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-black rounded-lg transition-colors"
+                                                                        onClick={e => e.stopPropagation()}
+                                                                        title="WhatsApp Directo"
+                                                                    >
+                                                                        <MessageSquare size={12} />
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        </label>
+                                                    ))}
+                                                    {ambassadorsList.length === 0 && (
+                                                        <p className="text-[10px] text-white/30 italic text-center py-4">No hay embajadores activos disponibles.</p>
+                                                    )}
+                                                </div>
+
+                                                <textarea 
+                                                    value={msgText}
+                                                    onChange={e => setMsgText(e.target.value)}
+                                                    placeholder="Escriba la directiva aquí..."
+                                                    className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-[12px] text-white/90 placeholder:text-white/20 outline-none focus:border-emerald-500/50 min-h-[100px] resize-none"
+                                                />
+
+                                                <button 
+                                                    onClick={handleSendMessage}
+                                                    disabled={isSendingMsg || !msgText.trim() || selectedAmbassadors.length === 0}
+                                                    className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                >
+                                                    {isSendingMsg ? <RefreshCw size={14} className="animate-spin" /> : <Radio size={14} />}
+                                                    TRANSMITIR ORDEN
+                                                </button>
+                                            </div>
+
+                                            {/* Historial de Envíos */}
+                                            <div className="bg-[#050A15] border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+                                                <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-2">Registros de Transmisión</h3>
+                                                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-3 min-h-[200px]">
+                                                    {sentMessages.length === 0 ? (
+                                                        <p className="text-[10px] text-white/30 italic text-center py-4">Aún no se han enviado directivas.</p>
+                                                    ) : (
+                                                        sentMessages.map(msg => (
+                                                            <div key={msg.id} className="bg-white/5 border border-white/10 rounded-lg p-3 flex flex-col gap-2 relative">
+                                                                <div className="flex justify-between items-start">
+                                                                    <span className="text-[9px] text-white/40 uppercase tracking-widest">{new Date(msg.createdAt).toLocaleString('es-AR')}</span>
+                                                                    <div className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest flex items-center gap-1 ${
+                                                                        msg.isRead ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                                                    }`}>
+                                                                        {msg.isRead ? <CheckCircle2 size={10} /> : <Clock size={10} />}
+                                                                        {msg.isRead ? 'Confirmado' : 'Pendiente'}
+                                                                    </div>
+                                                                </div>
+                                                                <p className="text-[11px] text-white/80 break-words">{msg.text}</p>
+                                                                <div className="text-[9px] text-emerald-400/50 uppercase tracking-widest border-t border-white/5 pt-2 mt-1">
+                                                                    Destino: {msg.recipientName}
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </div>

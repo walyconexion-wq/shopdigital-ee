@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
-import { guardarComercio, eliminarComercio, crearFactura } from '../firebase';
+import { guardarComercio, eliminarComercio, crearFactura, suscribirseAMensajesBunker, marcarMensajeComoLeido } from '../firebase';
+import { useAuth } from '../components/AuthContext';
 import {
     ChevronLeft,
     ShieldCheck,
@@ -25,7 +26,10 @@ import {
     LogOut,
     Camera,
     CheckSquare,
-    Clock
+    CheckSquare,
+    Clock,
+    Radio,
+    AlertTriangle
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
@@ -39,8 +43,19 @@ type RoomType = 'hall' | 'radar' | 'misiones' | 'herramientas' | 'metricas';
 const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [activeRoom, setActiveRoom] = useState<RoomType>('hall');
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const [mensajesDirectivos, setMensajesDirectivos] = useState<any[]>([]);
+
+    React.useEffect(() => {
+        if (user?.uid) {
+            const unsub = suscribirseAMensajesBunker(user.uid, (mensajes) => {
+                setMensajesDirectivos(mensajes);
+            });
+            return () => unsub();
+        }
+    }, [user]);
 
     // Filtrar comercios pendientes (Radar de Prospectos)
     const pendingShops = useMemo(() => {
@@ -357,6 +372,68 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                         <Zap size={14} className="text-emerald-400" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-white/70">POSNET</span>
                     </button>
+                </div>
+
+                {/* --- BANDEJA DE MENSAJES DIRECTIVOS --- */}
+                <div className="max-w-lg mx-auto mt-6">
+                    <div className="flex items-center justify-between mb-3">
+                        <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
+                            <Radio size={14} className="text-red-500 animate-pulse" /> Alertas de Dirección
+                        </h2>
+                        {mensajesDirectivos.filter(m => !m.isRead).length > 0 && (
+                            <span className="bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse">
+                                {mensajesDirectivos.filter(m => !m.isRead).length} NUEVAS
+                            </span>
+                        )}
+                    </div>
+                    
+                    <div className="flex flex-col gap-3">
+                        {mensajesDirectivos.length === 0 ? (
+                            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-6 text-center">
+                                <p className="text-[10px] text-white/30 uppercase tracking-widest italic">Sin novedades en la frecuencia.</p>
+                            </div>
+                        ) : (
+                            mensajesDirectivos.map(msg => (
+                                <div key={msg.id} className={`border rounded-2xl p-4 flex flex-col gap-3 transition-all ${
+                                    msg.isRead ? 'bg-[#0f172a] border-white/10 opacity-70' : 'bg-red-950/20 border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.15)]'
+                                }`}>
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-[8px] text-white/40 uppercase tracking-widest">
+                                            {new Date(msg.createdAt).toLocaleString('es-AR')}
+                                        </span>
+                                        {!msg.isRead && (
+                                            <span className="text-[8px] font-black bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded uppercase flex items-center gap-1">
+                                                <AlertTriangle size={8} /> Prioridad
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-[12px] text-white/90 leading-relaxed font-medium break-words">
+                                        {msg.text}
+                                    </p>
+                                    {!msg.isRead && (
+                                        <button 
+                                            onClick={() => {
+                                                playSuccessSound();
+                                                marcarMensajeComoLeido(msg.id);
+                                            }}
+                                            className="w-full mt-2 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-black uppercase tracking-widest text-[9px] rounded-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                                        >
+                                            <CheckCircle size={14} /> Confirmar Recepción
+                                        </button>
+                                    )}
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    <a
+                        href="https://wa.me/5491140607059"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-6 w-full bg-emerald-500/10 border border-emerald-500/30 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] text-emerald-400 active:scale-95 transition-all hover:bg-emerald-500/20"
+                    >
+                        <MessageSquare size={14} /> Reporte al Director (WhatsApp)
+                    </a>
                 </div>
             </div>
         </div>

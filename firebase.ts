@@ -1074,5 +1074,63 @@ export const obtenerTownsPorRegion = async (regionId: string) => {
     }
 };
 
-export default app;
+// ==============================
+// 📡 MENSAJERÍA BÚNKER -> EMBAJADOR (FRECUENCIA DIRECTIVA)
+// ==============================
+export interface BunkerMessage {
+    id?: string;
+    text: string;
+    sender: 'director';
+    recipientId: 'all' | string; // 'all' para todos, o ID del embajador
+    recipientName: string;
+    createdAt: string;
+    isRead: boolean;
+    readAt?: string;
+}
 
+export const enviarMensajeBunker = async (mensaje: Omit<BunkerMessage, 'id' | 'createdAt' | 'isRead'>) => {
+    try {
+        const docRef = await addDoc(collection(db, 'bunker_messages'), {
+            ...mensaje,
+            createdAt: new Date().toISOString(),
+            isRead: false
+        });
+        console.log(`[BÚNKER] Mensaje enviado a ${mensaje.recipientName}. ID: ${docRef.id}`);
+        return docRef.id;
+    } catch (error) {
+        console.error("[BÚNKER] Error enviando mensaje:", error);
+        throw error;
+    }
+};
+
+export const suscribirseAMensajesBunker = (ambassadorId: string, callback: (mensajes: BunkerMessage[]) => void) => {
+    const colRef = collection(db, 'bunker_messages');
+    // Escuchar mensajes dirigidos a todos o específicamente a este embajador
+    const q = query(
+        colRef,
+        where("recipientId", "in", ['all', ambassadorId]),
+        orderBy("createdAt", "desc")
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+        const mensajes = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as BunkerMessage[];
+        callback(mensajes);
+    }, (error) => {
+        console.error("[BÚNKER] Error suscribiéndose a mensajes:", error);
+    });
+};
+
+export const marcarMensajeComoLeido = async (messageId: string) => {
+    try {
+        const docRef = doc(db, 'bunker_messages', messageId);
+        await updateDoc(docRef, { 
+            isRead: true, 
+            readAt: new Date().toISOString() 
+        });
+        console.log(`[BÚNKER] Mensaje ${messageId} marcado como leído.`);
+    } catch (error) {
+        console.error("[BÚNKER] Error marcando mensaje como leído:", error);
+    }
+};
+
+export default app;
