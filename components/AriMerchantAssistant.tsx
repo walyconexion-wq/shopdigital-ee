@@ -8,7 +8,7 @@ import { generateAriResponse } from '../services/gemini';
 import { Shop, MarketingCampaign } from '../types';
 import { playNeonClick } from '../utils/audio';
 import { guardarCampaniaMarketing, suscribirseACampaniasMarketing, actualizarEstadoCampania } from '../firebase';
-import { Calendar, CheckCircle2, Clock, Trash2, ChevronDown, ChevronUp, Globe } from 'lucide-react';
+import { Calendar, CheckCircle2, Clock, Trash2, ChevronDown, ChevronUp, Globe, Camera } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'ari';
@@ -368,7 +368,7 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
             {inline && (
                 <div
                     className={`w-full bg-[#020810]/95 backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
-                    style={{ borderColor: isMarketing ? 'rgba(16,185,129,0.2)' : isIndustrial ? 'rgba(245,158,11,0.2)' : 'rgba(34,211,238,0.2)', minHeight: '420px' }}
+                    style={{ borderColor: isMarketing ? 'rgba(16,185,129,0.2)' : isIndustrial ? 'rgba(245,158,11,0.2)' : 'rgba(34,211,238,0.2)', minHeight: isOpen ? '420px' : 'auto' }}
                 >
                     {/* Background grid */}
                     <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
