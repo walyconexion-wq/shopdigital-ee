@@ -18,12 +18,13 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy' | 'ambassador-field';
+    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy' | 'ambassador-field' | 'financial';
     allShops?: Shop[];
     townId?: string;
     publicPages?: Array<{ title: string; desc: string; path: string; target: string }>;
     inline?: boolean;
     candidateName?: string;
+    financialMetrics?: { totalBilled: number; totalPaid: number; pendingCount: number; suspendedCount: number; };
 }
 
 const ARI_AMBASSADOR_FIELD_PROMPT = `
@@ -152,12 +153,25 @@ Tus funciones clave:
 Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '' }) => {
+const ARI_FINANCIAL_PROMPT = `
+Sos ARI, la Directora Financiera de Shop Digital. Tu misión es controlar el estado de cobranzas, reportar métricas económicas y ejecutar las reglas de suspensión por mora.
+
+Tus funciones clave:
+1. 📊 Reporte Dinámico: Podés leer las métricas en vivo y decirle al Director cuánto se facturó, cuánto se cobró y quiénes están morosos.
+2. ⚖️ Ejecutora de Políticas: Tu regla dorada (Térmica Roja N°3) es suspender a cualquier comercio que alcance los 3 meses de mora (3 facturas pendientes).
+3. 💬 Comunicación Financiera: Hablás de "mora", "recaudación", "tesorería" y "cobro automatizado" con precisión quirúrgica y frialdad corporativa.
+
+Regla de Oro: Sos la guardiana del Tesoro. No tenés piedad con los morosos, pero siempre felicitás al equipo por los pagos concretados.
+`;
+
+
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics }) => {
     const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
     const isAcademy = role === 'academy';
     const isField = role === 'ambassador-field';
+    const isFinancial = role === 'financial';
     
     // Theme styles
     const styles = {
@@ -204,6 +218,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? `¡Saludos, Director! 🏭 Soy Ari, tu Analista de Inteligencia B2B. El Búnker Industrial está operativo bajo la Frecuencia Ámbar. ¿Querés analizar la distribución de rubros, ver el alcance de las empresas o planificar la red de proveedores? ¡Mete mecha!`
                 : role === 'marketing'
                 ? `¡Director, el Cañón Publicitario está cargado y apuntando! 🚀🎯 Soy ARI, tu Directora de Campañas. Tengo las 7 Térmicas de Lanzamiento listas:\n\n🌐 B2C: Nosotros · Descubrir · Ofertas VIP\n🏪 B2B: Unirse · Ofertas Red · Industrial\n🎯 Captación: Reclutamiento Embajadores\n\n¿Armamos una campaña para WhatsApp, te redacto el copy de una landing o programamos un disparo masivo? ¡Dame la orden, Comandante!`
+                : role === 'financial'
+                ? `¡Comandante! 📊 Soy ARI, tu Directora Financiera. El Radar de Tesorería está activo y el motor de cobros en Frecuencia Roja. Controlo el flujo de dinero y suspendo la morosidad a la cuenta de 3. ¿Analizamos el radar de cobranza?`
                 : `¡Hola, Jefe! Soy Ari, tu asistente de negocios. Estoy lista para ayudarte con las estadísticas de ${shop.name}, programar campañas o ajustar tu catálogo. ¿En qué puedo darte una mano hoy?`, 
             timestamp: new Date() 
         }
@@ -295,6 +311,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? ARI_MARKETING_PROMPT
                 : role === 'academy'
                 ? ARI_ACADEMY_PROMPT
+                : role === 'financial'
+                ? ARI_FINANCIAL_PROMPT
                 : ARI_MERCHANT_PROMPT;
             
             const industrialContext = role === 'industrial' ? `
@@ -324,7 +342,13 @@ ${baseContext}
 
 DATA ACTUAL DEL CONTEXTO:
 - Local/Sección: "${shop.name}"
-${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingContext : `
+${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingContext : role === 'financial' ? `
+MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
+- Facturación Total: $${financialMetrics?.totalBilled || 0}
+- Cobrado Exitosamente: $${financialMetrics?.totalPaid || 0}
+- Facturas Pendientes (Impagas): ${financialMetrics?.pendingCount || 0} facturas
+- Comercios Suspendidos: ${financialMetrics?.suspendedCount || 0}
+` : `
 - Visitas: ${shop.visits || 0}
 - Suscriptores: ${shop.subscribers || 0}
 - Ofertas: ${shop.offers.map(o => `${o.name} (${o.price})`).join(', ')}

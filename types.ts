@@ -178,6 +178,8 @@ export interface Shop {
   // Billing Fields
   billingStatus?: 'active' | 'pending' | 'suspended';
   billingAmount?: number;
+  fechaEnvioAutomatica?: number; // Día del mes para enviar factura automáticamente
+  ultimoEnvioAutomatico?: string; // Fecha (ISO) de última generación automática
   visits?: number;
   subscribers?: number;
   reviews?: Review[];

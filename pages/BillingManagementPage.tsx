@@ -11,6 +11,8 @@ import { CATEGORIES } from '../constants';
 import { suscribirseAFacturasPorZona, crearFactura, actualizarEstadoFactura, actualizarFactura } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import { playNeonClick } from '../utils/audio';
+import { runFinancialAudit } from '../services/financial';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 interface BillingManagementPageProps {
     allShops: Shop[];
@@ -46,6 +48,10 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             setInvoices(sorted as Invoice[]);
             setLoading(false);
         });
+        
+        // Ejecutar auditoría financiera al cargar el radar
+        runFinancialAudit(townId);
+        
         return () => unsubscribe();
     }, [townId]);
 
@@ -284,35 +290,20 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                 </div>
 
                 <div className="px-5 mt-6 relative z-10 max-w-lg mx-auto">
-                    {/* Resumen Rápido A.I. */}
-                    <div className="w-full bg-violet-900/10 border border-violet-500/20 rounded-2xl p-4 mb-6 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-32 h-32 bg-violet-500/10 rounded-full blur-[40px] pointer-events-none" />
-                        <h2 className="text-[10px] font-black text-violet-400 uppercase tracking-widest mb-3 flex items-center gap-2 relative z-10">
-                            <LineChart size={14} /> Desglose Zonal (A.I.)
-                        </h2>
-                        <div className="space-y-2 relative z-10">
-                            {localities.map(loc => {
-                                const normalizedLoc = normalize(loc);
-                                const locInvoices = currentMonthInvoices.filter(inv => {
-                                    if (normalize(inv.locality) === normalizedLoc) return true;
-                                    const shop = allShops.find(s => s.id === inv.shopId);
-                                    return normalize(shop?.zone || "") === normalizedLoc;
-                                });
-                                const locTot = locInvoices.reduce((sum, inv) => sum + inv.amount, 0);
-                                const locPag = locInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
-                                if (locTot === 0) return null;
-                                return (
-                                    <div key={loc} className="flex justify-between items-center bg-black/40 px-3 py-2 rounded-xl text-[9px] font-bold tracking-widest uppercase border border-white/5">
-                                        <span className="text-white/80">{loc}</span>
-                                        <div className="flex gap-3 text-right">
-                                            <span className="text-green-400">{formatCurrency(locPag)}</span>
-                                            <span className="text-white/40">/</span>
-                                            <span className="text-white">{formatCurrency(locTot)}</span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                    {/* ARI Directora Financiera Inline */}
+                    <div className="mb-6">
+                        <AriMerchantAssistant 
+                            shop={{ id: 'bunker', name: 'Tesorería Central', category: 'finance', rating: 5, specialty: 'Finanzas', address: 'Búnker', image: '', bannerImage: '', offers: [], mapUrl: '' } as any}
+                            role="financial"
+                            townId={townId}
+                            inline={true}
+                            financialMetrics={{
+                                totalBilled: totalFacturado,
+                                totalPaid: totalCobrado,
+                                pendingCount: invoices.filter(i => i.status === 'pending').length,
+                                suspendedCount: invoices.filter(i => i.status === 'suspended').length
+                            }}
+                        />
                     </div>
                     
                     {loading ? (
