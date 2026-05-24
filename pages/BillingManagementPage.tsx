@@ -254,7 +254,8 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-violet-500/30">
                 <div className="fixed inset-0 pointer-events-none z-0">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[120px] animate-pulse" />
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.08)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                    <div className="absolute inset-0 tech-mesh-bg" />
+                    <div className="absolute inset-0 tech-dots-bg pointer-events-none" />
                 </div>
 
                 <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-violet-500/30 pt-10 pb-6 px-4 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
@@ -354,7 +355,8 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-violet-500/30">
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[120px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.08)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                <div className="absolute inset-0 tech-mesh-bg" />
+                <div className="absolute inset-0 tech-dots-bg pointer-events-none" />
             </div>
 
             {/* Header Nivel 2 */}
