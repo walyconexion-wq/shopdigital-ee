@@ -595,8 +595,8 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
                 </div>
             )}
 
-            {/* Chat Panel */}
-            {isOpen && (
+            {/* Chat Panel (Floating mode only) */}
+            {!inline && isOpen && (
                 <div className={`w-[340px] h-[500px] bg-[#050505]/95 backdrop-blur-3xl border border-white/10 rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
                     {/* Background Grid & Glows */}
                     <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
