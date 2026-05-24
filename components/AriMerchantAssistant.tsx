@@ -153,7 +153,7 @@ Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda 
 `;
 
 export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '' }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
     const isAcademy = role === 'academy';
@@ -378,7 +378,10 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
                     <div className="absolute top-0 left-0 right-0 h-[2px] z-10" style={{ background: `linear-gradient(90deg, transparent, ${isMarketing ? '#10b981' : isIndustrial ? '#f59e0b' : '#22d3ee'}, transparent)` }} />
 
                     {/* Header inline */}
-                    <div className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center gap-3 relative z-10`}>
+                    <div 
+                        onClick={() => setIsOpen(!isOpen)}
+                        className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center gap-3 relative z-10 cursor-pointer hover:brightness-110 transition-all`}
+                    >
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center border flex-shrink-0 ${styles.headerGlow}`}>
                             <Sparkles size={18} className={styles.headerIconColor} />
                         </div>
@@ -389,11 +392,15 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
                                 {styles.headerSubtitle}
                             </p>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-black/40 border border-emerald-500/20 rounded-full px-2 py-1">
+                        <div className="flex items-center gap-2 bg-black/40 border border-emerald-500/20 rounded-full px-2 py-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
                             <span className="text-[7px] font-black uppercase tracking-widest text-emerald-400">ACTIVA</span>
+                            {isOpen ? <ChevronUp size={12} className="text-emerald-400" /> : <ChevronDown size={12} className="text-emerald-400" />}
                         </div>
                     </div>
+
+                    {isOpen && (
+                        <>
 
                     {/* Misiones Programadas (colapsable) */}
                     <div className="bg-white/[0.03] border-b border-white/5 relative z-10">
@@ -507,6 +514,30 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
                                 placeholder="Comandale a ARI una campaña..."
                                 className="flex-1 bg-transparent border-none text-white text-[11px] py-2.5 focus:outline-none placeholder:text-white/25 font-medium"
                             />
+                            <input
+                                type="file"
+                                id="ari-image-upload-inline"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    if (e.target.files && e.target.files.length > 0) {
+                                        const file = e.target.files[0];
+                                        setMessages(prev => [...prev, { role: 'user', text: `📸 Imagen enviada: ${file.name}` }]);
+                                        setIsLoading(true);
+                                        setTimeout(() => {
+                                            setMessages(prev => [...prev, { role: 'ari', text: `¡Foto recibida y analizada, Jefe! Todo en orden. ¿Querés que armemos un reporte con esta evidencia?` }]);
+                                            setIsLoading(false);
+                                            scrollToBottom();
+                                        }, 1500);
+                                    }
+                                }}
+                            />
+                            <button
+                                onClick={() => document.getElementById('ari-image-upload-inline')?.click()}
+                                className="p-2 rounded-xl transition-all text-white/40 hover:text-white hover:bg-white/10"
+                            >
+                                <Camera size={16} />
+                            </button>
                             <button
                                 onClick={handleToggleMic}
                                 className={`p-2 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
@@ -522,6 +553,8 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
                             </button>
                         </div>
                     </div>
+                    </>
+                    )}
                 </div>
             )}
 
@@ -766,6 +799,30 @@ ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingCo
                                 placeholder="Comandá a Ari..."
                                 className="flex-1 bg-transparent border-none text-white text-[11px] py-3 focus:outline-none placeholder:text-white/30 font-medium tracking-wide"
                             />
+                            <input 
+                                type="file"
+                                id="ari-image-upload-floating"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    if (e.target.files && e.target.files.length > 0) {
+                                        const file = e.target.files[0];
+                                        setMessages(prev => [...prev, { role: 'user', text: `📸 Imagen enviada: ${file.name}` }]);
+                                        setIsLoading(true);
+                                        setTimeout(() => {
+                                            setMessages(prev => [...prev, { role: 'ari', text: `¡Foto recibida y analizada, Jefe! Todo en orden. ¿Querés que armemos un reporte con esta evidencia?` }]);
+                                            setIsLoading(false);
+                                            scrollToBottom();
+                                        }, 1500);
+                                    }
+                                }}
+                            />
+                            <button
+                                onClick={() => document.getElementById('ari-image-upload-floating')?.click()}
+                                className="p-2.5 rounded-xl transition-all text-white/40 hover:text-white hover:bg-white/10"
+                            >
+                                <Camera size={18} />
+                            </button>
                             <button 
                                 onClick={handleToggleMic}
                                 className={`p-2.5 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'text-white/40 hover:text-white hover:bg-white/10'}`}

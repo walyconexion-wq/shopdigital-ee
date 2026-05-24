@@ -13,8 +13,8 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
     const bgColor = globalConfig?.bgColor || '#000000';
     
-    // Ocultar ARI en páginas de edición para que solo aparezca la versión del comerciante
-    const isEditPage = location.pathname.includes('/editar') || location.pathname.includes('/mi-catalogo');
+    // Ocultar ARI en páginas de edición y paneles que tienen su propio ARI (como Embajador)
+    const isEditPage = location.pathname.includes('/editar') || location.pathname.includes('/mi-catalogo') || location.pathname.includes('/embajador');
 
     // Helper to convert hex to rgba
     const hexToRgba = (hex: string, alpha: number) => {
