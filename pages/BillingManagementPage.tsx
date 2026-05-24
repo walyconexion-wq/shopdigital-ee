@@ -259,7 +259,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                 </div>
 
                 <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-violet-500/30 pt-10 pb-6 px-4 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                    <div role="button" tabIndex={0} onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
+                    <div role="button" tabIndex={0} onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro`); }} 
                             className="absolute top-10 left-6 text-violet-400 hover:text-violet-300 cursor-pointer">
                         <ChevronLeft size={24} />
                     </div>
