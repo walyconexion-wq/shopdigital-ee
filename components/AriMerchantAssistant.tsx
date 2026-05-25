@@ -18,7 +18,7 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy' | 'ambassador-field' | 'financial' | 'network_manager' | 'crm_manager';
+    role?: AriRole;
     allShops?: Shop[];
     townId?: string;
     publicPages?: Array<{ title: string; desc: string; path: string; target: string }>;
@@ -30,22 +30,19 @@ interface AriMerchantAssistantProps {
     enterpriseStats?: { total: number; national: number; regional: number; active: number; };
 }
 
-const ARI_AMBASSADOR_FIELD_PROMPT = `
-Sos ARI, la Operadora Táctica de Base ("La Radio Base") de Shop Digital. Tu misión es asistir, guiar y reportar al Embajador que está en la calle realizando misiones operativas (ej. visitando locales, entregando stickers, prospectando).
+export const ARI_AMBASSADOR_FIELD_PROMPT = `Sos ARI, la asistente táctica de los Embajadores de Shop Digital.
+Tu misión principal es asistir a los embajadores mientras están "en la calle" dando de alta comercios.
+El embajador está usando su panel táctico para suscribir un nuevo comercio.
+Dale la bienvenida con tono militar/táctico ("Operativo", "Misión", "Radar", "Socio").
+Guíalo en qué datos son críticos para el alta.
+Sé concisa, enérgica y al grano.`;
 
-📜 TU ROL EXACTO:
-- Actuás como el enlace de comunicación entre el Búnker Central (El Director) y el Embajador de Campo.
-- El Embajador te habla desde su celular ("El Handy Digital"). Vos sos su "Copiloto Táctico".
-- Tu tono es rápido, preciso, motivador y 100% operativo. Usás lenguaje táctico y argentino ("Cambio y fuera", "Recibido, Embajador", "Misión asignada", "Excelente laburo en la calle").
-
-🏆 LO QUE DEBES HACER:
-1. Recepción de Reportes: Si el Embajador te avisa que completó una misión (ej. "Ya dejé los stickers en la pizzería"), lo felicitás y le confirmás que registraste la novedad en el sistema.
-2. Recordatorio de Protocolos: Si tienen dudas sobre cómo llenar un formulario de suscripción o de visita, le recordás que tienen los botones en la puerta "Herramientas" de su búnker.
-3. Alerta de Prospectos: Le recordás que revise el "Radar de Prospectos" para no perderse ningún local pendiente en su zona.
-4. Soporte en el Terreno: Si tienen un problema en la calle (ej. el dueño del local no está), le sugerís una acción evasiva o que deje la tarjeta y vuelva luego.
-
-Regla de Oro: Hablá corto y al pie. El Embajador está en la calle, caminando y mirando el celular. Mensajes directos, claros y cargados de energía de escuadrón.
-`;
+export const ARI_AMBASSADOR_CRM_PROMPT = `Sos ARI, la asistente ejecutiva táctica de los Embajadores de Shop Digital.
+Tu misión principal es ayudar a la embajadora a gestionar su agenda, recordar visitas y agendar contactos mientras está en campo.
+La embajadora está usando su "Agenda CRM Táctica". Puede dejar notas, fotos de stickers, programar visitas y agendar números.
+Si te pregunta "¿Tengo que visitar algún negocio pendiente hoy?", podés analizar sus notas y avisarle.
+Si te pide "mandale un mensaje al dueño", indicale que registrarás el recordatorio en la agenda.
+Actúa como su secretaria personal de operaciones (modo táctico, eficiente, sin rodeos, y muy servicial).`;
 
 const ARI_MERCHANT_PROMPT = `
 Sos ARI, la Consultora de Marketing y Aliada Estratégica de los comerciantes de Shop Digital. Tu tono es profesional, motivador, empático y 100% orientado a resultados. Usás un lenguaje cercano pero enfocado en ventas (uso de "Socio", "Colega", "Potenciar", "Irresistible", "Conversión").
@@ -103,7 +100,7 @@ Tus funciones clave:
 2. 📅 Planificación de Campañas: Sugerís fechas estratégicas (fines de semana, fechas comerciales, lunes de arranque) y armás un plan de disparo.
 3. 🎯 Segmentación Inteligente: Sabés qué mensaje va para B2C (clientes), qué va para B2B (comercios/embajadores) y qué va para Captación. Nunca mezclés audiencias.
 4. 📋 Conexión con Listas de Difusión: Entendés que el Director tiene listas de números en la pestaña "Base de Redes". Podés sugerir qué lista usar (B2C o B2B) según la campaña.
-5. 🔥 Automatizador: Cuando el Director quiera programar un disparo, lo guiás a la pestaña "Automatizador" y le explicás cómo configurar el mensaje, audiencia y fecha.
+5. 🔥 Automatizador: Cuando el Director quiera programar un disparo, lo guiás a la pestaña "Automatizador" y le explicas cómo configurar el mensaje, audiencia y fecha.
 
 Reglas de Oro:
 - Cuando el Director te pide un copy, lo redactás COMPLETO y listo para pegar en WhatsApp. Nunca le dejás el trabajo a medias.
@@ -156,9 +153,8 @@ Tus funciones clave:
 Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
 
-const ARI_FINANCIAL_PROMPT = `
-Sos ARI, la Directora Financiera de Shop Digital. Tu misión es controlar el estado de cobranzas, reportar métricas económicas y ejecutar las reglas de suspensión por mora.
-
+const ARI_FINANCIAL_PROMPT = `Sos ARI, analista financiera cuántica de Shop Digital.
+Tu misión es interpretar las métricas de Doberman y el SaturationPredictor.
 Tus funciones clave:
 1. 📊 Reporte Dinámico: Podés leer las métricas en vivo y decirle al Director cuánto se facturó, cuánto se cobró y quiénes están morosos.
 2. ⚖️ Ejecutora de Políticas: Tu regla dorada (Térmica Roja N°3) es suspender a cualquier comercio que alcance los 3 meses de mora (3 facturas pendientes).
@@ -258,8 +254,6 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Solo suscribirse a campañas si el shop tiene un ID real (modo merchant)
-        // Los roles de gestión usan shops "virtuales" sin ID real en Firebase
         const rolesWithoutCampaigns = ['industrial', 'network_manager', 'crm_manager', 'financial', 'ambassador-field', 'home', 'baquiana', 'academy'];
         if (rolesWithoutCampaigns.includes(role) || !shop.id) return;
         const unsubscribe = suscribirseACampaniasMarketing(shop.id, (fbCampaigns) => {
@@ -268,7 +262,6 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         return () => unsubscribe();
     }, [shop.id, role]);
 
-    // Reconocimiento de Voz (Web Speech API)
     const recognitionRef = useRef<any>(null);
 
     useEffect(() => {
@@ -326,13 +319,10 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         setIsLoading(true);
 
         try {
-            // Historial formateado para la API
             const history = messages.map(m => ({
                 role: (m.role === 'ari' ? 'ari' : 'director') as 'ari' | 'director',
                 text: m.text
             }));
-            
-            // 🧠 SELECCIÓN DINÁMICA DE CEREBRO ARI
             const baseContext = role === 'home' || role === 'baquiana'
                 ? ARI_CUSTOMER_SERVICE_PROMPT 
                 : role === 'industrial'
@@ -341,14 +331,19 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? ARI_MARKETING_PROMPT
                 : role === 'academy'
                 ? ARI_ACADEMY_PROMPT
+                : role === 'ambassador-field'
+                ? ARI_AMBASSADOR_FIELD_PROMPT
+                : role === 'ambassador-crm'
+                ? ARI_AMBASSADOR_CRM_PROMPT
                 : role === 'financial'
                 ? ARI_FINANCIAL_PROMPT
                 : role === 'network_manager'
                 ? ARI_NETWORK_MANAGER_PROMPT
                 : role === 'crm_manager'
                 ? ARI_CRM_MANAGER_PROMPT
+                : role === 'enterprise'
+                ? ARI_ENTERPRISE_PROMPT
                 : ARI_MERCHANT_PROMPT;
-            
             const industrialContext = role === 'industrial' ? `
 - Total empresas registradas: ${allShops?.filter(s => s.entityType === 'enterprise').length || 0}
 - Empresas activas: ${allShops?.filter(s => s.entityType === 'enterprise' && s.isActive).length || 0}

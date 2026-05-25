@@ -23,6 +23,7 @@ import { DirectorBunkerPage } from './pages/DirectorBunkerPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
+import AmbassadorAgendaPage from './pages/AmbassadorAgendaPage';
 import AmbassadorRecruitPage1 from './pages/AmbassadorRecruitPage1';
 import AmbassadorRecruitPage2 from './pages/AmbassadorRecruitPage2';
 import AmbassadorRecruitmentAdminPage from './pages/AmbassadorRecruitmentAdminPage';
@@ -217,6 +218,7 @@ const TownController: React.FC = () => {
                     <Route path="reclutamiento" element={<AmbassadorRecruitPage1 />} />
                     <Route path="reclutamiento/alta/:id" element={<AmbassadorRecruitPage2 />} />
                     <Route path="embajador" element={<ProtectedRoute roles={['admin', 'ambassador']}><AmbassadorPanelPage allShops={allShops} /></ProtectedRoute>} />
+                    <Route path="embajador/agenda" element={<ProtectedRoute roles={['admin', 'ambassador']}><AmbassadorAgendaPage /></ProtectedRoute>} />
                     <Route path="embajador/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="embajador/editar/:shopId" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopEditPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/editar" element={<ShopEditPage allShops={allShops} />} />

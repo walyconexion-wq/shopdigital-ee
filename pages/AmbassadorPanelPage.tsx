@@ -26,7 +26,7 @@ import {
     LogOut,
     Camera,
     CheckSquare,
-    CheckSquare,
+    NotebookPen,
     Clock,
     Radio,
     AlertTriangle
@@ -267,11 +267,14 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                     <span className="text-[10px] text-white/50 uppercase tracking-widest">Abre el formulario oficial (Copia de Embajador)</span>
                 </div>
             </button>
-            <button className="w-full bg-emerald-500/20 border border-emerald-500/40 p-6 rounded-2xl flex flex-col items-center justify-center gap-3 text-center active:scale-95 transition-transform">
-                <Camera size={32} className="text-emerald-400" />
+            <button 
+                onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/agenda`); }}
+                className="w-full bg-emerald-500/20 border border-emerald-500/40 p-6 rounded-2xl flex flex-col items-center justify-center gap-3 text-center active:scale-95 transition-transform"
+            >
+                <NotebookPen size={32} className="text-emerald-400" />
                 <div>
-                    <span className="block text-sm font-black text-white uppercase tracking-widest">Reportar Promoción / Visita</span>
-                    <span className="text-[10px] text-white/50 uppercase tracking-widest">Subir foto de sticker colocado</span>
+                    <span className="block text-sm font-black text-white uppercase tracking-widest">Agenda CRM Táctica</span>
+                    <span className="text-[10px] text-white/50 uppercase tracking-widest">Anotador, recordatorios y reportes de visitas</span>
                 </div>
             </button>
         </div>
