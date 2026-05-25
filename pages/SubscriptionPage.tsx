@@ -15,9 +15,11 @@ import {
     Tag,
     CheckCircle2,
     PartyPopper,
-    ImagePlus
+    ImagePlus,
+    Share2
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 // Las localidades se cargan dinámicamente desde Firebase según el townId (ver useTownLocalities)
 
@@ -139,6 +141,25 @@ const SubscriptionPage: React.FC = () => {
         }
     };
 
+    const handleShare = async () => {
+        playNeonClick();
+        const url = `${window.location.origin}/${townId}/subscripcion`;
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: `Sumá tu comercio a ShopDigital ${townId.replace(/-/g, ' ')}`,
+                    text: '¡Subite a la red comercial inteligente y ganá visibilidad!',
+                    url: url
+                });
+            } else {
+                await navigator.clipboard.writeText(url);
+                alert('¡Link de suscripción copiado al portapapeles!');
+            }
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    };
+
     if (showSuccess) {
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 animate-in zoom-in duration-500">
@@ -174,29 +195,68 @@ const SubscriptionPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
-            {/* HUD Background Layers */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[120%] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+        <div className="min-h-screen bg-[#020617] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+            <style>{`
+                @keyframes pulseGlow {
+                    0%, 100% { filter: drop-shadow(0 0 15px rgba(34,211,238,0.4)); }
+                    50% { filter: drop-shadow(0 0 35px rgba(34,211,238,0.8)); }
+                }
+                .tech-grid-bg {
+                    background-size: 30px 30px;
+                    background-image: 
+                        linear-gradient(to right, rgba(34,211,238,0.04) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(34,211,238,0.04) 1px, transparent 1px);
+                }
+                .glass-card-neon {
+                    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.4));
+                    backdrop-filter: blur(12px);
+                    border: 1px solid rgba(34,211,238,0.15);
+                    box-shadow: inset 0 0 20px rgba(34,211,238,0.02), 0 8px 32px rgba(0,0,0,0.4);
+                }
+            `}</style>
+
+            <div className="fixed inset-0 pointer-events-none z-0 tech-grid-bg" />
+            
+            {/* Esferas de luz cian */}
+            <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-cyan-500/5 blur-[120px] pointer-events-none z-0" />
+            <div className="fixed bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] rounded-full bg-cyan-500/5 blur-[100px] pointer-events-none z-0" />
+
+            {/* HEADER STICKY */}
+            <div className="sticky top-0 z-40 bg-[#020617]/80 backdrop-blur-xl border-b border-cyan-500/20 pt-6 pb-4 px-6 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center justify-between mb-4">
+                    <button onClick={() => {
+                        playNeonClick();
+                        navigate(-1);
+                    }} className="p-2 bg-white/5 rounded-xl border border-white/10 text-white/70 hover:text-cyan-400 hover:border-cyan-400/50 transition-all active:scale-95">
+                        <ChevronLeft size={20} />
+                    </button>
+                    <div className="flex-1 flex justify-center items-center gap-3">
+                        <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center border border-cyan-500/30" style={{ animation: 'pulseGlow 3s infinite' }}>
+                            <Rocket size={20} className="text-cyan-400" />
+                        </div>
+                        <div>
+                            <h1 className="text-[12px] sm:text-sm font-black uppercase tracking-widest text-white leading-none text-center">Suma Tu Comercio</h1>
+                            <span className="text-[9px] font-bold text-cyan-500/60 uppercase tracking-widest block text-center mt-1">{townId.replace(/-/g, ' ')}</span>
+                        </div>
+                    </div>
+                    <div className="w-10" /> {/* Spacer */}
+                </div>
+                <p className="text-[8px] font-bold text-white/50 uppercase tracking-widest text-center">Completá los datos y ganá visibilidad en la red comercial.</p>
             </div>
 
-            <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b border-white/5 mb-8 sticky top-0 z-50">
-                <button onClick={() => {
-                    playNeonClick();
-                    navigate(-1);
-                }} className="self-start mb-4 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/10 transition-all"><ChevronLeft size={20} /></button>
-                <div className="flex items-center gap-2 mb-1">
-                    <Rocket size={18} className="text-cyan-400" />
-                    <h2 className="text-[18px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">Suma Tu Comercio · {townId.replace(/-/g, ' ')}</h2>
-                </div>
-                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest text-center mt-2 px-4 shadow-black">Completá los datos y ganá visibilidad en la red comercial.</p>
+            {/* PANEL ARI INLINE */}
+            <div className="relative z-10 px-5 mt-6 mb-8 max-w-lg mx-auto">
+                <AriMerchantAssistant 
+                    shop={{ id: 'suscripcion', name: 'Nuevo Comercio' } as any}
+                    role="merchant"
+                    townId={townId}
+                    inline={true}
+                />
             </div>
 
             <form onSubmit={handleSubmit} className="px-8 space-y-6 max-w-lg mx-auto relative z-10 animate-in slide-in-from-bottom-6 duration-700">
                 {/* Nombre Comercio */}
-                <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-6 focus-within:border-cyan-500/50 transition-colors">
+                <div className="glass-card-neon rounded-3xl p-6 relative overflow-hidden focus-within:border-cyan-400/50 transition-colors">
                     <div className="flex justify-between items-center mb-4">
                         <label className="text-[10px] flex items-center gap-2 font-black uppercase tracking-[0.2em] text-cyan-400">
                             <Store size={14} /> Marca Comercial
@@ -214,7 +274,7 @@ const SubscriptionPage: React.FC = () => {
 
                 {/* Rubro y Localidad */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-5 focus-within:border-cyan-500/50 transition-colors">
+                    <div className="glass-card-neon rounded-3xl p-5 focus-within:border-cyan-400/50 transition-colors">
                         <label className="text-[9px] flex items-center gap-1.5 font-black uppercase tracking-[0.2em] text-cyan-400 mb-3">
                             <Tag size={12} /> Rubro
                         </label>
@@ -229,7 +289,7 @@ const SubscriptionPage: React.FC = () => {
                         </select>
                     </div>
 
-                    <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-5 focus-within:border-cyan-500/50 transition-colors">
+                    <div className="glass-card-neon rounded-3xl p-5 focus-within:border-cyan-400/50 transition-colors">
                         <label className="text-[9px] flex items-center gap-1.5 font-black uppercase tracking-[0.2em] text-cyan-400 mb-3">
                             <MapPin size={12} /> Localidad
                         </label>
@@ -246,7 +306,7 @@ const SubscriptionPage: React.FC = () => {
                 </div>
 
                 {/* Dirección del Local */}
-                <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-6 focus-within:border-cyan-500/50 transition-colors">
+                <div className="glass-card-neon rounded-3xl p-6 focus-within:border-cyan-400/50 transition-colors">
                     <div className="flex justify-between items-center mb-4">
                         <label className="text-[10px] flex items-center gap-2 font-black uppercase tracking-[0.2em] text-cyan-400">
                             <MapPin size={14} /> Dirección del Local
@@ -263,7 +323,7 @@ const SubscriptionPage: React.FC = () => {
                 </div>
 
                 {/* Foto Portada (Opcional - Input de Archivo) */}
-                <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-6 focus-within:border-cyan-500/50 transition-colors">
+                <div className="glass-card-neon rounded-3xl p-6 focus-within:border-cyan-400/50 transition-colors">
                     <div className="flex justify-between items-center mb-4">
                         <label className="text-[10px] flex items-center gap-2 font-black uppercase tracking-[0.2em] text-cyan-400">
                             <Camera size={14} /> Logo / Foto (Opcional)
@@ -295,7 +355,7 @@ const SubscriptionPage: React.FC = () => {
                 </div>
 
                 {/* Owner Data */}
-                <div className="glass-card-3d bg-white/[0.02] border border-white/10 rounded-3xl p-6 space-y-6">
+                <div className="glass-card-neon rounded-3xl p-6 space-y-6">
                     <div className="flex items-center gap-2 mb-2">
                         <User size={14} className="text-cyan-400" />
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400">Titular de Contacto</h3>
@@ -328,11 +388,11 @@ const SubscriptionPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 space-y-4">
                     <button 
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full glass-action-btn btn-cyan-neon py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[12px] shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95 transition-all text-white disabled:opacity-50"
+                        className="w-full glass-action-btn bg-cyan-900/40 border border-cyan-500 py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[12px] shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95 transition-all text-white disabled:opacity-50"
                     >
                         {isSubmitting ? (
                             <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -342,6 +402,16 @@ const SubscriptionPage: React.FC = () => {
                             </>
                         )}
                     </button>
+                    
+                    <button
+                        type="button"
+                        onClick={handleShare}
+                        className="w-full bg-white/5 border border-white/10 py-4 rounded-2xl flex items-center justify-center gap-2 font-bold uppercase tracking-[0.1em] text-[10px] text-white/70 hover:bg-white/10 hover:text-white transition-all active:scale-95"
+                    >
+                        <Share2 size={16} />
+                        Compartir este formulario
+                    </button>
+
                     <p className="text-[7px] text-center text-white/30 uppercase tracking-[0.3em] font-bold mt-4">
                         Al enviar, aceptás los términos y condiciones de la red ShopDigital.
                     </p>
