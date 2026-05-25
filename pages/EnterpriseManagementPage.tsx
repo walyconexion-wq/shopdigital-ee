@@ -118,80 +118,109 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
     };
 
     // =========================================================
-    // VIEW 1: Grilla de Rubros Industriales
+    // VIEW 1: Grilla de Rubros Industriales — Molde Facturación
     // =========================================================
     if (!selectedCategoryId) {
         return (
-            <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-amber-500/30">
+            <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-amber-500/30">
                 <div className="fixed inset-0 pointer-events-none z-0">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[120px] animate-pulse" />
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(245,158,11,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(245,158,11,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] animate-pulse" />
+                    <div className="absolute inset-0 tech-mesh-bg" />
+                    <div className="absolute inset-0 tech-dots-bg pointer-events-none" />
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-amber-500/20 mb-6 sticky top-0 z-50">
-                    <button onClick={() => { 
-                        playNeonClick(); 
+                {/* Header sticky — molde Facturación */}
+                <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-amber-500/30 pt-10 pb-6 px-4 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                    <div role="button" tabIndex={0} onClick={() => {
+                        playNeonClick();
                         if (provinciaParam) {
                             navigate(`/empresas/control-maestro?provincia=${provinciaParam}`);
                         } else {
-                            navigate(`/${townId}/embajador`); 
+                            navigate(`/${townId}/tablero-maestro`);
                         }
                     }}
-                        className="self-start mb-4 w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-400/30 hover:bg-amber-500/20 transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-                        <ChevronLeft size={20} />
-                    </button>
-                    <div className="flex items-center gap-2 mb-1">
-                        <Factory size={18} className="text-amber-400" />
-                        <h2 className="text-[16px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
-                            Gestión de Empresas
-                        </h2>
+                        className="absolute top-10 left-6 text-amber-400 hover:text-amber-300 cursor-pointer">
+                        <ChevronLeft size={24} />
                     </div>
-                    <p className="text-[9px] font-black text-amber-400/80 uppercase tracking-widest text-center mt-2 px-4 italic">
-                        Nodo Empresarial B2B · {allEnterprises.length} asociadas
-                    </p>
-                    <button
-                        onClick={() => { 
-                            playNeonClick(); 
-                            navigate(`/${townId}/embajador/empresas/nueva${provinciaParam ? `?provincia=${provinciaParam}` : ''}`); 
-                        }}
-                        className="mt-4 w-full max-w-xs bg-amber-500 text-black py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)]"
-                    >
-                        <Plus size={16} /> Alta de Nueva Empresa
-                    </button>
+                    <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-2 border border-amber-400/30 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                            <Factory size={24} className="text-amber-400" />
+                        </div>
+                        <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Industrias</h1>
+                        <p className="text-[10px] font-bold text-amber-400/80 uppercase tracking-widest text-center mt-1">
+                            Nodo Empresarial B2B · {allEnterprises.length} asociadas
+                        </p>
+
+                        {/* Métricas en vivo */}
+                        <div className="w-full max-w-sm mt-4 grid grid-cols-3 gap-2 text-center bg-black/40 p-3 rounded-2xl border border-white/5">
+                            <div className="flex flex-col">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Activas</span>
+                                <span className="text-xs font-black text-green-400">{allEnterprises.filter(e => e.isActive).length}</span>
+                            </div>
+                            <div className="flex flex-col border-x border-white/5">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Nacionales</span>
+                                <span className="text-xs font-black text-amber-400">{allEnterprises.filter(e => e.reach === 'national').length}</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Total</span>
+                                <span className="text-xs font-black text-white">{allEnterprises.length}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="px-5 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-lg mx-auto relative z-10">
-                    {ENTERPRISE_CATEGORIES.map(cat => {
-                        const count = countByCategory[cat.id] || 0;
-                        return (
-                            <button
-                                key={cat.id}
-                                onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
-                                className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-amber-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden"
-                            >
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full blur-[20px] pointer-events-none" />
-                                <div className="text-amber-400 group-hover:scale-110 transition-transform">
-                                    {cat.icon}
-                                </div>
-                                <span className="text-[7px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
-                                    {cat.name}
-                                </span>
-                                {count > 0 && (
-                                    <span className="absolute top-2 right-2 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[7px] font-black px-1.5 py-0.5 rounded-full">
-                                        {count}
+                <div className="px-5 mt-6 relative z-10 max-w-lg mx-auto">
+                    {/* ARI Inline */}
+                    <div className="mb-6">
+                        <AriMerchantAssistant
+                            shop={{ id: 'industrial-bunker', name: 'Nódo Empresarial B2B', category: 'enterprise', rating: 5, specialty: 'Industrial', address: 'Búnker', image: '', bannerImage: '', offers: [], mapUrl: '' } as any}
+                            role="industrial"
+                            townId={townId}
+                            inline={true}
+                            allShops={allShops}
+                        />
+                    </div>
+
+                    <div className="flex justify-between items-center mb-3 mt-8">
+                        <h2 className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-2">Rubros Industriales</h2>
+                        <button
+                            onClick={() => {
+                                playNeonClick();
+                                navigate(`/${townId}/embajador/empresas/nueva${provinciaParam ? `?provincia=${provinciaParam}` : ''}`);
+                            }}
+                            className="bg-amber-500 text-black py-2 px-4 rounded-xl flex items-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+                        >
+                            <Plus size={12} /> Alta
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {ENTERPRISE_CATEGORIES.map(cat => {
+                            const count = countByCategory[cat.id] || 0;
+                            return (
+                                <div
+                                    key={cat.id}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
+                                    className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-amber-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden cursor-pointer"
+                                >
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full blur-[20px] pointer-events-none" />
+                                    <div className="text-amber-400 group-hover:scale-110 transition-transform">
+                                        {cat.icon}
+                                    </div>
+                                    <span className="text-[7px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
+                                        {cat.name}
                                     </span>
-                                )}
-                            </button>
-                        );
-                    })}
+                                    {count > 0 && (
+                                        <span className="absolute top-2 right-2 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[7px] font-black px-1.5 py-0.5 rounded-full">
+                                            {count}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-
-                <AriMerchantAssistant 
-                    role="industrial" 
-                    shop={{ name: `Nodo Empresarial: ${provinciaParam || townId}` } as Shop} 
-                    allShops={allShops}
-                    townId={townId}
-                />
             </div>
         );
     }

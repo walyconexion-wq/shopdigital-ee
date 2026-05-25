@@ -15,7 +15,8 @@ import {
     MapPin,
     Image as ImageIcon,
     ArrowLeft,
-    Edit3
+    Edit3,
+    RefreshCw
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
@@ -122,66 +123,91 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
     };
 
     // =========================================================
-    // VIEW 1: Category Selection Grid
+    // VIEW 1: Category Selection Grid — Molde Facturación
     // =========================================================
     if (!selectedCategoryId) {
         return (
-            <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
-                {/* HUD Background */}
+            <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-yellow-500/30">
                 <div className="fixed inset-0 pointer-events-none z-0">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse" />
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] animate-pulse" />
+                    <div className="absolute inset-0 tech-mesh-bg" />
+                    <div className="absolute inset-0 tech-dots-bg pointer-events-none" />
                 </div>
 
-                {/* Header */}
-                <div className="bg-zinc-900/50 backdrop-blur-md pt-8 pb-6 px-6 flex flex-col items-center border-b border-yellow-500/20 mb-6 sticky top-0 z-50">
-                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/embajador`); }} 
-                        className="self-start mb-4 w-10 h-10 rounded-2xl bg-yellow-500/10 flex items-center justify-center text-yellow-400 border border-yellow-400/30 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-                        <ChevronLeft size={20} />
-                    </button>
-                    <div className="flex items-center gap-2 mb-1">
-                        <ShieldCheck size={18} className="text-yellow-400" />
-                        <h2 className="text-[16px] font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]">
-                            Gestión de Comercios
-                        </h2>
+                {/* Header sticky — molde Facturación */}
+                <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-yellow-500/30 pt-10 pb-6 px-4 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                    <div role="button" tabIndex={0} onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro`); }}
+                        className="absolute top-10 left-6 text-yellow-400 hover:text-yellow-300 cursor-pointer">
+                        <ChevronLeft size={24} />
                     </div>
-                    <p className="text-[9px] font-black text-yellow-400/80 uppercase tracking-widest text-center mt-2 px-4 italic">
-                        SEDE: {townId.toUpperCase().replace(/-/g, ' ')}
-                    </p>
+                    <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 bg-yellow-500/10 rounded-2xl flex items-center justify-center mb-2 border border-yellow-400/30 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                            <Store size={24} className="text-yellow-400" />
+                        </div>
+                        <h1 className="text-xl font-[1000] uppercase tracking-[0.2em] text-white">Comercios</h1>
+                        <p className="text-[10px] font-bold text-yellow-400/80 uppercase tracking-widest text-center mt-1">
+                            Red Minorista · {townId.replace(/-/g, ' ')}
+                        </p>
+
+                        {/* Métricas en vivo */}
+                        <div className="w-full max-w-sm mt-4 grid grid-cols-3 gap-2 text-center bg-black/40 p-3 rounded-2xl border border-white/5">
+                            <div className="flex flex-col">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Activos</span>
+                                <span className="text-xs font-black text-green-400">{shopStats.active}</span>
+                            </div>
+                            <div className="flex flex-col border-x border-white/5">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Suspendidos</span>
+                                <span className="text-xs font-black text-red-400">{shopStats.suspended}</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">Total Red</span>
+                                <span className="text-xs font-black text-white">{shopStats.total}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Category Grid */}
-                <div className="px-5 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-lg mx-auto relative z-10">
-                    {CATEGORIES.map(cat => {
-                        const count = shopCountByCategory[cat.id] || 0;
-                        return (
-                            <button
-                                key={cat.id}
-                                onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
-                                className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-yellow-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden"
-                            >
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/5 rounded-full blur-[20px] pointer-events-none" />
-                                <div className="text-yellow-400 group-hover:scale-110 transition-transform">
-                                    {cat.icon}
-                                </div>
-                                <span className="text-[8px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
-                                    {cat.name}
-                                </span>
-                                {count > 0 && (
-                                    <span className="absolute top-2 right-2 bg-yellow-500/20 border border-yellow-400/30 text-yellow-300 text-[7px] font-black px-1.5 py-0.5 rounded-full">
-                                        {count}
+                <div className="px-5 mt-6 relative z-10 max-w-lg mx-auto">
+                    {/* ARI Inline */}
+                    <div className="mb-6">
+                        <AriMerchantAssistant
+                            shop={{ id: 'network-bunker', name: 'Red de Comercios', category: 'network', rating: 5, specialty: 'Red', address: 'Búnker', image: '', bannerImage: '', offers: [], mapUrl: '' } as any}
+                            role="network_manager"
+                            townId={townId}
+                            inline={true}
+                            shopStats={shopStats}
+                        />
+                    </div>
+
+                    <h2 className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-2 mb-3 mt-8">Navegación por Rubro</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {CATEGORIES.map(cat => {
+                            const count = shopCountByCategory[cat.id] || 0;
+                            return (
+                                <div
+                                    key={cat.id}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => { playNeonClick(); setSelectedCategoryId(cat.id); }}
+                                    className="glass-card-3d bg-white/[0.03] border border-white/10 hover:border-yellow-500/40 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95 group relative overflow-hidden cursor-pointer"
+                                >
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/5 rounded-full blur-[20px] pointer-events-none" />
+                                    <div className="text-yellow-400 group-hover:scale-110 transition-transform">
+                                        {cat.icon}
+                                    </div>
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
+                                        {cat.name}
                                     </span>
-                                )}
-                            </button>
-                        );
-                    })}
+                                    {count > 0 && (
+                                        <span className="absolute top-2 right-2 bg-yellow-500/20 border border-yellow-400/30 text-yellow-300 text-[7px] font-black px-1.5 py-0.5 rounded-full">
+                                            {count}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-                
-                <AriMerchantAssistant 
-                    role="network_manager" 
-                    shop={{ name: `Zona: ${townId}` } as Shop} 
-                    shopStats={shopStats}
-                />
             </div>
         );
     }
