@@ -258,7 +258,10 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (role === 'industrial') return;
+        // Solo suscribirse a campañas si el shop tiene un ID real (modo merchant)
+        // Los roles de gestión usan shops "virtuales" sin ID real en Firebase
+        const rolesWithoutCampaigns = ['industrial', 'network_manager', 'crm_manager', 'financial', 'ambassador-field', 'home', 'baquiana', 'academy'];
+        if (rolesWithoutCampaigns.includes(role) || !shop.id) return;
         const unsubscribe = suscribirseACampaniasMarketing(shop.id, (fbCampaigns) => {
             setCampaigns(fbCampaigns);
         });
