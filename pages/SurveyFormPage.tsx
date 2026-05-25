@@ -9,6 +9,7 @@ import { guardarRelevamiento } from '../firebase';
 import { playNeonClick } from '../utils/audio';
 import { CATEGORIES } from '../constants';
 import { useTownLocalities } from '../hooks/useTownLocalities';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 const SurveyFormPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
@@ -93,34 +94,69 @@ const SurveyFormPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-cyan-500/30">
-            {/* Fondo dinámico oscuro */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-yellow-500/10 rounded-full blur-[100px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(234,179,8,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(234,179,8,0.03)_1px,transparent_1px)] bg-[size:30px_30px]" />
+        <div className="min-h-screen bg-[#020617] text-white pb-24 relative overflow-x-hidden selection:bg-amber-500/30">
+            {/* ESTILOS TECH-MESH ÁMBAR Y ANIMACIONES */}
+            <style>{`
+                @keyframes pulseGlow {
+                    0%, 100% { filter: drop-shadow(0 0 15px rgba(245,158,11,0.4)); }
+                    50% { filter: drop-shadow(0 0 35px rgba(245,158,11,0.8)); }
+                }
+                .tech-grid-bg {
+                    background-size: 30px 30px;
+                    background-image: 
+                        linear-gradient(to right, rgba(245,158,11,0.04) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(245,158,11,0.04) 1px, transparent 1px);
+                }
+                .glass-card-neon {
+                    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.4));
+                    backdrop-filter: blur(12px);
+                    border: 1px solid rgba(245,158,11,0.15);
+                    box-shadow: inset 0 0 20px rgba(245,158,11,0.02), 0 8px 32px rgba(0,0,0,0.4);
+                }
+            `}</style>
+
+            <div className="fixed inset-0 pointer-events-none z-0 tech-grid-bg" />
+            
+            {/* Esferas de luz ámbar */}
+            <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none z-0" />
+            <div className="fixed bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] rounded-full bg-orange-500/5 blur-[100px] pointer-events-none z-0" />
+
+            {/* HEADER STICKY (MOLDE FACTURACIÓN) */}
+            <div className="sticky top-0 z-40 bg-[#020617]/80 backdrop-blur-xl border-b border-amber-500/20 pt-6 pb-4 px-6 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center justify-between mb-4">
+                    <button onClick={() => navigate(`/${townId}/embajador/`)} className="p-2 bg-white/5 rounded-xl border border-white/10 text-white/70 hover:text-amber-400 hover:border-amber-400/50 transition-all active:scale-95">
+                        <ChevronLeft size={20} />
+                    </button>
+                    <div className="flex-1 flex justify-center items-center gap-3">
+                        <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/30" style={{ animation: 'pulseGlow 3s infinite' }}>
+                            <BatteryCharging size={20} className="text-amber-400" />
+                        </div>
+                        <div>
+                            <h1 className="text-sm font-black uppercase tracking-widest text-white leading-none">Relevamiento</h1>
+                            <span className="text-[10px] font-bold text-amber-500/60 uppercase tracking-widest">Táctico</span>
+                        </div>
+                    </div>
+                    <div className="w-10" /> {/* Spacer */}
+                </div>
             </div>
 
-            {/* Header Flotante */}
-            <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-yellow-500/30 pt-10 pb-6 px-6 relative z-10 sticky top-0 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <button onClick={() => navigate(-1)} className="absolute top-10 left-6 text-white/50 hover:text-yellow-400">
-                    <ChevronLeft size={28} />
-                </button>
-                <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 bg-yellow-500/10 rounded-2xl flex items-center justify-center mb-2 border border-yellow-400/30">
-                        <BatteryCharging size={24} className="text-yellow-400 animate-pulse" />
-                    </div>
-                    <h1 className="text-[16px] font-[1000] uppercase tracking-widest text-white text-center leading-tight">Relevamiento<br/>Táctico</h1>
-                    <p className="text-[9px] font-black text-yellow-500/60 uppercase tracking-widest mt-1">Sede: {townId.replace(/-/g, ' ')}</p>
-                </div>
+            {/* PANEL ARI INLINE */}
+            <div className="relative z-10 px-5 mt-6 mb-8 max-w-md mx-auto">
+                <AriMerchantAssistant 
+                    shop={{ id: 'relevamiento', name: 'Prospecto' } as any}
+                    role="ambassador-field"
+                    townId={townId}
+                    inline={true}
+                />
             </div>
 
             {/* Formulario Mobile-First */}
             <form onSubmit={handleSubmit} className="px-5 mt-6 relative z-10 max-w-md mx-auto space-y-8 pb-12">
                 
                 {/* SECCIÓN: OPERATIVO */}
-                <div className="bg-black/60 border border-white/10 rounded-3xl p-5 shadow-lg">
+                <div className="glass-card-neon rounded-3xl p-5 relative overflow-hidden">
                     <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
-                        <User size={14} className="text-yellow-400" /> Registro Operativo
+                        <User size={14} className="text-amber-400" /> Registro Operativo
                     </h2>
                     
                     <div>
@@ -138,8 +174,9 @@ const SurveyFormPage: React.FC = () => {
                 </div>
 
                 {/* SECCIÓN: IDENTIDAD Y CONTACTO */}
-                <div className="bg-zinc-900/80 border border-yellow-500/20 rounded-3xl p-5 shadow-lg">
-                    <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-yellow-400 mb-4 flex items-center gap-2 border-b border-yellow-500/20 pb-2">
+                <div className="glass-card-neon border-amber-500/20 rounded-3xl p-5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-[50px] pointer-events-none" />
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-400 mb-4 flex items-center gap-2 border-b border-amber-500/20 pb-2">
                         <Store size={14} /> Identidad del Local
                     </h2>
                     
@@ -223,7 +260,7 @@ const SurveyFormPage: React.FC = () => {
                 </div>
 
                 {/* SECCIÓN: DIAGNÓSTICO DIGITAL */}
-                <div className="bg-black/80 border border-white/10 rounded-3xl p-5 shadow-lg">
+                <div className="glass-card-neon rounded-3xl p-5 relative overflow-hidden">
                     <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
                         <AlertTriangle size={14} className="text-white/60" /> Diagnóstico Rápido
                     </h2>
@@ -240,7 +277,7 @@ const SurveyFormPage: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => handleInterestChange('medium')}
-                                    className={`py-3 rounded-xl font-black tracking-widest text-[9px] uppercase transition-all ${formData.digitalDiagnosis.interestLevel === 'medium' ? 'bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.4)]' : 'bg-white/5 text-white/40 border border-white/10'}`}
+                                    className={`py-3 rounded-xl font-black tracking-widest text-[9px] uppercase transition-all ${formData.digitalDiagnosis.interestLevel === 'medium' ? 'bg-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-white/5 text-white/40 border border-white/10'}`}
                                 >Medio</button>
                                 <button
                                     type="button"
@@ -258,7 +295,7 @@ const SurveyFormPage: React.FC = () => {
                                 value={formData.digitalDiagnosis.missing}
                                 onChange={handleChange}
                                 placeholder="Ej. Fidelizar, más difusión, QR en mesa..."
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium text-white focus:outline-none focus:border-yellow-400 transition-all placeholder:text-white/20"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium text-white focus:outline-none focus:border-amber-400 transition-all placeholder:text-white/20"
                             />
                         </div>
 
@@ -270,7 +307,7 @@ const SurveyFormPage: React.FC = () => {
                                 onChange={handleChange}
                                 rows={3}
                                 placeholder="Ej. Me pidió que vuelva el viernes porque hoy estaba lleno."
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium text-white focus:outline-none focus:border-yellow-400 transition-all placeholder:text-white/20 resize-none"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm font-medium text-white focus:outline-none focus:border-amber-400 transition-all placeholder:text-white/20 resize-none"
                             />
                         </div>
                     </div>
@@ -280,7 +317,7 @@ const SurveyFormPage: React.FC = () => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[12px] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-[0_10px_40px_rgba(234,179,8,0.3)] disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-amber-400 to-amber-600 text-black py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[12px] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-[0_10px_40px_rgba(245,158,11,0.3)] disabled:opacity-50"
                 >
                     {loading ? (
                         'GUARDANDO...'

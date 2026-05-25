@@ -457,7 +457,6 @@ const MasterPanelPage: React.FC = () => {
     const managementPages = [
         { title: 'Reclutamiento Admin', desc: 'Aprobar o rechazar aspirantes a Embajadores', path: `/${townId}/tablero-maestro/reclutamiento` },
         { title: 'Panel de Embajador', desc: 'Autenticación para dar de alta comercios', path: `/${townId}/embajador` },
-        { title: 'Relevamiento Táctico', desc: 'Carga Express Mobile de prospectos en calle', path: `/${townId}/embajador/relevamiento/nuevo` },
         { title: 'Gestión de Prospectos', desc: 'Ver, revisar, y activar leads de relevamiento', path: `/${townId}/embajador/relevamiento/gestion` },
         { title: 'Suscripción Creadores', desc: 'Página de suscripción comercial', path: `/${townId}/subscripcion` },
     ];
