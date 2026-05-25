@@ -18,6 +18,7 @@ import {
     Edit3
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 interface ShopManagementPageProps {
     allShops: Shop[];
@@ -60,6 +61,14 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
             counts[cat.id] = allShops.filter(s => s.category === cat.id).length;
         });
         return counts;
+    }, [allShops]);
+
+    const shopStats = useMemo(() => {
+        return {
+            total: allShops.length,
+            active: allShops.filter(s => s.isActive).length,
+            suspended: allShops.filter(s => !s.isActive).length
+        };
     }, [allShops]);
 
     const handleDelete = async (shop: Shop) => {
@@ -167,6 +176,12 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                         );
                     })}
                 </div>
+                
+                <AriMerchantAssistant 
+                    role="network_manager" 
+                    shop={{ name: `Zona: ${townId}` } as Shop} 
+                    shopStats={shopStats}
+                />
             </div>
         );
     }
@@ -330,6 +345,12 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                     })
                 )}
             </div>
+
+            <AriMerchantAssistant 
+                role="network_manager" 
+                shop={{ name: `Gestión de ${selectedCategory?.name || 'Comercios'} en ${activeLocation}` } as Shop} 
+                shopStats={shopStats}
+            />
         </div>
     );
 };

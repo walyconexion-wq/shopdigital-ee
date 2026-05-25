@@ -19,6 +19,7 @@ import {
     Plus
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 interface EnterpriseManagementPageProps {
     allShops: Shop[];
@@ -184,6 +185,13 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                         );
                     })}
                 </div>
+
+                <AriMerchantAssistant 
+                    role="industrial" 
+                    shop={{ name: `Nodo Empresarial: ${provinciaParam || townId}` } as Shop} 
+                    allShops={allShops}
+                    townId={townId}
+                />
             </div>
         );
     }
@@ -342,6 +350,13 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                     })
                 )}
             </div>
+
+            <AriMerchantAssistant 
+                role="industrial" 
+                shop={{ name: `Nodo B2B: ${selectedCategory?.name || 'Empresas'}` } as Shop} 
+                allShops={allShops}
+                townId={townId}
+            />
         </div>
     );
 };

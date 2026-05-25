@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
-    ChevronLeft, Terminal, MapPin, Zap, Database, Check, Settings
+    ChevronLeft, Terminal, MapPin, Zap, Database, Check, Settings,
+    Store, Users, Factory, ShoppingBag
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
@@ -136,10 +137,76 @@ export const RegionMasterPanelPage: React.FC = () => {
                     </div>
                 </div>
 
+                {/* ═══════════════════════════════════════════ */}
+                {/* ⚡ TÉRMICAS DE GESTIÓN AUTÓNOMA (4 NODOS)  */}
+                {/* ═══════════════════════════════════════════ */}
+                <section className="mt-8">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <Terminal size={12} /> Térmicas de Gestión Autónoma
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* 🟡 GESTOR DE COMERCIOS */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${regionData?.towns[0].id}/embajador/gestion`); }} 
+                            className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(234,179,8,0.2)] border border-yellow-500/40 hover:from-yellow-600 hover:to-amber-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-2 pointer-events-none">
+                                <Store size={18} className="text-yellow-300" />
+                                <span className="text-[13px] text-yellow-300">GESTOR DE COMERCIOS</span>
+                            </div>
+                            <span className="text-[8px] text-yellow-300/80 italic pointer-events-none">RED MINORISTA · ACTIVACIONES · STATUS</span>
+                        </div>
+
+                        {/* 🔵 GESTOR DE CLIENTES */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${regionData?.towns[0].id}/embajador/clientes`); }} 
+                            className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.2)] border border-cyan-500/40 hover:from-cyan-600 hover:to-blue-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-2 pointer-events-none">
+                                <Users size={18} className="text-cyan-300" />
+                                <span className="text-[13px] text-cyan-300">GESTOR DE CLIENTES</span>
+                            </div>
+                            <span className="text-[8px] text-cyan-300/80 italic pointer-events-none">RED VIP · CRM · RETENCIÓN</span>
+                        </div>
+
+                        {/* 🟠 GESTOR DE INDUSTRIAS (B2B) */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${regionData?.towns[0].id}/embajador/empresas`); }} 
+                            className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-500/40 hover:from-amber-600 hover:to-orange-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-2 pointer-events-none">
+                                <Factory size={18} className="text-amber-300" />
+                                <span className="text-[13px] text-amber-300">GESTOR DE INDUSTRIAS</span>
+                            </div>
+                            <span className="text-[8px] text-amber-300/80 italic pointer-events-none">NODO B2B · MAYORISTAS · PROVEEDORES</span>
+                        </div>
+
+                        {/* 🟣 GESTOR DE FACTURACIÓN */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${regionData?.towns[0].id}/embajador/facturacion`); }} 
+                            className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.2)] border border-violet-500/40 hover:from-violet-600 hover:to-purple-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-2 pointer-events-none">
+                                <ShoppingBag size={18} className="text-violet-300" />
+                                <span className="text-[13px] text-violet-300">GESTOR DE FACTURACIÓN</span>
+                            </div>
+                            <span className="text-[8px] text-violet-300/80 italic pointer-events-none">TESORERÍA · AVISOS · COBRANZAS</span>
+                        </div>
+                    </div>
+                </section>
+
                 {/* 🛡️ ACCESO DIRECTO AL BÚNKER CENTRAL (Solo Director) */}
                 <div 
                     role="button" tabIndex={0}
-                    onClick={() => { playNeonClick(); navigate(`/${regionData.towns[0].id}/bunker-waly`); }}
+                    onClick={() => { playNeonClick(); navigate(`/${regionData?.towns[0].id}/bunker-waly`); }}
                     className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(139,92,246,0.2)] relative overflow-hidden group mt-10"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-violet-500/0 via-white/5 to-violet-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>

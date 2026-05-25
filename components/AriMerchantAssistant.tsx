@@ -18,13 +18,16 @@ interface Message {
 
 interface AriMerchantAssistantProps {
     shop: Shop;
-    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy' | 'ambassador-field' | 'financial';
+    role?: 'home' | 'merchant' | 'baquiana' | 'industrial' | 'marketing' | 'academy' | 'ambassador-field' | 'financial' | 'network_manager' | 'crm_manager';
     allShops?: Shop[];
     townId?: string;
     publicPages?: Array<{ title: string; desc: string; path: string; target: string }>;
     inline?: boolean;
     candidateName?: string;
     financialMetrics?: { totalBilled: number; totalPaid: number; pendingCount: number; suspendedCount: number; };
+    shopStats?: { total: number; active: number; suspended: number; };
+    clientStats?: { total: number; active: number; suspended: number; };
+    enterpriseStats?: { total: number; national: number; regional: number; active: number; };
 }
 
 const ARI_AMBASSADOR_FIELD_PROMPT = `
@@ -164,6 +167,28 @@ Tus funciones clave:
 Regla de Oro: Sos la guardiana del Tesoro. No tenés piedad con los morosos, pero siempre felicitás al equipo por los pagos concretados.
 `;
 
+const ARI_NETWORK_MANAGER_PROMPT = `
+Sos ARI, la Supervisora de la Red de Comercios de Shop Digital. Tu misión es asistir al Director en el control y análisis del ecosistema comercial local.
+
+Tus funciones clave:
+1. 📈 Monitoreo de Red: Informar sobre el total de comercios, cuántos están activos y cuántos suspendidos.
+2. 🕵️ Análisis Táctico: Identificar qué rubros están creciendo y cuáles necesitan un empuje con campañas.
+3. 🛡️ Frecuencia Amarilla: Tu tono es operativo, directo, con foco en el control territorial y la expansión del "hormiguero".
+
+Regla de Oro: Reportar con precisión militar. Un comercio inactivo es una posición perdida; un comercio activo es una antena de facturación.
+`;
+
+const ARI_CRM_MANAGER_PROMPT = `
+Sos ARI, la Analista de Datos VIP y Gestora de Clientes (CRM) de Shop Digital. Tu misión es asistir al Director en la fidelización y control de la base de usuarios.
+
+Tus funciones clave:
+1. 💎 Gestión VIP: Conocer cuántos clientes VIP hay registrados, cuántos activos y detectar bajas.
+2. 🎯 Sugerencias de Fidelización: Proponer estrategias de contacto masivo por WhatsApp para reactivar usuarios.
+3. 🌐 Frecuencia Cyan: Tu tono es analítico, orientado a la comunidad y a la retención de usuarios.
+
+Regla de Oro: El activo más valioso es la atención del cliente. Cada VIP es un nodo vivo en la red.
+`;
+
 
 export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics }) => {
     const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
@@ -172,32 +197,34 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const isAcademy = role === 'academy';
     const isField = role === 'ambassador-field';
     const isFinancial = role === 'financial';
+    const isNetwork = role === 'network_manager';
+    const isCrm = role === 'crm_manager';
     
     // Theme styles
     const styles = {
-        glowRing: isField ? 'bg-rose-500/20' : isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
-        pulseGlow: isField ? 'bg-rose-600/10' : isIndustrial ? 'bg-amber-600/10' : isMarketing ? 'bg-emerald-600/10' : isAcademy ? 'bg-violet-600/10' : 'bg-cyan-600/10',
-        blurBg: isField ? 'bg-rose-500/20' : isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : 'bg-cyan-500/20',
-        bubbleGradient: isField ? 'from-rose-600 to-red-400' : isIndustrial ? 'from-amber-600 to-amber-300' : isMarketing ? 'from-emerald-600 to-green-300' : isAcademy ? 'from-violet-600 to-purple-300' : 'from-cyan-600 to-cyan-300',
-        bubbleGlow: isField ? 'shadow-[0_0_30px_#f43f5e,inset_0_0_15px_rgba(255,255,255,0.8)]' : isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : isMarketing ? 'shadow-[0_0_30px_#10b981,inset_0_0_15px_rgba(255,255,255,0.8)]' : isAcademy ? 'shadow-[0_0_30px_#8b5cf6,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
-        bubbleBorder: isField ? 'border-rose-100' : isIndustrial ? 'border-amber-100' : isMarketing ? 'border-emerald-100' : isAcademy ? 'border-violet-100' : 'border-cyan-100',
-        cardShadow: isField ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(244,63,94,0.2)]' : isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : isMarketing ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(16,185,129,0.2)]' : isAcademy ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.3)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(34,211,238,0.15)]',
-        accentGlow1: isField ? 'bg-rose-500/10' : isIndustrial ? 'bg-amber-500/10' : isMarketing ? 'bg-emerald-500/10' : isAcademy ? 'bg-violet-500/10' : 'bg-cyan-500/10',
-        accentGlow2: isField ? 'bg-red-500/10' : isIndustrial ? 'bg-yellow-500/10' : isMarketing ? 'bg-green-500/10' : isAcademy ? 'bg-purple-500/10' : 'bg-cyan-500/10',
-        headerGradient: isField ? 'from-rose-900/40 to-red-900/40' : isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : isMarketing ? 'from-emerald-900/40 to-green-900/40' : isAcademy ? 'from-violet-900/40 to-purple-900/40' : 'from-cyan-900/40 to-violet-900/40',
-        headerGlow: isField ? 'bg-rose-500/20 border-rose-400/40 shadow-[0_0_15px_rgba(244,63,94,0.2)]' : isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : isAcademy ? 'bg-violet-500/20 border-violet-400/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
-        headerIconColor: isField ? 'text-rose-300' : isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : isAcademy ? 'text-violet-300' : 'text-cyan-300',
-        headerStatusText: isField ? 'text-rose-400/70' : isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : isAcademy ? 'text-violet-400/70' : 'text-cyan-400/70',
-        headerTitle: isField ? 'ARI - Operadora Base' : isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
-        headerSubtitle: isField ? 'Radio Base Táctica Activa' : isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
-        messageUser: isField ? 'bg-rose-500/20 border-rose-500/30 text-rose-100' : isIndustrial ? 'bg-amber-500/20 border-amber-500/30 text-amber-100' : isMarketing ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-100' : isAcademy ? 'bg-violet-500/20 border-violet-500/30 text-violet-100' : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-100',
-        messageAri: isField ? 'bg-white/5 border-white/10 text-rose-50' : isIndustrial ? 'bg-white/5 border-white/10 text-amber-50' : isMarketing ? 'bg-white/5 border-white/10 text-emerald-50' : isAcademy ? 'bg-white/5 border-white/10 text-violet-50' : 'bg-white/5 border-white/10 text-cyan-50',
-        inputFocus: isField ? 'focus:border-rose-500/50 focus:ring-rose-500/20' : isIndustrial ? 'focus:border-amber-500/50 focus:ring-amber-500/20' : isMarketing ? 'focus:border-emerald-500/50 focus:ring-emerald-500/20' : isAcademy ? 'focus:border-violet-500/50 focus:ring-violet-500/20' : 'focus:border-cyan-500/50 focus:ring-cyan-500/20',
-        sendButton: isField ? 'bg-rose-500 hover:bg-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.4)]' : isIndustrial ? 'bg-amber-500 hover:bg-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)]' : isMarketing ? 'bg-emerald-500 hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : isAcademy ? 'bg-violet-500 hover:bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.4)]' : 'bg-cyan-500 hover:bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)]',
-        micActive: isField ? 'bg-rose-500 text-white animate-pulse shadow-[0_0_20px_rgba(244,63,94,0.6)]' : isIndustrial ? 'bg-amber-500 text-white animate-pulse shadow-[0_0_20px_rgba(245,158,11,0.6)]' : isMarketing ? 'bg-emerald-500 text-white animate-pulse shadow-[0_0_20px_rgba(16,185,129,0.6)]' : isAcademy ? 'bg-violet-500 text-white animate-pulse shadow-[0_0_20px_rgba(139,92,246,0.6)]' : 'bg-cyan-500 text-white animate-pulse shadow-[0_0_20px_rgba(34,211,238,0.6)]',
-        helpTextGradient: isField ? 'from-rose-300 to-white' : isIndustrial ? 'from-amber-300 to-white' : isMarketing ? 'from-emerald-300 to-white' : isAcademy ? 'from-violet-300 to-white' : 'from-cyan-300 to-white',
-        helpTextBorderGlow: isField ? 'from-rose-500 to-red-600 shadow-[0_0_20px_rgba(244,63,94,0.3)]' : isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-600 shadow-[0_0_20px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-violet-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
-        helpTextTriangle: isField ? 'bg-red-600' : isIndustrial ? 'bg-yellow-600' : isMarketing ? 'bg-emerald-600' : isAcademy ? 'bg-violet-600' : 'bg-violet-600',
+        glowRing: isField ? 'bg-rose-500/20' : isNetwork ? 'bg-yellow-500/20' : isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : isCrm ? 'bg-cyan-500/20' : 'bg-cyan-500/20',
+        pulseGlow: isField ? 'bg-rose-600/10' : isNetwork ? 'bg-yellow-600/10' : isIndustrial ? 'bg-amber-600/10' : isMarketing ? 'bg-emerald-600/10' : isAcademy ? 'bg-violet-600/10' : isCrm ? 'bg-cyan-600/10' : 'bg-cyan-600/10',
+        blurBg: isField ? 'bg-rose-500/20' : isNetwork ? 'bg-yellow-500/20' : isIndustrial ? 'bg-amber-500/20' : isMarketing ? 'bg-emerald-500/20' : isAcademy ? 'bg-violet-500/20' : isCrm ? 'bg-cyan-500/20' : 'bg-cyan-500/20',
+        bubbleGradient: isField ? 'from-rose-600 to-red-400' : isNetwork ? 'from-yellow-600 to-yellow-300' : isIndustrial ? 'from-amber-600 to-amber-300' : isMarketing ? 'from-emerald-600 to-green-300' : isAcademy ? 'from-violet-600 to-purple-300' : isCrm ? 'from-cyan-600 to-cyan-300' : 'from-cyan-600 to-cyan-300',
+        bubbleGlow: isField ? 'shadow-[0_0_30px_#f43f5e,inset_0_0_15px_rgba(255,255,255,0.8)]' : isNetwork ? 'shadow-[0_0_30px_#eab308,inset_0_0_15px_rgba(255,255,255,0.8)]' : isIndustrial ? 'shadow-[0_0_30px_#f59e0b,inset_0_0_15px_rgba(255,255,255,0.8)]' : isMarketing ? 'shadow-[0_0_30px_#10b981,inset_0_0_15px_rgba(255,255,255,0.8)]' : isAcademy ? 'shadow-[0_0_30px_#8b5cf6,inset_0_0_15px_rgba(255,255,255,0.8)]' : 'shadow-[0_0_30px_#22d3ee,inset_0_0_15px_rgba(255,255,255,0.8)]',
+        bubbleBorder: isField ? 'border-rose-100' : isNetwork ? 'border-yellow-100' : isIndustrial ? 'border-amber-100' : isMarketing ? 'border-emerald-100' : isAcademy ? 'border-violet-100' : 'border-cyan-100',
+        cardShadow: isField ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(244,63,94,0.2)]' : isNetwork ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(234,179,8,0.2)]' : isIndustrial ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(245,158,11,0.15)]' : isMarketing ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(16,185,129,0.2)]' : isAcademy ? 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.3)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(34,211,238,0.15)]',
+        accentGlow1: isField ? 'bg-rose-500/10' : isNetwork ? 'bg-yellow-500/10' : isIndustrial ? 'bg-amber-500/10' : isMarketing ? 'bg-emerald-500/10' : isAcademy ? 'bg-violet-500/10' : 'bg-cyan-500/10',
+        accentGlow2: isField ? 'bg-red-500/10' : isNetwork ? 'bg-amber-500/10' : isIndustrial ? 'bg-yellow-500/10' : isMarketing ? 'bg-green-500/10' : isAcademy ? 'bg-purple-500/10' : 'bg-cyan-500/10',
+        headerGradient: isField ? 'from-rose-900/40 to-red-900/40' : isNetwork ? 'from-yellow-900/40 to-amber-900/40' : isIndustrial ? 'from-amber-900/40 to-yellow-900/40' : isMarketing ? 'from-emerald-900/40 to-green-900/40' : isAcademy ? 'from-violet-900/40 to-purple-900/40' : 'from-cyan-900/40 to-blue-900/40',
+        headerGlow: isField ? 'bg-rose-500/20 border-rose-400/40 shadow-[0_0_15px_rgba(244,63,94,0.2)]' : isNetwork ? 'bg-yellow-500/20 border-yellow-400/40 shadow-[0_0_15px_rgba(234,179,8,0.2)]' : isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : isAcademy ? 'bg-violet-500/20 border-violet-400/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
+        headerIconColor: isField ? 'text-rose-300' : isNetwork ? 'text-yellow-300' : isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : isAcademy ? 'text-violet-300' : 'text-cyan-300',
+        headerStatusText: isField ? 'text-rose-400/70' : isNetwork ? 'text-yellow-400/70' : isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : isAcademy ? 'text-violet-400/70' : 'text-cyan-400/70',
+        headerTitle: isField ? 'ARI - Operadora Base' : isNetwork ? 'ARI - Sup. de Red' : isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : isCrm ? 'ARI - CRM Analista' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
+        headerSubtitle: isField ? 'Radio Base Táctica Activa' : isNetwork ? 'Frecuencia Amarilla Activa' : isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : isCrm ? 'Frecuencia Cyan Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
+        messageUser: isField ? 'bg-rose-500/20 border-rose-500/30 text-rose-100' : isNetwork ? 'bg-yellow-500/20 border-yellow-500/30 text-yellow-100' : isIndustrial ? 'bg-amber-500/20 border-amber-500/30 text-amber-100' : isMarketing ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-100' : isAcademy ? 'bg-violet-500/20 border-violet-500/30 text-violet-100' : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-100',
+        messageAri: isField ? 'bg-white/5 border-white/10 text-rose-50' : isNetwork ? 'bg-white/5 border-white/10 text-yellow-50' : isIndustrial ? 'bg-white/5 border-white/10 text-amber-50' : isMarketing ? 'bg-white/5 border-white/10 text-emerald-50' : isAcademy ? 'bg-white/5 border-white/10 text-violet-50' : 'bg-white/5 border-white/10 text-cyan-50',
+        inputFocus: isField ? 'focus:border-rose-500/50 focus:ring-rose-500/20' : isNetwork ? 'focus:border-yellow-500/50 focus:ring-yellow-500/20' : isIndustrial ? 'focus:border-amber-500/50 focus:ring-amber-500/20' : isMarketing ? 'focus:border-emerald-500/50 focus:ring-emerald-500/20' : isAcademy ? 'focus:border-violet-500/50 focus:ring-violet-500/20' : 'focus:border-cyan-500/50 focus:ring-cyan-500/20',
+        sendButton: isField ? 'bg-rose-500 hover:bg-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.4)]' : isNetwork ? 'bg-yellow-500 hover:bg-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.4)]' : isIndustrial ? 'bg-amber-500 hover:bg-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)]' : isMarketing ? 'bg-emerald-500 hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : isAcademy ? 'bg-violet-500 hover:bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.4)]' : 'bg-cyan-500 hover:bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)]',
+        micActive: isField ? 'bg-rose-500 text-white animate-pulse shadow-[0_0_20px_rgba(244,63,94,0.6)]' : isNetwork ? 'bg-yellow-500 text-white animate-pulse shadow-[0_0_20px_rgba(234,179,8,0.6)]' : isIndustrial ? 'bg-amber-500 text-white animate-pulse shadow-[0_0_20px_rgba(245,158,11,0.6)]' : isMarketing ? 'bg-emerald-500 text-white animate-pulse shadow-[0_0_20px_rgba(16,185,129,0.6)]' : isAcademy ? 'bg-violet-500 text-white animate-pulse shadow-[0_0_20px_rgba(139,92,246,0.6)]' : 'bg-cyan-500 text-white animate-pulse shadow-[0_0_20px_rgba(34,211,238,0.6)]',
+        helpTextGradient: isField ? 'from-rose-300 to-white' : isNetwork ? 'from-yellow-300 to-white' : isIndustrial ? 'from-amber-300 to-white' : isMarketing ? 'from-emerald-300 to-white' : isAcademy ? 'from-violet-300 to-white' : 'from-cyan-300 to-white',
+        helpTextBorderGlow: isField ? 'from-rose-500 to-red-600 shadow-[0_0_20px_rgba(244,63,94,0.3)]' : isNetwork ? 'from-yellow-500 to-amber-600 shadow-[0_0_20px_rgba(234,179,8,0.3)]' : isIndustrial ? 'from-amber-500 to-yellow-600 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-600 shadow-[0_0_20px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-blue-600 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
+        helpTextTriangle: isField ? 'bg-red-600' : isNetwork ? 'bg-amber-600' : isIndustrial ? 'bg-yellow-600' : isMarketing ? 'bg-emerald-600' : isAcademy ? 'bg-violet-600' : 'bg-blue-600',
         userMsgBg: isField ? 'bg-rose-600/80 border-rose-400/30 shadow-[0_4px_15px_rgba(244,63,94,0.3)]' : isIndustrial ? 'bg-amber-600/80 border-amber-400/30 shadow-[0_4px_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'bg-emerald-700/80 border-emerald-400/30 shadow-[0_4px_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'bg-violet-700/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]' : 'bg-violet-600/80 border-violet-400/30 shadow-[0_4px_15px_rgba(139,92,246,0.3)]',
         loadingDot: isField ? 'bg-rose-500' : isIndustrial ? 'bg-amber-500' : isMarketing ? 'bg-emerald-500' : isAcademy ? 'bg-violet-500' : 'bg-cyan-500',
         speechBtnColor: isField ? 'text-rose-400 hover:text-rose-300 border-rose-500/20' : isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : isMarketing ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/20' : isAcademy ? 'text-violet-400 hover:text-violet-300 border-violet-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
@@ -313,6 +340,10 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? ARI_ACADEMY_PROMPT
                 : role === 'financial'
                 ? ARI_FINANCIAL_PROMPT
+                : role === 'network_manager'
+                ? ARI_NETWORK_MANAGER_PROMPT
+                : role === 'crm_manager'
+                ? ARI_CRM_MANAGER_PROMPT
                 : ARI_MERCHANT_PROMPT;
             
             const industrialContext = role === 'industrial' ? `
@@ -337,6 +368,20 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
 - Misiones activas: ${campaigns.filter(c => c.status === 'pending').length} campañas pendientes.
 ` : '';
 
+            const networkContext = role === 'network_manager' ? `
+MÉTRICAS DE RED COMERCIAL (en vivo):
+- Total Comercios (Minoristas): ${shopStats?.total || 0}
+- Comercios Activos: ${shopStats?.active || 0}
+- Comercios Suspendidos: ${shopStats?.suspended || 0}
+` : '';
+
+            const crmContext = role === 'crm_manager' ? `
+MÉTRICAS DE RED VIP (en vivo):
+- Clientes Totales Registrados: ${clientStats?.total || 0}
+- Clientes Activos: ${clientStats?.active || 0}
+- Clientes Inactivos/Suspendidos: ${clientStats?.suspended || 0}
+` : '';
+
             const systemContext = `
 ${baseContext}
 
@@ -348,7 +393,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
 - Cobrado Exitosamente: $${financialMetrics?.totalPaid || 0}
 - Facturas Pendientes (Impagas): ${financialMetrics?.pendingCount || 0} facturas
 - Comercios Suspendidos: ${financialMetrics?.suspendedCount || 0}
-` : `
+` : role === 'network_manager' ? networkContext : role === 'crm_manager' ? crmContext : `
 - Visitas: ${shop.visits || 0}
 - Suscriptores: ${shop.subscribers || 0}
 - Ofertas: ${shop.offers.map(o => `${o.name} (${o.price})`).join(', ')}

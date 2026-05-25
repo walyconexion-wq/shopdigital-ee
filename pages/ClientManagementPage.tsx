@@ -27,6 +27,7 @@ import {
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import { playNeonClick } from '../utils/audio';
 import { eliminarCliente, guardarCliente } from '../firebase';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 interface ClientManagementPageProps {
     allShops: Shop[];
@@ -111,6 +112,14 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         });
         return counts;
     }, [clientsInZone, shopToCategoryMap]);
+
+    const clientStats = useMemo(() => {
+        return {
+            total: clientsInZone.length,
+            active: clientsInZone.length,
+            engagement: 85
+        };
+    }, [clientsInZone]);
 
     // Comercios filtrados por Rubro + Localidad + TOWNID (BLINDAJE TOTAL 🛡️)
     const shopsWithClients = useMemo(() => {
@@ -259,6 +268,12 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                         );
                     })}
                 </div>
+
+                <AriMerchantAssistant 
+                    role="crm_manager" 
+                    shop={{ name: `Zona: ${townId}` } as Shop} 
+                    clientStats={clientStats}
+                />
             </div>
         );
     }
@@ -565,6 +580,12 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                     ))
                 )}
             </div>
+
+            <AriMerchantAssistant 
+                role="crm_manager" 
+                shop={{ name: `CRM: ${selectedCategory?.name || 'Rubro'} en ${activeLocation}` } as Shop} 
+                clientStats={clientStats}
+            />
         </div>
     );
 };
