@@ -613,18 +613,7 @@ const MasterPanelPage: React.FC = () => {
                     <span className="text-[8px] text-amber-200/80 italic pointer-events-none">DIRECTORIO INDUSTRIAL · PROVEEDORES · MAYORISTAS</span>
                 </div>
 
-                <div 
-                    role="button" tabIndex={0}
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/fabrica`); }} 
-                    className="w-full glass-card-neon text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.3)] border border-yellow-500/50 hover:from-amber-500 hover:to-yellow-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                    <div className="flex items-center gap-2 pointer-events-none">
-                        <Factory size={14} className="text-white/80" />
-                        <span className="text-[14px]">🏭 LA FÁBRICA · VISIóN GLOBAL</span>
-                    </div>
-                    <span className="text-[8px] text-yellow-100 italic pointer-events-none">VER Y SALTAR A CUALQUIER ZONA · FORJAR NUEVAS CIUDADES</span>
-                </div>
+
 
                 {/* 🎨 EDITOR DE TEMA Y FONDO */}
                 <div 
