@@ -257,7 +257,10 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
             <h2 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2 mb-6">
                 <Wrench className="text-blue-400" /> Arsenal de Herramientas
             </h2>
-            <button className="w-full bg-blue-500/20 border border-blue-500/40 p-6 rounded-2xl flex flex-col items-center justify-center gap-3 text-center active:scale-95 transition-transform">
+            <button 
+                onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/relevamiento/nuevo`); }}
+                className="w-full bg-blue-500/20 border border-blue-500/40 p-6 rounded-2xl flex flex-col items-center justify-center gap-3 text-center active:scale-95 transition-transform"
+            >
                 <Store size={32} className="text-blue-400" />
                 <div>
                     <span className="block text-sm font-black text-white uppercase tracking-widest">Suscripción Nuevo Comercio</span>
