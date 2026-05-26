@@ -93,9 +93,9 @@ const EnterpriseMasterPanelPage: React.FC = () => {
 
     // Dummy Shop object for the B2B Node
     const bunkerShop = useMemo<Shop>(() => ({
-        id: 'bunker-industrial',
-        slug: 'bunker-industrial',
-        name: 'Búnker Industrial B2B',
+        id: 'panel-maestro-industrial',
+        slug: 'panel-maestro-industrial',
+        name: 'Panel Maestro Industrial B2B',
         entityType: 'enterprise',
         isActive: true,
         visits: 0,
@@ -134,7 +134,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                 </button>
                 <Factory size={28} className="text-cyan-400 mb-2 drop-shadow-[0_0_15px_rgba(6,182,212,0.6)]" />
                 <h1 className="text-[18px] font-black text-white uppercase tracking-[0.2em] text-center drop-shadow-[0_0_10px_rgba(6,182,212,0.4)]">
-                    Búnker Industrial
+                    Panel Maestro Industrial
                 </h1>
                 <p className="text-[8px] font-bold text-cyan-400/60 uppercase tracking-widest mt-1 italic">
                     Panel de Control B2B · {formattedTown}
@@ -316,7 +316,7 @@ const EnterpriseMasterPanelPage: React.FC = () => {
                     © 2026 · ShopDigital
                 </p>
                 <p className="text-[8px] font-bold text-cyan-400 uppercase tracking-[0.25em] select-none" style={{ textShadow: '0 0 10px rgba(245,158,11,0.5)' }}>
-                    🏭 Búnker Industrial · Control B2B
+                    🏭 Panel Maestro Industrial · Control B2B
                 </p>
             </footer>
             

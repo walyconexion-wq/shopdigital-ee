@@ -45,6 +45,16 @@ const EnterpriseMasterBoardPage: React.FC = () => {
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
 
+    // Modo Camaleón: leer config de zona para identidad visual del panel
+    const [zoneConfig, setZoneConfig] = useState<any>({ primaryColor: '#06b6d4', townName: '' });
+
+    useEffect(() => {
+        const unsub = subscribeToGlobalConfig((cfg) => {
+            if (cfg) setZoneConfig(cfg);
+        }, selectedTownId);
+        return () => unsub();
+    }, [selectedTownId]);
+
     // Sync selectedTownId state with URL query param if changed externally
     useEffect(() => {
         if (provinciaParam === 'cordoba') {
@@ -54,18 +64,18 @@ const EnterpriseMasterBoardPage: React.FC = () => {
         }
     }, [provinciaParam]);
 
+    const formatTownName = (id: string) => {
+        if (id === 'ezeiza') return 'Ezeiza';
+        if (id === 'esteban-echeverria') return 'Esteban Echeverría';
+        if (id === 'mina-clavero' || id === 'traslasierra') return 'Traslasierra';
+        return id.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    };
+
+    const zoneName = zoneConfig?.townName || formatTownName(selectedTownId);
+
     const handleSelectTown = (townId: string) => {
         playNeonClick();
         setSelectedTownId(townId);
-        
-        // Redirigir a los Tableros Maestros B2C correspondientes
-        if (townId === 'ezeiza') {
-            navigate('/ezeiza/tablero-maestro');
-        } else if (townId === 'mina-clavero') {
-            navigate('/region/traslasierra/tablero-maestro');
-        } else {
-            navigate('/esteban-echeverria/tablero-maestro');
-        }
     };
 
     const handleCopy = (path: string) => {
@@ -85,8 +95,9 @@ const EnterpriseMasterBoardPage: React.FC = () => {
         );
     }, [searchTerm]);
 
-    // Paleta Tech Neon Forzada para B2B
-    const primaryColor = '#06b6d4'; // Cyan
+    // Paleta Tech Neon B2B — Modo Camaleón
+    const zoneColor = zoneConfig?.primaryColor || '#06b6d4';
+    const primaryColor = '#06b6d4'; // Cyan industrial
     const secondaryColor = '#3b82f6'; // Azul Royal
     const bgColor = '#020617'; // Slate 950
 
@@ -102,18 +113,11 @@ const EnterpriseMasterBoardPage: React.FC = () => {
         }
     };
 
-    // Management pages under Sistemas Internos (combining B2C and B2B specific tools)
+    // ═══════════════════════════════════════════════════════════
+    // ADN FRACTAL — Sistemas Internos (MOLDE IDÉNTICO AL B2C)
+    // Solo: Reclutamiento Admin, Panel de Embajador, Suscripción de Comercio
+    // ═══════════════════════════════════════════════════════════
     const managementPages = [
-        { 
-            title: 'ALTA DE EMPRESA B2B', 
-            desc: 'Agregar nueva organización B2B al nodo', 
-            path: `/${selectedTownId}/embajador/empresas/nueva?provincia=${provinciaParam}` 
-        },
-        { 
-            title: 'GESTIÓN DE RUBROS / EMPRESAS', 
-            desc: 'Revisar, editar o suspender cuentas empresariales', 
-            path: `/${selectedTownId}/embajador/empresas?provincia=${provinciaParam}` 
-        },
         { 
             title: 'RECLUTAMIENTO ADMIN', 
             desc: 'Aprobar o rechazar aspirantes a Embajadores', 
@@ -125,23 +129,8 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             path: `/${selectedTownId}/embajador` 
         },
         { 
-            title: 'FACTURACIÓN Y AVISOS', 
-            desc: 'Suscripciones B2C y B2B', 
-            path: `/${selectedTownId}/embajador/facturacion` 
-        },
-        { 
-            title: 'RELEVAMIENTO TÁCTICO', 
-            desc: 'Carga Express Mobile de prospectos en calle', 
-            path: `/${selectedTownId}/embajador/relevamiento/nuevo` 
-        },
-        { 
-            title: 'GESTIÓN DE PROSPECTOS', 
-            desc: 'Ver, revisar, y activar leads de relevamiento', 
-            path: `/${selectedTownId}/embajador/relevamiento/gestion` 
-        },
-        { 
-            title: 'SUSCRIPCIÓN CREADORES', 
-            desc: 'Página de suscripción comercial', 
+            title: 'SUSCRIPCIÓN DE COMERCIO', 
+            desc: 'Formulario público para nuevos comerciantes', 
             path: `/${selectedTownId}/subscripcion` 
         },
     ];
@@ -157,6 +146,10 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                 @keyframes scanline {
                     0% { transform: translateY(-100%); }
                     100% { transform: translateY(200%); }
+                }
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-6px); }
                 }
                 .tech-grid-bg {
                     background-size: 30px 30px;
@@ -178,6 +171,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
 
             {/* Background Tecnológico */}
             <div className="fixed inset-0 pointer-events-none z-0 tech-grid-bg">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-screen"></div>
                 <div 
                     className="absolute top-0 right-0 w-[50vw] h-[50vw] rounded-full blur-[150px] opacity-20 mix-blend-screen"
                     style={{ backgroundColor: primaryColor }}
@@ -191,7 +185,9 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/50 to-[#020617]/90"></div>
             </div>
 
-            {/* Header Sticky Console */}
+            {/* ════════════════════════════════════════════════════════ */}
+            {/* HEADER — PANEL MAESTRO INDUSTRIAL                      */}
+            {/* ════════════════════════════════════════════════════════ */}
             <div 
                 className="backdrop-blur-xl border-b pt-10 pb-6 px-6 relative z-10 sticky top-0 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                 style={{ 
@@ -210,7 +206,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                 <div className="flex flex-col items-center">
                     <Terminal size={36} className="mb-2" style={{ color: primaryColor, animation: 'pulseGlow 4s infinite alternate' }} />
                     <h1 className="text-2xl font-[1000] uppercase tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-cyan-400 to-blue-500 text-center drop-shadow-md">
-                        BÚNKER INDUSTRIAL
+                        PANEL MAESTRO INDUSTRIAL
                     </h1>
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] mt-2 text-center text-cyan-400 flex items-center justify-center gap-1 opacity-80" style={{ textShadow: `0 0 10px ${hexToRgba(primaryColor, 0.5)}` }}>
                         PROVINCIA: {currentProvince.name} <span className="text-[12px]">{currentProvince.emoji}</span>
@@ -233,7 +229,10 @@ const EnterpriseMasterBoardPage: React.FC = () => {
 
             <div className="px-6 mt-8 space-y-6 relative z-10 pb-20 max-w-lg mx-auto">
                 
-                {/* SELECTORES DE LOCALIDADES ACTIVAS */}
+                {/* ════════════════════════════════════════════════════════ */}
+                {/* 🧬 ADN FRACTAL — SELECTORES DE LOCALIDAD                */}
+                {/* Respetamos la estructura del molde B2C                  */}
+                {/* ════════════════════════════════════════════════════════ */}
                 {filteredStaticTowns.length === 0 ? (
                     <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-2xl p-6 text-center animate-in fade-in duration-300">
                         <MapPin size={20} className="text-cyan-400 mx-auto mb-2 opacity-50" />
@@ -245,7 +244,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 animate-in fade-in slide-in-from-top-4 duration-1000">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
                         {filteredStaticTowns.map((town) => {
                             const isSelected = town.id === selectedTownId;
                             const Icon = town.icon;
@@ -253,10 +252,10 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                 <button 
                                     key={town.id}
                                     onClick={() => handleSelectTown(town.id)}
-                                    className={`py-5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-white/[0.02] border-white/10 opacity-60 hover:opacity-100 hover:border-cyan-500/30'}`}
+                                    className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100 hover:border-cyan-500/30'}`}
                                 >
-                                    <Icon size={20} className={isSelected ? town.iconClass : 'text-white/40'} />
-                                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${isSelected ? 'text-white' : 'text-white/40'}`}>
+                                    <Icon size={24} className={isSelected ? town.iconClass : 'text-white/40'} />
+                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isSelected ? 'text-white' : 'text-white/40'}`}>
                                         {town.label}
                                     </span>
                                 </button>
@@ -267,84 +266,92 @@ const EnterpriseMasterBoardPage: React.FC = () => {
 
                 {selectedTownId && (
                     <div className="flex flex-col gap-4">
-                        {/* 🛡️ ACCESO DIRECTO AL BÚNKER CENTRAL */}
+
+                        {/* ════════════════════════════════════════════════════════ */}
+                        {/* 🛡️ BÚNKER CENTRAL DEL DIRECTOR - WALY                  */}
+                        {/* (ADN Fractal: idéntico al molde B2C)                    */}
+                        {/* ════════════════════════════════════════════════════════ */}
                         <div 
                             role="button" tabIndex={0}
                             onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/bunker-waly`); }}
-                            className="glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group"
-                            style={{ borderColor: hexToRgba(secondaryColor, 0.5) }}
+                            className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(139,92,246,0.2)] relative overflow-hidden group"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
-                            <Zap size={18} className="text-blue-400 animate-pulse" />
-                            <span className="text-[12px] text-blue-200" style={{ textShadow: `0 0 10px ${hexToRgba(secondaryColor, 0.8)}` }}>BÚNKER CENTRAL B2C</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-violet-500/0 via-white/5 to-violet-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <Zap size={18} className="text-violet-400" />
+                            <span className="text-[13px] text-violet-300">BÚNKER CENTRAL DEL DIRECTOR - WALY</span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            {/* 🎨 DISEÑADOR DE INTERFAZ */}
-                            <div 
-                                role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/configuracion`); }} 
-                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
-                            >
-                                <Palette size={20} className="text-pink-400" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-center text-pink-200">SINFONÍA EDITOR</span>
-                                <span className="text-[7px] text-center text-white/40 uppercase tracking-widest leading-tight">Configuración Visual</span>
+                        {/* ════════════════════════════════════════════════════════ */}
+                        {/* 🎨 DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR             */}
+                        {/* (ADN Fractal: idéntico al molde B2C)                    */}
+                        {/* ════════════════════════════════════════════════════════ */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/configuracion`); }} 
+                            className="w-full glass-card-neon text-white p-6 rounded-3xl font-[1000] uppercase tracking-widest border transition-all flex flex-col items-center justify-center gap-2 cursor-pointer group hover:bg-zinc-800"
+                            style={{ borderColor: hexToRgba(zoneColor, 0.3) }}
+                        >
+                            <div className="flex items-center gap-3">
+                                <Palette size={20} style={{ color: zoneColor }} />
+                                <span className="text-[14px]">DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR</span>
                             </div>
-
-                            {/* 🏭 LA FÁBRICA */}
-                            <div 
-                                role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/fabrica`); }} 
-                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
-                            >
-                                <Factory size={20} className="text-emerald-400" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-center text-emerald-200">LA FÁBRICA</span>
-                                <span className="text-[7px] text-center text-white/40 uppercase tracking-widest leading-tight">Gestión Global</span>
-                            </div>
+                            <span className="text-[8px] opacity-40 uppercase tracking-[0.3em]">Control visual total · Colores · Temas · Identidad</span>
                         </div>
 
-                        {/* 🏭 NODO EMPRESARIAL B2B MAIN BUTTON */}
+                        {/* ════════════════════════════════════════════════════════ */}
+                        {/* 🏭 NODO EMPRESARIAL B2B                                */}
+                        {/* (ADN Fractal: idéntico al molde B2C)                    */}
+                        {/* ════════════════════════════════════════════════════════ */}
                         <div 
                             role="button" tabIndex={0}
                             onClick={() => { playNeonClick(); navigate(`/empresas`); }} 
-                            className="w-full glass-card-neon p-6 rounded-3xl font-[1000] uppercase tracking-widest shadow-[0_0_30px_rgba(6,182,212,0.15)] active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
-                            style={{ 
-                                background: `linear-gradient(145deg, ${hexToRgba(secondaryColor, 0.2)}, ${hexToRgba(primaryColor, 0.1)})`,
-                                borderColor: primaryColor
-                            }}
+                            className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.25)] border border-amber-500/40 hover:from-amber-600 hover:to-orange-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                            <div className="flex items-center gap-3 pointer-events-none">
-                                <Globe size={24} className="text-cyan-300" style={{ filter: `drop-shadow(0 0 10px ${primaryColor})` }} />
-                                <span className="text-[16px] text-white" style={{ textShadow: `0 0 15px ${primaryColor}` }}>NODO B2B MAESTRO</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-2 pointer-events-none">
+                                <Factory size={18} className="text-amber-200" />
+                                <span className="text-[14px]">🏭 NODO EMPRESARIAL B2B</span>
                             </div>
-                            <span className="text-[9px] text-cyan-200/80 uppercase tracking-[0.3em] pointer-events-none mt-1">Directorio · Mayoristas</span>
+                            <span className="text-[8px] text-amber-200/80 italic pointer-events-none">DIRECTORIO INDUSTRIAL · PROVEEDORES · MAYORISTAS</span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            {/* 🎨 EDITOR DE TEMA Y FONDO */}
-                            <div 
-                                role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(`/empresas/configuracion`); }} 
-                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
-                            >
-                                <Palette size={16} className="text-violet-400" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-center text-violet-200">Editor B2B</span>
+                        {/* ════════════════════════════════════════════════════════ */}
+                        {/* 🎨 EDITOR DE TEMA Y FONDO                              */}
+                        {/* (ADN Fractal: idéntico al molde B2C)                    */}
+                        {/* ════════════════════════════════════════════════════════ */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/tablero-maestro/configuracion`); }} 
+                            className="w-full glass-card-neon text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(168,85,247,0.2)] border border-purple-500/40 hover:from-purple-500 hover:to-pink-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-2 pointer-events-none">
+                                <Palette size={14} className="text-purple-200" />
+                                <span className="text-[13px]">🎨 EDITOR DE TEMA Y FONDO</span>
                             </div>
+                            <span className="text-[8px] text-purple-200/70 italic pointer-events-none">COLORES · ESTACIONES · BORDES · FONDO DE APP</span>
+                        </div>
 
-                            {/* 📢 MARKETING INTELIGENTE */}
-                            <div 
-                                role="button" tabIndex={0}
-                                onClick={() => { playNeonClick(); navigate(`/empresas/marketing-inteligente`); }} 
-                                className="glass-card-neon p-4 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer group active:scale-95"
-                            >
-                                <Megaphone size={16} className="text-blue-400" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-center text-blue-200">Marketing Bot</span>
+                        {/* ════════════════════════════════════════════════════════ */}
+                        {/* 📢 MARKETING INTELIGENTE                               */}
+                        {/* (ADN Fractal: idéntico al molde B2C)                    */}
+                        {/* ════════════════════════════════════════════════════════ */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/marketing-inteligente`); }} 
+                            className="w-full glass-card-neon text-white p-4 rounded-xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.2)] border border-cyan-500/40 hover:from-cyan-500 hover:to-blue-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 relative overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                            <div className="flex items-center gap-2 pointer-events-none">
+                                <Megaphone size={14} className="text-cyan-200" />
+                                <span className="text-[13px]">📢 MARKETING INTELIGENTE</span>
                             </div>
+                            <span className="text-[8px] text-cyan-200/70 italic pointer-events-none">CEREBRO DEL BOT · CAMPAÑAS · FIDELIZACIÓN</span>
                         </div>
 
                         {/* ═══════════════════════════════════════════ */}
                         {/* ⚡ TÉRMICAS DE GESTIÓN AUTÓNOMA (4 NODOS)  */}
+                        {/* ADN Fractal: idéntico al molde B2C         */}
                         {/* ═══════════════════════════════════════════ */}
                         <section className="mt-8">
                             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
@@ -409,13 +416,15 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             </div>
                         </section>
 
-                        {/* SISTEMAS INTERNOS */}
+                        {/* ═══════════════════════════════════════════ */}
+                        {/* 🔒 SISTEMAS INTERNOS                       */}
+                        {/* ADN Fractal: idéntico al molde B2C         */}
+                        {/* Solo: Reclutamiento, Embajador, Suscripción*/}
+                        {/* ═══════════════════════════════════════════ */}
                         <section className="mt-8">
-                            <div className="flex items-center justify-center gap-2 mb-6 opacity-60">
-                                <ShieldAlert size={14} className="text-red-400" />
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-red-400/80">Sistemas Internos</h2>
-                                <div className="h-[1px] flex-1 bg-gradient-to-r from-red-500/20 to-transparent ml-2" />
-                            </div>
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                                <Lock size={12} /> Sistemas Internos
+                            </h2>
                             
                             <div className="grid grid-cols-1 gap-3">
                                 {managementPages.map((page, idx) => (
@@ -423,27 +432,22 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                         key={idx}
                                         role="button" tabIndex={0}
                                         onClick={() => { playNeonClick(); navigate(page.path); }}
-                                        className="glass-card-neon p-4 rounded-2xl flex items-center justify-between group active:scale-95 transition-all cursor-pointer"
-                                        style={{ borderColor: 'rgba(239, 68, 68, 0.2)', backgroundColor: 'rgba(239, 68, 68, 0.02)' }}
+                                        className="glass-card-neon p-4 rounded-2xl flex items-center justify-between group hover:border-red-400/40 active:scale-95 transition-all cursor-pointer"
                                     >
                                         <div className="flex flex-col items-start text-left flex-1 pointer-events-none">
-                                            <h3 className="text-[11px] font-[1000] text-white/90 uppercase tracking-widest group-hover:text-cyan-300 transition-colors">
-                                                {page.title}
-                                            </h3>
-                                            <p className="text-[8px] text-white/40 uppercase tracking-[0.2em] mt-1 line-clamp-1">
-                                                {page.desc}
-                                            </p>
+                                            <h3 className="text-[12px] font-[1000] text-red-400 uppercase tracking-wider group-hover:text-red-300 transition-colors">{page.title}</h3>
+                                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-1">{page.desc}</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <div 
                                                 role="button" tabIndex={0}
                                                 onClick={(e) => { e.stopPropagation(); handleCopy(page.path); }}
-                                                className={`w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${copiedPath === page.path ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'}`}
+                                                className={`w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${copiedPath === page.path ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
                                             >
-                                                {copiedPath === page.path ? <Check size={12} /> : <Copy size={12} />}
+                                                {copiedPath === page.path ? <Check size={14} /> : <Copy size={14} />}
                                             </div>
-                                            <div className="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/30 text-cyan-400 group-hover:bg-cyan-500/30 transition-colors">
-                                                <ExternalLink size={12} />
+                                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30 text-red-400 group-hover:bg-red-500/30 transition-colors">
+                                                <ExternalLink size={14} />
                                             </div>
                                         </div>
                                     </div>
@@ -451,19 +455,17 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             </div>
                         </section>
 
-                        {/* 📡 ACCESO AL CENTRO DE TRANSMISIÓN */}
+                        {/* ═══════════════════════════════════════════ */}
+                        {/* 📡 ACCESO AL CENTRO DE TRANSMISIÓN         */}
+                        {/* ADN Fractal: idéntico al molde B2C         */}
+                        {/* ═══════════════════════════════════════════ */}
                         <button 
                             onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/director/transmision-en-vivo`); }}
-                            className="w-full mt-6 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all"
-                            style={{
-                                background: `linear-gradient(135deg, ${hexToRgba('#ef4444', 0.2)}, ${hexToRgba('#b91c1c', 0.3)})`,
-                                border: `1px solid ${hexToRgba('#ef4444', 0.4)}`,
-                                boxShadow: `0 0 25px ${hexToRgba('#ef4444', 0.15)}`
-                            }}
+                            className="w-full mt-6 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[12px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all glass-card-neon border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_30px_rgba(239,68,68,0.4)]"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-400/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
-                            <Megaphone size={18} className="text-red-400 animate-pulse" />
-                            <span style={{ textShadow: `0 0 10px ${hexToRgba('#ef4444', 0.8)}` }}>CENTRO DE TRANSMISIÓN EN VIVO</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                            <Megaphone size={20} className="drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+                            <span className="drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]">📡 Entrar al Centro de Transmisión en Vivo</span>
                         </button>
                     </div>
                 )}
@@ -475,7 +477,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                     SHOPDIGITAL NETWORKS © 2026
                 </p>
                 <p className="text-[7.5px] font-black text-blue-400/50 uppercase tracking-[0.25em] select-none">
-                    NODO INDUSTRIAL · BÚNKER DE CONTROL
+                    PANEL MAESTRO INDUSTRIAL · CONTROL B2B
                 </p>
             </footer>
         </div>

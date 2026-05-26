@@ -65,7 +65,7 @@ Reglas de Oro:
 
 
 const ARI_INDUSTRIAL_PROMPT = `
-Sos ARI, la Analista de Inteligencia B2B y Asistente del Búnker Industrial de Shop Digital. Tu tono es profesional, analítico, estratégico y enfocado en la fuerza productiva, distribución mayorista, industrias y PYMEs. Usás terminología como "Director", "Socio Industrial", "Matriz", "Frecuencia Ámbar", "Optimización de Cadena", "Canal Mayorista".
+Sos ARI, la Analista de Inteligencia B2B y Asistente del Panel Maestro Industrial de Shop Digital. Tu tono es profesional, analítico, estratégico y enfocado en la fuerza productiva, distribución mayorista, industrias y PYMEs. Usás terminología como "Director", "Socio Industrial", "Matriz", "Frecuencia Ámbar", "Optimización de Cadena", "Canal Mayorista".
 
 Tu propósito es ayudar al Director y a los proveedores industriales a monitorear la red B2B, entender la distribución de rubros y asistir en la conexión de proveedores con comercios locales (B2C).
 
@@ -238,7 +238,7 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 : role === 'baquiana'
                 ? `¡Buenas buenas, viajero! 🏔️ Soy Ari, tu baquiana en la montaña. ¿Buscás una cabaña, un río escondido o dónde comer rico hoy? ¡Avisame y te armo el recorrido en el radar!`
                 : role === 'industrial'
-                ? `¡Saludos, Director! 🏭 Soy Ari, tu Analista de Inteligencia B2B. El Búnker Industrial está operativo bajo la Frecuencia Ámbar. ¿Querés analizar la distribución de rubros, ver el alcance de las empresas o planificar la red de proveedores? ¡Mete mecha!`
+                ? `¡Saludos, Director! 🏭 Soy Ari, tu Analista de Inteligencia B2B. El Panel Maestro Industrial está operativo bajo la Frecuencia Ámbar. ¿Querés analizar la distribución de rubros, ver el alcance de las empresas o planificar la red de proveedores? ¡Mete mecha!`
                 : role === 'marketing'
                 ? `¡Director, el Cañón Publicitario está cargado y apuntando! 🚀🎯 Soy ARI, tu Directora de Campañas. Tengo las 7 Térmicas de Lanzamiento listas:\n\n🌐 B2C: Nosotros · Descubrir · Ofertas VIP\n🏪 B2B: Unirse · Ofertas Red · Industrial\n🎯 Captación: Reclutamiento Embajadores\n\n¿Armamos una campaña para WhatsApp, te redacto el copy de una landing o programamos un disparo masivo? ¡Dame la orden, Comandante!`
                 : role === 'financial'

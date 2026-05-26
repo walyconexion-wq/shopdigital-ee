@@ -214,7 +214,7 @@ export const RegionMasterPanelPage: React.FC = () => {
                     <span className="text-[13px] text-violet-300">Búnker Central · ARI</span>
                 </div>
 
-                {/* 🛡️ ACCESO DIRECTO AL BÚNKER INDUSTRIAL */}
+                {/* 🛡️ ACCESO DIRECTO AL PANEL MAESTRO INDUSTRIAL */}
                 <div 
                     role="button" tabIndex={0}
                     onClick={() => { 
@@ -225,7 +225,7 @@ export const RegionMasterPanelPage: React.FC = () => {
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-white/5 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     <Terminal size={18} className="text-cyan-400" />
-                    <span className="text-[13px] text-cyan-300">BÚNKER INDUSTRIAL (B2B)</span>
+                    <span className="text-[13px] text-cyan-300">PANEL MAESTRO INDUSTRIAL (B2B)</span>
                 </div>
             </div>
         </div>
