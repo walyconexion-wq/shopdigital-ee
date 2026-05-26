@@ -77,7 +77,7 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
 
             {/* Header Sticky */}
             <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-amber-500/20 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl flex items-center justify-between">
-                <button onClick={() => { playNeonClick(); navigate(`/empresas/control-maestro`); }} className="text-white/50 hover:text-white transition-colors">
+                <button onClick={() => { playNeonClick(); navigate(`/empresas/tablero-maestro`); }} className="text-white/50 hover:text-white transition-colors">
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center flex-1">

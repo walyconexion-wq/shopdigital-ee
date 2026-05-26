@@ -54,7 +54,6 @@ import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
 import EnterpriseDetailPage from './pages/EnterpriseDetailPage';
 import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
 import EnterpriseFormPage from './pages/EnterpriseFormPage';
-import EnterpriseMasterPanelPage from './pages/EnterpriseMasterPanelPage';
 import EnterpriseGlobalConfigPage from './pages/EnterpriseGlobalConfigPage';
 import EnterpriseMasterBoardPage from './pages/EnterpriseMasterBoardPage';
 import CreditsPosnetPage from './pages/CreditsPosnetPage';
@@ -292,7 +291,7 @@ const EnterpriseController: React.FC = () => {
         <Routes>
             <Route path="/" element={<Layout allShops={allShops} globalConfig={enterpriseGlobalConfig} />}>
                 <Route index element={<EnterpriseHomePage globalConfig={enterpriseGlobalConfig} />} />
-                <Route path="control-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterPanelPage /></ProtectedRoute>} />
+                <Route path="control-maestro" element={<Navigate to="/empresas/tablero-maestro" replace />} />
                 <Route path="tablero-maestro" element={<ProtectedRoute roles={['admin']}><EnterpriseMasterBoardPage /></ProtectedRoute>} />
                 <Route path="marketing-inteligente" element={<ProtectedRoute roles={['admin']}><MarketingPanelPage /></ProtectedRoute>} />
                 <Route path="inscripcion" element={<EnterpriseSubscriptionPage />} />

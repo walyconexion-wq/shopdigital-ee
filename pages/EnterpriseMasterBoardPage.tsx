@@ -197,7 +197,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             >
                 <div 
                     role="button" tabIndex={0} 
-                    onClick={() => { playNeonClick(); navigate(`/empresas/control-maestro?provincia=${provinciaParam}`); }} 
+                    onClick={() => { playNeonClick(); navigate(`/empresas?provincia=${provinciaParam}`); }} 
                     className="absolute top-10 left-6 hover:opacity-70 cursor-pointer transition-transform hover:scale-110 active:scale-95" 
                     style={{ color: primaryColor }}
                 >

@@ -30,7 +30,7 @@ const MarketingPanelPage: React.FC = () => {
     
     // Determine context based on URL: /empresas/marketing-inteligente or /:townId/marketing-inteligente
     const isEnterprisePath = window.location.pathname.startsWith('/empresas');
-    const basePath = isEnterprisePath ? '/empresas/control-maestro' : `/${params.townId}/tablero-maestro`;
+    const basePath = isEnterprisePath ? '/empresas/tablero-maestro' : `/${params.townId}/tablero-maestro`;
     const headerTitle = isEnterprisePath ? 'Marketing Industrial' : 'Marketing Zonal';
     const townId = params.townId || 'esteban-echeverria';
 

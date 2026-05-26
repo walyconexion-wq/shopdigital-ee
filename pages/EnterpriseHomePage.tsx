@@ -50,7 +50,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     const handleBunkerClick = () => {
         playNeonClick();
         const next = bunkerClicks + 1;
-        if (next >= 5) { navigate(`/empresas/control-maestro?provincia=${selectedProvince}`); setBunkerClicks(0); }
+        if (next >= 5) { navigate(`/empresas/tablero-maestro?provincia=${selectedProvince}`); setBunkerClicks(0); }
         else setBunkerClicks(next);
     };
 

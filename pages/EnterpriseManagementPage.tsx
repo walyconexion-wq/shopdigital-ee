@@ -134,7 +134,7 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                     <div role="button" tabIndex={0} onClick={() => {
                         playNeonClick();
                         if (provinciaParam) {
-                            navigate(`/empresas/control-maestro?provincia=${provinciaParam}`);
+                            navigate(`/empresas/tablero-maestro?provincia=${provinciaParam}`);
                         } else {
                             navigate(`/${townId}/tablero-maestro`);
                         }
