@@ -8,12 +8,42 @@ import ArgentinaMap from '../components/ArgentinaMap';
 import Logo from '../components/Logo';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
+const STATIC_REGIONS: Region[] = [
+    { 
+        id: 'esteban-echeverria', 
+        name: 'Esteban Echeverría', 
+        type: 'zona', 
+        towns: ['esteban-echeverria'], 
+        color: '#22d3ee', 
+        icon: 'building', 
+        isActive: true 
+    },
+    { 
+        id: 'ezeiza', 
+        name: 'Ezeiza', 
+        type: 'zona', 
+        towns: ['ezeiza'], 
+        color: '#22d3ee', 
+        icon: 'building', 
+        isActive: true 
+    },
+    { 
+        id: 'traslasierra', 
+        name: 'Traslasierra', 
+        type: 'region', 
+        towns: ['mina-clavero', 'nono', 'cura-brochero', 'panaholma', 'villa-dolores', 'villa-las-rosas', 'san-javier', 'las-rabonas'], 
+        color: '#0ea5e9', 
+        icon: 'mountain', 
+        isActive: true 
+    }
+];
+
 const GlobalHomePage: React.FC = () => {
     const navigate = useNavigate();
-    const [regions, setRegions] = useState<Region[]>([]);
+    const [regions, setRegions] = useState<Region[]>(STATIC_REGIONS);
     const [filter, setFilter] = useState<'all' | 'region' | 'zona'>('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
 
     // Mock Shop para que ARI funcione en la Home Global
@@ -46,7 +76,15 @@ const GlobalHomePage: React.FC = () => {
 
     useEffect(() => {
         const unsubscribe = suscribirseARegiones((data) => {
-            setRegions(data);
+            if (data && data.length > 0) {
+                const dynamicRegions = data.filter(
+                    r => r.id !== 'traslasierra' && 
+                         r.id !== 'ezeiza' && 
+                         r.id !== 'esteban-echeverria' && 
+                         r.id !== 'buenos-aires-sur'
+                );
+                setRegions([...STATIC_REGIONS, ...dynamicRegions]);
+            }
             setLoading(false);
         });
         return () => unsubscribe();
@@ -64,7 +102,7 @@ const GlobalHomePage: React.FC = () => {
     const handleRegionClick = (region: Region) => {
         playNeonClick();
         if (region.id === 'traslasierra') {
-            navigate('/mina-clavero/home');
+            navigate('/region/traslasierra');
         } else if (region.towns.length === 1) {
             navigate(`/${region.towns[0]}/home`);
         } else {
@@ -73,7 +111,7 @@ const GlobalHomePage: React.FC = () => {
     };
 
     const mapNodes = [
-        { id: 'buenos-aires-sur', label: 'Buenos Aires', x: 190, y: 260, isActive: regions.some(r => r.id === 'buenos-aires-sur') },
+        { id: 'buenos-aires-sur', label: 'Buenos Aires', x: 190, y: 260, isActive: regions.some(r => r.id === 'buenos-aires-sur' || r.id === 'ezeiza' || r.id === 'esteban-echeverria') },
         { id: 'traslasierra', label: 'Traslasierra', x: 135, y: 180, isActive: regions.some(r => r.id === 'traslasierra') },
         { id: 'calamuchita', label: 'Calamuchita', x: 140, y: 195, isActive: regions.some(r => r.id === 'calamuchita') },
         { id: 'punilla', label: 'Punilla', x: 138, y: 170, isActive: regions.some(r => r.id === 'punilla') },
@@ -267,8 +305,13 @@ const GlobalHomePage: React.FC = () => {
                             <ArgentinaMap
                                 nodes={mapNodes}
                                 onNodeClick={(id) => {
-                                    const region = regions.find(r => r.id === id);
-                                    if (region) handleRegionClick(region);
+                                    if (id === 'buenos-aires-sur') {
+                                        const region = regions.find(r => r.id === 'buenos-aires-sur' || r.id === 'esteban-echeverria');
+                                        if (region) handleRegionClick(region);
+                                    } else {
+                                        const region = regions.find(r => r.id === id);
+                                        if (region) handleRegionClick(region);
+                                    }
                                 }}
                                 accentColor="#00FBFF"
                             />
