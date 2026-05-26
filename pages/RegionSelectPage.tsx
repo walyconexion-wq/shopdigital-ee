@@ -69,10 +69,10 @@ const RegionSelectPage: React.FC = () => {
             const townData = towns.find(t => t.id === townId);
             return {
                 id: townId,
-                name: townData?.name || townId.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
-                localities: townData?.localities || [],
-                exists: !!townData,
-                shopCount: 0 // Could be enriched with real data
+                name: townData?.name || townId.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+                localities: townData?.localities && townData.localities.length > 0 ? townData.localities : ['Centro'],
+                exists: true, // Siempre habilitado para permitir el ruteo y configuración fractal
+                shopCount: 0
             };
         })
         : [];
