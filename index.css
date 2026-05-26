@@ -317,3 +317,470 @@
   background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
   background-attachment: fixed;
 }
+
+/* ═══════════════════════════════════════════ */
+/* ☀️ SISTEMA DE TEMAS INTELIGENTE (DÍA/NOCHE) */
+/* ═══════════════════════════════════════════ */
+
+:root {
+  --app-bg: #000000;
+  --app-text: #ffffff;
+  --app-text-muted: rgba(255, 255, 255, 0.4);
+  --card-bg: rgba(255, 255, 255, 0.02);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --neon-opacity: 1;
+}
+
+.day-mode {
+  --app-bg: #f8fafc;
+  --app-text: #0f172a;
+  --app-text-muted: #64748b;
+  --card-bg: #ffffff;
+  --card-border: #cbd5e1;
+  --card-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.08), 0 8px 16px -6px rgba(59, 130, 246, 0.08);
+  --neon-opacity: 0.05;
+}
+
+/* Overrides para el Modo Día */
+.day-mode.w-full {
+  background-color: var(--app-bg) !important;
+}
+
+/* Encabezado */
+.day-mode .glass-header {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.08) !important;
+}
+
+.day-mode .glass-header h1 span,
+.day-mode .glass-header p {
+  color: #0f172a !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.day-mode .glass-header svg {
+  color: #1e40af !important;
+  filter: none !important;
+}
+
+.day-mode .text-shadow-premium {
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.day-mode h2.text-white\/90 {
+  color: #334155 !important;
+}
+
+/* Botón 3D de Rubro/Categoría */
+.day-mode .glass-button-3d {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1.2px solid rgba(59, 130, 246, 0.3) !important;
+  border-bottom-width: 4.5px !important;
+  box-shadow: 
+    0 8px 16px rgba(59, 130, 246, 0.06), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  color: #0f172a !important;
+}
+
+.day-mode .glass-button-3d span {
+  color: #1e293b !important;
+  font-weight: 800 !important;
+}
+
+.day-mode .glass-button-3d svg {
+  color: #2563eb !important;
+}
+
+.day-mode .glass-button-3d:hover {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+  border-color: rgba(37, 99, 235, 0.5) !important;
+  box-shadow: 
+    0 12px 20px rgba(37, 99, 235, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.day-mode .glass-button-3d:active {
+  transform: translateY(3.5px) scale(0.97) translateZ(0) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 0 4px 6px -2px rgba(37, 99, 235, 0.08) !important;
+  background: #dbeafe !important;
+}
+
+/* Rubro Seleccionado / Activo */
+.day-mode .btn-neon-active {
+  border: 1.5px solid #2563eb !important;
+  border-bottom-width: 4.5px !important;
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%) !important;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.2) !important;
+  animation: none !important;
+}
+
+.day-mode .btn-neon-active span {
+  color: #1e40af !important;
+}
+
+.day-mode .btn-neon-active svg {
+  color: #2563eb !important;
+}
+
+/* Tarjeta General 3D */
+.day-mode .glass-card-3d {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.05), 0 5px 15px rgba(15, 23, 42, 0.03) !important;
+}
+
+.day-mode .glass-card-3d:hover {
+  background: #ffffff !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Botón de Acción (Suscribir / Compartir) */
+.day-mode .glass-action-btn {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 
+    0 8px 16px -4px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.day-mode .glass-action-btn span {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+}
+
+.day-mode .glass-action-btn svg {
+  color: #2563eb !important;
+}
+
+.day-mode .glass-action-btn:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 12px 20px -4px rgba(15, 23, 42, 0.12) !important;
+}
+
+.day-mode .glass-action-btn:active {
+  transform: scale(0.97) translateY(2px) !important;
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Muted & Texts */
+.day-mode .text-white\/20 { color: #cbd5e1 !important; }
+.day-mode .text-white\/30 { color: #94a3b8 !important; }
+.day-mode .text-white\/40 { color: #64748b !important; }
+.day-mode .text-white\/70 { color: #475569 !important; }
+.day-mode .text-white\/80 { color: #334155 !important; }
+.day-mode .text-white\/90 { color: #1e293b !important; }
+.day-mode .text-white { color: #0f172a !important; }
+.day-mode footer p.text-white { color: #475569 !important; }
+.day-mode footer button.text-white { color: #475569 !important; }
+.day-mode footer button.text-white:hover { color: #2563eb !important; }
+
+/* Botones Específicos */
+.day-mode .btn-wa {
+  background: #eafaf1 !important;
+  border-color: #2ecc71 !important;
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.08) !important;
+}
+
+.day-mode .btn-wa span {
+  color: #1e7e34 !important;
+}
+
+.day-mode .btn-wa svg {
+  color: #2ecc71 !important;
+}
+
+.day-mode .btn-wa:hover {
+  background: #d4f5e2 !important;
+}
+
+.day-mode .btn-ig {
+  background: #fdf2f8 !important;
+  border-color: #db2777 !important;
+  box-shadow: 0 4px 10px rgba(219, 39, 119, 0.08) !important;
+}
+
+.day-mode .btn-ig span {
+  color: #9d174d !important;
+}
+
+.day-mode .btn-ig svg {
+  color: #db2777 !important;
+}
+
+.day-mode .btn-ig:hover {
+  background: #fce7f3 !important;
+}
+
+.day-mode .btn-premium {
+  background: #ffffff !important;
+  border-color: #64748b !important;
+  box-shadow: 0 4px 10px rgba(100, 116, 139, 0.08) !important;
+}
+
+.day-mode .btn-premium span {
+  color: #0f172a !important;
+}
+
+.day-mode .btn-premium svg {
+  color: #64748b !important;
+}
+
+.day-mode .btn-premium:hover {
+  background: #f8fafc !important;
+}
+
+/* Desactivar fondos tecnológicos */
+.day-mode .tech-mesh-bg,
+.day-mode .tech-dots-bg,
+.day-mode .tech-mesh-yellow,
+.day-mode .tech-dots-yellow,
+.day-mode .tech-mesh-cyan,
+.day-mode .tech-dots-cyan,
+.day-mode .tech-mesh-amber,
+.day-mode .tech-dots-amber {
+  background-image: none !important;
+  animation: none !important;
+}
+
+/* Ocultar o reducir opacidad de brillos neón flotantes en Home */
+.day-mode [class*="blur-3xl"] {
+  opacity: 0.15 !important;
+}
+
+/* ARI Asistente Adaptaciones */
+.day-mode [class*="bg-[#020810]/95"],
+.day-mode .bg-\[\#020810\]\/95 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08) !important;
+}
+
+.day-mode [class*="bg-black/40"] {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+.day-mode [class*="border-white/10"] {
+  border-color: #e2e8f0 !important;
+}
+
+.day-mode [class*="border-white/5"] {
+  border-color: #f1f5f9 !important;
+}
+
+.day-mode [class*="bg-white/5"] {
+  background-color: rgba(241, 245, 249, 0.5) !important;
+}
+
+.day-mode [class*="bg-white/[0.03]"] {
+  background-color: rgba(248, 250, 252, 0.5) !important;
+}
+
+.day-mode [class*="text-emerald-400"] {
+  color: #059669 !important;
+}
+
+.day-mode [class*="border-emerald-500/20"] {
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.day-mode .bg-zinc-900\/80 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+.day-mode .neon-sign-title {
+  color: #0f172a !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+  animation: none !important;
+}
+
+.day-mode .neon-sign-glow {
+  display: none !important;
+}
+
+/* CategoryPage dynamic locality buttons & cards */
+.day-mode button[class*="bg-violet-600/50"],
+.day-mode button[class*="bg-cyan-600/50"],
+.day-mode button[class*="bg-rose-600/50"],
+.day-mode button[class*="bg-green-600/50"],
+.day-mode button[class*="bg-amber-600/50"] {
+  background-color: #eff6ff !important;
+  border-color: #2563eb !important;
+  color: #1e40af !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15) !important;
+}
+
+.day-mode button[class*="bg-violet-600/30"],
+.day-mode button[class*="bg-cyan-600/30"],
+.day-mode button[class*="bg-rose-600/30"],
+.day-mode button[class*="bg-green-600/30"],
+.day-mode button[class*="bg-amber-600/30"] {
+  background-color: #eff6ff !important;
+  border: 1px solid #3b82f6 !important;
+  border-bottom-width: 4px !important;
+  color: #1e40af !important;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1) !important;
+}
+
+.day-mode button[class*="bg-violet-600/30"]:hover,
+.day-mode button[class*="bg-cyan-600/30"]:hover,
+.day-mode button[class*="bg-rose-600/30"]:hover,
+.day-mode button[class*="bg-green-600/30"]:hover,
+.day-mode button[class*="bg-amber-600/30"]:hover {
+  background-color: #dbeafe !important;
+  border-color: #2563eb !important;
+}
+
+.day-mode button[class*="bg-violet-600/30"]:active,
+.day-mode button[class*="bg-cyan-600/30"]:active,
+.day-mode button[class*="bg-rose-600/30"]:active,
+.day-mode button[class*="bg-green-600/30"]:active,
+.day-mode button[class*="bg-amber-600/30"]:active {
+  background-color: #bfdbfe !important;
+  border-bottom-width: 1px !important;
+}
+
+.day-mode .card-neon-violet,
+.day-mode .card-neon-green,
+.day-mode .card-neon-red,
+.day-mode .card-neon-cyan,
+.day-mode .card-neon-amber {
+  background: #ffffff !important;
+  border: 1.2px solid #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.05) !important;
+}
+
+.day-mode .card-neon-violet:hover,
+.day-mode .card-neon-green:hover,
+.day-mode .card-neon-red:hover,
+.day-mode .card-neon-cyan:hover,
+.day-mode .card-neon-amber:hover {
+  border-color: #94a3b8 !important;
+  box-shadow: 0 15px 30px rgba(59, 130, 246, 0.08) !important;
+}
+
+.day-mode button[class*="bg-orange-500/90"],
+.day-mode button[class*="bg-green-500/90"],
+.day-mode button[class*="bg-rose-500/90"] {
+  box-shadow: none !important;
+}
+
+.day-mode .bg-gradient-to-br.from-yellow-300.via-yellow-600.to-yellow-900 {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] {
+  background: #ffffff !important;
+  border: 1.5px solid #f59e0b !important;
+}
+
+.day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] p {
+  color: #78350f !important;
+}
+
+.day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] h3 {
+  background: none !important;
+  color: #d97706 !important;
+}
+
+.day-mode .bg-yellow-500\/10.border-yellow-500\/30 {
+  background-color: #fef3c7 !important;
+  border-color: #f59e0b !important;
+}
+
+.day-mode .bg-yellow-500\/10.border-yellow-500\/30 span {
+  color: #d97706 !important;
+}
+
+/* PedidoYa y otros elementos en ShopDetailPage */
+.day-mode button[class*="bg-[#EA044E]/10"] {
+  background-color: #fff1f2 !important;
+  border-color: #f43f5e !important;
+  box-shadow: 0 4px 10px rgba(244, 63, 94, 0.1) !important;
+}
+
+.day-mode button[class*="bg-[#EA044E]/10"] span {
+  color: #e11d48 !important;
+}
+
+.day-mode button[class*="bg-[#EA044E]/10"]:hover {
+  background-color: #ffe4e6 !important;
+}
+
+.day-mode .btn-neon-red {
+  background-color: #fff1f2 !important;
+  border-color: #fda4af !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+.day-mode .btn-neon-red span {
+  color: #e11d48 !important;
+}
+
+.day-mode .btn-neon-green {
+  background-color: #f0fdf4 !important;
+  border-color: #86efac !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+.day-mode .btn-neon-green span,
+.day-mode .btn-neon-green message-circle {
+  color: #16a34a !important;
+}
+
+.day-mode .btn-neon-blue {
+  background-color: #f0f9ff !important;
+  border-color: #7dd3fc !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+.day-mode .btn-neon-blue span {
+  color: #0284c7 !important;
+}
+
+.day-mode .offer-card-neon {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.05) !important;
+  animation: none !important;
+}
+
+.day-mode .offer-card-neon:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 15px 30px rgba(59, 130, 246, 0.1) !important;
+}
+
+.day-mode .offer-price-tag {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  box-shadow: none !important;
+}
+
+.day-mode .offer-price-tag span {
+  color: #1e40af !important;
+}
+
+.day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900 {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+
+.day-mode .bg-gradient-to-r.from-emerald-900\/40.to-green-900\/40 {
+  background: #22c55e !important;
+  border-color: #16a34a !important;
+}
+
+.day-mode .bg-gradient-to-r.from-emerald-900\/40.to-green-900\/40 span {
+  color: #ffffff !important;
+}
+
+.day-mode .bg-gradient-to-r.from-emerald-900\/40.to-green-900\/40 svg {
+  color: #ffffff !important;
+}

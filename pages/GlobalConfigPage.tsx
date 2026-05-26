@@ -24,6 +24,7 @@ const GlobalConfigPage: React.FC = () => {
         mainTitle: "ShopDigital",
         mainSubtitle: "Tu guía de ofertas locales",
         theme: 'default',
+        themeMode: 'auto',
         primaryColor: '#22d3ee',
         townName: derivedTownName,  // Dinámico desde el townId de la URL
         categories: []
@@ -36,7 +37,10 @@ const GlobalConfigPage: React.FC = () => {
     useEffect(() => {
         const unsubscribe = subscribeToGlobalConfig((updatedConfig) => {
             if (updatedConfig) {
-                setConfig(updatedConfig);
+                setConfig({
+                    themeMode: 'auto',
+                    ...updatedConfig
+                });
             }
         }, townId);
         return () => unsubscribe();
@@ -56,6 +60,7 @@ const GlobalConfigPage: React.FC = () => {
             // Limpiar categorías: solo datos serializables (sin React elements ni funciones)
             const cleanConfig = {
                 ...config,
+                themeMode: config.themeMode || 'auto',
                 categories: (config.categories || []).map((c: any) => ({
                     id: c.id,
                     slug: c.slug,
@@ -216,6 +221,39 @@ const GlobalConfigPage: React.FC = () => {
                                 )}
                             </button>
                         ))}
+                    </div>
+                </section>
+
+                {/* Section: Modo Día/Noche */}
+                <section className="space-y-4">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <Layout size={14} /> Esquema de Color Inteligente (Día/Noche)
+                    </h2>
+                    <div className="bg-zinc-900/40 p-5 rounded-[2rem] border border-white/5 space-y-4">
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                { id: 'auto', name: 'Automático', icon: '🔄', desc: 'Día 8AM a 8PM' },
+                                { id: 'light', name: 'Modo Día', icon: '☀️', desc: 'Claro fijo' },
+                                { id: 'dark', name: 'Modo Noche', icon: '🌙', desc: 'Cyberpunk fijo' },
+                            ].map(mode => (
+                                <button
+                                    key={mode.id}
+                                    onClick={() => { playNeonClick(); setConfig({ ...config, themeMode: mode.id }); }}
+                                    className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1.5 ${
+                                        (config.themeMode || 'auto') === mode.id 
+                                        ? 'bg-white/10 border-white/40 ring-2 ring-white/10' 
+                                        : 'bg-zinc-900/40 border-white/5 hover:border-white/20'
+                                    }`}
+                                >
+                                    <span className="text-xl">{mode.icon}</span>
+                                    <span className="text-[8px] font-black text-white/70 uppercase tracking-wider">{mode.name}</span>
+                                    <span className="text-[6px] text-white/30 uppercase tracking-wider mt-0.5">{mode.desc}</span>
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-[8px] text-white/30 uppercase tracking-widest text-center pt-2 border-t border-white/5">
+                            Controla si la app cambia de piel según la hora local de tus clientes o si se congela en un modo.
+                        </p>
                     </div>
                 </section>
 

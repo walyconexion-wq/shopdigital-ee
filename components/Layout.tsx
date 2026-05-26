@@ -12,6 +12,28 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     const location = useLocation();
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
     const bgColor = globalConfig?.bgColor || '#000000';
+    const themeMode = globalConfig?.themeMode || 'auto';
+    
+    // Helper to check if it is currently day mode
+    const checkIsDayMode = (mode: string) => {
+        if (mode === 'light') return true;
+        if (mode === 'dark') return false;
+        const hour = new Date().getHours();
+        return hour >= 8 && hour < 20;
+    };
+
+    const [isDayMode, setIsDayMode] = React.useState(() => checkIsDayMode(themeMode));
+
+    React.useEffect(() => {
+        setIsDayMode(checkIsDayMode(themeMode));
+        
+        if (themeMode === 'auto') {
+            const interval = setInterval(() => {
+                setIsDayMode(checkIsDayMode(themeMode));
+            }, 60000);
+            return () => clearInterval(interval);
+        }
+    }, [themeMode]);
     
     // Ocultar ARI en páginas de edición y paneles que tienen su propio ARI (como Embajador)
     const isEditPage = location.pathname.includes('/editar') || location.pathname.includes('/mi-catalogo') || location.pathname.includes('/embajador');
@@ -71,19 +93,24 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
 
     return (
         <div 
-            className="w-full max-w-md mx-auto h-screen flex flex-col overflow-hidden relative shadow-2xl"
-            style={{ ...containerStyle, backgroundColor: bgColor }}
+            className={`w-full max-w-md mx-auto h-screen flex flex-col overflow-hidden relative shadow-2xl ${isDayMode ? 'day-mode' : ''}`}
+            style={{ 
+                ...containerStyle, 
+                backgroundColor: isDayMode ? '#f8fafc' : bgColor 
+            }}
         >
             {/* Background Effect */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 <div
                     className="absolute inset-0"
                     style={{
-                        background: `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.08)} 0%, transparent 60%), linear-gradient(180deg, ${bgColor} 0%, ${bgColor} 50%, ${bgColor} 100%)`,
+                        background: isDayMode 
+                            ? `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.04)} 0%, transparent 65%), linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)`
+                            : `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.08)} 0%, transparent 60%), linear-gradient(180deg, ${bgColor} 0%, ${bgColor} 50%, ${bgColor} 100%)`,
                     }}
                 />
                 {/* Fondo Tecnológico Dinámico */}
-                {techStyle && (
+                {techStyle && !isDayMode && (
                     <>
                         <div className="absolute inset-0" style={{ backgroundImage: techStyle.texture, opacity: techStyle.opacity }} />
                         {techStyle.grid && (
@@ -104,7 +131,15 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
             </main>
 
             {/* ARI - Asistente Baquiana Global (visible en todas las zonas) */}
-            {!isEditPage && <AriMerchantAssistant shop={ariContextShop} role="baquiana" />}
+            {!isEditPage && (
+                <AriMerchantAssistant 
+                    shop={ariContextShop} 
+                    role="baquiana" 
+                    townId={themeMode}
+                    isDayMode={isDayMode}
+                    globalConfig={globalConfig}
+                />
+            )}
         </div>
     );
 };

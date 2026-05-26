@@ -28,6 +28,8 @@ interface AriMerchantAssistantProps {
     shopStats?: { total: number; active: number; suspended: number; };
     clientStats?: { total: number; active: number; suspended: number; };
     enterpriseStats?: { total: number; national: number; regional: number; active: number; };
+    isDayMode?: boolean;
+    globalConfig?: any;
 }
 
 export const ARI_AMBASSADOR_FIELD_PROMPT = `Sos ARI, la asistente táctica de los Embajadores de Shop Digital.
@@ -186,7 +188,7 @@ Regla de Oro: El activo más valioso es la atención del cliente. Cada VIP es un
 `;
 
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode = false, globalConfig }) => {
     const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
@@ -384,6 +386,8 @@ MÉTRICAS DE RED VIP (en vivo):
 ${baseContext}
 
 DATA ACTUAL DEL CONTEXTO:
+- Modo Visual de la App: ${isDayMode ? 'Modo Día (Interfaz clara con bordes azules)' : 'Modo Noche (Interfaz ciberpunk oscura con neón)'}
+- Configuración de Tema (themeMode): ${globalConfig?.themeMode || 'auto'}
 - Local/Sección: "${shop.name}"
 ${role === 'industrial' ? industrialContext : role === 'marketing' ? marketingContext : role === 'financial' ? `
 MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
