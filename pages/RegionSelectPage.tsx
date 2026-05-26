@@ -5,6 +5,31 @@ import { obtenerRegionPorId, subscribeToTowns } from '../firebase';
 import { Region } from '../types';
 import { playNeonClick } from '../utils/audio';
 
+const STATIC_REGIONS: Record<string, Region> = {
+    'traslasierra': {
+        id: 'traslasierra',
+        name: 'Valle de Traslasierra',
+        provinceId: 'cordoba',
+        type: 'region',
+        towns: ['mina-clavero', 'nono', 'cura-brochero', 'panaholma', 'villa-dolores', 'villa-las-rosas', 'san-javier', 'las-rabonas'],
+        color: '#0ea5e9',
+        icon: 'mountain',
+        isActive: true,
+        createdAt: new Date().toISOString()
+    },
+    'buenos-aires-sur': {
+        id: 'buenos-aires-sur',
+        name: 'Buenos Aires Sur',
+        provinceId: 'buenos-aires',
+        type: 'zona',
+        towns: ['esteban-echeverria', 'ezeiza', 'lomas-de-zamora'],
+        color: '#22d3ee',
+        icon: 'building',
+        isActive: true,
+        createdAt: new Date().toISOString()
+    }
+};
+
 const RegionSelectPage: React.FC = () => {
     const { regionId } = useParams<{ regionId: string }>();
     const navigate = useNavigate();
@@ -14,9 +39,19 @@ const RegionSelectPage: React.FC = () => {
 
     useEffect(() => {
         if (!regionId) return;
+        
+        // Cargar instantáneamente la región estática como fallback
+        if (STATIC_REGIONS[regionId]) {
+            setRegion(STATIC_REGIONS[regionId]);
+        }
+
         obtenerRegionPorId(regionId).then(r => {
-            setRegion(r);
-            if (!r) setLoading(false);
+            if (r) {
+                setRegion(r);
+            }
+            if (!r && !STATIC_REGIONS[regionId]) {
+                setLoading(false);
+            }
         });
     }, [regionId]);
 

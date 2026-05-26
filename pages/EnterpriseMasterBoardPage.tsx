@@ -251,11 +251,16 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             return (
                                 <button 
                                     key={town.id}
-                                    onClick={() => handleSelectTown(town.id)}
-                                    className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100 hover:border-cyan-500/30'}`}
+                                    onClick={() => {
+                                        playNeonClick();
+                                        if (town.id === 'ezeiza') navigate('/ezeiza/home');
+                                        else if (town.id === 'esteban-echeverria') navigate('/esteban-echeverria/home');
+                                        else navigate('/region/traslasierra');
+                                    }}
+                                    className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-zinc-900/50 border-white/10 opacity-75 hover:opacity-100 hover:border-cyan-500/35'}`}
                                 >
-                                    <Icon size={24} className={isSelected ? town.iconClass : 'text-white/40'} />
-                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isSelected ? 'text-white' : 'text-white/40'}`}>
+                                    <Icon size={24} className={isSelected ? town.iconClass : 'text-white/60 group-hover:text-white transition-colors'} />
+                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isSelected ? 'text-white' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>
                                         {town.label}
                                     </span>
                                 </button>
