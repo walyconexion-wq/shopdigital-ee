@@ -564,21 +564,21 @@ const MasterPanelPage: React.FC = () => {
                 {/* SELECTORES DE ADN ZONAL 🧬 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/ezeiza/tablero-maestro'); }}
+                        onClick={() => { playNeonClick(); navigate('/ezeiza/home'); }}
                         className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${townId === 'ezeiza' ? 'bg-cyan-500/20 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.2)]' : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
                     >
                         <Globe size={24} className={townId === 'ezeiza' ? 'text-cyan-400' : 'text-white/40'} />
                         <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'ezeiza' ? 'text-white' : 'text-white/20'}`}>Zona Ezeiza</span>
                     </button>
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/esteban-echeverria/tablero-maestro'); }}
+                        onClick={() => { playNeonClick(); navigate('/esteban-echeverria/home'); }}
                         className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${townId === 'esteban-echeverria' ? 'bg-violet-500/20 border-violet-500 shadow-[0_0_30px_rgba(139,92,246,0.2)]' : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
                     >
                         <Lock size={24} className={townId === 'esteban-echeverria' ? 'text-violet-400' : 'text-white/40'} />
                         <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'esteban-echeverria' ? 'text-white' : 'text-white/20'}`}>Zona E. Echeverría</span>
                     </button>
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/region/traslasierra/tablero-maestro'); }}
+                        onClick={() => { playNeonClick(); navigate('/region/traslasierra'); }}
                         className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${isTraslasierra ? 'bg-emerald-500/20 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 'bg-zinc-900/50 border-white/5 opacity-40 hover:opacity-100'}`}
                     >
                         <MapPin size={24} className={isTraslasierra ? 'text-emerald-400' : 'text-white/40'} />

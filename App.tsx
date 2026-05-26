@@ -64,7 +64,6 @@ import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
 import GlobalHomePage from './pages/GlobalHomePage';
 import RegionSelectPage from './pages/RegionSelectPage';
 import RegionSeedPage from './pages/RegionSeedPage';
-import RegionMasterPanelPage from './pages/RegionMasterPanelPage';
 import { TRASLASIERRA_REGION } from './data/regionalTemplates/traslasierraConfig';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
@@ -319,7 +318,6 @@ const App: React.FC = () => {
 
                 {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
                 <Route path="/region/:regionId" element={<RegionSelectPage />} />
-                <Route path="/region/:regionId/tablero-maestro" element={<ProtectedRoute roles={['admin']}><RegionMasterPanelPage /></ProtectedRoute>} />
                 
                 {/* 🏔️ PORTAL IMPERIAL: TRASLASIERRA */}
                 <Route path="/traslasierra" element={<Navigate to="/region/traslasierra" replace />} />
