@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { 
     Radar, Search, AlertCircle, CheckCircle2, 
     ArrowRight, MapPin, Star, Phone, RefreshCw,
-    Scan, Ghost, Zap
+    Scan, Ghost, Zap, Download
 } from 'lucide-react';
 import { scanZone, RadarResult } from '../services/radar';
 import { playNeonClick } from '../utils/audio';
 import { generateGhostPitch } from '../services/gemini';
 import { X, Copy, MessageSquare, Send } from 'lucide-react';
+import { guardarRelevamiento } from '../firebase';
 
 interface RadarScannerProps {
     townId: string;
@@ -31,6 +32,7 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
     const [activeGhost, setActiveGhost] = useState<RadarResult | null>(null);
     const [persuasionScript, setPersuasionScript] = useState('');
     const [isPersuading, setIsPersuading] = useState(false);
+    const [importedIds, setImportedIds] = useState<string[]>([]);
 
     const handleStartScan = async () => {
         playNeonClick();
@@ -77,6 +79,41 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
             setPersuasionScript("Error al conectar con Ari para la redacción.");
         } finally {
             setIsPersuading(false);
+        }
+    };
+
+    const handleImportProspect = async (biz: RadarResult) => {
+        playNeonClick();
+        try {
+            const leadData = {
+                id: `lead-gmaps-${biz.id}-${townId}`,
+                name: biz.name,
+                category: biz.category,
+                address: biz.address,
+                zone: biz.address.split(',')[1]?.trim() || 'Centro',
+                contactName: 'Dueño / Encargado',
+                phone: biz.phone || '',
+                socialNetworks: '',
+                digitalDiagnosis: {
+                    missing: 'Ficha en ShopDigital (Importado de Google Maps)',
+                    interestLevel: 'medium' as const,
+                    observations: `Local importado satelitalmente con calificación de ${biz.rating || 'N/A'} estrellas en Google.`
+                },
+                ambassadorName: 'ARI Radar',
+                date: new Date().toISOString().split('T')[0],
+                status: 'pending' as const,
+                source: 'google_maps',
+                isSeed: true,
+                latitude: biz.latitude || 0,
+                longitude: biz.longitude || 0
+            };
+            
+            await guardarRelevamiento(leadData, townId);
+            setImportedIds(prev => [...prev, biz.id]);
+            alert(`✅ "${biz.name}" fue importado exitosamente al Radar de Prospectos de la Agenda.`);
+        } catch (error) {
+            console.error("Error importando prospecto:", error);
+            alert("No se pudo importar el prospecto.");
         }
     };
 
@@ -222,13 +259,28 @@ export const RadarScanner: React.FC<RadarScannerProps> = ({ townId, themeColor =
                                         </div>
                                     </div>
                                     {biz.isGhost && (
-                                        <button 
-                                            onClick={() => handlePersuade(biz)}
-                                            className="p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 transition-all active:scale-90 group" 
-                                            title="Persuadir (Redactar Guion)"
-                                        >
-                                            <Zap size={16} className="group-hover:scale-125 group-hover:fill-red-400/20 transition-all" />
-                                        </button>
+                                        <div className="flex gap-2">
+                                            {importedIds.includes(biz.id) ? (
+                                                <span className="px-3 py-2 bg-green-500/20 border border-green-500/30 text-green-400 text-[9px] font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-1">
+                                                    <CheckCircle2 size={12} /> Importado
+                                                </span>
+                                            ) : (
+                                                <button 
+                                                    onClick={() => handleImportProspect(biz)}
+                                                    className="p-3 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-xl text-cyan-400 transition-all active:scale-90 group" 
+                                                    title="Importar como Prospecto"
+                                                >
+                                                    <Download size={16} className="group-hover:scale-125 transition-all" />
+                                                </button>
+                                            )}
+                                            <button 
+                                                onClick={() => handlePersuade(biz)}
+                                                className="p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 transition-all active:scale-95 group" 
+                                                title="Persuadir (Redactar Guion)"
+                                            >
+                                                <Zap size={16} className="group-hover:scale-125 group-hover:fill-red-400/20 transition-all" />
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             ))}

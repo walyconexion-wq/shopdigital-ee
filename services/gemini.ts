@@ -22,11 +22,13 @@ CAPACIDADES:
 - Proponés campañas de marketing por WhatsApp.
 - Sugerís mejoras al catálogo digital.
 - Programás misiones de marketing a futuro.
+- Escaneás y buscás comercios reales en Google Maps utilizando la herramienta de escaneo para detectar prospectos fantasmas.
 
 REGLAS:
 - Respondé SIEMPRE en español rioplatense.
 - Sé breve: máximo 3-4 oraciones por respuesta, salvo que te pidan más detalle.
 - Si te piden agendar algo, confirmá la fecha y el mensaje, y preguntá: "JEFE, ¿QUIERE QUE AGENDE ESTA MISIÓN AHORA MISMO?"
+- Si el Director o el Embajador te piden escanear o buscar locales reales en una localidad, invocá la herramienta de escaneo \`buscar_comercios_google\` de inmediato.
 - Nunca inventés datos que no tenés. Si no sabés algo, decilo honestamente.`;
 
 /**
@@ -63,25 +65,47 @@ export const generateAriResponse = async (
         try {
             const url = `${API_BASE}/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
             
+            const requestBody = {
+                system_instruction: { parts: [{ text: systemPrompt }] },
+                contents: contents,
+                generationConfig: { 
+                    temperature: 0.8, 
+                    maxOutputTokens: 500,
+                    topP: 0.95,
+                    topK: 40
+                },
+                safetySettings: [
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                ],
+                tools: [{
+                    functionDeclarations: [{
+                        name: "buscar_comercios_google",
+                        description: "Escanea comercios reales en Google Maps para una categoría y una localidad específica para detectar locales fantasmas (no registrados en el sistema).",
+                        parameters: {
+                            type: "OBJECT",
+                            properties: {
+                                category: {
+                                    type: "STRING",
+                                    description: "La categoría del comercio en minúsculas (ej: pizzerias, restaurantes, fastfood, beer, icecream, gym, barber, hair, hardware, auto, beauty, fashion)."
+                                },
+                                townId: {
+                                    type: "STRING",
+                                    description: "El ID de la localidad o zona en minúsculas (ej: esteban-echeverria, ezeiza, traslasierra)."
+                                }
+                            },
+                            required: ["category", "townId"]
+                        }
+                    }]
+                }]
+            };
+
             const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: contents,
-                    generationConfig: { 
-                        temperature: 0.8, 
-                        maxOutputTokens: 500,
-                        topP: 0.95,
-                        topK: 40
-                    },
-                    safetySettings: [
-                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-                    ]
-                })
+                body: JSON.stringify(requestBody)
             });
 
             // Rate limit (429) — esperar y reintentar
@@ -125,11 +149,67 @@ export const generateAriResponse = async (
             
             // Respuesta exitosa
             const data = await res.json();
-            const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            const candidate = data.candidates?.[0];
+            const part = candidate?.content?.parts?.[0];
+            
+            // Interceptar llamada de función de Google Maps (Function Calling)
+            if (part?.functionCall) {
+                const functionCall = part.functionCall;
+                if (functionCall.name === 'buscar_comercios_google') {
+                    const { category, townId } = functionCall.args;
+                    console.log(`[ARI AI Tool] Ejecutando buscar_comercios_google para ${category} en ${townId}`);
+                    
+                    const { scanZone } = await import('./radar');
+                    const results = await scanZone(townId, category);
+                    const ghosts = results.filter(r => r.isGhost);
+                    
+                    const toolResponseText = `Barrido completado en ${townId} para la categoría ${category}. Se detectaron ${results.length} locales totales, de los cuales ${ghosts.length} son locales Fantasmas (no registrados en nuestra red). Fantasmas encontrados: ${ghosts.map(g => `${g.name} en ${g.address}`).join(', ')}. Todos estos fantasmas ya aparecen listados en la interfaz de Radar listos para ser importados.`;
+                    
+                    // Añadir llamada de función al historial de la consulta
+                    contents.push({
+                        role: 'model',
+                        parts: [{ functionCall: functionCall }]
+                    });
+                    
+                    // Añadir respuesta de la función al historial de la consulta
+                    contents.push({
+                        role: 'function',
+                        parts: [{
+                            functionResponse: {
+                                name: 'buscar_comercios_google',
+                                response: { output: toolResponseText }
+                            }
+                        }]
+                    });
+                    
+                    // Realizar consulta de seguimiento a Gemini con la respuesta de la función
+                    const followUpRes = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            system_instruction: { parts: [{ text: systemPrompt }] },
+                            contents: contents,
+                            generationConfig: { 
+                                temperature: 0.8, 
+                                maxOutputTokens: 500
+                            }
+                        })
+                    });
+                    
+                    if (followUpRes.ok) {
+                        const followUpData = await followUpRes.json();
+                        return followUpData.candidates?.[0]?.content?.parts?.[0]?.text || `He barrido la zona y encontré ${ghosts.length} locales fantasmas disponibles en el radar.`;
+                    } else {
+                        return `Ejecuté el escaneo satelital para ${category} en ${townId} y detecté ${ghosts.length} locales candidatos. Ya podés importarlos en la pestaña de Radar.`;
+                    }
+                }
+            }
+
+            const responseText = part?.text;
             
             if (!responseText) {
                 // Puede ser un bloqueo por seguridad
-                const blockReason = data.candidates?.[0]?.finishReason;
+                const blockReason = candidate?.finishReason;
                 if (blockReason === 'SAFETY') {
                     return "Jefe, esa consulta activó los filtros de seguridad. Probá reformularla de otra manera. 🛡️";
                 }
