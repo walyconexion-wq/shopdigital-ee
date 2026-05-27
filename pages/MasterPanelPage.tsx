@@ -8,7 +8,8 @@ import { playNeonClick } from '../utils/audio';
 import { 
     guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, 
     saveCategoriesConfig, migrarDatosLegados, subscribeToGlobalConfig,
-    guardarBroadcast, obtenerBroadcasts, eliminarBroadcast, toggleBroadcast, Broadcast
+    guardarBroadcast, obtenerBroadcasts, eliminarBroadcast, toggleBroadcast, Broadcast,
+    guardarCliente
 } from '../firebase';
 import { Offer } from '../types';
 import { DobermanBadge } from '../components/DobermanBadge';
@@ -25,6 +26,8 @@ const MasterPanelPage: React.FC = () => {
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const [isMigrating, setIsMigrating] = useState(false);
     const [migrationResult, setMigrationResult] = useState<any>(null);
+    const [isSeeding, setIsSeeding] = useState(false);
+    const [hasSeeded, setHasSeeded] = useState(false);
     // Modo Camaleón: leer config de zona para identidad visual del panel
     const [zoneConfig, setZoneConfig] = useState<any>({ primaryColor: '#22d3ee', townName: '' });
 
@@ -102,14 +105,15 @@ const MasterPanelPage: React.FC = () => {
         }
     };
 
-    const injectTestShops = async () => {
-        // ─── Confirm con nombre de zona ───────────────────────────────────
+    const seedMuestrasHiperrealistas = async () => {
         const confirmed = window.confirm(
-            `⚠️ INYECCIÓN DIRIGIDA\n\n¿Estás seguro de inyectar datos maestros en la zona:\n\n"${zoneName}"\n\nSolo se escribirá en /comercios con townId="${townId}". No se tocará ninguna otra zona.`
+            `🌱 SIEMBRA HIPERREALISTA DE MUESTRAS (V2)\n\n¿Estás seguro de sembrar comercios, clientes e industrias de muestra en la zona:\n\n"${zoneName}"?\n\nEsto creará un comercio por cada rubro activo en cada localidad de la zona. Se inyectará con la marca "isSeed: true" y el estado de incubación.`
         );
         if (!confirmed) return;
 
+        setIsSeeding(true);
         try {
+            playNeonClick();
             // ─── Leer localidades reales de la zona activa ────────────────
             const { getTowns } = await import('../firebase');
             const towns = await getTowns();
@@ -117,311 +121,184 @@ const MasterPanelPage: React.FC = () => {
             const baseLocs: string[] = (thisTown && Array.isArray((thisTown as any).localities) && (thisTown as any).localities.length > 0)
                 ? (thisTown as any).localities
                 : ['Centro'];
-            // Expandir a 6 slots (ciclar si hay menos)
-            const locs = Array.from({ length: 6 }, (_, i) => baseLocs[i % baseLocs.length]);
 
-            const shops: any[] = [
-                {
-                    id: `restaurante-maestro-1-${townId}`,
-                    slug: `restaurante-maestro-1-${townId}`,
-                    name: "Macondo",
-                    category: "restaurantes",
-                    zone: locs[0],
-                    address: locs[0],
-                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.333639195138!2d-58.50213166152844!3d-34.81334119999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1669b1d6949%3A0xfa8f1cd3207ae1a1!2sMacondo!5e1!3m2!1ses-419!2sar!4v1774709334693!5m2!1ses-419!2sar",
-                    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
-                    bannerImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=400&fit=crop",
-                    description: "El mejor ambiente y la mejor comida para disfrutar en familia.",
-                    specialty: "Restaurante",
-                    ownerName: "Admin",
-                    phone: "5491100000000",
-                    rating: 5.0,
-                    isActive: true, // Auto-activate since user is admin!
-                    offers: [
-                        { id: `promo-macondo-1-${townId}`, name: "Menú Ejecutivo Base", price: 6500, image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop" },
-                        { id: `promo-macondo-2-${townId}`, name: "Bife de Chorizo Premium", price: 18500, image: "https://images.unsplash.com/photo-1558030006-450675393462?w=400&h=300&fit=crop" },
-                        { id: `promo-macondo-3-${townId}`, name: "Ravioles Caseros", price: 9800, image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop" },
-                        { id: `promo-macondo-4-${townId}`, name: "Cerveza Artesanal Pinta", price: 3200, image: "https://images.unsplash.com/photo-1566633641473-ebbeaef6c7f4?w=400&h=300&fit=crop" }
-                    ],
-                    mapSheetUrl: '',
-                    instagram: '',
-                    facebook: '',
-                    tiktok: ''
-                },
-                {
-                    id: `restaurante-maestro-2-${townId}`,
-                    slug: `restaurante-maestro-2-${townId}`,
-                    name: "Parrilla La Carlina",
-                    category: "restaurantes",
-                    zone: locs[1],
-                    address: locs[1],
-                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31330.36092038479!2d-58.50213168184711!3d-34.813269452061654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd180c730bb3d%3A0x2e5c48a961c30e14!2sParrilla%20-%20Restaurante%20La%20Carlina!5e1!3m2!1ses-419!2sar!4v1774709403317!5m2!1ses-419!2sar",
-                    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop",
-                    bannerImage: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=400&fit=crop",
-                    specialty: "Parrilla",
-                    ownerName: "Admin",
-                    phone: "5491100000000",
-                    rating: 5.0,
-                    isActive: true, // Auto-activate
-                    offers: [
-                        { id: `promo-carlina-1-${townId}`, name: "Parrillada V.I.P (2 Pers)", price: 21000, image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=400&h=300&fit=crop" },
-                        { id: `promo-carlina-2-${townId}`, name: "Matambre a la Pizza", price: 14500, image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop" },
-                        { id: `promo-carlina-3-${townId}`, name: "Bondiola Braseada", price: 16000, image: "https://images.unsplash.com/photo-1628268909376-e8c5dfdc3130?w=400&h=300&fit=crop" },
-                        { id: `promo-carlina-4-${townId}`, name: "Flan Mixto Casero", price: 4500, image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=400&h=300&fit=crop" }
-                    ],
-                    mapSheetUrl: '',
-                    instagram: '',
-                    facebook: '',
-                    tiktok: ''
-                },
-                {
-                    id: `restaurante-maestro-3-${townId}`,
-                    slug: `restaurante-maestro-3-${townId}`,
-                    name: "El Bodegón De Canning",
-                    category: "restaurantes",
-                    zone: locs[2],
-                    address: locs[2],
-                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31315.31353599826!2d-58.53928356152844!3d-34.85282359999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd7ed0d8beecd%3A0x539414616272bd17!2sEl%20Bodegon%20De%20Canning!5e1!3m2!1ses-419!2sar!4v1774709476315!5m2!1ses-419!2sar",
-                    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop",
-                    bannerImage: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=400&fit=crop",
-                    specialty: "Bodegón",
-                    ownerName: "Admin",
-                    phone: "5491100000000",
-                    rating: 5.0,
-                    isActive: true, // Auto-activate
-                    offers: [
-                        {
-                            id: "promo-bodegon-1",
-                            name: "Milanesa Napolitana XXL",
-                            price: 9500,
-                            image: "https://images.unsplash.com/photo-1599921841143-819065a55cc6?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-bodegon-2",
-                            name: "Sorrentinos de Jamón y Queso",
-                            price: 8500,
-                            image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-bodegon-3",
-                            name: "Cazuela de Mariscos",
-                            price: 22000,
-                            image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-bodegon-4",
-                            name: "Tabla Picada Bodegón (3 Pers)",
-                            price: 24000,
-                            image: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400&h=300&fit=crop"
-                        }
-                    ],
-                    mapSheetUrl: '',
-                    instagram: '',
-                    facebook: '',
-                    tiktok: ''
-                },
-                {
-                    id: `fastfood-maestro-1-${townId}`,
-                    slug: `fastfood-maestro-1-${townId}`,
-                    name: "Mr Tasty",
-                    category: "fastfood",
-                    zone: locs[3 % locs.length],
-                    address: locs[3 % locs.length],
-                    mapUrl: "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d22814.031406935814!2d-58.4754765!3d-34.7977637!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd14b53c1b6f3%3A0x91ef24a15ef7cb98!2sMr%20Tasty%20Monte%20Grande!5e1!3m2!1ses-419!2sar!4v1774740877510!5m2!1ses-419!2sar",
-                    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop",
-                    bannerImage: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=400&fit=crop",
-                    specialty: "Hamburguesas & Fast Food",
-                    ownerName: "Admin",
-                    phone: "5491100000000",
-                    rating: 4.8,
-                    isActive: true, // Auto-activate
-                    offers: [
-                        {
-                            id: "promo-tasty-1",
-                            name: "Combo Tasty Doble Cheddar",
-                            price: 7500,
-                            image: "https://images.unsplash.com/photo-1586816001966-79b736744398?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-tasty-2",
-                            name: "Papas Fritas con Bacon",
-                            price: 4500,
-                            image: "https://images.unsplash.com/photo-1576107248873-1d0b3a31c19b?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-tasty-3",
-                            name: "Nuggets de Pollo x10",
-                            price: 5200,
-                            image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-tasty-4",
-                            name: "Milkshake Vainilla & Oreo",
-                            price: 3800,
-                            image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop"
-                        }
-                    ],
-                    mapSheetUrl: '',
-                    instagram: '',
-                    facebook: '',
-                    tiktok: ''
-                },
-                {
-                    id: `fastfood-maestro-2-${townId}`,
-                    slug: `fastfood-maestro-2-${townId}`,
-                    name: "Burger Mat",
-                    category: "fastfood",
-                    zone: locs[4 % locs.length],
-                    address: locs[4 % locs.length],
-                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22815.061778173727!2d-58.48918582682876!3d-34.794039999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd39bdc8c9ff3%3A0x118244d60db4d933!2sBURGUER%20MAT!5e1!3m2!1ses-419!2sar!4v1774741379189!5m2!1ses-419!2sar",
-                    image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=400&h=300&fit=crop",
-                    bannerImage: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&h=400&fit=crop",
-                    specialty: "Hamburguesas Smash",
-                    ownerName: "Admin",
-                    phone: "5491100000000",
-                    rating: 4.9,
-                    isActive: true, // Auto-activate
-                    offers: [
-                        {
-                            id: "promo-burgermat-1",
-                            name: "Smash Burger Doble",
-                            price: 6500,
-                            image: "https://images.unsplash.com/photo-1594212691516-436f5efa9a4d?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-burgermat-2",
-                            name: "Hamburguesa BBQ Crispy",
-                            price: 7200,
-                            image: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-burgermat-3",
-                            name: "Super Pancho con Papas",
-                            price: 3500,
-                            image: "https://images.unsplash.com/photo-1585848206001-f0932c0d83ad?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-burgermat-4",
-                            name: "Aros de Cebolla Rebozados",
-                            price: 3200,
-                            image: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=400&h=300&fit=crop"
-                        }
-                    ],
-                    mapSheetUrl: '',
-                    instagram: '',
-                    facebook: '',
-                    tiktok: ''
-                },
-                {
-                    id: `fastfood-maestro-3-${townId}`,
-                    slug: `fastfood-maestro-3-${townId}`,
-                    name: "Sabores Express",
-                    category: "fastfood",
-                    zone: locs[5 % locs.length],
-                    address: locs[5 % locs.length],
-                    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22803.99859432698!2d-58.52188422682876!3d-34.834003499999994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd100487efa8b%3A0x33c68573928f7921!2sSabores%20Express%20EL%20JAGUEL!5e1!3m2!1ses-419!2sar!4v1774741501606!5m2!1ses-419!2sar",
-                    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop",
-                    bannerImage: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&h=400&fit=crop",
-                    specialty: "Pizzas & Empanadas",
-                    ownerName: "Admin",
-                    phone: "5491100000000",
-                    rating: 4.6,
-                    isActive: true, // Auto-activate
-                    offers: [
-                        {
-                            id: "promo-sabores-1",
-                            name: "Promoción: 2 Pizzas Muzzarella",
-                            price: 11000,
-                            image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-sabores-2",
-                            name: "Docena de Empanadas Premium",
-                            price: 8500,
-                            image: "https://images.unsplash.com/photo-1627447470659-1e3df6a165b4?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-sabores-3",
-                            name: "Pizza Especial Jamón y Morrones",
-                            price: 7500,
-                            image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop"
-                        },
-                        {
-                            id: "promo-sabores-4",
-                            name: "Media Docena Emp. Carne Cortada",
-                            price: 4500,
-                            image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&h=300&fit=crop"
-                        }
-                    ],
-                    mapSheetUrl: '',
-                    instagram: '',
-                    facebook: '',
-                    tiktok: ''
+            // ─── Definir rubros sembrables (24 rubros) ────────────────────
+            const seedCategoriesData: Record<string, { name: string; names: string[]; img: string; offerName: string; price: number }> = {
+                pizzerias: { name: "Pizzería", names: ["Don Carlos", "El Tano", "Napolitana"], img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500", offerName: "Pizza Grande Especial", price: 6500 },
+                restaurantes: { name: "Bodegón", names: ["Lo de Charly", "Don Miguel", "El Boliche"], img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500", offerName: "Milanesa Completa con Fritas", price: 8500 },
+                fastfood: { name: "Burger Club", names: ["Doble Queso", "La Estación", "Fast Bite"], img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500", offerName: "Combo Hamburguesa Clásica", price: 5400 },
+                beer: { name: "Cervecería", names: ["Temple", "Growler Garage", "Refugio"], img: "https://images.unsplash.com/photo-1532635241-17e820add50f?w=500", offerName: "Pinta de Artesanal + Papas", price: 4200 },
+                icecream: { name: "Heladería", names: ["Freddo", "Cremolatti", "Vía Cosenza"], img: "https://images.unsplash.com/photo-1567206563066-0480d07addb6?w=500", offerName: "1 Kilo de Helado Premium", price: 9500 },
+                gastro: { name: "Rotisería", names: ["La Abuela", "Sabores Caseros", "Viandas Fit"], img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500", offerName: "Pollo al Horno con Papas", price: 7200 },
+                markets: { name: "Mercado", names: ["El Sol", "Las Acacias", "Almacén Central"], img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500", offerName: "Bolson de Verduras de Estación", price: 4800 },
+                fashion: { name: "Boutique", names: ["Elegance", "Milán Style", "Urbano Look"], img: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500", offerName: "Remera Algodón Estampada", price: 12000 },
+                tech: { name: "Waly Tech", names: ["Ciber Conexión", "Matriz Celulares", "Tecno Sur"], img: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=500", offerName: "Cargador Rápido Tipo C", price: 8900 },
+                home: { name: "Deco Hogar", names: ["Muebles del Sur", "Bazar Express", "Luz y Diseño"], img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=500", offerName: "Juego de Sábanas 2 Plazas", price: 18500 },
+                barber: { name: "Barbería", names: ["The King", "Corte Táctico", "Barber Style"], img: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=500", offerName: "Corte de Cabello + Perfilado", price: 4500 },
+                hair: { name: "Peluquería", names: ["Estela Unisex", "Glamour Salón", "Coiffeur Claudio"], img: "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=500", offerName: "Lavado y Nutrición Intensa", price: 6500 },
+                gym: { name: "Gimnasio", names: ["Iron Gym", "Fuerza y Salud", "Crossfit Box"], img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500", offerName: "Pase Libre Mensual", price: 15000 },
+                hardware: { name: "Ferretería", names: ["El Tornillo", "Bulonera Central", "Industrial Sur"], img: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500", offerName: "Caja de Herramientas Completa", price: 35000 },
+                pets: { name: "Veterinaria", names: ["San Roque", "Mascotas Felices", "Pet Shop"], img: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=500", offerName: "Alimento Perro Premium 15kg", price: 28000 },
+                tattoo: { name: "Neon Art", names: ["Tattoo Studio", "Tinta Roja", "Skin Art"], img: "https://images.unsplash.com/photo-1590247813693-5541d1c609fd?w=500", offerName: "Sesión de Tatuaje de 2 Horas", price: 40000 },
+                beauty: { name: "Estética", names: ["Bella Donna", "Lotus Centro", "Spa Relajación"], img: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500", offerName: "Limpieza de Cutis Profunda", price: 8000 },
+                inmo: { name: "Inmobiliaria", names: ["Santamarina", "Propiedades Sur", "Matriz Prop"], img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500", offerName: "Tasación de Propiedad Sin Cargo", price: 0 },
+                auto: { name: "Lubricentro", names: ["Silva Express", "Repuestos MG", "Taller Mecánico"], img: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=500", offerName: "Cambio de Filtro y Aceite", price: 22000 },
+                gifts: { name: "Regalería", names: ["Con Amor", "Sorpresas y Más", "Gifts Shop"], img: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500", offerName: "Peluche de Muestra + Tarjeta", price: 7500 },
+                finance: { name: "CrediSur", names: ["Finanzas Express", "Créditos Central", "Socio Financiero"], img: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=500", offerName: "Asesoramiento Financiero", price: 0 },
+                servicios: { name: "Estudio", names: ["Pérez Contable", "Asociados Abogados", "PC Soporte"], img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500", offerName: "Consulta Inicial Profesional", price: 5000 },
+                automotormotos: { name: "Motos", names: ["Dos Ruedas", "El Rayo", "Motos Central"], img: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500", offerName: "Service Completo de Moto", price: 16000 },
+                farmacias: { name: "Farmacia", names: ["Central", "Del Pueblo", "Social Sur"], img: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500", offerName: "Medidor de Presión Digital", price: 14500 }
+            };
+
+            // Mapas específicos de Esteban Echeverría para conservar fidelidad original
+            const EE_MAPS: Record<string, string> = {
+                "monte-grande": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3274.6547638367746!2d-58.468205423450914!3d-34.82728286950269!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1625fe9f8b9%3A0xe54ef864fb8c1d56!2sMonte%20Grande%2C%20Provincia%20de%20Buenos%20Aires!5e0!3m2!1ses!4far!4v1716800000000!5m2!1ses!4far",
+                "luis-guillon": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3275.29548325692!2d-58.4552485!3d-34.8112345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1a23fe9f8b9%3A0xe54ef864fb8c1d56!2sLuis%20Guill%C3%B3n%2C%20Provincia%20de%20Buenos%20Aires!5e0!3m2!1ses!4far!4v1716800000000!5m2!1ses!4far",
+                "el-jaguel": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3273.829548325692!2d-58.4852485!3d-34.8452345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1c23fe9f8b9%3A0xe54ef864fb8c1d56!2sEl%20Jag%C3%BCel%2C%20Provincia%20de%20Buenos%20Aires!5e0!3m2!1ses!4far!4v1716800000000!5m2!1ses!4far"
+            };
+
+            const EZEIZA_MAPS: Record<string, string> = {
+                "ezeiza": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3271.8679183!2d-58.52554!3d-34.85124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1d0efb!2sEzeiza!5e0",
+                "la-union": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3271!2d-58.55!3d-34.86!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1",
+                "tristan-suarez": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3270!2d-58.57!3d-34.88!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1"
+            };
+
+            let totalComercios = 0;
+
+            for (const [catKey, catVal] of Object.entries(seedCategoriesData)) {
+                for (let i = 0; i < baseLocs.length; i++) {
+                    const locName = baseLocs[i];
+                    const locSlug = locName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+                    
+                    const businessName = `${catVal.name} ${catVal.names[i % catVal.names.length]}`;
+                    const id = `shop-sample-${catKey}-${locSlug}-${townId}`;
+                    const slug = `sample-${catKey}-${locSlug}-${townId}`;
+
+                    let mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(businessName + ", " + locName + ", Argentina")}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+                    if (townId === 'esteban-echeverria' && EE_MAPS[locSlug]) {
+                        mapUrl = EE_MAPS[locSlug];
+                    } else if (townId === 'ezeiza' && EZEIZA_MAPS[locSlug]) {
+                        mapUrl = EZEIZA_MAPS[locSlug];
+                    }
+
+                    const shopData = {
+                        id,
+                        slug,
+                        name: businessName,
+                        category: catKey,
+                        specialty: `Especialistas en ${catVal.name.toLowerCase()} de primer nivel para toda la comunidad de ${locName}.`,
+                        entityType: 'merchant',
+                        zone: locName,
+                        address: `Calle Ficticia ${100 + i * 15}, ${locName}, Argentina`,
+                        phone: "1152668273",
+                        ownerName: `Propietario ${catVal.names[i % catVal.names.length]}`,
+                        image: catVal.img,
+                        bannerImage: catVal.img,
+                        description: `Te damos la bienvenida a ${businessName}. Ofrecemos una experiencia excelente en ${catVal.name.toLowerCase()} con atención personalizada, los mejores insumos del mercado y beneficios exclusivos para socios VIP de la Red ShopDigital. Visitanos y conocé nuestras propuestas.`,
+                        mapUrl: mapUrl,
+                        website: `https://shopdigital.tech/${slug}`,
+                        instagram: `https://instagram.com/${slug}`,
+                        facebook: `https://facebook.com/${slug}`,
+                        tiktok: "",
+                        rating: parseFloat((4.2 + Math.random() * 0.7).toFixed(1)),
+                        isActive: true,
+                        townId: townId,
+                        verified: true,
+                        visits: Math.floor(20 + Math.random() * 80),
+                        subscribers: Math.floor(5 + Math.random() * 30),
+                        schedule: 'Lun-Sáb 9:00 - 20:00 · Dom Cerrado',
+                        isSeed: true,
+                        status: 'incubacion',
+                        offers: [
+                            {
+                                id: `offer-sample-${catKey}-${locSlug}-1-${townId}`,
+                                name: catVal.offerName,
+                                price: catVal.price,
+                                image: catVal.img,
+                                description: `Descuento exclusivo de demostración. Presentá tu credencial VIP y obtené este beneficio.`
+                            }
+                        ]
+                    };
+
+                    await guardarComercio(shopData, townId);
+                    totalComercios++;
                 }
-            ];
-            
-            const b2bOffers: Offer[] = [
+            }
+
+            // 2. Inyectar Cliente VIP Cero
+            const clientZero = {
+                id: `cli-socio-cero-${townId}`,
+                name: "Juan Pérez",
+                email: `juan.perez.${townId}@test.com`,
+                vipCode: "0001",
+                townId: townId,
+                status: "active",
+                createdAt: new Date().toISOString(),
+                vipStatus: "active",
+                role: "client-vip",
+                balance: 1000,
+                isSeed: true
+            };
+            await guardarCliente(clientZero, townId);
+
+            // 3. Inyectar Industrias B2B (Muestras adaptables)
+            const b2bLoc1 = baseLocs[0] || 'Centro';
+            const b2bLoc2 = baseLocs[1] || b2bLoc1;
+
+            const B2B_INDUSTRIES = [
                 {
-                    id: `b2b-1-${townId}`,
-                    target: 'B2B',
-                    title: "20% OFF Cenas Comerciales",
-                    description: `Descuento en cenas para eventos de empresas locales de ${zoneName}.`,
-                    price: "A convenir",
-                    discountLabel: "20% OFF",
-                    image: "https://images.unsplash.com/photo-1544025162-81111421ab79?w=800&h=600&fit=crop",
-                    merchantName: "Macondo",
-                    merchantZone: locs[0],
-                    category: "restaurantes",
-                    validFrom: new Date().toISOString().split('T')[0],
-                    validUntil: "2026-12-31",
+                    id: `ent-bebidas-${townId}-sample`,
+                    slug: `bebidas-${townId}-sample`,
+                    name: `Distribuidora de Bebidas ${zoneName} S.A.`,
+                    category: 'ent-alimentos',
+                    specialty: 'Distribución mayorista de bebidas nacionales e importadas. Abastecimiento de restaurantes, cervecerías y comercios.',
+                    entityType: 'enterprise',
+                    reach: 'regional',
+                    zone: b2bLoc1,
+                    address: `Av. Principal 1200, ${b2bLoc1}, Argentina`,
+                    phone: '1158291032',
+                    image: 'https://images.unsplash.com/photo-1527960656366-ee2a5e98f661?w=500',
+                    bannerImage: 'https://images.unsplash.com/photo-1527960656366-ee2a5e98f661?w=500',
+                    description: 'Distribuidora mayorista dedicada al abastecimiento de bebidas alcohólicas y analcohólicas en toda la zona. Precios directos y entregas programadas.',
                     isActive: true,
-                    createdAt: new Date().toISOString()
+                    townId: townId,
+                    offers: [],
+                    isSeed: true,
+                    status: 'incubacion'
                 },
                 {
-                    id: `b2b-2-${townId}`,
-                    target: 'B2B',
-                    title: "Parrillada Corporativa VIP",
-                    description: "Bebidas liberadas contratando mesa para más de 10 personas.",
-                    price: "$21,000 / persona",
-                    discountLabel: "Bebidas Libre",
-                    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop",
-                    merchantName: "Parrilla La Carlina",
-                    merchantZone: locs[1],
-                    category: "restaurantes",
-                    validFrom: new Date().toISOString().split('T')[0],
-                    validUntil: "2026-12-31",
+                    id: `ent-panificadora-${townId}-sample`,
+                    slug: `panificadora-${townId}-sample`,
+                    name: `Panificadora Industrial ${b2bLoc2}`,
+                    category: 'ent-alimentos',
+                    specialty: 'Elaboración industrial de pan lactal, pan de hamburguesas y panchos para locales gastronómicos y mercados.',
+                    entityType: 'enterprise',
+                    reach: 'regional',
+                    zone: b2bLoc2,
+                    address: `Ruta Nacional Km 23.5, ${b2bLoc2}, Argentina`,
+                    phone: '1149204921',
+                    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500',
+                    bannerImage: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500',
+                    description: 'Fábrica e insumos de panadería para todo el canal gastronómico. Despacho diario con flota propia.',
                     isActive: true,
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: `b2b-3-${townId}`,
-                    target: 'B2B',
-                    title: "Viandas para Personal",
-                    description: `Precios mayoristas en viandas diarias para empresas de la red ShopDigital ${zoneName}.`,
-                    price: "$6,500 / un.",
-                    discountLabel: "Mayoreo",
-                    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop",
-                    merchantName: "El Bodegón De Canning",
-                    merchantZone: locs[2],
-                    category: "restaurantes",
-                    validFrom: new Date().toISOString().split('T')[0],
-                    validUntil: "2026-12-31",
-                    isActive: true,
-                    createdAt: new Date().toISOString()
+                    townId: townId,
+                    offers: [],
+                    isSeed: true,
+                    status: 'incubacion'
                 }
             ];
 
-            alert(`🛡️ INICIO DE INYECCIÓN DIRIGIDA → Zona: ${zoneName} (${townId})`);
-            for (const shop of shops) {
-                await guardarComercio(shop, townId);
+            for (const ind of B2B_INDUSTRIES) {
+                await guardarComercio(ind, townId);
             }
-            for (const offer of b2bOffers) {
-                await guardarOferta(offer, townId);
-            }
-            alert(`✅ ¡ÉXITO! Datos maestros inyectados en "${zoneName}" con localidades: ${[...new Set(shops.map((s: any) => s.zone))].join(', ')}`);
+
+            setHasSeeded(true);
+            alert(`🌱 ¡Muestras sembradas con éxito en ${zoneName}!\n\nSe crearon ${totalComercios} comercios (uno por rubro por localidad), 1 Socio VIP y 2 industrias B2B de muestra.`);
         } catch (error: any) {
-            console.error("Error injetando datos:", error);
-            alert("❌ ERROR AL SUBIR: " + (error.message || "Fallo de permisos."));
+            console.error("Error en la siembra:", error);
+            alert(`❌ Error al sembrar muestras: ${error.message || error}`);
+        } finally {
+            setIsSeeding(false);
         }
     };
 
@@ -557,7 +434,21 @@ const MasterPanelPage: React.FC = () => {
                     <Terminal size={18} className="text-cyan-400" />
                     <span className="text-[13px] text-cyan-300">PANEL MAESTRO INDUSTRIAL (B2B)</span>
                 </div>
-\n                {/* Botón de Inject Data eliminado por directiva de Operaciones 2.0 */}
+                <button
+                    disabled={isSeeding || hasSeeded}
+                    onClick={seedMuestrasHiperrealistas}
+                    className={`w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed
+                        ${hasSeeded 
+                            ? 'border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.2)] bg-emerald-500/10' 
+                            : 'border-green-500/40 hover:border-green-400 shadow-[0_0_30px_rgba(34,197,94,0.2)]'
+                        }`}
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-white/5 to-green-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <Database size={18} className={hasSeeded ? 'text-emerald-400' : 'text-green-400 animate-pulse'} />
+                    <span className={hasSeeded ? 'text-[13px] text-emerald-300' : 'text-[13px] text-green-300'}>
+                        {isSeeding ? '⏳ Sembrando Ecosistema...' : hasSeeded ? '✅ Ecosistema Poblado' : '🌱 Sembrar Muestras Hiperrealistas'}
+                    </span>
+                </button>
 
                 {/* Botón de Reset Maestro eliminado por directiva de Operaciones 2.0 (Prevención de reseteos en producción) */}
 
