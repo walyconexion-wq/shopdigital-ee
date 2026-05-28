@@ -699,6 +699,73 @@ export const saveGlobalConfig = async (config: any, townId: string = 'esteban-ec
     }
 };
 
+export const incrementarVisitasZona = async (townId: string) => {
+    try {
+        const ref = doc(db, 'appConfig', townId);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+            await updateDoc(ref, { visits: increment(1) });
+        } else {
+            await setDoc(ref, { visits: 1, updatedAt: new Date().toISOString() }, { merge: true });
+        }
+    } catch (error) {
+        console.error("Error incrementing zone visits:", error);
+    }
+};
+
+export const registrarVisitaConTelemetria = async (
+    townId: string,
+    temp: number | null,
+    weatherCode: number | null
+) => {
+    try {
+        const now = new Date();
+        const hour = now.getHours();
+        
+        let timeOfDay = 'noche';
+        if (hour >= 6 && hour < 12) timeOfDay = 'mañana';
+        else if (hour >= 12 && hour < 19) timeOfDay = 'tarde';
+        else if (hour >= 19 && hour < 24) timeOfDay = 'noche';
+        else timeOfDay = 'madrugada';
+
+        const days = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+        const dayOfWeek = days[now.getDay()];
+
+        const dateStr = now.toISOString().split('T')[0];
+
+        const visitData = {
+            townId,
+            timestamp: now.toISOString(),
+            hour,
+            dayOfWeek,
+            timeOfDay,
+            dateStr,
+            temp: temp !== null ? temp : 18,
+            weatherCode: weatherCode !== null ? weatherCode : 0,
+            createdAt: now.toISOString()
+        };
+
+        await addDoc(collection(db, "telemetria_visitas"), visitData);
+        console.log("Telemetry visit logged successfully:", visitData);
+    } catch (e) {
+        console.error("Error logging telemetry visit:", e);
+    }
+};
+
+export const suscribirseATelemetriaVisitas = (callback: (data: any[]) => void, limitCount: number = 100) => {
+    const q = query(
+        collection(db, "telemetria_visitas"), 
+        orderBy("timestamp", "desc"), 
+        limit(limitCount)
+    );
+    return onSnapshot(q, (snapshot) => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(data);
+    }, (error) => {
+        console.error("Error in telemetry subscription:", error);
+    });
+};
+
 // --- CATEGORY (RUBROS) CONFIG ---
 
 // Default active categories (all system categories active by default)

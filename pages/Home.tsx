@@ -12,17 +12,125 @@ interface HomeProps {
     globalConfig?: any;
 }
 
+interface Coordinates {
+    lat: number;
+    lon: number;
+}
+
+const TOWN_COORDINATES: Record<string, Coordinates> = {
+    'esteban-echeverria': { lat: -34.82, lon: -58.47 },
+    'ezeiza': { lat: -34.85, lon: -58.52 },
+    'traslasierra': { lat: -31.72, lon: -65.01 },
+    'mina-clavero': { lat: -31.72, lon: -65.01 },
+    'villa-cura-brochero': { lat: -31.72, lon: -65.01 },
+    'nono': { lat: -31.79, lon: -65.00 },
+    'san-lorenzo': { lat: -31.66, lon: -65.01 },
+    'las-rabonas': { lat: -31.85, lon: -64.97 },
+    'los-hornillos': { lat: -31.90, lon: -64.95 },
+    'villa-de-las-rosas': { lat: -31.95, lon: -65.01 },
+    'las-tapias': { lat: -31.97, lon: -65.09 },
+    'san-javier': { lat: -32.03, lon: -65.03 },
+    'yacanto': { lat: -32.05, lon: -65.03 },
+    'la-poblacion': { lat: -32.10, lon: -65.01 },
+    'luyaba': { lat: -32.17, lon: -65.07 },
+    'la-paz': { lat: -32.22, lon: -65.05 },
+};
+
+const getCoordinates = (id: string): Coordinates => {
+    if (TOWN_COORDINATES[id]) return TOWN_COORDINATES[id];
+    if (id.includes('ezeiza')) return TOWN_COORDINATES['ezeiza'];
+    if (id.includes('traslasierra')) return TOWN_COORDINATES['traslasierra'];
+    return TOWN_COORDINATES['esteban-echeverria'];
+};
+
+const getWeatherEmoji = (code: number | null): string => {
+    if (code === null) return '🌡️';
+    if (code === 0) return '☀️';
+    if ([1, 2, 3].includes(code)) return '⛅';
+    if ([45, 48].includes(code)) return '🌫️';
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️';
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return '❄️';
+    if ([95, 96, 99].includes(code)) return '⛈️';
+    return '🌡️';
+};
+
 const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const themeColor = globalConfig?.themeColor || '#22d3ee';
     const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
-    const activeTheme = globalConfig?.theme || 'default';
+    const activeTheme = globalConfig?.isChristmasMode ? 'christmas' : (globalConfig?.theme || 'default');
     const mainSubtitle = globalConfig?.mainSubtitle || `Tu guía de ofertas en ${townId.replace(/-/g, ' ')}`;
     const townName = globalConfig?.townName || 'Esteban Echeverría';
 
     const [logoClicks, setLogoClicks] = React.useState(0);
     const [walyClicks, setWalyClicks] = React.useState(0);
+
+    // --- Telemetría y Clima ---
+    const [time, setTime] = React.useState(new Date());
+    const [temp, setTemp] = React.useState<number | null>(null);
+    const [weatherCode, setWeatherCode] = React.useState<number | null>(null);
+    const [weatherError, setWeatherError] = React.useState(false);
+    const loggedRef = React.useRef<string | null>(null);
+
+    // Incrementar visitas de zona de manera atómica
+    React.useEffect(() => {
+        if (townId) {
+            import('../firebase').then(({ incrementarVisitasZona }) => {
+                incrementarVisitasZona(townId);
+            });
+        }
+    }, [townId]);
+
+    // Timer de Reloj Local
+    React.useEffect(() => {
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Consulta Meteorológica y Registro de Telemetría
+    React.useEffect(() => {
+        setTemp(null);
+        setWeatherCode(null);
+        setWeatherError(false);
+
+        const coords = getCoordinates(townId);
+        const fetchWeather = async () => {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const currentTemp = data.current?.temperature_2m;
+                    const currentCode = data.current?.weather_code;
+                    if (typeof currentTemp === 'number') {
+                        const roundedTemp = Math.round(currentTemp);
+                        setTemp(roundedTemp);
+                        setWeatherCode(typeof currentCode === 'number' ? currentCode : null);
+
+                        // Registrar telemetría de visita una única vez por zona resuelta
+                        if (loggedRef.current !== townId) {
+                            loggedRef.current = townId;
+                            const { registrarVisitaConTelemetria } = await import('../firebase');
+                            registrarVisitaConTelemetria(townId, roundedTemp, currentCode);
+                        }
+                    }
+                } else {
+                    setWeatherError(true);
+                }
+            } catch (err) {
+                console.error("Error fetching weather:", err);
+                setWeatherError(true);
+            }
+        };
+
+        fetchWeather();
+        const interval = setInterval(fetchWeather, 600000); // 10 min
+        return () => clearInterval(interval);
+    }, [townId]);
+
+    // Formateadores de Reloj y Fecha
+    const currentTimeStr = time.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const currentDateStr = time.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
 
     const hexToRgba = (hex: string, alpha: number) => {
         const r = parseInt(hex.slice(1, 3), 16);
@@ -117,6 +225,13 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     90% { opacity: 0.2; }
                     100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
                 }
+                @keyframes bounceSlow {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-6px); }
+                }
+                .animate-bounce-slow {
+                    animation: bounceSlow 3s ease-in-out infinite;
+                }
                 `}
             </style>
             
@@ -153,6 +268,66 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     </div>
                     <div className="h-[1px] w-6" style={{ background: `linear-gradient(90deg, ${hexToRgba(themeColor, 0.3)}, transparent)` }}></div>
                 </div>
+
+                {/* Panel de Telemetría Cyberpunk */}
+                <div 
+                    className="mt-6 flex items-center justify-between w-full max-w-[340px] px-4 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-widest relative overflow-hidden backdrop-blur-md shadow-lg"
+                    style={{
+                        background: 'rgba(15, 23, 42, 0.45)',
+                        borderColor: hexToRgba(themeColor, 0.35),
+                        boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.15)}, inset 0 0 8px ${hexToRgba(themeColor, 0.05)}`
+                    }}
+                >
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">HORA</span>
+                        <span className="text-white font-mono text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                            {currentTimeStr}
+                        </span>
+                    </div>
+                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">FECHA</span>
+                        <span className="text-white text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                            {currentDateStr}
+                        </span>
+                    </div>
+                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">VISITAS</span>
+                        <span className="text-white text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                            👁️ {globalConfig?.visits || 1}
+                        </span>
+                    </div>
+                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">CLIMA</span>
+                        <span className="text-white text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                            {getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : (weatherError ? '18°C' : '...')}
+                        </span>
+                    </div>
+                </div>
+
+                {globalConfig?.isChristmasMode && (
+                    <div 
+                        className="mt-6 w-full max-w-[340px] px-4 py-3 rounded-2xl border text-center relative overflow-hidden backdrop-blur-md animate-bounce-slow"
+                        style={{
+                            background: `linear-gradient(135deg, rgba(220, 38, 38, 0.3) 0%, rgba(20, 83, 45, 0.3) 100%)`,
+                            borderColor: '#ef4444',
+                            boxShadow: '0 0 15px rgba(239, 68, 68, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.3)',
+                        }}
+                    >
+                        {/* Christmas Lights decoration */}
+                        <div className="absolute top-0 left-0 right-0 flex justify-around opacity-80 select-none text-[8px] tracking-[0.1em] pointer-events-none">
+                            <span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span><span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span>
+                        </div>
+                        <h3 className="text-[13px] font-black text-white tracking-[0.15em] uppercase text-shadow-premium flex items-center justify-center gap-1.5 pt-1.5">
+                            🎄 ¡Feliz Navidad en {townName}! 🎅
+                        </h3>
+                        <p className="text-[8.5px] font-black text-emerald-300 tracking-[0.1em] uppercase mt-1">
+                            Disfrutá los catálogos y ofertas locales
+                        </p>
+                    </div>
+                )}
 
                 {/* Chips Regionales para Traslasierra */}
                 {isInTraslasierra && (

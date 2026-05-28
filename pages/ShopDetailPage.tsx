@@ -32,9 +32,10 @@ import { logEvento } from '../services/telemetry';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
+    globalConfig?: any;
 }
 
-const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
+const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig }) => {
     const { townId = 'esteban-echeverria', categorySlug, shopSlug } = useParams<{ townId: string; categorySlug: string; shopSlug: string }>();
     const navigate = useNavigate();
     const isEnterprisePath = window.location.pathname.startsWith('/empresas');
@@ -105,9 +106,9 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
         carnival:   { particles: ['🎭','🎉','🎈','✨','🎊'], bg: 'rgba(88,28,135,0.08)',  overlay: 'rgba(168,85,247,0.04)' },
         easter:     { particles: ['🐣','🐥','🌻','🥚','🐣'], bg: 'rgba(26,46,5,0.07)',   overlay: 'rgba(132,204,22,0.04)' },
     };
-    const activeSeason = selectedShop?.seasonTheme && selectedShop.seasonTheme !== 'none'
+    const activeSeason = (selectedShop?.seasonTheme && selectedShop.seasonTheme !== 'none')
         ? SEASON_CONFIG[selectedShop.seasonTheme]
-        : null;
+        : (globalConfig?.isChristmasMode ? SEASON_CONFIG.christmas : null);
 
 
     const [hasLikedFeed, setHasLikedFeed] = useState(false);
@@ -364,6 +365,13 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops }) => {
                 <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
                     {/* 💡 LETRERO NEÓN 3D — Nombre del Comercio */}
                     <div className="relative" style={{ '--neon-color': themeColor } as React.CSSProperties}>
+                        {globalConfig?.isChristmasMode && (
+                            <svg className="absolute -top-4 left-[-15px] w-9 h-9 z-[60] pointer-events-none drop-shadow-[0_0_8px_rgba(239,68,68,0.6)] rotate-[-15deg]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 14C18 10 16 5 11 3C10.5 4 9 6.5 9 8C9 9 9.5 9.5 9 10C8 11 6.5 12 5.5 14C4 17 6.5 18 11 18C15.5 18 18 17 18 14Z" fill="#ef4444"/>
+                                <path d="M4 17C4 16 5 15.5 11 15.5C17 15.5 18 16 18 17C18 18 16.5 19 11 19C5.5 19 4 18 4 17Z" fill="#ffffff"/>
+                                <circle cx="10" cy="3.5" r="2.5" fill="#ffffff"/>
+                            </svg>
+                        )}
                         {/* Capa de resplandor trasero (profundidad 3D) */}
                         <h1
                             aria-hidden="true"

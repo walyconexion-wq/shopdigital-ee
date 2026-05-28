@@ -202,7 +202,7 @@ const TownController: React.FC = () => {
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<Home globalConfig={effectiveGlobalConfig} />} />
                     <Route path=":categorySlug" element={<CategoryPage allShops={allShops} globalConfig={effectiveGlobalConfig} />} />
-                    <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} />} />
+                    <Route path=":categorySlug/:shopSlug" element={<ShopDetailPage allShops={allShops} globalConfig={effectiveGlobalConfig} />} />
                     <Route path=":categorySlug/:shopSlug/menu" element={<ShopMenuPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/credencial" element={<CredencialPage allShops={allShops} />} />
                     <Route path=":categorySlug/:shopSlug/panel-autogestion" element={<AdminPanelPage allShops={allShops} allClients={allClients} />} />

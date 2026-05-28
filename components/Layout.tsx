@@ -99,6 +99,48 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 backgroundColor: isDayMode ? '#f8fafc' : bgColor 
             }}
         >
+            {/* Modo Navidad: Nieve Cayendo en CSS Puro */}
+            {globalConfig?.isChristmasMode && (
+                <div className="absolute inset-0 pointer-events-none z-[999] overflow-hidden">
+                    <style>{`
+                        @keyframes globalSnowfall {
+                            0% { transform: translateY(-10px) translateX(0); opacity: 0; }
+                            10% { opacity: 0.8; }
+                            90% { opacity: 0.8; }
+                            100% { transform: translateY(105vh) translateX(55px); opacity: 0; }
+                        }
+                        .snowflake-global {
+                            position: absolute;
+                            color: #fff;
+                            font-size: 1.2em;
+                            user-select: none;
+                            pointer-events: none;
+                            z-index: 999;
+                            opacity: 0;
+                            text-shadow: 0 0 3px rgba(255,255,255,0.8), 0 0 10px rgba(6,182,212,0.4);
+                        }
+                    `}</style>
+                    {[...Array(15)].map((_, i) => {
+                        const left = (i * 7) + Math.sin(i) * 2;
+                        const delay = (i * 0.7).toFixed(1);
+                        const duration = (6 + (i % 5) * 1.5).toFixed(1);
+                        const scale = (0.5 + (i % 3) * 0.25).toFixed(2);
+                        return (
+                            <span 
+                                key={i} 
+                                className="snowflake-global"
+                                style={{
+                                    left: `${left}%`,
+                                    animation: `globalSnowfall ${duration}s linear ${delay}s infinite`,
+                                    transform: `scale(${scale})`
+                                }}
+                            >
+                                ❄️
+                            </span>
+                        );
+                    })}
+                </div>
+            )}
             {/* Background Effect */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 <div

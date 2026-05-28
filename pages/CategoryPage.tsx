@@ -134,6 +134,17 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
 
     return (
         <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-transparent pb-10">
+            <style>
+                {`
+                @keyframes bounceSlow {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-6px); }
+                }
+                .animate-bounce-slow {
+                    animation: bounceSlow 3s ease-in-out infinite;
+                }
+                `}
+            </style>
             <div className="absolute top-40 right-[-10%] w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
             <div className="absolute bottom-40 left-[-10%] w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
 
@@ -165,6 +176,25 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                             </p>
                         </div>
                     </div>
+
+                    {globalConfig?.isChristmasMode && (
+                        <div 
+                            className="mt-4 w-[calc(100%-1rem)] max-w-[340px] mx-auto px-4 py-2.5 rounded-2xl border text-center relative overflow-hidden backdrop-blur-md animate-bounce-slow"
+                            style={{
+                                background: `linear-gradient(135deg, rgba(220, 38, 38, 0.3) 0%, rgba(20, 83, 45, 0.3) 100%)`,
+                                borderColor: '#ef4444',
+                                boxShadow: '0 0 15px rgba(239, 68, 68, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.3)',
+                            }}
+                        >
+                            {/* Christmas Lights decoration */}
+                            <div className="absolute top-0 left-0 right-0 flex justify-around opacity-80 select-none text-[8px] tracking-[0.1em] pointer-events-none">
+                                <span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span><span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span>
+                            </div>
+                            <h3 className="text-[12px] font-black text-white tracking-[0.12em] uppercase text-shadow-premium flex items-center justify-center gap-1.5 pt-1">
+                                🎄 ¡Feliz Navidad en {townName}! 🎅
+                            </h3>
+                        </div>
+                    )}
                 </div>
             </header>
 

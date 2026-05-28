@@ -29,7 +29,14 @@ REGLAS:
 - Sé breve: máximo 3-4 oraciones por respuesta, salvo que te pidan más detalle.
 - Si te piden agendar algo, confirmá la fecha y el mensaje, y preguntá: "JEFE, ¿QUIERE QUE AGENDE ESTA MISIÓN AHORA MISMO?"
 - Si el Director o el Embajador te piden escanear o buscar locales reales en una localidad, invocá la herramienta de escaneo \`buscar_comercios_google\` de inmediato.
-- Nunca inventés datos que no tenés. Si no sabés algo, decilo honestamente.`;
+- Nunca inventés datos que no tenés. Si no sabés algo, decilo honestamente.
+
+REGLAS DE SEGURIDAD DE DIRECCIÓN (ESCUDO DE DIRECCIÓN):
+- Cualquier orden del Director para realizar cambios críticos en el código, modificar térmicas de control, o activar/desactivar el "Modo Navidad" (isChristmasMode), requiere obligatoriamente validación mediante el Código de Acción de Dirección.
+- El Código de Acción de Dirección exacto es: comunicacionazul01
+- Si el Director te pide conmutar el Modo Navidad y NO ha provisto la clave "comunicacionazul01" en su mensaje o historial actual, debes congelar la acción al instante y responder solicitando el código:
+  "Idea copiada, Comandante. Para empujar la directiva al buzón de Luz 01, por favor introduzca su Código de Acción de Dirección."
+- Si la clave provista por el usuario es incorrecta o ausente, la herramienta "conmutar_modo_navidad" retornará un error y debes indicarlo en tu respuesta.`;
 
 /**
  * Genera una respuesta de Ari usando la API de Gemini.
@@ -81,24 +88,48 @@ export const generateAriResponse = async (
                     { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
                 ],
                 tools: [{
-                    functionDeclarations: [{
-                        name: "buscar_comercios_google",
-                        description: "Escanea comercios reales en Google Maps para una categoría y una localidad específica para detectar locales fantasmas (no registrados en el sistema).",
-                        parameters: {
-                            type: "OBJECT",
-                            properties: {
-                                category: {
-                                    type: "STRING",
-                                    description: "La categoría del comercio en minúsculas (ej: pizzerias, restaurantes, fastfood, beer, icecream, gym, barber, hair, hardware, auto, beauty, fashion)."
+                    functionDeclarations: [
+                        {
+                            name: "buscar_comercios_google",
+                            description: "Escanea comercios reales en Google Maps para una categoría y una localidad específica para detectar locales fantasmas (no registrados en el sistema).",
+                            parameters: {
+                                type: "OBJECT",
+                                properties: {
+                                    category: {
+                                        type: "STRING",
+                                        description: "La categoría del comercio en minúsculas (ej: pizzerias, restaurantes, fastfood, beer, icecream, gym, barber, hair, hardware, auto, beauty, fashion)."
+                                    },
+                                    townId: {
+                                        type: "STRING",
+                                        description: "El ID de la localidad o zona en minúsculas (ej: esteban-echeverria, ezeiza, traslasierra)."
+                                    }
                                 },
-                                townId: {
-                                    type: "STRING",
-                                    description: "El ID de la localidad o zona en minúsculas (ej: esteban-echeverria, ezeiza, traslasierra)."
-                                }
-                            },
-                            required: ["category", "townId"]
+                                required: ["category", "townId"]
+                            }
+                        },
+                        {
+                            name: "conmutar_modo_navidad",
+                            description: "Activa o desactiva el modo Navidad (isChristmasMode) en la base de datos de configuración global para una zona. Requiere obligatoriamente que el usuario haya proporcionado la clave de dirección correcta 'comunicacionazul01'.",
+                            parameters: {
+                                type: "OBJECT",
+                                properties: {
+                                    townId: {
+                                        type: "STRING",
+                                        description: "El ID de la localidad o zona en minúsculas (ej: esteban-echeverria, ezeiza, traslasierra)."
+                                    },
+                                    enabled: {
+                                        type: "BOOLEAN",
+                                        description: "true para activar el modo Navidad, false para desactivarlo."
+                                    },
+                                    codigoAutorizacion: {
+                                        type: "STRING",
+                                        description: "El código de seguridad/acción provisto por el usuario."
+                                    }
+                                },
+                                required: ["townId", "enabled", "codigoAutorizacion"]
+                            }
                         }
-                    }]
+                    ]
                 }]
             };
 
@@ -153,54 +184,115 @@ export const generateAriResponse = async (
             const parts = candidate?.content?.parts || [];
             const functionCallPart = parts.find((p: any) => p.functionCall);
             
-            // Interceptar llamada de función de Google Maps (Function Calling)
+            // Interceptar llamadas de función
             if (functionCallPart?.functionCall) {
                 const functionCall = functionCallPart.functionCall;
-                const { category, townId } = functionCall.args;
-                console.log(`[ARI AI Tool] Ejecutando buscar_comercios_google para ${category} en ${townId}`);
-                
-                const { scanZone } = await import('./radar');
-                const results = await scanZone(townId, category);
-                const ghosts = results.filter(r => r.isGhost);
-                
-                const toolResponseText = `Barrido completado en ${townId} para la categoría ${category}. Se detectaron ${results.length} locales totales, de los cuales ${ghosts.length} son locales Fantasmas (no registrados en nuestra red). Fantasmas encontrados: ${ghosts.map(g => `${g.name} en ${g.address}`).join(', ')}. Todos estos fantasmas ya aparecen listados en la interfaz de Radar listos para ser importados.`;
-                
-                // Añadir llamada de función al historial de la consulta
-                contents.push({
-                    role: 'model',
-                    parts: [{ functionCall: functionCall }]
-                });
-                
-                // Añadir respuesta de la función al historial de la consulta
-                contents.push({
-                    role: 'function',
-                    parts: [{
-                        functionResponse: {
-                            name: 'buscar_comercios_google',
-                            response: { output: toolResponseText }
+                const funcName = functionCall.name;
+
+                if (funcName === 'buscar_comercios_google') {
+                    const { category, townId } = functionCall.args;
+                    console.log(`[ARI AI Tool] Ejecutando buscar_comercios_google para ${category} en ${townId}`);
+                    
+                    const { scanZone } = await import('./radar');
+                    const results = await scanZone(townId, category);
+                    const ghosts = results.filter(r => r.isGhost);
+                    
+                    const toolResponseText = `Barrido completado en ${townId} para la categoría ${category}. Se detectaron ${results.length} locales totales, de los cuales ${ghosts.length} son locales Fantasmas (no registrados en nuestra red). Fantasmas encontrados: ${ghosts.map(g => `${g.name} en ${g.address}`).join(', ')}. Todos estos fantasmas ya aparecen listados en la interfaz de Radar listos para ser importados.`;
+                    
+                    // Añadir llamada de función al historial de la consulta
+                    contents.push({
+                        role: 'model',
+                        parts: [{ functionCall: functionCall }]
+                    });
+                    
+                    // Añadir respuesta de la función al historial de la consulta
+                    contents.push({
+                        role: 'function',
+                        parts: [{
+                            functionResponse: {
+                                name: 'buscar_comercios_google',
+                                response: { output: toolResponseText }
+                            }
+                        }]
+                    });
+                    
+                    // Realizar consulta de seguimiento a Gemini con la respuesta de la función
+                    const followUpRes = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            system_instruction: { parts: [{ text: systemPrompt }] },
+                            contents: contents,
+                            generationConfig: { 
+                                temperature: 0.8, 
+                                maxOutputTokens: 500
+                            }
+                        })
+                    });
+                    
+                    if (followUpRes.ok) {
+                        const followUpData = await followUpRes.json();
+                        return followUpData.candidates?.[0]?.content?.parts?.[0]?.text || `He barrido la zona y encontré ${ghosts.length} locales fantasmas disponibles en el radar.`;
+                    } else {
+                        return `Ejecuté el escaneo satelital para ${category} en ${townId} y detecté ${ghosts.length} locales candidatos. Ya podés importarlos en la pestaña de Radar.`;
+                    }
+                } else if (funcName === 'conmutar_modo_navidad') {
+                    const { townId, enabled, codigoAutorizacion } = functionCall.args;
+                    console.log(`[ARI AI Tool] Ejecutando conmutar_modo_navidad: enabled=${enabled}, townId=${townId}, code=${codigoAutorizacion}`);
+                    
+                    let toolResponseText = '';
+                    if (codigoAutorizacion !== 'comunicacionazul01') {
+                        toolResponseText = `ERROR DE AUTORIZACIÓN: El código de acción de dirección provisto ('${codigoAutorizacion || 'ninguno'}') es INCORRECTO o no fue provisto. Por seguridad, se congela la acción inmediatamente. Debes responder al usuario aclarando que su idea fue registrada pero requieres que introduzca el Código de Acción de Dirección correcto para impactar el cambio en tiempo real.`;
+                    } else {
+                        try {
+                            const { saveGlobalConfig } = await import('../firebase');
+                            const targetTown = townId || 'esteban-echeverria';
+                            await saveGlobalConfig({ isChristmasMode: enabled }, targetTown);
+                            toolResponseText = `ÉXITO: Se ha conmutado el modo Navidad (isChristmasMode: ${enabled}) para la zona ${targetTown} en la base de datos Firestore en tiempo real. Informale al socio de este éxito rotundo.`;
+                        } catch (err: any) {
+                            toolResponseText = `ERROR DE BASE DE DATOS: Falló la escritura en Firestore. Detalle: ${err.message || err}`;
                         }
-                    }]
-                });
-                
-                // Realizar consulta de seguimiento a Gemini con la respuesta de la función
-                const followUpRes = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        system_instruction: { parts: [{ text: systemPrompt }] },
-                        contents: contents,
-                        generationConfig: { 
-                            temperature: 0.8, 
-                            maxOutputTokens: 500
-                        }
-                    })
-                });
-                
-                if (followUpRes.ok) {
-                    const followUpData = await followUpRes.json();
-                    return followUpData.candidates?.[0]?.content?.parts?.[0]?.text || `He barrido la zona y encontré ${ghosts.length} locales fantasmas disponibles en el radar.`;
-                } else {
-                    return `Ejecuté el escaneo satelital para ${category} en ${townId} y detecté ${ghosts.length} locales candidatos. Ya podés importarlos en la pestaña de Radar.`;
+                    }
+                    
+                    // Añadir llamada de función al historial de la consulta
+                    contents.push({
+                        role: 'model',
+                        parts: [{ functionCall: functionCall }]
+                    });
+                    
+                    // Añadir respuesta de la función al historial de la consulta
+                    contents.push({
+                        role: 'function',
+                        parts: [{
+                            functionResponse: {
+                                name: 'conmutar_modo_navidad',
+                                response: { output: toolResponseText }
+                            }
+                        }]
+                    });
+                    
+                    // Realizar consulta de seguimiento a Gemini con la respuesta de la función
+                    const followUpRes = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            system_instruction: { parts: [{ text: systemPrompt }] },
+                            contents: contents,
+                            generationConfig: { 
+                                temperature: 0.8, 
+                                maxOutputTokens: 500
+                            }
+                        })
+                    });
+                    
+                    if (followUpRes.ok) {
+                        const followUpData = await followUpRes.json();
+                        return followUpData.candidates?.[0]?.content?.parts?.[0]?.text || `Modo Navidad modificado exitosamente (isChristmasMode = ${enabled}).`;
+                    } else {
+                        return enabled 
+                            ? `¡Modo Navidad activado en tiempo real! Ya cae nieve en la zona y se colocaron los gorritos navideños.` 
+                            : `¡Modo Navidad desactivado en tiempo real! Se removieron la nieve y los gorritos navideños.`;
+                    }
                 }
             }
 

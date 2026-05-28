@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
+import { subscribeToGlobalConfig } from '../firebase';
 
 const Logo: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const [clickCount, setClickCount] = useState(0);
+    const [isChristmas, setIsChristmas] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const unsub = subscribeToGlobalConfig((config) => {
+            if (config && config.isChristmasMode) {
+                setIsChristmas(true);
+            } else {
+                setIsChristmas(false);
+            }
+        }, townId);
+        return () => unsub();
+    }, [townId]);
 
     const handleLogoClick = () => {
         playNeonClick();
@@ -29,6 +42,13 @@ const Logo: React.FC = () => {
 
       {/* Nombre de la App */}
       <h1 className="text-[36px] font-[900] tracking-tighter leading-none mb-1.5 relative z-10">
+        {isChristmas && (
+          <svg className="absolute -top-3 left-[28px] w-9 h-9 z-20 pointer-events-none drop-shadow-[0_0_8px_rgba(239,68,68,0.6)] rotate-[-10deg]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 14C18 10 16 5 11 3C10.5 4 9 6.5 9 8C9 9 9.5 9.5 9 10C8 11 6.5 12 5.5 14C4 17 6.5 18 11 18C15.5 18 18 17 18 14Z" fill="#ef4444"/>
+            <path d="M4 17C4 16 5 15.5 11 15.5C17 15.5 18 16 18 17C18 18 16.5 19 11 19C5.5 19 4 18 4 17Z" fill="#ffffff"/>
+            <circle cx="10" cy="3.5" r="2.5" fill="#ffffff"/>
+          </svg>
+        )}
         <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-cyan-100 to-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] text-shadow-premium transition-all duration-300">
           ShopDigital
         </span>

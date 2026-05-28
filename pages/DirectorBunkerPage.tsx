@@ -9,7 +9,7 @@ import {
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
-import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker } from '../firebase';
+import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas } from '../firebase';
 import { RadarScanner } from '../components/RadarScanner';
 import { SaturationPredictor } from '../components/SaturationPredictor';
 import { LayoutGrid, Target, TrendingUp, Radio, CheckCircle2 } from 'lucide-react';
@@ -25,6 +25,17 @@ const embajadores = [
     { name: 'Fede', zone: 'Ezeiza Centro', status: 'Pateando' },
     { name: 'Mati', zone: 'Monte Grande Sur', status: 'Reunión' },
 ];
+
+const getWeatherEmoji = (code: number | null): string => {
+    if (code === null) return '🌡️';
+    if (code === 0) return '☀️';
+    if ([1, 2, 3].includes(code)) return '⛅';
+    if ([45, 48].includes(code)) return '🌫️';
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️';
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return '❄️';
+    if ([95, 96, 99].includes(code)) return '⛈️';
+    return '🌡️';
+};
 
 // Banderas por código de país
 const getFlag = (code: string) => {
@@ -66,8 +77,9 @@ export const DirectorBunkerPage: React.FC = () => {
     const [securityStatus, setSecurityStatus] = useState<'green' | 'red'>('green');
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'radar' | 'predictor' | 'comunicaciones'>('radar');
+    const [activeTab, setActiveTab] = useState<'radar' | 'predictor' | 'comunicaciones' | 'telemetria'>('radar');
     const [activeCategory, setActiveCategory] = useState('pizzerias');
+    const [telemetryLogs, setTelemetryLogs] = useState<any[]>([]);
     
     // --- Estado para Comunicaciones Directivas ---
     const [ambassadorsList, setAmbassadorsList] = useState<any[]>([]);
@@ -136,9 +148,15 @@ export const DirectorBunkerPage: React.FC = () => {
                 setSentMessages(mensajes);
             });
 
+            // Suscribirse a la telemetría de visitas en tiempo real
+            const unsubTelemetry = suscribirseATelemetriaVisitas((data) => {
+                setTelemetryLogs(data);
+            }, 50);
+
             return () => {
                 unsubAmbassadors();
                 unsubMessages();
+                unsubTelemetry();
             };
         }
     }, [isAuthorized]);
@@ -244,6 +262,47 @@ export const DirectorBunkerPage: React.FC = () => {
     // ═══════════════════════════════════════════
     // PANEL DEL DIRECTOR (Autorizado)
     // ═══════════════════════════════════════════
+    // --- Cálculo de Estadísticas de Telemetría ---
+    const telemetryStats = React.useMemo(() => {
+        if (telemetryLogs.length === 0) return { total: 0, peakTime: 'N/D', peakWeather: 'N/D', peakDay: 'N/D' };
+        
+        const counts: Record<string, Record<string, number>> = {
+            timeOfDay: {},
+            weatherEmoji: {},
+            dayOfWeek: {}
+        };
+
+        telemetryLogs.forEach(log => {
+            if (log.timeOfDay) {
+                counts.timeOfDay[log.timeOfDay] = (counts.timeOfDay[log.timeOfDay] || 0) + 1;
+            }
+            const emoji = getWeatherEmoji(log.weatherCode);
+            counts.weatherEmoji[emoji] = (counts.weatherEmoji[emoji] || 0) + 1;
+            if (log.dayOfWeek) {
+                counts.dayOfWeek[log.dayOfWeek] = (counts.dayOfWeek[log.dayOfWeek] || 0) + 1;
+            }
+        });
+
+        const getMaxKey = (obj: Record<string, number>) => {
+            let maxKey = 'N/D';
+            let maxVal = -1;
+            Object.entries(obj).forEach(([key, val]) => {
+                if (val > maxVal) {
+                    maxVal = val;
+                    maxKey = key;
+                }
+            });
+            return maxKey;
+        };
+
+        return {
+            total: telemetryLogs.length,
+            peakTime: getMaxKey(counts.timeOfDay),
+            peakWeather: getMaxKey(counts.weatherEmoji),
+            peakDay: getMaxKey(counts.dayOfWeek)
+        };
+    }, [telemetryLogs]);
+
     const handleSend = async () => {
         if (!msgInput.trim() || isThinking) return;
         playNeonClick();
@@ -251,7 +310,20 @@ export const DirectorBunkerPage: React.FC = () => {
         setAriMsgs(newHistory);
         setMsgInput('');
         setIsThinking(true);
-        const response = await generateAriResponse(newHistory, ARI_BUNKER_PROMPT, (retryMsg) => {
+
+        const telemetrySummary = `
+TELEMETRÍA DE VISITAS RECIENTES (Historial de accesos):
+- Total de registros analizados: ${telemetryLogs.length} visitas.
+- Horario pico de acceso: ${telemetryStats.peakTime}.
+- Condición de clima más común durante visitas: ${telemetryStats.peakWeather}.
+- Día de la semana preferido: ${telemetryStats.peakDay}.
+- Registros detallados recientes:
+${telemetryLogs.slice(0, 10).map(l => `  * Zona: ${l.townId} | Fecha: ${l.dateStr} | Hora: ${l.hour}hs | Clima: ${l.temp}°C, code ${l.weatherCode} | Turno: ${l.timeOfDay} | Día: ${l.dayOfWeek}`).join('\n')}
+`;
+
+        const fullContext = `${ARI_BUNKER_PROMPT}\n\n${telemetrySummary}`;
+
+        const response = await generateAriResponse(newHistory, fullContext, (retryMsg) => {
             setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: retryMsg }]);
         });
         setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: response }]);
@@ -404,6 +476,16 @@ export const DirectorBunkerPage: React.FC = () => {
                                     <TrendingUp size={14} /> El Predictor (Saturación)
                                 </button>
                                 <button 
+                                    onClick={() => { playNeonClick(); setActiveTab('telemetria'); }}
+                                    className={`flex-1 py-4 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                                        activeTab === 'telemetria' 
+                                        ? 'text-fuchsia-400 bg-fuchsia-500/5 border-b-2 border-fuchsia-500' 
+                                        : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                                    }`}
+                                >
+                                    <Activity size={14} /> Telemetría
+                                </button>
+                                <button 
                                     onClick={() => { playNeonClick(); setActiveTab('comunicaciones'); }}
                                     className={`flex-1 py-4 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
                                         activeTab === 'comunicaciones' 
@@ -439,6 +521,70 @@ export const DirectorBunkerPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <SaturationPredictor townId={townId} category={activeCategory} />
+                                    </div>
+                                ) : activeTab === 'telemetria' ? (
+                                    <div className="animate-in fade-in duration-500 flex flex-col gap-6">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
+                                                <Activity size={18} className="text-fuchsia-500 animate-pulse" /> Telemetría de Tráfico y Sensores
+                                            </h2>
+                                            <div className="px-3 py-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-full">
+                                                <span className="text-[8px] font-black text-fuchsia-400 uppercase tracking-widest">Fase 4.1: Live Analytics</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Telemetry Stats Cards */}
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                            <div className="bg-black/50 border border-white/10 rounded-xl p-3.5 flex flex-col justify-between">
+                                                <span className="text-white/40 text-[7px] tracking-widest uppercase mb-1">MUESTRAS TOTALES</span>
+                                                <span className="text-lg font-black text-white">{telemetryStats.total}</span>
+                                            </div>
+                                            <div className="bg-black/50 border border-white/10 rounded-xl p-3.5 flex flex-col justify-between">
+                                                <span className="text-white/40 text-[7px] tracking-widest uppercase mb-1">TURNO PICO</span>
+                                                <span className="text-lg font-black text-fuchsia-400 tracking-wide">{telemetryStats.peakTime}</span>
+                                            </div>
+                                            <div className="bg-black/50 border border-white/10 rounded-xl p-3.5 flex flex-col justify-between">
+                                                <span className="text-white/40 text-[7px] tracking-widest uppercase mb-1">CLIMA EN ACCESOS</span>
+                                                <span className="text-lg font-black text-cyan-400 flex items-center gap-1.5">{telemetryStats.peakWeather}</span>
+                                            </div>
+                                            <div className="bg-black/50 border border-white/10 rounded-xl p-3.5 flex flex-col justify-between">
+                                                <span className="text-white/40 text-[7px] tracking-widest uppercase mb-1">DÍA PREFERIDO</span>
+                                                <span className="text-lg font-black text-violet-400 tracking-wide">{telemetryStats.peakDay}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Telemetry Logs Table */}
+                                        <div className="bg-black/50 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
+                                            <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-widest border-b border-white/5 pb-2">SENSORES DE RED EN TIEMPO REAL</h3>
+                                            <div className="overflow-y-auto max-h-[300px] no-scrollbar flex flex-col gap-2.5 pr-1">
+                                                {telemetryLogs.length === 0 ? (
+                                                    <p className="text-[10px] text-white/30 italic text-center py-6">No hay registros de telemetría disponibles aún.</p>
+                                                ) : (
+                                                    telemetryLogs.map((log, idx) => (
+                                                        <div key={log.id || idx} className="bg-white/[0.02] border border-white/5 hover:border-fuchsia-500/30 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-[10px] font-bold uppercase transition-all">
+                                                            <div className="flex items-center gap-2.5">
+                                                                <div className="w-2 h-2 rounded-full bg-fuchsia-500 animate-pulse"></div>
+                                                                <div className="flex flex-col gap-0.5">
+                                                                    <span className="text-white tracking-wider">Acceso a {log.townId?.replace(/-/g, ' ')}</span>
+                                                                    <span className="text-white/30 text-[7.5px] tracking-widest">{new Date(log.timestamp).toLocaleString('es-AR')}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-4 text-[9px] font-black tracking-widest">
+                                                                <span className="px-2 py-1 bg-violet-500/10 border border-violet-500/20 rounded-md text-violet-300">
+                                                                    📅 {log.dayOfWeek}
+                                                                </span>
+                                                                <span className="px-2 py-1 bg-amber-500/10 border border-amber-500/20 rounded-md text-amber-300">
+                                                                    🕒 {log.timeOfDay}
+                                                                </span>
+                                                                <span className="px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-md text-cyan-300 flex items-center gap-1">
+                                                                    {getWeatherEmoji(log.weatherCode)} {log.temp}°C
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="animate-in fade-in duration-500 flex flex-col gap-6">
