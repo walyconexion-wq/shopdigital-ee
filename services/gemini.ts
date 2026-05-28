@@ -150,62 +150,61 @@ export const generateAriResponse = async (
             // Respuesta exitosa
             const data = await res.json();
             const candidate = data.candidates?.[0];
-            const part = candidate?.content?.parts?.[0];
+            const parts = candidate?.content?.parts || [];
+            const functionCallPart = parts.find((p: any) => p.functionCall);
             
             // Interceptar llamada de función de Google Maps (Function Calling)
-            if (part?.functionCall) {
-                const functionCall = part.functionCall;
-                if (functionCall.name === 'buscar_comercios_google') {
-                    const { category, townId } = functionCall.args;
-                    console.log(`[ARI AI Tool] Ejecutando buscar_comercios_google para ${category} en ${townId}`);
-                    
-                    const { scanZone } = await import('./radar');
-                    const results = await scanZone(townId, category);
-                    const ghosts = results.filter(r => r.isGhost);
-                    
-                    const toolResponseText = `Barrido completado en ${townId} para la categoría ${category}. Se detectaron ${results.length} locales totales, de los cuales ${ghosts.length} son locales Fantasmas (no registrados en nuestra red). Fantasmas encontrados: ${ghosts.map(g => `${g.name} en ${g.address}`).join(', ')}. Todos estos fantasmas ya aparecen listados en la interfaz de Radar listos para ser importados.`;
-                    
-                    // Añadir llamada de función al historial de la consulta
-                    contents.push({
-                        role: 'model',
-                        parts: [{ functionCall: functionCall }]
-                    });
-                    
-                    // Añadir respuesta de la función al historial de la consulta
-                    contents.push({
-                        role: 'function',
-                        parts: [{
-                            functionResponse: {
-                                name: 'buscar_comercios_google',
-                                response: { output: toolResponseText }
-                            }
-                        }]
-                    });
-                    
-                    // Realizar consulta de seguimiento a Gemini con la respuesta de la función
-                    const followUpRes = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            system_instruction: { parts: [{ text: systemPrompt }] },
-                            contents: contents,
-                            generationConfig: { 
-                                temperature: 0.8, 
-                                maxOutputTokens: 500
-                            }
-                        })
-                    });
-                    
-                    if (followUpRes.ok) {
-                        const followUpData = await followUpRes.json();
-                        return followUpData.candidates?.[0]?.content?.parts?.[0]?.text || `He barrido la zona y encontré ${ghosts.length} locales fantasmas disponibles en el radar.`;
-                    } else {
-                        return `Ejecuté el escaneo satelital para ${category} en ${townId} y detecté ${ghosts.length} locales candidatos. Ya podés importarlos en la pestaña de Radar.`;
-                    }
+            if (functionCallPart?.functionCall) {
+                const functionCall = functionCallPart.functionCall;
+                const { category, townId } = functionCall.args;
+                console.log(`[ARI AI Tool] Ejecutando buscar_comercios_google para ${category} en ${townId}`);
+                
+                const { scanZone } = await import('./radar');
+                const results = await scanZone(townId, category);
+                const ghosts = results.filter(r => r.isGhost);
+                
+                const toolResponseText = `Barrido completado en ${townId} para la categoría ${category}. Se detectaron ${results.length} locales totales, de los cuales ${ghosts.length} son locales Fantasmas (no registrados en nuestra red). Fantasmas encontrados: ${ghosts.map(g => `${g.name} en ${g.address}`).join(', ')}. Todos estos fantasmas ya aparecen listados en la interfaz de Radar listos para ser importados.`;
+                
+                // Añadir llamada de función al historial de la consulta
+                contents.push({
+                    role: 'model',
+                    parts: [{ functionCall: functionCall }]
+                });
+                
+                // Añadir respuesta de la función al historial de la consulta
+                contents.push({
+                    role: 'function',
+                    parts: [{
+                        functionResponse: {
+                            name: 'buscar_comercios_google',
+                            response: { output: toolResponseText }
+                        }
+                    }]
+                });
+                
+                // Realizar consulta de seguimiento a Gemini con la respuesta de la función
+                const followUpRes = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        system_instruction: { parts: [{ text: systemPrompt }] },
+                        contents: contents,
+                        generationConfig: { 
+                            temperature: 0.8, 
+                            maxOutputTokens: 500
+                        }
+                    })
+                });
+                
+                if (followUpRes.ok) {
+                    const followUpData = await followUpRes.json();
+                    return followUpData.candidates?.[0]?.content?.parts?.[0]?.text || `He barrido la zona y encontré ${ghosts.length} locales fantasmas disponibles en el radar.`;
+                } else {
+                    return `Ejecuté el escaneo satelital para ${category} en ${townId} y detecté ${ghosts.length} locales candidatos. Ya podés importarlos en la pestaña de Radar.`;
                 }
             }
 
-            const responseText = part?.text;
+            const responseText = parts[0]?.text;
             
             if (!responseText) {
                 // Puede ser un bloqueo por seguridad

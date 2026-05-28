@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
 import { guardarComercio, eliminarComercio, crearFactura, suscribirseAMensajesBunker, marcarMensajeComoLeido } from '../firebase';
+import { RadarScanner } from '../components/RadarScanner';
 import { useAuth } from '../components/AuthContext';
 import {
     ChevronLeft,
@@ -47,6 +48,7 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
     const [activeRoom, setActiveRoom] = useState<RoomType>('hall');
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [mensajesDirectivos, setMensajesDirectivos] = useState<any[]>([]);
+    const [radarSubTab, setRadarSubTab] = useState<'scan' | 'approvals'>('scan');
 
     React.useEffect(() => {
         if (user?.uid) {
@@ -116,111 +118,144 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
 
     const renderRadarRoom = () => (
         <div className="px-6 space-y-6 max-w-2xl mx-auto pb-24">
-            <h2 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2 mb-6">
+            <h2 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2 mb-2">
                 <Target className="text-cyan-400" /> Radar de Prospectos
             </h2>
-            {pendingShops.length === 0 ? (
-                <div className="bg-white/[0.02] border border-cyan-500/20 rounded-3xl p-10 flex flex-col items-center justify-center gap-4 text-center">
-                    <div className="w-16 h-16 bg-cyan-500/5 rounded-full flex items-center justify-center border border-cyan-500/20">
-                        <CheckCircle size={24} className="text-cyan-400/50" />
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-black text-white uppercase tracking-widest mb-2">Red Despejada</h3>
-                        <p className="text-[10px] text-white/40 uppercase tracking-widest leading-relaxed">No hay negocios pendientes de aprobación.</p>
-                    </div>
+
+            {/* Sub-tabs selector for scan vs approvals */}
+            <div className="flex bg-black/40 border border-white/10 rounded-2xl p-1 mb-4">
+                <button
+                    onClick={() => { playNeonClick(); setRadarSubTab('scan'); }}
+                    className={`flex-1 py-2 text-center rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] transition-all ${
+                        radarSubTab === 'scan'
+                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]'
+                        : 'text-white/40 hover:text-white/70'
+                    }`}
+                >
+                    📡 Escáner Satelital
+                </button>
+                <button
+                    onClick={() => { playNeonClick(); setRadarSubTab('approvals'); }}
+                    className={`flex-1 py-2 text-center rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] transition-all ${
+                        radarSubTab === 'approvals'
+                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                        : 'text-white/40 hover:text-white/70'
+                    }`}
+                >
+                    📋 Aprobaciones ({pendingShops.length})
+                </button>
+            </div>
+
+            {radarSubTab === 'scan' ? (
+                <div className="animate-in fade-in duration-300">
+                    <RadarScanner townId={townId} themeColor="#06b6d4" />
                 </div>
             ) : (
-                pendingShops.map((shop) => (
-                    <div key={shop.id} className="bg-[#050B14] border border-cyan-400/30 rounded-3xl p-6 overflow-hidden relative shadow-lg">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-[40px] pointer-events-none" />
-                        
-                        <div className="flex flex-col gap-6 relative z-10">
-                            {/* Header: Nombre y Rubro */}
-                            <div className="flex items-start gap-4 pb-4 border-b border-white/5">
-                                <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 relative flex items-center justify-center">
-                                    {shop.bannerImage ? (
-                                        <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <ImageIcon size={20} className="text-white/20" />
-                                    )}
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-xl font-[1000] text-white uppercase tracking-tighter leading-tight">
-                                        {shop.name}
-                                    </h3>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-400/20">
-                                            {CATEGORIES.find(c => c.id === shop.category)?.name || shop.category}
-                                        </span>
-                                        <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-1">
-                                            <MapPin size={10} /> {shop.zone}
-                                        </span>
-                                    </div>
-                                </div>
+                <div className="space-y-6 animate-in fade-in duration-300">
+                    {pendingShops.length === 0 ? (
+                        <div className="bg-white/[0.02] border border-cyan-500/20 rounded-3xl p-10 flex flex-col items-center justify-center gap-4 text-center">
+                            <div className="w-16 h-16 bg-cyan-500/5 rounded-full flex items-center justify-center border border-cyan-500/20">
+                                <CheckCircle size={24} className="text-cyan-400/50" />
                             </div>
-
-                            {/* Details */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
-                                    <User size={14} className="text-white/40" />
-                                    <div>
-                                        <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-0.5">Titular</p>
-                                        <p className="text-[11px] font-black text-white/90">{shop.ownerName || 'No provisto'}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
-                                    <Phone size={14} className="text-green-400" />
-                                    <div>
-                                        <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-0.5">Contacto</p>
-                                        <p className="text-[11px] font-black text-white/90">{shop.phone || 'No provisto'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
-                                <Navigation size={14} className="text-yellow-400" />
-                                <div>
-                                    <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-0.5">Dirección del Local</p>
-                                    <p className="text-[11px] font-black text-white/90">{shop.address || 'No provista'}</p>
-                                </div>
-                            </div>
-
-                            {shop.phone && (
-                                <a
-                                    href={`https://wa.me/549${shop.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`¡Hola ${shop.ownerName || ''}! Soy embajador de ShopDigital. Tu comercio "${shop.name}" está pendiente de verificación. ¿Podemos coordinar una visita? 🚀`)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={() => playNeonClick()}
-                                    className="w-full bg-green-600/20 border border-green-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] text-green-300 active:scale-95 transition-all hover:bg-green-600/30"
-                                >
-                                    <MessageSquare size={16} /> Contactar por WhatsApp
-                                </a>
-                            )}
-
-                            <div className="pt-2 flex gap-3">
-                                <button
-                                    disabled={processingId === shop.id}
-                                    onClick={() => handleReject(shop)}
-                                    className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] active:scale-95 transition-all hover:bg-red-500/20"
-                                >
-                                    <XCircle size={16} /> Rechazar
-                                </button>
-                                
-                                <button
-                                    disabled={processingId === shop.id}
-                                    onClick={() => handleApprove(shop)}
-                                    className="flex-[2] bg-cyan-500/20 border border-cyan-400/50 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[11px] active:scale-95 transition-all text-white"
-                                >
-                                    {processingId === shop.id ? (
-                                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                    ) : (
-                                        <><CheckCircle size={16} /> Aprobar & Activar</>
-                                    )}
-                                </button>
+                            <div>
+                                <h3 className="text-lg font-black text-white uppercase tracking-widest mb-2">Red Despejada</h3>
+                                <p className="text-[10px] text-white/40 uppercase tracking-widest leading-relaxed">No hay negocios pendientes de aprobación.</p>
                             </div>
                         </div>
-                    </div>
-                ))
+                    ) : (
+                        pendingShops.map((shop) => (
+                            <div key={shop.id} className="bg-[#050B14] border border-cyan-400/30 rounded-3xl p-6 overflow-hidden relative shadow-lg">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-[40px] pointer-events-none" />
+                                
+                                <div className="flex flex-col gap-6 relative z-10">
+                                    {/* Header: Nombre y Rubro */}
+                                    <div className="flex items-start gap-4 pb-4 border-b border-white/5">
+                                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 relative flex items-center justify-center">
+                                            {shop.bannerImage ? (
+                                                <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <ImageIcon size={20} className="text-white/20" />
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-[1000] text-white uppercase tracking-tighter leading-tight">
+                                                {shop.name}
+                                            </h3>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-400/20">
+                                                    {CATEGORIES.find(c => c.id === shop.category)?.name || shop.category}
+                                                </span>
+                                                <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-1">
+                                                    <MapPin size={10} /> {shop.zone}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Details */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
+                                            <User size={14} className="text-white/40" />
+                                            <div>
+                                                <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-0.5">Titular</p>
+                                                <p className="text-[11px] font-black text-white/90">{shop.ownerName || 'No provisto'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
+                                            <Phone size={14} className="text-green-400" />
+                                            <div>
+                                                <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-0.5">Contacto</p>
+                                                <p className="text-[11px] font-black text-white/90">{shop.phone || 'No provisto'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex items-center gap-3">
+                                        <Navigation size={14} className="text-yellow-400" />
+                                        <div>
+                                            <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-0.5">Dirección del Local</p>
+                                            <p className="text-[11px] font-black text-white/90">{shop.address || 'No provista'}</p>
+                                        </div>
+                                    </div>
+
+                                    {shop.phone && (
+                                        <a
+                                            href={`https://wa.me/549${shop.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`¡Hola ${shop.ownerName || ''}! Soy embajador de ShopDigital. Tu comercio "${shop.name}" está pendiente de verificación. ¿Podemos coordinar una visita? 🚀`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={() => playNeonClick()}
+                                            className="w-full bg-green-600/20 border border-green-400/40 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] text-green-300 active:scale-95 transition-all hover:bg-green-600/30"
+                                        >
+                                            <MessageSquare size={16} /> Contactar por WhatsApp
+                                        </a>
+                                    )}
+
+                                    <div className="pt-2 flex gap-3">
+                                        <button
+                                            disabled={processingId === shop.id}
+                                            onClick={() => handleReject(shop)}
+                                            className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] active:scale-95 transition-all hover:bg-red-500/20"
+                                        >
+                                            <XCircle size={16} /> Rechazar
+                                        </button>
+                                        
+                                        <button
+                                            disabled={processingId === shop.id}
+                                            onClick={() => handleApprove(shop)}
+                                            className="flex-[2] bg-cyan-500/20 border border-cyan-400/50 py-3 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[11px] active:scale-95 transition-all text-white"
+                                        >
+                                            {processingId === shop.id ? (
+                                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <><CheckCircle size={16} /> Aprobar & Activar</>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             )}
         </div>
     );
