@@ -292,6 +292,20 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         }
     }, []);
 
+    // Calentamiento preventivo de las voces de síntesis de voz en el navegador
+    useEffect(() => {
+        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+            const handleVoicesChanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+            window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+            return () => {
+                window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+            };
+        }
+    }, []);
+
     const scrollToBottom = () => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -425,10 +439,67 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
             }
             setSpeakingMsgId(id);
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'es-AR';
-            utterance.rate = 1.1;
-            utterance.pitch = 1.2; // Voz un poco más femenina/joven
+            
+            // Intentar buscar una voz en español dulce, femenina y natural
+            const voices = window.speechSynthesis.getVoices();
+            
+            // Filtrar voces en español (es-AR, es-ES, es-MX, etc.)
+            const spanishVoices = voices.filter(v => v.lang.toLowerCase().startsWith('es'));
+            
+            let selectedVoice = null;
+            
+            // Orden de preferencia para voces dulces y de alta calidad:
+            // 1. Laura (Microsoft Laura Mobile - extremadamente dulce en Windows)
+            // 2. Google (Google español - muy natural en Chrome)
+            // 3. Paulina o Monica (Voces femeninas premium en iOS/Safari)
+            // 4. Helena (Microsoft Helena - femenina y clara en Windows)
+            // 5. Sabina (Microsoft Sabina - femenina Windows)
+            // 6. Otras voces que indiquen calidad/naturales
+            const preferredPatterns = [
+                /laura/i,
+                /google/i,
+                /paulina/i,
+                /monica/i,
+                /helena/i,
+                /sabina/i,
+                /natural/i
+            ];
+            
+            for (const pattern of preferredPatterns) {
+                const match = spanishVoices.find(v => pattern.test(v.name));
+                if (match) {
+                    selectedVoice = match;
+                    break;
+                }
+            }
+            
+            // Si no se encuentra una preferida, usar cualquier voz en español de Argentina,
+            // o cualquier voz en español en general
+            if (!selectedVoice) {
+                selectedVoice = spanishVoices.find(v => v.lang.toLowerCase() === 'es-ar') || 
+                                spanishVoices.find(v => v.lang.toLowerCase().startsWith('es-')) || 
+                                spanishVoices[0];
+            }
+            
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+                utterance.lang = selectedVoice.lang;
+                console.log("Selected ARI voice:", selectedVoice.name, selectedVoice.lang);
+            } else {
+                utterance.lang = 'es-AR';
+            }
+            
+            // Optimizar ritmo y tono para mayor dulzura y empatía
+            // pitch = 1.28 le da un tono femenino, claro, dulce y ligeramente aniñado (amigable y carismático)
+            // rate = 1.05 mantiene una velocidad fluida pero comprensible
+            utterance.rate = 1.05;
+            utterance.pitch = 1.28; 
+            
             utterance.onend = () => setSpeakingMsgId(null);
+            utterance.onerror = (e) => {
+                console.error("Speech synthesis error:", e);
+                setSpeakingMsgId(null);
+            };
             window.speechSynthesis.speak(utterance);
         }
     };
