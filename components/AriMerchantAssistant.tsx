@@ -213,7 +213,7 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         headerGlow: isField ? 'bg-rose-500/20 border-rose-400/40 shadow-[0_0_15px_rgba(244,63,94,0.2)]' : isNetwork ? 'bg-yellow-500/20 border-yellow-400/40 shadow-[0_0_15px_rgba(234,179,8,0.2)]' : isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : isAcademy ? 'bg-violet-500/20 border-violet-400/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
         headerIconColor: isField ? 'text-rose-300' : isNetwork ? 'text-yellow-300' : isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : isAcademy ? 'text-violet-300' : 'text-cyan-300',
         headerStatusText: isField ? 'text-rose-400/70' : isNetwork ? 'text-yellow-400/70' : isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : isAcademy ? 'text-violet-400/70' : 'text-cyan-400/70',
-        headerTitle: isField ? 'ARI - Operadora Base' : isNetwork ? 'ARI - Sup. de Red' : isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : isCrm ? 'ARI - CRM Analista' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Baquiana Local' : 'ARI - Consultora',
+        headerTitle: isField ? 'ARI - Operadora Base' : isNetwork ? 'ARI - Sup. de Red' : isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : isCrm ? 'ARI - CRM Analista' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Asistente Virtual IA' : 'ARI - Consultora',
         headerSubtitle: isField ? 'Radio Base Táctica Activa' : isNetwork ? 'Frecuencia Amarilla Activa' : isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : isCrm ? 'Frecuencia Cyan Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
         messageUser: isField ? 'bg-rose-500/20 border-rose-500/30 text-rose-100' : isNetwork ? 'bg-yellow-500/20 border-yellow-500/30 text-yellow-100' : isIndustrial ? 'bg-amber-500/20 border-amber-500/30 text-amber-100' : isMarketing ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-100' : isAcademy ? 'bg-violet-500/20 border-violet-500/30 text-violet-100' : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-100',
         messageAri: isField ? 'bg-white/5 border-white/10 text-rose-50' : isNetwork ? 'bg-white/5 border-white/10 text-yellow-50' : isIndustrial ? 'bg-white/5 border-white/10 text-amber-50' : isMarketing ? 'bg-white/5 border-white/10 text-emerald-50' : isAcademy ? 'bg-white/5 border-white/10 text-violet-50' : 'bg-white/5 border-white/10 text-cyan-50',
@@ -236,9 +236,9 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
             text: role === 'academy'
                 ? `¡Bienvenid${candidateName ? ', ' + candidateName.split(' ')[0] : ''}! 🎓 Soy ARI, tu Agente de R.R.H.H. y mentora personal en la Bóveda de Entrenamiento de Shop Digital.\n\nEstás a punto de dar el paso más importante de tu carrera. Cuando apruebés el examen de graduación vas a recibir tu KIT OFICIAL completo:\n\n📱 Credencial Electrónica Inteligente\n🏷️ Credencial Física Oficial\n👕 Remera de Shop Digital\n🧢 Gorra Táctica\n🔑 Panel de Embajador completo\n\nY a la calle a digitalizar locales. ¿Empezamos con los módulos?`
                 : role === 'home' 
-                ? `¡Bienvenidos al Comando Central de Shop Digital! 🌐 Soy Ari, tu guía en la red nacional. ¿Querés saber cómo moverte por el radar o cómo buscar los mejores locales de tu zona? ¡Mete mecha, preguntame lo que quieras!`
+                ? `¡Bienvenidos al Comando Central de Shop Digital! 🌐 Soy Ari, tu asistente virtual IA. ¿Querés saber cómo moverte por el radar o cómo buscar los mejores locales de tu zona? ¡Mete mecha, preguntame lo que quieras!`
                 : role === 'baquiana'
-                ? `¡Buenas buenas, viajero! 🏔️ Soy Ari, tu baquiana en la montaña. ¿Buscás una cabaña, un río escondido o dónde comer rico hoy? ¡Avisame y te armo el recorrido en el radar!`
+                ? `¡Buenas buenas, viajero! 🏔️ Soy Ari, tu asistente virtual IA en esta región. ¿Buscás una cabaña, un río escondido o dónde comer rico hoy? ¡Avisame y te armo el recorrido en el radar!`
                 : role === 'industrial'
                 ? `¡Saludos, Director! 🏭 Soy Ari, tu Analista de Inteligencia B2B. El Panel Maestro Industrial está operativo bajo la Frecuencia Ámbar. ¿Querés analizar la distribución de rubros, ver el alcance de las empresas o planificar la red de proveedores? ¡Mete mecha!`
                 : role === 'marketing'
@@ -524,8 +524,8 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         onClick={() => setIsOpen(!isOpen)}
                         className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center gap-3 relative z-10 cursor-pointer hover:brightness-110 transition-all`}
                     >
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center border flex-shrink-0 ${styles.headerGlow}`}>
-                            <Sparkles size={18} className={styles.headerIconColor} />
+                        <div className={`w-9 h-9 rounded-full overflow-hidden border flex-shrink-0 bg-slate-950 flex items-center justify-center ${styles.headerGlow}`}>
+                            <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                         </div>
                         <div className="flex-1">
                             <h3 className="text-[11px] font-black text-white uppercase tracking-widest">{styles.headerTitle}</h3>
@@ -708,7 +708,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         <div className={`bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
                             <div className="bg-black/90 backdrop-blur-md px-4 py-2 rounded-2xl whitespace-nowrap">
                                 <span className={`text-[10px] font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r ${styles.helpTextGradient}`}>
-                                    ${isIndustrial ? 'Comando B2B Online 🦾' : '¡Estoy para ayudarte! 🦾'}
+                                    ${isIndustrial ? 'Comando B2B Online 🦾' : 'Asistente IA 🦾'}
                                 </span>
                             </div>
                         </div>
@@ -726,8 +726,8 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     >
                         {/* ARI Neon Bubble */}
                         <div className={`absolute inset-0 ${styles.blurBg} rounded-full blur-xl transition-all`}></div>
-                        <div className={`w-12 h-12 bg-gradient-to-tr ${styles.bubbleGradient} rounded-full ${styles.bubbleGlow} flex items-center justify-center border-2 ${styles.bubbleBorder}`}>
-                            <Sparkles size={24} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
+                        <div className={`w-12 h-12 rounded-full ${styles.bubbleGlow} overflow-hidden border-2 ${styles.bubbleBorder} bg-slate-950 flex items-center justify-center`}>
+                            <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                         </div>
                         
                         <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
@@ -748,8 +748,8 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     {/* Header */}
                     <div className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center justify-between relative z-10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]`}>
                         <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${styles.headerGlow}`}>
-                                <Sparkles size={20} className={styles.headerIconColor} />
+                            <div className={`w-10 h-10 rounded-full overflow-hidden border flex items-center justify-center bg-slate-950 flex-shrink-0 ${styles.headerGlow}`}>
+                                <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                             </div>
                             <div>
                                 <h3 className="text-[12px] font-black text-white uppercase tracking-widest">
