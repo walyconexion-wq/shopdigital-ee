@@ -152,7 +152,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 <div className="w-full px-6 flex flex-col pb-4">
                     <button
                         onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                        className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                        className="back-button absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
                     >
                         <ArrowLeft size={22} className="text-white drop-shadow-md pr-0.5" />
                     </button>
@@ -212,7 +212,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                 <button
                                     key={loc}
                                     onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                                    className={`flex-1 min-w-[72px] py-3 px-2 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 active:scale-95 ${activeClass}`}
+                                    className={`locality-tab flex-1 min-w-[72px] py-3 px-2 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 active:scale-95 ${activeClass}`}
                                 >
                                     <span className={`text-[10px] sm:text-[11px] font-[1000] uppercase tracking-widest text-center leading-tight ${isActive ? 'text-shadow-premium' : ''}`}>
                                         {loc}
@@ -228,21 +228,11 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                     <div className="flex flex-wrap justify-center gap-2.5 px-2 pb-2 max-w-[95%] mx-auto mb-2">
                         <button
                             onClick={() => { playNeonClick(); setActiveSubcategory(''); }}
-                            className={`px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
+                            className={`subcategory-tab px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
                                 !activeSubcategory 
-                                    ? 'backdrop-blur-md text-white scale-105 animate-pulse'
+                                    ? 'active-sub backdrop-blur-md text-white scale-105 animate-pulse'
                                     : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
                             }`}
-                            style={!activeSubcategory ? {
-                                backgroundColor: hexToRgba(themeColor, 0.35),
-                                borderColor: '#ffffff',
-                                boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
-                                textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
-                            } : {
-                                backgroundColor: hexToRgba(themeColor, 0.1),
-                                borderColor: hexToRgba(themeColor, 0.3),
-                                boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
-                            }}
                         >
                             Ver Todo
                         </button>
@@ -252,21 +242,11 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                 <button
                                     key={sub}
                                     onClick={() => { playNeonClick(); setActiveSubcategory(sub); }}
-                                    className={`px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
+                                    className={`subcategory-tab px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
                                         isActive 
-                                            ? 'backdrop-blur-md text-white scale-105 animate-pulse'
+                                            ? 'active-sub backdrop-blur-md text-white scale-105 animate-pulse'
                                             : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
                                     }`}
-                                    style={isActive ? {
-                                        backgroundColor: hexToRgba(themeColor, 0.35),
-                                        borderColor: '#ffffff',
-                                        boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
-                                        textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
-                                    } : {
-                                        backgroundColor: hexToRgba(themeColor, 0.1),
-                                        borderColor: hexToRgba(themeColor, 0.3),
-                                        boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
-                                    }}
                                 >
                                     {sub}
                                 </button>

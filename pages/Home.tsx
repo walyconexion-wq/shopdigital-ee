@@ -269,39 +269,34 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     <div className="h-[1px] w-6" style={{ background: `linear-gradient(90deg, ${hexToRgba(themeColor, 0.3)}, transparent)` }}></div>
                 </div>
 
-                {/* Panel de Telemetría Cyberpunk */}
+                {/* Panel de Telemetría */}
                 <div 
-                    className="mt-6 flex items-center justify-between w-full max-w-[340px] px-4 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-widest relative overflow-hidden backdrop-blur-md shadow-lg"
-                    style={{
-                        background: 'rgba(15, 23, 42, 0.45)',
-                        borderColor: hexToRgba(themeColor, 0.35),
-                        boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.15)}, inset 0 0 8px ${hexToRgba(themeColor, 0.05)}`
-                    }}
+                    className="telemetry-widget mt-6 flex items-center justify-between w-full max-w-[340px] px-4 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-widest relative overflow-hidden backdrop-blur-md shadow-lg"
                 >
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">HORA</span>
-                        <span className="text-white font-mono text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                        <span className="telemetry-widget-value text-white font-mono text-[10px] tracking-wider">
                             {currentTimeStr}
                         </span>
                     </div>
                     <div className="w-[1px] h-5 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">FECHA</span>
-                        <span className="text-white text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                        <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             {currentDateStr}
                         </span>
                     </div>
                     <div className="w-[1px] h-5 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">VISITAS</span>
-                        <span className="text-white text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                        <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             👁️ {globalConfig?.visits || 1}
                         </span>
                     </div>
                     <div className="w-[1px] h-5 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">CLIMA</span>
-                        <span className="text-white text-[10px] tracking-wider" style={{ textShadow: `0 0 8px ${hexToRgba(themeColor, 0.5)}` }}>
+                        <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             {getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : (weatherError ? '18°C' : '...')}
                         </span>
                     </div>
@@ -372,7 +367,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     <button
                         key={cat.id}
                         onClick={() => { playNeonClick(); navigate(`/${townId}/${cat.slug}`); }}
-                        className="glass-button-3d category-btn btn-neon-active aspect-square group backdrop-blur-md border rounded-[1.25rem] transition-all duration-300"
+                        className="glass-button-3d category-btn aspect-square group backdrop-blur-md border rounded-[1.25rem] transition-all duration-300"
                         style={{
                             animation: `fadeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) ${index * 35}ms both`,
                             backgroundColor: hexToRgba(themeColor, 0.15),

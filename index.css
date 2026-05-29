@@ -333,13 +333,44 @@
 }
 
 .day-mode {
-  --app-bg: #f8fafc;
+  --app-bg: #fdfbf7;
   --app-text: #0f172a;
-  --app-text-muted: #64748b;
+  --app-text-muted: #475569;
   --card-bg: #ffffff;
   --card-border: #cbd5e1;
-  --card-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.08), 0 8px 16px -6px rgba(59, 130, 246, 0.08);
+  --card-shadow: 0 10px 25px -5px rgba(88, 70, 50, 0.08), 0 8px 16px -6px rgba(88, 70, 50, 0.08);
   --neon-opacity: 0.05;
+}
+
+/* Telemetry Widget and Subcategory Tab base styles */
+.telemetry-widget {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border-color: color-mix(in srgb, var(--theme-primary) 35%, transparent) !important;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--theme-primary) 15%, transparent), inset 0 0 8px color-mix(in srgb, var(--theme-primary) 5%, transparent) !important;
+}
+
+.telemetry-widget-value {
+  text-shadow: 0 0 8px color-mix(in srgb, var(--theme-primary) 50%, transparent) !important;
+}
+
+.subcategory-tab {
+  background-color: color-mix(in srgb, var(--theme-primary) 10%, transparent) !important;
+  border-color: color-mix(in srgb, var(--theme-primary) 30%, transparent) !important;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--theme-primary) 10%, transparent) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.subcategory-tab:hover {
+  color: #ffffff !important;
+  border-color: color-mix(in srgb, var(--theme-primary) 50%, transparent) !important;
+}
+
+.subcategory-tab.active-sub {
+  background-color: color-mix(in srgb, var(--theme-primary) 35%, transparent) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--theme-primary) 80%, transparent), inset 0 0 10px color-mix(in srgb, var(--theme-primary) 50%, transparent) !important;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--theme-primary) 90%, transparent) !important;
+  color: #ffffff !important;
 }
 
 /* Overrides para el Modo Día */
@@ -375,14 +406,14 @@
   color: #334155 !important;
 }
 
-/* Botón 3D de Rubro/Categoría */
+/* Botón 3D de Rubro/Categoría (Neumórfico en Modo Día) */
 .day-mode .glass-button-3d {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-  border: 1.2px solid rgba(59, 130, 246, 0.3) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #faf8f5 100%) !important;
+  border: 1px solid #f2e9db !important;
   border-bottom-width: 4.5px !important;
   box-shadow: 
-    0 8px 16px rgba(59, 130, 246, 0.06), 
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    0 8px 16px rgba(88, 70, 50, 0.06), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
   color: #0f172a !important;
 }
 
@@ -392,39 +423,73 @@
 }
 
 .day-mode .glass-button-3d svg {
-  color: #2563eb !important;
+  color: var(--theme-primary) !important;
 }
 
 .day-mode .glass-button-3d:hover {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
-  border-color: rgba(37, 99, 235, 0.5) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f7f3eb 100%) !important;
+  border-color: #e5d5c0 !important;
   box-shadow: 
-    0 12px 20px rgba(37, 99, 235, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    0 12px 20px rgba(88, 70, 50, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 .day-mode .glass-button-3d:active {
   transform: translateY(3.5px) scale(0.97) translateZ(0) !important;
   border-bottom-width: 1px !important;
-  box-shadow: 0 4px 6px -2px rgba(37, 99, 235, 0.08) !important;
-  background: #dbeafe !important;
+  box-shadow: 0 4px 6px -2px rgba(88, 70, 50, 0.08) !important;
+  background: #f2e9db !important;
 }
 
-/* Rubro Seleccionado / Activo */
-.day-mode .btn-neon-active {
-  border: 1.5px solid #2563eb !important;
-  border-bottom-width: 4.5px !important;
-  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%) !important;
-  box-shadow: 0 0 12px rgba(37, 99, 235, 0.2) !important;
-  animation: none !important;
+/* Override Telemetry Widget for Day Mode */
+.day-mode .telemetry-widget {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 8px 32px 0 rgba(88, 70, 50, 0.06), inset 0 0 8px rgba(255, 255, 255, 0.2) !important;
+}
+.day-mode .telemetry-widget span {
+  color: #475569 !important;
+}
+.day-mode .telemetry-widget .telemetry-widget-value {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
 }
 
-.day-mode .btn-neon-active span {
-  color: #1e40af !important;
+/* Override Back Button for Day Mode */
+.day-mode .back-button {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 15px rgba(88, 70, 50, 0.08) !important;
+}
+.day-mode .back-button:hover {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+.day-mode .back-button svg {
+  color: #0f172a !important;
+  filter: none !important;
 }
 
-.day-mode .btn-neon-active svg {
-  color: #2563eb !important;
+/* Subcategory tabs for Day Mode */
+.day-mode .subcategory-tab {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+  box-shadow: 0 4px 10px rgba(88, 70, 50, 0.04) !important;
+}
+.day-mode .subcategory-tab:hover {
+  background-color: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+.day-mode .subcategory-tab.active-sub {
+  background-color: var(--theme-primary) !important;
+  border-color: var(--theme-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-primary) 30%, transparent) !important;
+  text-shadow: none !important;
 }
 
 /* Tarjeta General 3D */
@@ -607,45 +672,52 @@
 }
 
 /* CategoryPage dynamic locality buttons & cards */
-.day-mode button[class*="bg-violet-600/50"],
-.day-mode button[class*="bg-cyan-600/50"],
-.day-mode button[class*="bg-rose-600/50"],
-.day-mode button[class*="bg-green-600/50"],
-.day-mode button[class*="bg-amber-600/50"] {
-  background-color: #eff6ff !important;
-  border-color: #2563eb !important;
-  color: #1e40af !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15) !important;
+.day-mode .locality-tab {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+  box-shadow: 0 4px 10px rgba(88, 70, 50, 0.04) !important;
 }
 
-.day-mode button[class*="bg-violet-600/30"],
-.day-mode button[class*="bg-cyan-600/30"],
-.day-mode button[class*="bg-rose-600/30"],
-.day-mode button[class*="bg-green-600/30"],
-.day-mode button[class*="bg-amber-600/30"] {
-  background-color: #eff6ff !important;
-  border: 1px solid #3b82f6 !important;
-  border-bottom-width: 4px !important;
-  color: #1e40af !important;
-  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1) !important;
+.day-mode .locality-tab:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
-.day-mode button[class*="bg-violet-600/30"]:hover,
-.day-mode button[class*="bg-cyan-600/30"]:hover,
-.day-mode button[class*="bg-rose-600/30"]:hover,
-.day-mode button[class*="bg-green-600/30"]:hover,
-.day-mode button[class*="bg-amber-600/30"]:hover {
-  background-color: #dbeafe !important;
-  border-color: #2563eb !important;
+.day-mode .locality-tab[class*="bg-violet-600/50"] {
+  background-color: #f5f3ff !important;
+  border-color: #8b5cf6 !important;
+  color: #5b21b6 !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12) !important;
 }
 
-.day-mode button[class*="bg-violet-600/30"]:active,
-.day-mode button[class*="bg-cyan-600/30"]:active,
-.day-mode button[class*="bg-rose-600/30"]:active,
-.day-mode button[class*="bg-green-600/30"]:active,
-.day-mode button[class*="bg-amber-600/30"]:active {
-  background-color: #bfdbfe !important;
-  border-bottom-width: 1px !important;
+.day-mode .locality-tab[class*="bg-cyan-600/50"] {
+  background-color: #ecfeff !important;
+  border-color: #06b6d4 !important;
+  color: #075985 !important;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.12) !important;
+}
+
+.day-mode .locality-tab[class*="bg-rose-600/50"] {
+  background-color: #fff1f2 !important;
+  border-color: #f43f5e !important;
+  color: #9f1239 !important;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.12) !important;
+}
+
+.day-mode .locality-tab[class*="bg-green-600/50"] {
+  background-color: #f0fdf4 !important;
+  border-color: #22c55e !important;
+  color: #166534 !important;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.12) !important;
+}
+
+.day-mode .locality-tab[class*="bg-amber-600/50"] {
+  background-color: #fffbeb !important;
+  border-color: #f59e0b !important;
+  color: #92400e !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12) !important;
 }
 
 .day-mode .card-neon-violet,
