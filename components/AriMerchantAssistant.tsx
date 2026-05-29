@@ -708,7 +708,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         <div className={`bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
                             <div className="bg-black/90 backdrop-blur-md px-4 py-2 rounded-2xl whitespace-nowrap">
                                 <span className={`text-[10px] font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r ${styles.helpTextGradient}`}>
-                                    ${isIndustrial ? 'Comando B2B Online 🦾' : 'Asistente IA 🦾'}
+                                    {isIndustrial ? 'Comando B2B Online' : 'Asistente IA'}
                                 </span>
                             </div>
                         </div>
