@@ -391,6 +391,11 @@ const GlobalConfigPage: React.FC = () => {
                                 { id: 'nebula', name: 'Nebulosa', emoji: '🌌', desc: 'Asfalto cósmico' },
                                 { id: 'hex', name: 'Hexágonos', emoji: '⬡', desc: 'Panal tech' },
                                 { id: 'cyber', name: 'Fibra Carbono', emoji: '🛡️', desc: 'Blindaje cyber' },
+                                { id: 'hex-glow', name: 'Panal Neón', emoji: '💠', desc: 'Luz en crestas' },
+                                { id: 'cube-depth', name: 'Bloques 3D', emoji: '📦', desc: 'Cubos flotantes' },
+                                { id: 'rounded-rects', name: 'Planos 3D', emoji: '📇', desc: 'Tarjetas flotando' },
+                                { id: 'wave-flow', name: 'Flujo Ondas', emoji: '🌊', desc: 'Ondas sinuosas' },
+                                { id: 'hex-3d-height', name: 'Muro Panal', emoji: '🧱', desc: 'Columnas 3D' },
                             ].map(bg => (
                                 <button
                                     key={bg.id}

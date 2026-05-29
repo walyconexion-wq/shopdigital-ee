@@ -856,3 +856,44 @@
 .day-mode .bg-gradient-to-r.from-emerald-900\/40.to-green-900\/40 svg {
   color: #ffffff !important;
 }
+
+/* ═══════════════════════════════════════════ */
+/* 🌀 EFECTO FLOTANTE DE BOTONES (FASE 2)     */
+/* ═══════════════════════════════════════════ */
+
+/* Efecto hover flotante con sombras orgánicas en Modo Claro y Neón en Modo Noche */
+.glass-button-3d, .glass-card-3d {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease !important;
+}
+
+/* Hover en Modo Noche */
+.glass-button-3d:hover {
+  transform: translateY(-6px) scale(1.02) translateZ(0) !important;
+  box-shadow: 
+    0 20px 30px rgba(0, 0, 0, 0.5), 
+    0 0 20px color-mix(in srgb, var(--theme-primary) 35%, transparent) !important;
+  border-color: var(--theme-primary) !important;
+}
+
+/* Hover en Modo Día (Neumórfico flotante sobre champagne) */
+.day-mode .glass-button-3d:hover {
+  transform: translateY(-6px) scale(1.02) translateZ(0) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 
+    0 16px 28px rgba(88, 70, 50, 0.12), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+/* active en Modo Día */
+.day-mode .glass-button-3d:active {
+  transform: translateY(1.5px) scale(0.98) translateZ(0) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 0 4px 8px rgba(88, 70, 50, 0.06) !important;
+}
+
+/* Hover general de tarjetas en modo día */
+.day-mode .glass-card-3d:hover {
+  transform: translateY(-4px) translateZ(0) !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 20px 35px rgba(88, 70, 50, 0.12) !important;
+}

@@ -23,6 +23,11 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     };
 
     const [isDayMode, setIsDayMode] = React.useState(() => checkIsDayMode(themeMode));
+    const [scrollTop, setScrollTop] = React.useState(0);
+
+    const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+        setScrollTop(e.currentTarget.scrollTop);
+    };
 
     React.useEffect(() => {
         setIsDayMode(checkIsDayMode(themeMode));
@@ -74,17 +79,65 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     const getTechBgStyles = () => {
         switch (techBg) {
             case 'stardust':
-                return { texture: "url('https://www.transparenttextures.com/patterns/stardust.png')", opacity: 0.35, grid: true, glow: 0.12 };
+                return { texture: "url('https://www.transparenttextures.com/patterns/stardust.png')", opacity: isDayMode ? 0.08 : 0.35, grid: true, glow: 0.12 };
             case 'circuit':
-                return { texture: "url('https://www.transparenttextures.com/patterns/circuits.png')", opacity: 0.25, grid: false, glow: 0.1 };
+                return { texture: "url('https://www.transparenttextures.com/patterns/circuits.png')", opacity: isDayMode ? 0.06 : 0.25, grid: false, glow: 0.1 };
             case 'matrix':
-                return { texture: "url('https://www.transparenttextures.com/patterns/dark-mosaic.png')", opacity: 0.3, grid: true, glow: 0.1 };
+                return { texture: "url('https://www.transparenttextures.com/patterns/dark-mosaic.png')", opacity: isDayMode ? 0.06 : 0.3, grid: true, glow: 0.1 };
             case 'nebula':
-                return { texture: "url('https://www.transparenttextures.com/patterns/asfalt-dark.png')", opacity: 0.4, grid: false, glow: 0.15 };
+                return { texture: "url('https://www.transparenttextures.com/patterns/asfalt-dark.png')", opacity: isDayMode ? 0.08 : 0.4, grid: false, glow: 0.15 };
             case 'hex':
-                return { texture: "url('https://www.transparenttextures.com/patterns/hexellence.png')", opacity: 0.25, grid: true, glow: 0.1 };
+                return { texture: "url('https://www.transparenttextures.com/patterns/hexellence.png')", opacity: isDayMode ? 0.06 : 0.25, grid: true, glow: 0.1 };
             case 'cyber':
-                return { texture: "url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png')", opacity: 0.3, grid: false, glow: 0.12 };
+                return { texture: "url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png')", opacity: isDayMode ? 0.06 : 0.3, grid: false, glow: 0.12 };
+            
+            // Nuevos fondos de la Fase 2 (vectoriales SVG dinámicos):
+            case 'hex-glow':
+                const hexGlowSvg = `data:image/svg+xml,${encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="100" viewBox="0 0 56 100">
+                        <path d="M28 66L0 50L0 16L28 0L56 16L56 50Z M0 100L28 84L56 100 M56 0L28 16L0 0" 
+                              fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${isDayMode ? 0.25 : 0.4}" />
+                    </svg>
+                `)}`;
+                return { texture: `url("${hexGlowSvg}")`, opacity: 1, grid: false, glow: 0.15 };
+                
+            case 'cube-depth':
+                const cubeDepthSvg = `data:image/svg+xml,${encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M0 30 L30 0 L60 30 L30 60 Z" fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${isDayMode ? 0.25 : 0.4}" />
+                        <path d="M30 30 L60 0 M30 30 L0 0 M30 30 L30 60" fill="none" stroke="${themeColor}" stroke-width="0.8" opacity="${isDayMode ? 0.15 : 0.25}" />
+                    </svg>
+                `)}`;
+                return { texture: `url("${cubeDepthSvg}")`, opacity: 1, grid: false, glow: 0.12 };
+                
+            case 'rounded-rects':
+                const roundedRectsSvg = `data:image/svg+xml,${encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+                        <rect x="5" y="5" width="30" height="30" rx="8" fill="none" stroke="${themeColor}" stroke-width="1" opacity="${isDayMode ? 0.12 : 0.2}" />
+                        <rect x="45" y="15" width="25" height="45" rx="8" fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${isDayMode ? 0.18 : 0.3}" />
+                        <rect x="15" y="45" width="25" height="25" rx="6" fill="none" stroke="${themeColor}" stroke-width="1" opacity="${isDayMode ? 0.1 : 0.15}" />
+                    </svg>
+                `)}`;
+                return { texture: `url("${roundedRectsSvg}")`, opacity: 1, grid: false, glow: 0.1 };
+                
+            case 'wave-flow':
+                const waveFlowSvg = `data:image/svg+xml,${encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="40" viewBox="0 0 100 40">
+                        <path d="M0 20 Q25 40 50 20 T100 20" fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${isDayMode ? 0.2 : 0.3}" />
+                        <path d="M0 10 Q25 30 50 10 T100 10" fill="none" stroke="${themeColor}" stroke-width="0.8" opacity="${isDayMode ? 0.1 : 0.15}" />
+                    </svg>
+                `)}`;
+                return { texture: `url("${waveFlowSvg}")`, opacity: 1, grid: false, glow: 0.1 };
+                
+            case 'hex-3d-height':
+                const hex3dHeightSvg = `data:image/svg+xml,${encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="104" viewBox="0 0 60 104">
+                        <path d="M0 17.32 L30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 Z" fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${isDayMode ? 0.25 : 0.4}" />
+                        <path d="M0 17.32 L30 34.64 L60 17.32 M30 34.64 L30 69.28" fill="none" stroke="${themeColor}" stroke-width="1" opacity="${isDayMode ? 0.2 : 0.3}" />
+                    </svg>
+                `)}`;
+                return { texture: `url("${hex3dHeightSvg}")`, opacity: 1, grid: false, glow: 0.15 };
+                
             default:
                 return null;
         }
@@ -152,23 +205,41 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                     }}
                 />
                 {/* Fondo Tecnológico Dinámico */}
-                {techStyle && !isDayMode && (
+                {techStyle && (
                     <>
-                        <div className="absolute inset-0" style={{ backgroundImage: techStyle.texture, opacity: techStyle.opacity }} />
-                        {techStyle.grid && (
-                            <div className="absolute inset-0" style={{
-                                backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.07)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.07)} 1px, transparent 1px)`,
-                                backgroundSize: '35px 35px'
-                            }} />
+                        <div 
+                            className="absolute inset-0 transition-transform duration-75 ease-out" 
+                            style={{ 
+                                backgroundImage: techStyle.texture, 
+                                opacity: techStyle.opacity,
+                                transform: `translateY(${scrollTop * 0.15}px) translateZ(0)`
+                            }} 
+                        />
+                        {techStyle.grid && !isDayMode && (
+                            <div 
+                                className="absolute inset-0 transition-transform duration-75 ease-out" 
+                                style={{
+                                    backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.07)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.07)} 1px, transparent 1px)`,
+                                    backgroundSize: '35px 35px',
+                                    transform: `translateY(${scrollTop * 0.08}px) translateZ(0)`
+                                }} 
+                            />
                         )}
-                        <div className="absolute top-0 right-0 w-[70%] h-[70%] rounded-full blur-[120px]" style={{ backgroundColor: hexToRgba(themeColor, techStyle.glow) }} />
-                        <div className="absolute bottom-0 left-0 w-[50%] h-[50%] rounded-full blur-[100px]" style={{ backgroundColor: hexToRgba(themeColor, techStyle.glow * 0.6) }} />
+                        {!isDayMode && (
+                            <>
+                                <div className="absolute top-0 right-0 w-[70%] h-[70%] rounded-full blur-[120px]" style={{ backgroundColor: hexToRgba(themeColor, techStyle.glow) }} />
+                                <div className="absolute bottom-0 left-0 w-[50%] h-[50%] rounded-full blur-[100px]" style={{ backgroundColor: hexToRgba(themeColor, techStyle.glow * 0.6) }} />
+                            </>
+                        )}
                     </>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
+                <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-transparent ${isDayMode ? 'to-[#faf5ee]/25' : 'to-black/40'}`} />
             </div>
 
-            <main className="flex-grow overflow-y-auto no-scrollbar relative z-10">
+            <main 
+                onScroll={handleScroll}
+                className="flex-grow overflow-y-auto no-scrollbar relative z-10"
+            >
                 <Outlet />
             </main>
 
