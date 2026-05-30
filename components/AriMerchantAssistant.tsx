@@ -151,6 +151,7 @@ Tus funciones clave:
 1. 🗺️ Guía Turística y Comercial: Si te preguntan por cabañas, recomendás buscar en la sección de "Hospedaje". Si preguntan por comida, los guiás a "Gastronomía".
 2. 🗣️ Capacidad de Diálogo: Sabés que el usuario puede estar hablándote por mensaje de voz, así que tus respuestas deben ser conversacionales, fluidas y no parecer un manual de instrucciones robótico.
 3. ⚡ Soporte Rápido: Ayudás a entender cómo usar los filtros, cómo contactar al dueño del local por WhatsApp y cómo aprovechar las Ofertas Relámpago.
+4. 🌍 Políglota (Operación Babel): Detectá automáticamente en qué idioma te habla el usuario (Inglés, Portugués o Español). Respondé siempre en ese mismo idioma de forma fluida, manteniendo la calidez, pero adaptándote a su lengua. Si la base de datos de comercios u ofertas está en español, traducile la recomendación con gracia (por ejemplo: "El Tano (Pizzaria) is open...").
 
 Regla de Oro: Sos la cara visible de la "Frecuencia Azul". Si alguien te saluda por audio, respondé con calidez y energía, como si los estuvieras recibiendo en la puerta del Valle.
 `;
@@ -228,6 +229,27 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         speechBtnColor: isField ? 'text-rose-400 hover:text-rose-300 border-rose-500/20' : isIndustrial ? 'text-amber-400 hover:text-amber-300 border-amber-500/20' : isMarketing ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/20' : isAcademy ? 'text-violet-400 hover:text-violet-300 border-violet-500/20' : 'text-cyan-400 hover:text-cyan-300 border-cyan-500/20',
         sendBtn: isField ? 'from-rose-500 to-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]' : isIndustrial ? 'from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : isMarketing ? 'from-emerald-500 to-green-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : isAcademy ? 'from-violet-500 to-purple-400 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'from-cyan-500 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
     };
+
+    const getChipClass = (color: 'cyan' | 'violet' | 'amber' | 'emerald' | 'yellow') => {
+        if (isDayMode) {
+            switch (color) {
+                case 'cyan': return 'bg-cyan-50 border-cyan-200/60 text-cyan-700 hover:bg-cyan-100/80';
+                case 'violet': return 'bg-violet-50 border-violet-200/60 text-violet-700 hover:bg-violet-100/80';
+                case 'amber': return 'bg-amber-50 border-amber-200/60 text-amber-700 hover:bg-amber-100/80';
+                case 'emerald': return 'bg-emerald-50 border-emerald-200/60 text-emerald-700 hover:bg-emerald-100/80';
+                case 'yellow': return 'bg-yellow-50 border-yellow-200/60 text-yellow-700 hover:bg-yellow-100/80';
+            }
+        } else {
+            switch (color) {
+                case 'cyan': return 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20';
+                case 'violet': return 'bg-violet-500/10 border-violet-500/20 text-violet-400 hover:bg-violet-500/20';
+                case 'amber': return 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/20';
+                case 'emerald': return 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20';
+                case 'yellow': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20';
+            }
+        }
+    };
+
     const [isListening, setIsListening] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([
@@ -509,35 +531,39 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
             {/* ═══ MODO INLINE: Panel siempre abierto, empotrado en la página ═══ */}
             {inline && (
                 <div
-                    className={`w-full bg-[#020810]/95 backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
+                    className={`w-full ${isDayMode ? 'bg-[#faf8f5]/98 border-slate-200/80 shadow-xl' : 'bg-[#020810]/95 border-white/10'} backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
                     style={{ borderColor: isMarketing ? 'rgba(16,185,129,0.2)' : isIndustrial ? 'rgba(245,158,11,0.2)' : 'rgba(34,211,238,0.2)', minHeight: isOpen ? '420px' : 'auto' }}
                 >
                     {/* Background grid */}
-                    <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
-                    <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0`} />
-                    <div className={`absolute bottom-0 left-0 w-32 h-32 ${styles.accentGlow2} rounded-full blur-3xl z-0`} />
+                    <div className={`absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.015'})_1px,transparent_1px),linear-gradient(90deg,rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.015'})_1px,transparent_1px)] bg-[size:20px_20px] z-0`} />
+                    <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0 ${isDayMode ? 'opacity-20' : ''}`} />
+                    <div className={`absolute bottom-0 left-0 w-32 h-32 ${styles.accentGlow2} rounded-full blur-3xl z-0 ${isDayMode ? 'opacity-20' : ''}`} />
                     {/* Línea de acento superior */}
                     <div className="absolute top-0 left-0 right-0 h-[2px] z-10" style={{ background: `linear-gradient(90deg, transparent, ${isMarketing ? '#10b981' : isIndustrial ? '#f59e0b' : '#22d3ee'}, transparent)` }} />
 
                     {/* Header inline */}
                     <div 
                         onClick={() => setIsOpen(!isOpen)}
-                        className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center gap-3 relative z-10 cursor-pointer hover:brightness-110 transition-all`}
+                        className={`p-4 ${
+                            isDayMode 
+                                ? 'bg-white border-b border-slate-100' 
+                                : `bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]`
+                        } flex items-center gap-3 relative z-10 cursor-pointer hover:brightness-110 transition-all`}
                     >
                         <div className={`w-9 h-9 rounded-full overflow-hidden border flex-shrink-0 bg-slate-950 flex items-center justify-center ${styles.headerGlow}`}>
                             <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-[11px] font-black text-white uppercase tracking-widest">{styles.headerTitle}</h3>
-                            <p className={`text-[8px] ${styles.headerStatusText} font-bold uppercase tracking-widest flex items-center gap-1`}>
+                            <h3 className={`text-[11px] font-black uppercase tracking-widest ${isDayMode ? 'text-[#0f172a]' : 'text-white'}`}>{styles.headerTitle}</h3>
+                            <p className={`text-[8px] ${isDayMode ? 'text-slate-500' : styles.headerStatusText} font-bold uppercase tracking-widest flex items-center gap-1`}>
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                 {styles.headerSubtitle}
                             </p>
                         </div>
-                        <div className="flex items-center gap-2 bg-black/40 border border-emerald-500/20 rounded-full px-2 py-1">
+                        <div className={`flex items-center gap-2 ${isDayMode ? 'bg-slate-100 border border-slate-200/80' : 'bg-black/40 border border-emerald-500/20'} rounded-full px-2 py-1`}>
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
-                            <span className="text-[7px] font-black uppercase tracking-widest text-emerald-400">ACTIVA</span>
-                            {isOpen ? <ChevronUp size={12} className="text-emerald-400" /> : <ChevronDown size={12} className="text-emerald-400" />}
+                            <span className={`text-[7px] font-black uppercase tracking-widest ${isDayMode ? 'text-emerald-600' : 'text-emerald-400'}`}>ACTIVA</span>
+                            {isOpen ? <ChevronUp size={12} className={isDayMode ? 'text-slate-600' : 'text-emerald-400'} /> : <ChevronDown size={12} className={isDayMode ? 'text-slate-600' : 'text-emerald-400'} />}
                         </div>
                     </div>
 
@@ -545,32 +571,32 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         <>
 
                     {/* Misiones Programadas (colapsable) */}
-                    <div className="bg-white/[0.03] border-b border-white/5 relative z-10">
+                    <div className={`${isDayMode ? 'bg-slate-50 border-b border-slate-100' : 'bg-white/[0.03] border-b border-white/5'} relative z-10`}>
                         <button
                             onClick={() => setShowCampaigns(!showCampaigns)}
-                            className="w-full px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-all"
+                            className={`w-full px-4 py-2 flex items-center justify-between transition-all ${isDayMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'}`}
                         >
                             <div className="flex items-center gap-2">
                                 <Calendar size={13} className="text-violet-400" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Misiones Programadas</span>
+                                <span className={`text-[9px] font-black uppercase tracking-widest ${isDayMode ? 'text-slate-700' : 'text-white/70'}`}>Misiones Programadas</span>
                                 {campaigns.filter(c => c.status === 'pending').length > 0 && (
                                     <span className="w-4 h-4 rounded-full bg-violet-600 text-[8px] font-black flex items-center justify-center text-white">
                                         {campaigns.filter(c => c.status === 'pending').length}
                                     </span>
                                 )}
                             </div>
-                            {showCampaigns ? <ChevronUp size={13} className="text-white/40" /> : <ChevronDown size={13} className="text-white/40" />}
+                            {showCampaigns ? <ChevronUp size={13} className={isDayMode ? 'text-slate-500' : 'text-white/40'} /> : <ChevronDown size={13} className={isDayMode ? 'text-slate-500' : 'text-white/40'} />}
                         </button>
                         {showCampaigns && (
                             <div className="max-h-[120px] overflow-y-auto p-3 space-y-2 no-scrollbar">
                                 {campaigns.length === 0 ? (
-                                    <p className="text-[9px] text-white/20 text-center py-2 italic">No hay misiones agendadas todavía, Jefe.</p>
+                                    <p className={`text-[9px] text-center py-2 italic ${isDayMode ? 'text-slate-400' : 'text-white/20'}`}>No hay misiones agendadas todavía, Jefe.</p>
                                 ) : campaigns.map(camp => (
-                                    <div key={camp.id} className="bg-black/40 border border-white/5 rounded-xl p-2.5 flex items-start gap-3 group">
+                                    <div key={camp.id} className={`${isDayMode ? 'bg-white border border-slate-200 shadow-sm' : 'bg-black/40 border border-white/5'} rounded-xl p-2.5 flex items-start gap-3 group`}>
                                         <div className={`mt-1 w-2 h-2 rounded-full ${camp.status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
                                         <div className="flex-1 min-w-0">
-                                            <span className="text-[8px] font-black text-white/40 uppercase flex items-center gap-1"><Clock size={8} /> {new Date(camp.scheduledDate).toLocaleDateString()}</span>
-                                            <p className="text-[9px] text-white/80 leading-tight truncate">{camp.message}</p>
+                                            <span className={`text-[8px] font-black uppercase flex items-center gap-1 ${isDayMode ? 'text-slate-400' : 'text-white/40'}`}><Clock size={8} /> {new Date(camp.scheduledDate).toLocaleDateString()}</span>
+                                            <p className={`text-[9px] leading-tight truncate ${isDayMode ? 'text-slate-700' : 'text-white/80'}`}>{camp.message}</p>
                                         </div>
                                         <button onClick={() => actualizarEstadoCampania(camp.id, 'cancelled')} className="text-red-500/60 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={11} /></button>
                                     </div>
@@ -586,16 +612,16 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                 <div className={`max-w-[88%] p-3 rounded-[1.1rem] text-[11px] leading-relaxed border backdrop-blur-md ${
                                     msg.role === 'user'
                                     ? styles.userMsgBg + ' text-white rounded-tr-sm'
-                                    : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm'
+                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]' : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm')
                                 }`}>
                                     {msg.text}
                                     {msg.role === 'ari' && (
                                         <button
                                             onClick={() => handlePlayMessage(msg.text, i)}
-                                            className={`mt-2 ${styles.speechBtnColor} transition-colors flex items-center gap-1 bg-black/20 hover:bg-black/40 px-2 py-1 rounded-md w-max`}
+                                            className={`mt-2 ${styles.speechBtnColor} transition-colors flex items-center gap-1 ${isDayMode ? 'bg-slate-100 hover:bg-slate-200' : 'bg-black/20 hover:bg-black/40'} px-2 py-1 rounded-md w-max`}
                                         >
                                             {speakingMsgId === i ? <Volume2 size={11} className="animate-pulse" /> : <Play size={11} />}
-                                            <span className="text-[8px] font-bold uppercase tracking-widest">{speakingMsgId === i ? 'Pausar' : 'Escuchar'}</span>
+                                            <span className={`text-[8px] font-bold uppercase tracking-widest ${isDayMode ? 'text-slate-600' : ''}`}>{speakingMsgId === i ? 'Pausar' : 'Escuchar'}</span>
                                         </button>
                                     )}
                                     <div className="text-[7px] mt-1 opacity-30 uppercase font-black tracking-widest">{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
@@ -604,7 +630,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         ))}
                         {isLoading && (
                             <div className="flex justify-start">
-                                <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none">
+                                <div className={`p-3 rounded-2xl rounded-tl-none ${isDayMode ? 'bg-slate-100 border border-slate-200' : 'bg-white/5 border border-white/10'}`}>
                                     <div className="flex gap-1">
                                         <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce`}></div>
                                         <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.2s]`}></div>
@@ -617,44 +643,44 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Quick chips inline */}
-                    <div className="px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t border-white/5 bg-white/[0.02] relative z-10">
+                    <div className={`px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t relative z-10 ${isDayMode ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-white/[0.02]'}`}>
                         {isAcademy ? (
                             <>
-                                <button onClick={() => { setInput('¿Qué recibo cuando me gradúo?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9}/> Kit Oficial</button>
-                                <button onClick={() => { setInput('Explicame el módulo de Ética y Conducta'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Bot size={9}/> Módulo Ética</button>
-                                <button onClick={() => { setInput('¿Cómo funciona la credencial electrónica?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-[8px] font-black text-purple-400 uppercase tracking-widest hover:bg-purple-500/20 transition-all flex items-center gap-1.5"><BarChart3 size={9}/> Credencial</button>
-                                <button onClick={() => { setInput('¿Cuáles son las funciones del Embajador?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Megaphone size={9}/> Mi Rol</button>
+                                <button onClick={() => { setInput('¿Qué recibo cuando me gradúo?'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}><Sparkles size={9}/> Kit Oficial</button>
+                                <button onClick={() => { setInput('Explicame el módulo de Ética y Conducta'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}><Bot size={9}/> Módulo Ética</button>
+                                <button onClick={() => { setInput('¿Cómo funciona la credencial electrónica?'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}><BarChart3 size={9}/> Credencial</button>
+                                <button onClick={() => { setInput('¿Cuáles son las funciones del Embajador?'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}><Megaphone size={9}/> Mi Rol</button>
                             </>
                         ) : isMarketing ? (
                             <>
-                                <button onClick={() => { setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5`}><Megaphone size={9} /> Copy B2B</button>
-                                <button onClick={() => { setInput('Armame una campaña para el fin de semana con las Ofertas VIP'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9} /> B2C VIP</button>
-                                <button onClick={() => { setInput('Quiero captar Embajadores, redactame el texto de Reclutamiento'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5"><Bot size={9} /> Reclutar</button>
-                                <button onClick={() => { setInput('¿Qué landing conviene disparar primero esta semana?'); scrollToBottom(); }} className="whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5"><BarChart3 size={9} /> Estrategia</button>
+                                <button onClick={() => { setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('emerald')}`}><Megaphone size={9} /> Copy B2B</button>
+                                <button onClick={() => { setInput('Armame una campaña para el fin de semana con las Ofertas VIP'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('cyan')}`}><Sparkles size={9} /> B2C VIP</button>
+                                <button onClick={() => { setInput('Quiero captar Embajadores, redactame el texto de Reclutamiento'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}><Bot size={9} /> Reclutar</button>
+                                <button onClick={() => { setInput('¿Qué landing conviene disparar primero esta semana?'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('emerald')}`}><BarChart3 size={9} /> Estrategia</button>
                             </>
                         ) : isIndustrial ? (
                             <>
-                                <button onClick={() => setInput('¿Cuántas empresas hay registradas?')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5"><BarChart3 size={9} /> B2B Total</button>
-                                <button onClick={() => setInput('Recomendame proveedores')} className="whitespace-nowrap px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-[8px] font-black text-yellow-400 uppercase tracking-widest hover:bg-yellow-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9} /> Proveedores</button>
+                                <button onClick={() => setInput('¿Cuántas empresas hay registradas?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}><BarChart3 size={9} /> B2B Total</button>
+                                <button onClick={() => setInput('Recomendame proveedores')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('yellow')}`}><Sparkles size={9} /> Proveedores</button>
                             </>
                         ) : (
                             <>
-                                <button onClick={() => setInput('Crear campaña WhatsApp')} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5"><Megaphone size={9} /> Campaña</button>
-                                <button onClick={() => setInput('Sugerencias para vender más')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5"><Sparkles size={9} /> Consejos</button>
+                                <button onClick={() => setInput('Crear campaña WhatsApp')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('cyan')}`}><Megaphone size={9} /> Campaña</button>
+                                <button onClick={() => setInput('Sugerencias para vender más')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}><Sparkles size={9} /> Consejos</button>
                             </>
                         )}
                     </div>
 
                     {/* Input inline */}
-                    <div className="p-3 bg-black/40 backdrop-blur-xl border-t border-white/10 relative z-10">
-                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-1 px-3">
+                    <div className={`p-3 relative z-10 ${isDayMode ? 'bg-[#faf8f5] border-t border-slate-200' : 'bg-black/40 backdrop-blur-xl border-t border-white/10'}`}>
+                        <div className={`flex items-center gap-2 ${isDayMode ? 'bg-slate-100 border border-slate-200 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)]' : 'bg-white/5 border border-white/10 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]'} rounded-2xl p-1 px-3`}>
                             <input
                                 type="text"
                                 value={input}
                                 onChange={e => setInput(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleSend()}
                                 placeholder="Comandale a ARI una campaña..."
-                                className="flex-1 bg-transparent border-none text-white text-[11px] py-2.5 focus:outline-none placeholder:text-white/25 font-medium"
+                                className={`flex-1 bg-transparent border-none ${isDayMode ? 'text-slate-800 placeholder:text-slate-400' : 'text-white placeholder:text-white/25'} text-[11px] py-2.5 focus:outline-none font-medium`}
                             />
                             <input
                                 type="file"
@@ -676,13 +702,13 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                             />
                             <button
                                 onClick={() => document.getElementById('ari-image-upload-inline')?.click()}
-                                className="p-2 rounded-xl transition-all text-white/40 hover:text-white hover:bg-white/10"
+                                className={`p-2 rounded-xl transition-all ${isDayMode ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
                             >
                                 <Camera size={16} />
                             </button>
                             <button
                                 onClick={handleToggleMic}
-                                className={`p-2 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
+                                className={`p-2 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : isDayMode ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
                             >
                                 {isListening ? <MicOff size={16} /> : <Mic size={16} />}
                             </button>
@@ -705,15 +731,15 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                 <div className="relative group">
                     {/* Cartelito de ayuda - Siempre visible con animación suave */}
                     <div className="absolute bottom-full right-0 mb-4 animate-bounce">
-                        <div className={`bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
-                            <div className="bg-black/90 backdrop-blur-md px-4 py-2 rounded-2xl whitespace-nowrap">
-                                <span className={`text-[10px] font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r ${styles.helpTextGradient}`}>
+                        <div className={isDayMode ? "bg-slate-200/80 shadow-[0_4px_15px_rgba(0,0,0,0.06)] p-[1px] rounded-2xl" : `bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
+                            <div className={`${isDayMode ? 'bg-[#faf8f5]' : 'bg-black/90 backdrop-blur-md'} px-4 py-2 rounded-2xl whitespace-nowrap`}>
+                                <span className={`text-[10px] font-black uppercase tracking-widest ${isDayMode ? 'text-[#0f172a]' : `text-transparent bg-clip-text bg-gradient-to-r ${styles.helpTextGradient}`}`}>
                                     {isIndustrial ? 'Comando B2B Online' : 'Asistente IA'}
                                 </span>
                             </div>
                         </div>
                         {/* Triangulito del cartelito */}
-                        <div className={`w-3 h-3 ${styles.helpTextTriangle} rotate-45 absolute -bottom-1.5 right-6`} />
+                        <div className={`w-3 h-3 ${isDayMode ? 'bg-[#faf8f5]' : styles.helpTextTriangle} rotate-45 absolute -bottom-1.5 right-6`} />
                     </div>
 
                     {/* Efecto de anillo pulsante de atención */}
@@ -739,23 +765,31 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
 
             {/* Chat Panel (Floating mode only) */}
             {!inline && isOpen && (
-                <div className={`w-[340px] h-[500px] bg-[#050505]/95 backdrop-blur-3xl border border-white/10 rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
+                <div className={`w-[340px] h-[500px] ${
+                    isDayMode 
+                        ? 'bg-[#faf8f5]/98 border border-slate-200/80 shadow-xl' 
+                        : 'bg-[#050505]/95 border border-white/10'
+                } backdrop-blur-3xl rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
                     {/* Background Grid & Glows */}
-                    <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
-                    <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0`} />
-                    <div className={`absolute bottom-0 left-0 w-32 h-32 ${styles.accentGlow2} rounded-full blur-3xl z-0`} />
+                    <div className={`absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.02'})_1px,transparent_1px),linear-gradient(90deg,rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.02'})_1px,transparent_1px)] bg-[size:20px_20px] z-0`} />
+                    <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0 ${isDayMode ? 'opacity-20' : ''}`} />
+                    <div className={`absolute bottom-0 left-0 w-32 h-32 ${styles.accentGlow2} rounded-full blur-3xl z-0 ${isDayMode ? 'opacity-20' : ''}`} />
 
                     {/* Header */}
-                    <div className={`p-4 bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 flex items-center justify-between relative z-10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]`}>
+                    <div className={`p-4 ${
+                        isDayMode 
+                            ? 'bg-white border-b border-slate-100' 
+                            : `bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]`
+                    } flex items-center justify-between relative z-10`}>
                         <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-full overflow-hidden border flex items-center justify-center bg-slate-950 flex-shrink-0 ${styles.headerGlow}`}>
                                 <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                             </div>
                             <div>
-                                <h3 className="text-[12px] font-black text-white uppercase tracking-widest">
+                                <h3 className={`text-[12px] font-black uppercase tracking-widest ${isDayMode ? 'text-[#0f172a]' : 'text-white'}`}>
                                     {styles.headerTitle}
                                 </h3>
-                                <p className={`text-[8px] ${styles.headerStatusText} font-bold uppercase tracking-widest flex items-center gap-1`}>
+                                <p className={`text-[8px] ${isDayMode ? 'text-slate-500' : styles.headerStatusText} font-bold uppercase tracking-widest flex items-center gap-1`}>
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> 
                                     {styles.headerSubtitle}
                                 </p>
@@ -763,41 +797,45 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         </div>
                         <button 
                             onClick={() => { setIsOpen(false); playNeonClick(); window.speechSynthesis.cancel(); }}
-                            className="p-2 hover:bg-white/5 rounded-xl transition-colors text-white/40 hover:text-white"
+                            className={`p-2 rounded-xl transition-colors ${
+                                isDayMode 
+                                    ? 'text-slate-400 hover:text-slate-800 hover:bg-slate-100' 
+                                    : 'text-white/40 hover:text-white hover:bg-white/5'
+                            }`}
                         >
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Bitácora de Marketing (Misiones Programadas) */}
-                    <div className="bg-white/[0.03] border-b border-white/5 relative z-10">
+                    <div className={`${isDayMode ? 'bg-slate-50 border-b border-slate-100' : 'bg-white/[0.03] border-b border-white/5'} relative z-10`}>
                         <button 
                             onClick={() => setShowCampaigns(!showCampaigns)}
-                            className="w-full px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-all"
+                            className={`w-full px-4 py-2 flex items-center justify-between transition-all ${isDayMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'}`}
                         >
                             <div className="flex items-center gap-2">
                                 <Calendar size={14} className="text-violet-400" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Misiones Programadas</span>
+                                <span className={`text-[9px] font-black uppercase tracking-widest ${isDayMode ? 'text-slate-700' : 'text-white/70'}`}>Misiones Programadas</span>
                                 {campaigns.filter(c => c.status === 'pending').length > 0 && (
                                     <span className="w-4 h-4 rounded-full bg-violet-600 text-[8px] font-black flex items-center justify-center text-white">
                                         {campaigns.filter(c => c.status === 'pending').length}
                                     </span>
                                 )}
                             </div>
-                            {showCampaigns ? <ChevronUp size={14} className="text-white/40" /> : <ChevronDown size={14} className="text-white/40" />}
+                            {showCampaigns ? <ChevronUp size={14} className={isDayMode ? 'text-slate-500' : 'text-white/40'} /> : <ChevronDown size={14} className={isDayMode ? 'text-slate-500' : 'text-white/40'} />}
                         </button>
 
                         {showCampaigns && (
                             <div className="max-h-[150px] overflow-y-auto p-3 space-y-2 no-scrollbar animate-in slide-in-from-top-2 duration-300">
                                 {campaigns.length === 0 ? (
-                                    <p className="text-[9px] text-white/20 text-center py-2 italic">No hay misiones agendadas todavía, Jefe.</p>
+                                    <p className={`text-[9px] text-center py-2 italic ${isDayMode ? 'text-slate-400' : 'text-white/20'}`}>No hay misiones agendadas todavía, Jefe.</p>
                                 ) : (
                                     campaigns.map(camp => (
-                                        <div key={camp.id} className="bg-black/40 border border-white/5 rounded-xl p-2.5 flex items-start gap-3 group">
+                                        <div key={camp.id} className={`${isDayMode ? 'bg-white border border-slate-200 shadow-sm' : 'bg-black/40 border border-white/5'} rounded-xl p-2.5 flex items-start gap-3 group`}>
                                             <div className={`mt-1 w-2 h-2 rounded-full ${camp.status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-tighter flex items-center gap-1">
+                                                    <span className={`text-[8px] font-black uppercase tracking-tighter flex items-center gap-1 ${isDayMode ? 'text-slate-400' : 'text-white/40'}`}>
                                                         <Clock size={8} /> {new Date(camp.scheduledDate).toLocaleDateString()}
                                                     </span>
                                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -811,7 +849,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <p className="text-[9px] text-white/80 leading-tight truncate">{camp.message}</p>
+                                                <p className={`text-[9px] leading-tight truncate ${isDayMode ? 'text-slate-700' : 'text-white/80'}`}>{camp.message}</p>
                                             </div>
                                         </div>
                                     ))
@@ -827,11 +865,11 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                 <div className={`max-w-[85%] p-3.5 rounded-[1.25rem] text-[11px] leading-relaxed shadow-lg border backdrop-blur-md transition-all ${
                                     msg.role === 'user' 
                                     ? styles.userMsgBg + ' text-white rounded-tr-sm' 
-                                    : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.2)]'
+                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800' : 'bg-white/5 border-white/10 text-white/90') + ' rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]'
                                 }`}>
                                     {msg.text}
                                     {msg.role === 'ari' && msg.text.includes('JEFE, ¿QUIERE que agende esta misión'.toUpperCase()) && (
-                                        <div className="mt-3 p-2 bg-white/10 rounded-xl border border-white/20 animate-pulse">
+                                        <div className={`mt-3 p-2 rounded-xl border animate-pulse ${isDayMode ? 'bg-slate-50 border-slate-200' : 'bg-white/10 border-white/20'}`}>
                                             <button 
                                                 onClick={() => {
                                                     playNeonClick();
@@ -863,10 +901,10 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                     {msg.role === 'ari' && (
                                         <button 
                                             onClick={() => handlePlayMessage(msg.text, i)}
-                                            className={`mt-2 ${styles.speechBtnColor} transition-colors flex items-center gap-1.5 bg-black/20 hover:bg-black/40 px-2.5 py-1.5 rounded-md w-max`}
+                                            className={`mt-2 ${styles.speechBtnColor} transition-colors flex items-center gap-1.5 ${isDayMode ? 'bg-slate-100 hover:bg-slate-200' : 'bg-black/20 hover:bg-black/40'} px-2.5 py-1.5 rounded-md w-max`}
                                         >
                                             {speakingMsgId === i ? <Volume2 size={12} className="animate-pulse" /> : <Play size={12} />}
-                                            <span className="text-[8px] font-bold uppercase tracking-widest">{speakingMsgId === i ? 'Pausar' : 'Escuchar Voz'}</span>
+                                            <span className={`text-[8px] font-bold uppercase tracking-widest ${isDayMode ? 'text-slate-600' : ''}`}>{speakingMsgId === i ? 'Pausar' : 'Escuchar Voz'}</span>
                                         </button>
                                     )}
                                 </div>
@@ -874,7 +912,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         ))}
                         {isLoading && (
                             <div className="flex justify-start">
-                                <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none">
+                                <div className={`p-3 rounded-2xl rounded-tl-none ${isDayMode ? 'bg-slate-100 border border-slate-200' : 'bg-white/5 border border-white/10'}`}>
                                     <div className="flex gap-1">
                                         <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce`}></div>
                                         <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.2s]`}></div>
@@ -887,43 +925,43 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Action Quick Chips */}
-                    <div className="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t border-white/5 bg-white/[0.02]">
+                    <div className={`px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t ${isDayMode ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-white/[0.02]'}`}>
                         {isIndustrial ? (
                             <>
-                                <button onClick={() => setInput('¿Cuántas empresas hay registradas en total y activas?')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('¿Cuántas empresas hay registradas en total y activas?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}>
                                     <BarChart3 size={10} /> Total Empresas
                                 </button>
-                                <button onClick={() => setInput('¿Qué empresas hay por alcance?')} className="whitespace-nowrap px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-[8px] font-black text-yellow-400 uppercase tracking-widest hover:bg-yellow-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('¿Qué empresas hay por alcance?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('yellow')}`}>
                                     <Globe size={10} /> Alcance B2B
                                 </button>
-                                <button onClick={() => setInput('Recomendame proveedores de alimentos')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('Recomendame proveedores de alimentos')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}>
                                     <Sparkles size={10} /> Proveedores
                                 </button>
                             </>
                         ) : isMarketing ? (
                             <>
-                                <button onClick={() => setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse')} className="whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('emerald')}`}>
                                     <Megaphone size={10} /> Copy B2B
                                 </button>
-                                <button onClick={() => setInput('Armame una campaña para el fin de semana con las Ofertas VIP para clientes')} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('Armame una campaña para el fin de semana con las Ofertas VIP para clientes')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('cyan')}`}>
                                     <Sparkles size={10} /> Campaña B2C
                                 </button>
-                                <button onClick={() => setInput('Quiero captar Embajadores, redactame el texto para el formulario de Reclutamiento')} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('Quiero captar Embajadores, redactame el texto para el formulario de Reclutamiento')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}>
                                     <Bot size={10} /> Reclutar
                                 </button>
-                                <button onClick={() => setInput('¿Cuántas campañas tengo activas y qué landing conviene disparar primero?')} className="whitespace-nowrap px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black text-emerald-400 uppercase tracking-widest hover:bg-emerald-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('¿Cuántas campañas tengo activas y qué landing conviene disparar primero?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('emerald')}`}>
                                     <BarChart3 size={10} /> Estado
                                 </button>
                             </>
                         ) : (
                             <>
-                                <button onClick={() => setInput('¿Cuántas visitas tuve hoy?')} className="whitespace-nowrap px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[8px] font-black text-cyan-400 uppercase tracking-widest hover:bg-cyan-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('¿Cuántas visitas tuve hoy?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('cyan')}`}>
                                     <BarChart3 size={10} /> Visitas
                                 </button>
-                                <button onClick={() => setInput('Crear campaña de WhatsApp')} className="whitespace-nowrap px-3 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-[8px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('Crear campaña de WhatsApp')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}>
                                     <Megaphone size={10} /> Campaña
                                 </button>
-                                <button onClick={() => setInput('Sugerencias para vender más')} className="whitespace-nowrap px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                                <button onClick={() => setInput('Sugerencias para vender más')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}>
                                     <Sparkles size={10} /> Consejos
                                 </button>
                             </>
@@ -931,15 +969,15 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-4 bg-black/40 backdrop-blur-xl border-t border-white/10 relative z-10">
-                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-1 px-3 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]">
+                    <div className={`p-4 ${isDayMode ? 'bg-[#faf8f5] border-t border-slate-200' : 'bg-black/40 backdrop-blur-xl border-t border-white/10'} relative z-10`}>
+                        <div className={`flex items-center gap-2 ${isDayMode ? 'bg-slate-100 border border-slate-200 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)]' : 'bg-white/5 border border-white/10 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]'} rounded-2xl p-1 px-3`}>
                             <input 
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                 placeholder="Comandá a Ari..."
-                                className="flex-1 bg-transparent border-none text-white text-[11px] py-3 focus:outline-none placeholder:text-white/30 font-medium tracking-wide"
+                                className={`flex-1 bg-transparent border-none ${isDayMode ? 'text-slate-800 placeholder:text-slate-400' : 'text-white placeholder:text-white/30'} text-[11px] py-3 focus:outline-none font-medium tracking-wide`}
                             />
                             <input 
                                 type="file"
@@ -961,13 +999,13 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                             />
                             <button
                                 onClick={() => document.getElementById('ari-image-upload-floating')?.click()}
-                                className="p-2.5 rounded-xl transition-all text-white/40 hover:text-white hover:bg-white/10"
+                                className={`p-2.5 rounded-xl transition-all ${isDayMode ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
                             >
                                 <Camera size={18} />
                             </button>
                             <button 
                                 onClick={handleToggleMic}
-                                className={`p-2.5 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
+                                className={`p-2.5 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' : isDayMode ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
                             >
                                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
                             </button>

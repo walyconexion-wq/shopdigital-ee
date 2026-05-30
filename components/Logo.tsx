@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 import { subscribeToGlobalConfig } from '../firebase';
+import { useLanguage } from './LanguageContext';
 
 const Logo: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const [clickCount, setClickCount] = useState(0);
     const [isChristmas, setIsChristmas] = useState(false);
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     useEffect(() => {
         const unsub = subscribeToGlobalConfig((config) => {
@@ -57,12 +59,12 @@ const Logo: React.FC = () => {
       {/* Identificación de Zona — Derivación dinámica universal */}
       <div className="flex flex-col items-center gap-0.5 relative z-10">
         {townId && window.location.pathname !== '/' && (
-          <span className="text-[12px] font-black tracking-[0.2em] uppercase bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
+          <span className="logo-town-name text-[12px] font-black tracking-[0.2em] uppercase bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
             {townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
           </span>
         )}
         <p className="text-[7px] font-black text-white/50 tracking-[0.3em] uppercase drop-shadow-md">
-          RED COMERCIAL DIGITAL {(!townId || window.location.pathname === '/') ? '· ARGENTINA' : ''}
+          {t((!townId || window.location.pathname === '/') ? 'RED COMERCIAL DIGITAL · ARGENTINA' : 'RED COMERCIAL DIGITAL')}
         </p>
       </div>
     </div>

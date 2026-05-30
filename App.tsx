@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useParams, Navigate, useLocation } from 'react-router-dom';
+import { LanguageProvider } from './components/LanguageContext';
 import { Shop, Client, Offer } from './types';
 import { 
   suscribirseAComercios, suscribirseAClientes, suscribirseAOfertas, 
@@ -308,51 +309,53 @@ const App: React.FC = () => {
     console.log("🧬 ROOT_CAMALEON_ACTIVE: El motor Multi-Zona está en marcha!");
     
     return (
-        <BrowserRouter>
-            <Routes>
-                {/* 🏭 Nodo Empresarial Global */}
-                <Route path="/empresas/*" element={<EnterpriseController />} />
+        <LanguageProvider>
+            <BrowserRouter>
+                <Routes>
+                    {/* 🏭 Nodo Empresarial Global */}
+                    <Route path="/empresas/*" element={<EnterpriseController />} />
 
-                {/* 🌐 HOME GLOBAL — Comando Central del Hormiguero */}
-                <Route path="/" element={<GlobalHomePage />} />
+                    {/* 🌐 HOME GLOBAL — Comando Central del Hormiguero */}
+                    <Route path="/" element={<GlobalHomePage />} />
 
-                {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
-                <Route path="/region/:regionId" element={<RegionSelectPage />} />
-                
-                {/* 🏔️ PORTAL IMPERIAL: TRASLASIERRA */}
-                <Route path="/traslasierra" element={<Navigate to="/region/traslasierra" replace />} />
+                    {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
+                    <Route path="/region/:regionId" element={<RegionSelectPage />} />
+                    
+                    {/* 🏔️ PORTAL IMPERIAL: TRASLASIERRA */}
+                    <Route path="/traslasierra" element={<Navigate to="/region/traslasierra" replace />} />
 
-                {/* 🌱 SEMILLERO — Inyección de datos regionales (admin only) */}
-                <Route path="/:townId/semillero-regional" element={<ProtectedRoute roles={['admin']}><RegionSeedPage /></ProtectedRoute>} />
+                    {/* 🌱 SEMILLERO — Inyección de datos regionales (admin only) */}
+                    <Route path="/:townId/semillero-regional" element={<ProtectedRoute roles={['admin']}><RegionSeedPage /></ProtectedRoute>} />
 
-                {/* Redirección directa para el Director Global (Tablero Maestro) */}
-                <Route path="/tablero-maestro" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
-                <Route path="/tablero-maestro/*" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
-                
-                {/* Bloqueo dimensional: Erradicar universo paralelo sin zona */}
-                <Route path="/embajador" element={<Navigate to="/" replace />} />
-                <Route path="/embajador/*" element={<Navigate to="/" replace />} />
-                
-                {/* 🛡️ BÚNKER DE MANDO Y TRANSMISIÓN (DIRECTOR) - Fuera de Layout mobile */}
-                <Route path="/:townId/bunker-waly" element={<DirectorBunkerPage />} />
-                <Route path="/:townId/director/transmision-en-vivo" element={<ProtectedRoute roles={['admin']}><LiveBroadcastPage /></ProtectedRoute>} />
-                {/* Alias sin townId — redirige al búnker de EE por defecto */}
-                <Route path="/director/transmision-en-vivo" element={<Navigate to="/esteban-echeverria/director/transmision-en-vivo" replace />} />
-                <Route path="/bunker-waly" element={<Navigate to="/esteban-echeverria/bunker-waly" replace />} />
+                    {/* Redirección directa para el Director Global (Tablero Maestro) */}
+                    <Route path="/tablero-maestro" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
+                    <Route path="/tablero-maestro/*" element={<Navigate to="/esteban-echeverria/tablero-maestro" replace />} />
+                    
+                    {/* Bloqueo dimensional: Erradicar universo paralelo sin zona */}
+                    <Route path="/embajador" element={<Navigate to="/" replace />} />
+                    <Route path="/embajador/*" element={<Navigate to="/" replace />} />
+                    
+                    {/* 🛡️ BÚNKER DE MANDO Y TRANSMISIÓN (DIRECTOR) - Fuera de Layout mobile */}
+                    <Route path="/:townId/bunker-waly" element={<DirectorBunkerPage />} />
+                    <Route path="/:townId/director/transmision-en-vivo" element={<ProtectedRoute roles={['admin']}><LiveBroadcastPage /></ProtectedRoute>} />
+                    {/* Alias sin townId — redirige al búnker de EE por defecto */}
+                    <Route path="/director/transmision-en-vivo" element={<Navigate to="/esteban-echeverria/director/transmision-en-vivo" replace />} />
+                    <Route path="/bunker-waly" element={<Navigate to="/esteban-echeverria/bunker-waly" replace />} />
 
-                {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}
-                <Route path="/:townId/tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
+                    {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}
+                    <Route path="/:townId/tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
 
-                {/* 🏫 ACADEMIA SHOPDIGITAL — Bóveda de Entrenamiento */}
-                <Route path="/:townId/academia-embajadores" element={<AcademyPage />} />
+                    {/* 🏫 ACADEMIA SHOPDIGITAL — Bóveda de Entrenamiento */}
+                    <Route path="/:townId/academia-embajadores" element={<AcademyPage />} />
 
-                {/* Ruteo Dinámico Multi-Zona */}
-                <Route path="/:townId/*" element={<TownController />} />
-                
-                {/* Manejo de rutas huérfanas */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        </BrowserRouter>
+                    {/* Ruteo Dinámico Multi-Zona */}
+                    <Route path="/:townId/*" element={<TownController />} />
+                    
+                    {/* Manejo de rutas huérfanas */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </BrowserRouter>
+        </LanguageProvider>
     );
 };
 

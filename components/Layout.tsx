@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AriMerchantAssistant } from './AriMerchantAssistant';
 import { Shop } from '../types';
+import { useLanguage } from './LanguageContext';
 
 interface LayoutProps {
     allShops?: Shop[];
@@ -143,6 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
         }
     };
     const techStyle = getTechBgStyles();
+    const { language, setLanguage } = useLanguage();
 
     return (
         <div 
@@ -152,6 +154,36 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 backgroundColor: isDayMode ? '#f8fafc' : bgColor 
             }}
         >
+            {/* Selector de Idioma (Operación Babel) */}
+            <div className={`absolute top-3.5 right-3.5 z-[100] flex items-center gap-1.5 backdrop-blur-md px-2.5 py-1 rounded-full border shadow-md transition-all duration-300 ${
+                isDayMode 
+                    ? 'bg-white/70 border-slate-200/50 text-slate-800' 
+                    : 'bg-slate-950/60 border-white/10 text-white'
+            }`}>
+                <button 
+                    onClick={() => setLanguage('es')} 
+                    className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
+                    style={{ color: language === 'es' ? themeColor : 'inherit', opacity: language === 'es' ? 1 : 0.5 }}
+                >
+                    ES
+                </button>
+                <span className="text-[9px] opacity-20">|</span>
+                <button 
+                    onClick={() => setLanguage('en')} 
+                    className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
+                    style={{ color: language === 'en' ? themeColor : 'inherit', opacity: language === 'en' ? 1 : 0.5 }}
+                >
+                    EN
+                </button>
+                <span className="text-[9px] opacity-20">|</span>
+                <button 
+                    onClick={() => setLanguage('pt')} 
+                    className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
+                    style={{ color: language === 'pt' ? themeColor : 'inherit', opacity: language === 'pt' ? 1 : 0.5 }}
+                >
+                    PT
+                </button>
+            </div>
             {/* Modo Navidad: Nieve Cayendo en CSS Puro */}
             {globalConfig?.isChristmasMode && (
                 <div className="absolute inset-0 pointer-events-none z-[999] overflow-hidden">

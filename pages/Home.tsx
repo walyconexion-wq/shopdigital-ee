@@ -7,6 +7,7 @@ import { playNeonClick } from '../utils/audio';
 import { resolveIcon } from '../utils/iconResolver';
 import { useAuth } from '../components/AuthContext';
 import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
+import { useLanguage } from '../components/LanguageContext';
 
 interface HomeProps {
     globalConfig?: any;
@@ -57,10 +58,11 @@ const getWeatherEmoji = (code: number | null): string => {
 const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const { t, language } = useLanguage();
     const themeColor = globalConfig?.themeColor || '#22d3ee';
     const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
     const activeTheme = globalConfig?.isChristmasMode ? 'christmas' : (globalConfig?.theme || 'default');
-    const mainSubtitle = globalConfig?.mainSubtitle || `Tu guía de ofertas en ${townId.replace(/-/g, ' ')}`;
+    const mainSubtitle = globalConfig?.mainSubtitle || `${t('Tu guía de ofertas locales')} - ${townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`;
     const townName = globalConfig?.townName || 'Esteban Echeverría';
 
     const [logoClicks, setLogoClicks] = React.useState(0);
@@ -207,7 +209,11 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const handleShare = () => {
         playNeonClick();
         const appUrl = window.location.origin;
-        const shareText = `¡Mirá los comercios de ${townName} en la App de Waly! 🚀\n\n👉 ${appUrl}`;
+        const shareText = language === 'en' 
+            ? `Check out the shops in ${townName} on Waly's App! 🚀\n\n👉 ${appUrl}`
+            : language === 'pt'
+                ? `Veja as lojas de ${townName} no aplicativo do Waly! 🚀\n\n👉 ${appUrl}`
+                : `¡Mirá los comercios de ${townName} en la App de Waly! 🚀\n\n👉 ${appUrl}`;
         if (navigator.share) {
             navigator.share({ title: 'ShopDigital', text: shareText, url: appUrl }).catch(console.error);
         } else {
@@ -274,28 +280,28 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     className="telemetry-widget mt-6 flex items-center justify-between w-full max-w-[340px] px-4 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-widest relative overflow-hidden backdrop-blur-md shadow-lg"
                 >
                     <div className="flex flex-col items-center flex-1">
-                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">HORA</span>
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('HORA')}</span>
                         <span className="telemetry-widget-value text-white font-mono text-[10px] tracking-wider">
                             {currentTimeStr}
                         </span>
                     </div>
                     <div className="w-[1px] h-5 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
-                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">FECHA</span>
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('FECHA')}</span>
                         <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             {currentDateStr}
                         </span>
                     </div>
                     <div className="w-[1px] h-5 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
-                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">VISITAS</span>
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('VISITAS')}</span>
                         <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             👁️ {globalConfig?.visits || 1}
                         </span>
                     </div>
                     <div className="w-[1px] h-5 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
-                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">CLIMA</span>
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('CLIMA')}</span>
                         <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             {getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : (weatherError ? '18°C' : '...')}
                         </span>
@@ -379,7 +385,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                             {cat.iconKey ? resolveIcon(cat.iconKey) : cat.icon}
                         </div>
                         <span className="text-[8.5px] text-center font-black uppercase leading-[1.1] tracking-[0.01em] px-0.5 text-white/90 group-hover:text-white transition-colors">
-                            {cat.name}
+                            {t(cat.name)}
                         </span>
                     </button>
                 ))}
@@ -396,7 +402,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     }}
                 >
                     <Store size={18} style={{ color: hexToRgba(themeColor, 0.8) }} strokeWidth={3} />
-                    <span className="text-white text-shadow-premium">Suscribir Comercio</span>
+                    <span className="text-white text-shadow-premium">{t('Suscribir Comercio')}</span>
                 </button>
 
                 <button
