@@ -917,3 +917,19 @@
   border-color: #94a3b8 !important;
   box-shadow: 0 20px 35px rgba(88, 70, 50, 0.12) !important;
 }
+
+/* ARI chat panel custom robust styles */
+.day-mode .ari-chat-container {
+  background-color: #faf8f5 !important;
+}
+
+.day-mode .ari-messages-container {
+  background-color: #faf8f5 !important;
+}
+
+.day-mode .ari-bubble-ari {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+}

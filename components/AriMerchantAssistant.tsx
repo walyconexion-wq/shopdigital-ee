@@ -189,7 +189,7 @@ Regla de Oro: El activo más valioso es la atención del cliente. Cada VIP es un
 `;
 
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode = false, globalConfig }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode: isDayModeProp = false, globalConfig }) => {
     const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
@@ -198,6 +198,31 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const isFinancial = role === 'financial';
     const isNetwork = role === 'network_manager';
     const isCrm = role === 'crm_manager';
+
+    const [dayModeActive, setDayModeActive] = useState(isDayModeProp);
+
+    useEffect(() => {
+        setDayModeActive(isDayModeProp);
+    }, [isDayModeProp]);
+
+    useEffect(() => {
+        if (isDayModeProp) return;
+        const checkTheme = () => {
+            const hasDayMode = document.body.classList.contains('day-mode') || 
+                               !!document.querySelector('.day-mode');
+            setDayModeActive(hasDayMode);
+        };
+        checkTheme();
+        const observer = new MutationObserver(checkTheme);
+        observer.observe(document.body, { attributes: true, subtree: true });
+        const timer = setTimeout(checkTheme, 300);
+        return () => {
+            observer.disconnect();
+            clearTimeout(timer);
+        };
+    }, [isDayModeProp]);
+
+    const isDayMode = dayModeActive;
     
     // Theme styles
     const styles = {
@@ -531,7 +556,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
             {/* ═══ MODO INLINE: Panel siempre abierto, empotrado en la página ═══ */}
             {inline && (
                 <div
-                    className={`w-full ${isDayMode ? 'bg-[#faf8f5]/98 border-slate-200/80 shadow-xl' : 'bg-[#020810]/95 border-white/10'} backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
+                    className={`w-full ari-chat-container ${isDayMode ? 'bg-[#faf8f5] border-slate-200/80 shadow-xl' : 'bg-[#020810]/95 border-white/10'} backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
                     style={{ borderColor: isMarketing ? 'rgba(16,185,129,0.2)' : isIndustrial ? 'rgba(245,158,11,0.2)' : 'rgba(34,211,238,0.2)', minHeight: isOpen ? '420px' : 'auto' }}
                 >
                     {/* Background grid */}
@@ -606,13 +631,13 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Mensajes */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar relative z-10" style={{ maxHeight: '280px' }}>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar relative z-10 ari-messages-container" style={{ maxHeight: '280px' }}>
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[88%] p-3 rounded-[1.1rem] text-[11px] leading-relaxed border backdrop-blur-md ${
                                     msg.role === 'user'
                                     ? styles.userMsgBg + ' text-white rounded-tr-sm'
-                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]' : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm')
+                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)] ari-bubble-ari' : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm')
                                 }`}>
                                     {msg.text}
                                     {msg.role === 'ari' && (
@@ -765,9 +790,9 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
 
             {/* Chat Panel (Floating mode only) */}
             {!inline && isOpen && (
-                <div className={`w-[340px] h-[500px] ${
+                <div className={`w-[340px] h-[500px] ari-chat-container ${
                     isDayMode 
-                        ? 'bg-[#faf8f5]/98 border border-slate-200/80 shadow-xl' 
+                        ? 'bg-[#faf8f5] border border-slate-200/80 shadow-xl' 
                         : 'bg-[#050505]/95 border border-white/10'
                 } backdrop-blur-3xl rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
                     {/* Background Grid & Glows */}
@@ -859,13 +884,13 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Messages Body */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar relative z-10">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar relative z-10 ari-messages-container">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[85%] p-3.5 rounded-[1.25rem] text-[11px] leading-relaxed shadow-lg border backdrop-blur-md transition-all ${
                                     msg.role === 'user' 
                                     ? styles.userMsgBg + ' text-white rounded-tr-sm' 
-                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800' : 'bg-white/5 border-white/10 text-white/90') + ' rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]'
+                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 ari-bubble-ari' : 'bg-white/5 border-white/10 text-white/90') + ' rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]'
                                 }`}>
                                     {msg.text}
                                     {msg.role === 'ari' && msg.text.includes('JEFE, ¿QUIERE que agende esta misión'.toUpperCase()) && (
