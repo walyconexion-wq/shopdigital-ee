@@ -390,14 +390,20 @@
 
 .day-mode .glass-header h1 span {
   color: #2d1e15 !important;
-  text-shadow: 1px 1px 0px #ffffff, 2px 2px 0px #e6dccf, 3px 3px 0px #e6dccf, 4px 4px 5px rgba(45, 30, 21, 0.2), 5px 5px 10px rgba(0, 0, 0, 0.1) !important;
+  text-shadow: 
+    1px 1px 0px #ffffff, 
+    2px 2px 0px #e6dccf, 
+    3px 3px 0px #d9cbbb, 
+    4px 4px 0px #cbbba9,
+    5px 5px 8px rgba(45, 30, 21, 0.35),
+    8px 8px 16px rgba(0, 0, 0, 0.12) !important;
   filter: none !important;
   font-weight: 900 !important;
 }
 
 .day-mode .glass-header p {
   color: #5c4033 !important;
-  text-shadow: 1px 1px 0px #ffffff, 2px 2px 3px rgba(92, 64, 51, 0.15) !important;
+  text-shadow: 1px 1px 0px #ffffff, 2px 2px 0px #e6dccf, 3px 3px 3px rgba(92, 64, 51, 0.18) !important;
   filter: none !important;
 }
 
@@ -407,7 +413,11 @@
   background-clip: initial !important;
   -webkit-text-fill-color: #3d2b1f !important;
   color: #3d2b1f !important;
-  text-shadow: 1px 1px 0px #ffffff, 2px 2px 0px #e6dccf, 3px 3px 4px rgba(61, 43, 31, 0.15) !important;
+  text-shadow: 
+    1px 1px 0px #ffffff, 
+    2px 2px 0px #e6dccf, 
+    3px 3px 0px #cbbba9,
+    4px 4px 6px rgba(61, 43, 31, 0.25) !important;
   filter: none !important;
 }
 
@@ -469,10 +479,21 @@
 .day-mode .telemetry-widget {
   background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.06) !important;
-  border-bottom: 3.5px solid rgba(0, 0, 0, 0.10) !important;
+  border-bottom: 4.5px solid rgba(88, 70, 50, 0.16) !important;
   box-shadow: 
-    0 10px 25px rgba(0, 0, 0, 0.06),
-    0 4px 6px rgba(0, 0, 0, 0.03),
+    0 12px 24px rgba(88, 70, 50, 0.06),
+    0 4px 6px rgba(88, 70, 50, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease !important;
+}
+
+.day-mode .telemetry-widget:hover {
+  transform: translateY(-5px) scale(1.02) !important;
+  border-color: rgba(88, 70, 50, 0.12) !important;
+  border-bottom-color: rgba(88, 70, 50, 0.24) !important;
+  box-shadow: 
+    0 20px 35px rgba(88, 70, 50, 0.12),
+    0 6px 12px rgba(88, 70, 50, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 .day-mode .telemetry-widget span {
@@ -537,11 +558,12 @@
 .day-mode .glass-action-btn {
   background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.06) !important;
-  border-bottom: 4.5px solid rgba(0, 0, 0, 0.12) !important;
+  border-bottom: 4.5px solid rgba(88, 70, 50, 0.16) !important;
   box-shadow: 
-    0 10px 25px rgba(0, 0, 0, 0.07),
-    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 12px 24px rgba(88, 70, 50, 0.06),
+    0 4px 6px rgba(88, 70, 50, 0.03),
     inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease !important;
 }
 
 .day-mode .glass-action-btn span {
@@ -555,18 +577,20 @@
 }
 
 .day-mode .glass-action-btn:hover {
-  background: #f8fafc !important;
-  border-color: rgba(0, 0, 0, 0.10) !important;
-  border-bottom-color: rgba(0, 0, 0, 0.18) !important;
+  background: #fdfbf7 !important;
+  transform: translateY(-6px) scale(1.01) !important;
+  border-color: rgba(88, 70, 50, 0.12) !important;
+  border-bottom-color: rgba(88, 70, 50, 0.24) !important;
   box-shadow: 
-    0 16px 32px rgba(0, 0, 0, 0.10),
-    0 6px 10px rgba(0, 0, 0, 0.05),
+    0 20px 35px rgba(88, 70, 50, 0.12),
+    0 6px 12px rgba(88, 70, 50, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 .day-mode .glass-action-btn:active {
-  transform: scale(0.97) translateY(2px) !important;
-  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.06) !important;
+  transform: translateY(2px) scale(0.98) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 0 4px 8px rgba(88, 70, 50, 0.05) !important;
 }
 
 /* Muted & Texts */
@@ -952,4 +976,85 @@
   color: #0f172a !important;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
   opacity: 1 !important;
+}
+
+/* ═══════════════════════════════════════════ */
+/* 🎨 CORRECT BRANDING OVERRIDES (NO BLUE ICONS) */
+/* ═══════════════════════════════════════════ */
+
+/* Override dynamic CategoryPage visits pill and action buttons in Day Mode */
+.day-mode .glass-card-3d div[style*="background-color"] {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.day-mode .glass-card-3d div[style*="background-color"] svg,
+.day-mode .glass-card-3d div[style*="background-color"] span {
+  color: #475569 !important;
+}
+
+/* Category card catalog button override */
+.day-mode .glass-card-3d button[class*="border-"] {
+  background: #ffffff !important;
+  color: #2d1e15 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-bottom: 4px solid rgba(88, 70, 50, 0.16) !important;
+  box-shadow: 0 4px 10px rgba(88, 70, 50, 0.05) !important;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.day-mode .glass-card-3d button[class*="border-"] svg {
+  color: #2d1e15 !important;
+}
+
+.day-mode .glass-card-3d button[class*="border-"]:hover {
+  background: #fdfbf7 !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  border-color: rgba(88, 70, 50, 0.12) !important;
+  border-bottom-color: rgba(88, 70, 50, 0.24) !important;
+  box-shadow: 0 8px 16px rgba(88, 70, 50, 0.12) !important;
+}
+
+.day-mode .glass-card-3d button[class*="border-"]:active {
+  transform: translateY(2px) scale(0.98) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 0 2px 4px rgba(88, 70, 50, 0.04) !important;
+}
+
+/* ShopDetailPage header stats badges overrides */
+.day-mode .absolute.bottom-5.left-5,
+.day-mode .absolute.bottom-5.right-5 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(88, 70, 50, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.day-mode .absolute.bottom-5.left-5 svg,
+.day-mode .absolute.bottom-5.left-5 span,
+.day-mode .absolute.bottom-5.right-5 svg,
+.day-mode .absolute.bottom-5.right-5 span {
+  color: #475569 !important;
+}
+
+/* ShopDetailPage and EnterpriseDetailPage section headers and view all text */
+.day-mode .flex.items-center.gap-2.mb-6 svg,
+.day-mode .flex.items-center.gap-2.mb-6 h3,
+.day-mode .flex.items-center.gap-3.ml-2 h3,
+.day-mode .flex.items-center.gap-3.ml-2 svg {
+  color: #3d2b1f !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+.day-mode span[style*="color"][class*="tracking-widest"],
+.day-mode span[style*="color"][class*="tracking-wider"] {
+  color: #5c4033 !important;
+  filter: none !important;
+}
+
+/* Other general blue icons cleanup in main pages */
+.day-mode svg[style*="color"]:not(.btn-wa svg):not(.btn-ig svg) {
+  color: #2d2d2d !important;
 }
