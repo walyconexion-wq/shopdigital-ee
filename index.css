@@ -636,7 +636,8 @@
 }
 
 /* Ocultar o reducir opacidad de brillos neón flotantes en Home */
-.day-mode [class*="blur-3xl"] {
+/* Excluimos .ari-chat-container porque tiene backdrop-blur-3xl y no debe apagarse */
+.day-mode [class*="blur-3xl"]:not(.ari-chat-container) {
   opacity: 0.15 !important;
 }
 
@@ -918,13 +919,17 @@
   box-shadow: 0 20px 35px rgba(88, 70, 50, 0.12) !important;
 }
 
-/* ARI chat panel custom robust styles */
+/* ARI chat panel custom robust styles — Modo Día */
 .day-mode .ari-chat-container {
   background-color: #faf8f5 !important;
+  opacity: 1 !important;
+  border-color: rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(203, 213, 225, 0.5) !important;
 }
 
 .day-mode .ari-messages-container {
   background-color: #faf8f5 !important;
+  opacity: 1 !important;
 }
 
 .day-mode .ari-bubble-ari {
@@ -932,4 +937,5 @@
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+  opacity: 1 !important;
 }
