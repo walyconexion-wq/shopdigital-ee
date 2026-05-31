@@ -379,9 +379,13 @@
 }
 /* Encabezado */
 .day-mode .glass-header {
-  background: rgba(255, 255, 255, 0.8) !important;
-  border-color: rgba(59, 130, 246, 0.25) !important;
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.08) !important;
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  border-bottom: 4px solid rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 
+    0 12px 35px rgba(0, 0, 0, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 .day-mode .glass-header h1 span {
@@ -425,11 +429,11 @@
 /* Botón 3D de Rubro/Categoría (Neumórfico en Modo Día) */
 .day-mode .glass-button-3d {
   background: linear-gradient(135deg, #ffffff 0%, #faf8f5 100%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  border-bottom: 4.5px solid rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-bottom: 5px solid rgba(0, 0, 0, 0.12) !important;
   box-shadow: 
-    0 8px 20px rgba(0, 0, 0, 0.05), 
-    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 10px 25px rgba(0, 0, 0, 0.07), 
+    0 4px 6px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
   color: #0f172a !important;
 }
@@ -440,16 +444,16 @@
 }
 
 .day-mode .glass-button-3d svg {
-  color: var(--theme-primary) !important;
+  color: #2d2d2d !important;
 }
 
 .day-mode .glass-button-3d:hover {
   background: linear-gradient(135deg, #ffffff 0%, #faf8f5 100%) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
-  border-bottom-color: rgba(0, 0, 0, 0.20) !important;
+  border-color: rgba(0, 0, 0, 0.10) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.18) !important;
   box-shadow: 
-    0 12px 24px rgba(0, 0, 0, 0.08),
-    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 16px 32px rgba(0, 0, 0, 0.10),
+    0 6px 10px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 
@@ -463,9 +467,13 @@
 
 /* Override Telemetry Widget for Day Mode */
 .day-mode .telemetry-widget {
-  background: rgba(255, 255, 255, 0.65) !important;
-  border-color: rgba(255, 255, 255, 0.8) !important;
-  box-shadow: 0 8px 32px 0 rgba(88, 70, 50, 0.06), inset 0 0 8px rgba(255, 255, 255, 0.2) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-bottom: 3.5px solid rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.06),
+    0 4px 6px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 .day-mode .telemetry-widget span {
   color: #475569 !important;
@@ -528,10 +536,12 @@
 /* Botón de Acción (Suscribir / Compartir) */
 .day-mode .glass-action-btn {
   background: #ffffff !important;
-  border: 1.5px solid #cbd5e1 !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-bottom: 4.5px solid rgba(0, 0, 0, 0.12) !important;
   box-shadow: 
-    0 8px 16px -4px rgba(15, 23, 42, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    0 10px 25px rgba(0, 0, 0, 0.07),
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 .day-mode .glass-action-btn span {
@@ -541,13 +551,17 @@
 }
 
 .day-mode .glass-action-btn svg {
-  color: #2563eb !important;
+  color: #2d2d2d !important;
 }
 
 .day-mode .glass-action-btn:hover {
   background: #f8fafc !important;
-  border-color: #94a3b8 !important;
-  box-shadow: 0 12px 20px -4px rgba(15, 23, 42, 0.12) !important;
+  border-color: rgba(0, 0, 0, 0.10) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.18) !important;
+  box-shadow: 
+    0 16px 32px rgba(0, 0, 0, 0.10),
+    0 6px 10px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 .day-mode .glass-action-btn:active {
