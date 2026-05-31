@@ -454,7 +454,7 @@
 }
 
 .day-mode .glass-button-3d svg {
-  color: #2d2d2d !important;
+  color: #2d1e15 !important;
 }
 
 .day-mode .glass-button-3d:hover {
@@ -573,7 +573,7 @@
 }
 
 .day-mode .glass-action-btn svg {
-  color: #2d2d2d !important;
+  color: #2d1e15 !important;
 }
 
 .day-mode .glass-action-btn:hover {
@@ -1056,5 +1056,5 @@
 
 /* Other general blue icons cleanup in main pages */
 .day-mode svg[style*="color"]:not(.btn-wa svg):not(.btn-ig svg) {
-  color: #2d2d2d !important;
+  color: #2d1e15 !important;
 }

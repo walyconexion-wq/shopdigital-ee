@@ -790,11 +790,17 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
 
             {/* Chat Panel (Floating mode only) */}
             {!inline && isOpen && (
-                <div className={`w-[340px] h-[500px] ari-chat-container ${
-                    isDayMode 
-                        ? 'bg-[#faf8f5] border border-slate-200/80 shadow-xl' 
-                        : 'bg-[#050505]/95 border border-white/10'
-                } backdrop-blur-3xl rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
+                <>
+                    {/* Backdrop blur overlay to prevent background mixing and highlight the chat */}
+                    <div 
+                        onClick={() => { setIsOpen(false); window.speechSynthesis.cancel(); }}
+                        className="fixed inset-0 bg-black/25 backdrop-blur-[5px] z-[998] transition-all duration-300 animate-in fade-in cursor-default"
+                    />
+                    <div className={`w-[340px] h-[500px] ari-chat-container z-[999] ${
+                        isDayMode 
+                            ? 'bg-[#faf8f5] border border-slate-200/80 shadow-xl' 
+                            : 'bg-[#050505]/95 border border-white/10'
+                    } backdrop-blur-3xl rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
                     {/* Background Grid & Glows */}
                     <div className={`absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.02'})_1px,transparent_1px),linear-gradient(90deg,rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.02'})_1px,transparent_1px)] bg-[size:20px_20px] z-0`} />
                     <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0 ${isDayMode ? 'opacity-20' : ''}`} />
@@ -1044,6 +1050,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         </div>
                     </div>
                 </div>
+                </>
             )}
         </div>
     );
