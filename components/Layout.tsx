@@ -151,7 +151,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
             className={`w-full max-w-md mx-auto h-screen flex flex-col overflow-hidden relative shadow-2xl ${isDayMode ? 'day-mode' : ''}`}
             style={{ 
                 ...containerStyle, 
-                backgroundColor: isDayMode ? '#f8fafc' : bgColor 
+                backgroundColor: isDayMode ? '#cda488' : bgColor 
             }}
         >
             {/* Selector de Idioma (Operación Babel) */}
@@ -232,7 +232,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                     className="absolute inset-0"
                     style={{
                         background: isDayMode 
-                            ? `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.07)} 0%, transparent 65%), linear-gradient(180deg, #fffdfa 0%, #faf5ee 50%, #f4edd9 100%)`
+                            ? `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.07)} 0%, transparent 65%), linear-gradient(180deg, #ebd7c8 0%, #cda488 50%, #b68d71 100%)`
                             : `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.08)} 0%, transparent 60%), linear-gradient(180deg, ${bgColor} 0%, ${bgColor} 50%, ${bgColor} 100%)`,
                     }}
                 />
@@ -251,9 +251,9 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                             <div 
                                 className="absolute inset-0 transition-transform duration-75 ease-out" 
                                 style={{
-                                    backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.07)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.07)} 1px, transparent 1px)`,
-                                    backgroundSize: '35px 35px',
-                                    transform: `translateY(${scrollTop * 0.08}px) translateZ(0)`
+                                     backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.07)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.07)} 1px, transparent 1px)`,
+                                     backgroundSize: '35px 35px',
+                                     transform: `translateY(${scrollTop * 0.08}px) translateZ(0)`
                                 }} 
                             />
                         )}
@@ -265,7 +265,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                         )}
                     </>
                 )}
-                <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-transparent ${isDayMode ? 'to-[#faf5ee]/25' : 'to-black/40'}`} />
+                <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-transparent ${isDayMode ? 'to-[#b68d71]/25' : 'to-black/40'}`} />
             </div>
 
             <main 
