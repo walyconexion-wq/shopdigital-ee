@@ -182,7 +182,6 @@ const GlobalHomePage: React.FC = () => {
         <div 
             className={`h-screen w-full font-sans overflow-hidden relative select-none ${isDayMode ? 'bg-[#cda488]' : 'bg-black text-white selection:bg-cyan-500/30'}`}
         >
-            {/* ☀️ INTERFAZ DE DÍA (MAQUETA) */}
             {isDayMode ? (
                 <div className="w-full max-w-md mx-auto h-screen flex flex-col justify-between p-6 relative">
                     
@@ -208,10 +207,8 @@ const GlobalHomePage: React.FC = () => {
                                 <button
                                     key={reg.id}
                                     onClick={() => { playNeonClick(); setActiveRegion(reg.id); }}
-                                    className={`flex-1 py-3 px-1 rounded-full text-[9px] font-black uppercase tracking-wider text-center transition-all border ${
-                                        isActive 
-                                        ? 'bg-[#cbbba9] text-[#2d1e15] border-[#a09485] border-b-[1.2px] translate-y-[2.3px] shadow-[inset_0_2px_6px_rgba(0,0,0,0.12)]' 
-                                        : 'bg-white text-[#2d1e15] border-slate-200 border-b-[3.5px] border-b-slate-300 shadow-[0_4px_10px_rgba(88,70,50,0.06),inset_0_1.5px_0_rgba(255,255,255,0.95)] active:translate-y-[2.3px] active:border-b-[1.2px] active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.12)]'
+                                    className={`flex-1 py-3 px-1 rounded-full text-[9px] font-black uppercase tracking-wider text-center ${
+                                        isActive ? 'home-btn-3d-active' : 'home-btn-3d'
                                     }`}
                                 >
                                     {reg.label}
@@ -224,8 +221,12 @@ const GlobalHomePage: React.FC = () => {
                     <div className="flex-1 w-full relative flex items-center mt-2 overflow-hidden">
                         
                         {/* Avatar de ARI señalando */}
-                        <div className="absolute right-[-25px] bottom-[-15px] w-[250px] pointer-events-none z-0 select-none">
-                            <img src="/ari-pointing.png" alt="ARI Asistente" className="w-full h-auto object-contain" />
+                        <div className="absolute right-[-20px] bottom-[-20px] w-[260px] pointer-events-none z-0 select-none model-floating">
+                            <img 
+                                src="/ari-pointing.png" 
+                                alt="ARI Asistente" 
+                                className="w-full h-auto object-contain animate-in fade-in slide-in-from-right-12 duration-1000 ease-out" 
+                            />
                         </div>
 
                         {/* Listado de Localidades (Botones 3D) */}
@@ -239,13 +240,13 @@ const GlobalHomePage: React.FC = () => {
                                             setMockMessage(
                                                 loc.name === 'Lomas de zamora'
                                                 ? "¡Zona Esteban Echeverría y Ezeiza activas! Lomas de Zamora será clonada en la próxima fase de expansión de la red local. 🚀"
-                                                : "¡Zona Traslasierra (Córdoba) y Buenos Aires activas! San Martín de los Andes (Patagonia) es nuestra próxima región imperial a clonar. 🏔️"
+                                                : "¡Zona Traslasierra (Córdoba) y Buenos Aires activas! San Martín de los Andes (Patagonia) is nuestra próxima región imperial a clonar. 🏔️"
                                             );
                                         } else {
                                             navigate(loc.path);
                                         }
                                     }}
-                                    className="w-full bg-white border border-slate-200/80 py-3.5 px-5 rounded-[1.35rem] text-left text-[10px] font-[1000] uppercase tracking-wider text-[#2d1e15] transition-all border-b-[4.5px] border-b-slate-300 shadow-[0_6px_16px_rgba(88,70,50,0.12),inset_0_1.5px_0_rgba(255,255,255,0.95)] active:translate-y-[3.5px] active:border-b-[1.2px] active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.12)]"
+                                    className="w-full py-4 px-5 rounded-[1.35rem] text-left text-[10px] font-[1000] uppercase tracking-wider home-btn-3d"
                                 >
                                     {loc.name}
                                 </button>

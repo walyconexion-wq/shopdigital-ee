@@ -1092,3 +1092,65 @@
   color: #ffffff !important;
   opacity: 0.55 !important;
 }
+
+/* ═══════════════════════════════════════════ */
+/* ☀️ BOTONES 3D HOME GLOBAL (MODO DÍA)       */
+/* ═══════════════════════════════════════════ */
+
+/* Botón 3D Base */
+.home-btn-3d {
+  background: #ffffff !important;
+  color: #2d1e15 !important;
+  border: 1.5px solid rgba(88, 70, 50, 0.15) !important;
+  border-bottom: 5px solid #a0836c !important;
+  box-shadow: 
+    0 8px 16px rgba(88, 70, 50, 0.1),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95) !important;
+  transition: all 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  position: relative !important;
+  top: 0 !important;
+  transform: translateY(0) !important;
+}
+
+.home-btn-3d:hover {
+  top: -2.5px !important;
+  border-bottom-width: 7.5px !important;
+  border-bottom-color: #8c715c !important;
+  box-shadow: 
+    0 12px 24px rgba(88, 70, 50, 0.16),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+.home-btn-3d:active {
+  top: 3.5px !important;
+  border-bottom-width: 1.5px !important;
+  border-bottom-color: #a0836c !important;
+  box-shadow: 
+    inset 0 3px 8px rgba(88, 70, 50, 0.18),
+    0 2px 4px rgba(88, 70, 50, 0.05) !important;
+}
+
+/* Selector de Región Activo */
+.home-btn-3d-active {
+  background: #cbbba9 !important;
+  color: #2d1e15 !important;
+  border: 1.5px solid #918171 !important;
+  border-bottom: 1.5px solid #918171 !important;
+  box-shadow: 
+    inset 0 3px 8px rgba(88, 70, 50, 0.18),
+    0 2px 4px rgba(88, 70, 50, 0.05) !important;
+  transform: translateY(3.5px) !important;
+  pointer-events: none !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* Animación Flotante de Modelo */
+@keyframes model-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.model-floating {
+  animation: model-float 4s ease-in-out infinite !important;
+}
