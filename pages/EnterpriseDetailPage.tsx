@@ -374,7 +374,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                         playNeonClick();
                         navigate(`${basePath}/${categorySlug}`);
                     }}
-                    className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                    className="back-button absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
                 >
                     <ArrowLeft size={22} className="text-white drop-shadow-md pr-0.5" />
                 </button>
@@ -390,7 +390,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                 {/* Gradiente sutil solo en los bordes para lectura de texto, el centro queda 100% visible */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
 
-                <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] flex flex-col items-center">
                     {/* 💡 LETRERO NEÓN 3D — Nombre del Comercio */}
                     <div className="relative" style={{ '--neon-color': themeColor } as React.CSSProperties}>
                         {/* Capa de resplandor trasero (profundidad 3D) */}
