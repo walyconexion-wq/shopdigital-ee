@@ -218,19 +218,10 @@ const GlobalHomePage: React.FC = () => {
                     </div>
 
                     {/* Sección Principal con Avatar y Localidades */}
-                    <div className="flex-1 w-full relative flex items-center mt-2 overflow-hidden">
+                    <div className="flex-1 w-full relative flex items-start justify-between mt-6 overflow-hidden">
                         
-                        {/* Avatar de ARI señalando */}
-                        <div className="absolute right-[-20px] bottom-[-20px] w-[260px] pointer-events-none z-0 select-none model-floating">
-                            <img 
-                                src="/ari-pointing.png" 
-                                alt="ARI Asistente" 
-                                className="w-full h-auto object-contain animate-in fade-in slide-in-from-right-12 duration-1000 ease-out" 
-                            />
-                        </div>
-
                         {/* Listado de Localidades (Botones 3D) */}
-                        <div className="relative z-10 flex flex-col gap-3.5 w-[56%] self-center pl-1">
+                        <div className="relative z-10 flex flex-col gap-3.5 w-[46%] pl-1 pt-2">
                             {localitiesForActiveRegion.map(loc => (
                                 <button
                                     key={loc.name}
@@ -246,11 +237,20 @@ const GlobalHomePage: React.FC = () => {
                                             navigate(loc.path);
                                         }
                                     }}
-                                    className="w-full py-4 px-5 rounded-[1.35rem] text-left text-[10px] font-[1000] uppercase tracking-wider home-btn-3d"
+                                    className="w-full py-3.5 pl-4 pr-2 rounded-[1.35rem] text-left text-[9.5px] font-[1000] uppercase tracking-wider home-btn-3d"
                                 >
                                     {loc.name}
                                 </button>
                             ))}
+                        </div>
+
+                        {/* Avatar de ARI señalando */}
+                        <div className="absolute right-[-15px] bottom-[-10px] h-[98%] w-[56%] pointer-events-none z-0 select-none model-floating flex items-end justify-end">
+                            <img 
+                                src="/ari-pointing.png" 
+                                alt="ARI Asistente" 
+                                className="h-full w-auto object-contain object-bottom animate-in fade-in slide-in-from-right-12 duration-1000 ease-out" 
+                            />
                         </div>
 
                     </div>
