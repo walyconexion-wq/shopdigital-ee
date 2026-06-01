@@ -636,7 +636,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[88%] p-3 rounded-[1.1rem] text-[11px] leading-relaxed border backdrop-blur-md ${
                                     msg.role === 'user'
-                                    ? styles.userMsgBg + ' text-white rounded-tr-sm'
+                                    ? styles.userMsgBg + ' text-white rounded-tr-sm user-msg-bubble'
                                     : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)] ari-bubble-ari' : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm')
                                 }`}>
                                     {msg.text}
@@ -755,16 +755,16 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
             {!inline && (
                 <div className="relative group">
                     {/* Cartelito de ayuda - Siempre visible con animación suave */}
-                    <div className="absolute bottom-full right-0 mb-4 animate-bounce">
-                        <div className={isDayMode ? "bg-slate-200/80 shadow-[0_4px_15px_rgba(0,0,0,0.06)] p-[1px] rounded-2xl" : `bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
-                            <div className={`${isDayMode ? 'bg-[#faf8f5]' : 'bg-black/90 backdrop-blur-md'} px-4 py-2 rounded-2xl whitespace-nowrap`}>
+                    <div className="absolute bottom-full right-0 mb-4 animate-bounce ari-helper-cartelito">
+                        <div className={isDayMode ? "ari-helper-cartelito-body p-[1px] rounded-2xl" : `bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
+                            <div className={`${isDayMode ? 'bg-transparent' : 'bg-black/90 backdrop-blur-md'} px-4 py-2 rounded-2xl whitespace-nowrap`}>
                                 <span className={`text-[10px] font-black uppercase tracking-widest ${isDayMode ? 'text-[#0f172a]' : `text-transparent bg-clip-text bg-gradient-to-r ${styles.helpTextGradient}`}`}>
                                     {isIndustrial ? 'Comando B2B Online' : 'Asistente IA'}
                                 </span>
                             </div>
                         </div>
                         {/* Triangulito del cartelito */}
-                        <div className={`w-3 h-3 ${isDayMode ? 'bg-[#faf8f5]' : styles.helpTextTriangle} rotate-45 absolute -bottom-1.5 right-6`} />
+                        <div className={`w-3 h-3 ${isDayMode ? 'ari-helper-cartelito-triangle' : styles.helpTextTriangle} rotate-45 absolute -bottom-1.5 right-6`} />
                     </div>
 
                     {/* Efecto de anillo pulsante de atención */}
@@ -895,7 +895,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[85%] p-3.5 rounded-[1.25rem] text-[11px] leading-relaxed shadow-lg border backdrop-blur-md transition-all ${
                                     msg.role === 'user' 
-                                    ? styles.userMsgBg + ' text-white rounded-tr-sm' 
+                                    ? styles.userMsgBg + ' text-white rounded-tr-sm user-msg-bubble' 
                                     : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 ari-bubble-ari' : 'bg-white/5 border-white/10 text-white/90') + ' rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]'
                                 }`}>
                                     {msg.text}
