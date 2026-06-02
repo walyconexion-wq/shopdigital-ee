@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
-import { subscribeToGlobalConfig } from '../firebase';
+import { subscribeToGlobalConfig, guardarComercio } from '../firebase';
 
 const PROVINCES = [
     { id: 'buenos-aires', name: 'BUENOS AIRES',  emoji: '🏙️' },
@@ -47,6 +47,8 @@ const EnterpriseMasterBoardPage: React.FC = () => {
 
     // Modo Camaleón: leer config de zona para identidad visual del panel
     const [zoneConfig, setZoneConfig] = useState<any>({ primaryColor: '#06b6d4', townName: '' });
+    const [isSeeding, setIsSeeding] = useState(false);
+    const [hasSeeded, setHasSeeded] = useState(false);
 
     useEffect(() => {
         const unsub = subscribeToGlobalConfig((cfg) => {
@@ -110,6 +112,226 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         } catch {
             return `rgba(6, 182, 212, ${alpha})`;
+        }
+    };
+
+    // ═══════════════════════════════════════════════════════════
+    // 🌱 SIEMBRA INDUSTRIAL B2B — Muestras Hiperrealistas
+    // Genera 1 empresa de muestra por cada categoría industrial
+    // ═══════════════════════════════════════════════════════════
+    const seedB2BMuestrasHiperrealistas = async () => {
+        const confirmed = window.confirm(
+            `🌱🏭 SIEMBRA INDUSTRIAL B2B HIPERREALISTA\n\n¿Estás seguro de sembrar empresas industriales de muestra en la zona:\n\n"${zoneName}"?\n\nSe creará 1 empresa por cada una de las 21 categorías industriales.\nTodas se inyectarán con la marca "isSeed: true" y estado de incubación.`
+        );
+        if (!confirmed) return;
+
+        setIsSeeding(true);
+        try {
+            playNeonClick();
+
+            // Datos hiperrealistas para las 21 categorías industriales B2B
+            const B2B_SEED_DATA: Record<string, { name: string; specialty: string; img: string; offerName: string; price: number }> = {
+                'ent-alimentos': {
+                    name: `Alimentos del Sur S.A.`,
+                    specialty: 'Elaboración y distribución mayorista de productos alimenticios envasados, conservas y congelados para cadenas de supermercados y minimercados.',
+                    img: 'https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=500',
+                    offerName: 'Caja x24 Conservas Premium',
+                    price: 45000
+                },
+                'ent-bebidas': {
+                    name: `Distribuidora de Bebidas ${zoneName}`,
+                    specialty: 'Distribución mayorista de bebidas nacionales e importadas. Abastecimiento directo a restaurantes, cervecerías y comercios minoristas.',
+                    img: 'https://images.unsplash.com/photo-1527960656366-ee2a5e98f661?w=500',
+                    offerName: 'Pallet Gaseosas x120 unid.',
+                    price: 85000
+                },
+                'ent-textil': {
+                    name: `Textil Industrial Pampa`,
+                    specialty: 'Fabricación de telas, hilados y corte de indumentaria a gran escala para marcas de moda y tiendas departamentales.',
+                    img: 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=500',
+                    offerName: 'Rollo Tela Jersey 50m',
+                    price: 120000
+                },
+                'ent-tecnologia': {
+                    name: `TechImport Argentina`,
+                    specialty: 'Importación directa de componentes electrónicos, celulares y accesorios tecnológicos. Distribución nacional a cadenas retail.',
+                    img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500',
+                    offerName: 'Lote Auriculares BT x50',
+                    price: 250000
+                },
+                'ent-limpieza': {
+                    name: `Higiene Total S.R.L.`,
+                    specialty: 'Fabricación de productos de limpieza industrial y doméstica. Línea completa de detergentes, desinfectantes y artículos de higiene.',
+                    img: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500',
+                    offerName: 'Pack Lavandina Institucional x12',
+                    price: 28000
+                },
+                'ent-construccion': {
+                    name: `Corralón y Materiales del Sur`,
+                    specialty: 'Venta mayorista de materiales de construcción: cemento, hierro, ladrillos, cal, arena y herramientas. Despacho a obra con flota propia.',
+                    img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500',
+                    offerName: 'Pallet Cemento x40 bolsas',
+                    price: 180000
+                },
+                'ent-mayoristas': {
+                    name: `Central Mayorista ${zoneName}`,
+                    specialty: 'Distribución de productos de consumo masivo a comercios minoristas. Alimentos, bebidas, perfumería y bazar a precios directos de fábrica.',
+                    img: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500',
+                    offerName: 'Bolsón Surtido Almacén',
+                    price: 95000
+                },
+                'ent-cosmeticos': {
+                    name: `Belleza Industrial Argentina`,
+                    specialty: 'Fabricación y fraccionamiento de cosméticos, cremas, shampoos y productos capilares para salones de belleza y perfumerías.',
+                    img: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500',
+                    offerName: 'Kit Salón Capilar x20 prod.',
+                    price: 65000
+                },
+                'ent-automotriz': {
+                    name: `AutoPartes Nacional S.A.`,
+                    specialty: 'Fabricación e importación de repuestos automotrices, autopartes y accesorios para talleres mecánicos y concesionarias.',
+                    img: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=500',
+                    offerName: 'Kit Pastillas de Freno x100',
+                    price: 340000
+                },
+                'ent-electronica': {
+                    name: `Electro Componentes Sur`,
+                    specialty: 'Distribución mayorista de componentes electrónicos, circuitos, cables, conectores y herramientas de soldadura para fábricas y talleres.',
+                    img: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=500',
+                    offerName: 'Lote Cables HDMI x200',
+                    price: 78000
+                },
+                'ent-muebles': {
+                    name: `Fábrica de Muebles del Valle`,
+                    specialty: 'Fabricación de muebles de madera y melamina para hogares, oficinas y locales comerciales. Diseño a medida y producción en serie.',
+                    img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500',
+                    offerName: 'Escritorio Oficina Premium',
+                    price: 155000
+                },
+                'ent-packaging': {
+                    name: `EnvaPack Industrial`,
+                    specialty: 'Fabricación de envases plásticos, cajas de cartón corrugado, film stretch y soluciones de packaging para la industria alimenticia y logística.',
+                    img: 'https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=500',
+                    offerName: 'Bobina Film Stretch x6',
+                    price: 42000
+                },
+                'ent-salud': {
+                    name: `Droguería del Centro`,
+                    specialty: 'Distribución farmacéutica mayorista. Medicamentos, insumos médicos y productos de salud para farmacias y centros de atención.',
+                    img: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=500',
+                    offerName: 'Lote Descartables Médicos',
+                    price: 125000
+                },
+                'ent-agro': {
+                    name: `AgroInsumos Pampa`,
+                    specialty: 'Provisión de semillas, fertilizantes, agroquímicos y maquinaria agrícola para productores rurales y cooperativas.',
+                    img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500',
+                    offerName: 'Pallet Fertilizante NPK x20',
+                    price: 220000
+                },
+                'ent-calzado': {
+                    name: `Calzados Industrial Sur`,
+                    specialty: 'Fabricación de calzado deportivo, casual y de seguridad industrial. Producción en serie y marca blanca para cadenas de retail.',
+                    img: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=500',
+                    offerName: 'Lote Zapatillas x48 pares',
+                    price: 480000
+                },
+                'ent-papeleria': {
+                    name: `Papelera del Plata`,
+                    specialty: 'Fabricación y distribución mayorista de papelería, útiles escolares, artículos de oficina y productos de librería.',
+                    img: 'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=500',
+                    offerName: 'Pack Resmas A4 x100',
+                    price: 95000
+                },
+                'ent-plasticos': {
+                    name: `Plásticos del Sur S.A.`,
+                    specialty: 'Fabricación de artículos plásticos descartables, contenedores, bolsas y productos de polietileno para industrias y comercios.',
+                    img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=500',
+                    offerName: 'Bolsa Consorcio x1000 unid.',
+                    price: 35000
+                },
+                'ent-metalurgica': {
+                    name: `Metalúrgica Federal`,
+                    specialty: 'Fabricación de estructuras metálicas, herrería industrial, corte y plegado de chapas. Provisión a constructoras y talleres.',
+                    img: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=500',
+                    offerName: 'Perfil de Hierro T x50',
+                    price: 290000
+                },
+                'ent-quimica': {
+                    name: `Química Industrial del Sur`,
+                    specialty: 'Fabricación y distribución de insumos químicos, solventes, adhesivos y productos para industrias textiles, alimenticias y de la construcción.',
+                    img: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=500',
+                    offerName: 'Tambor Solvente Industrial 200L',
+                    price: 185000
+                },
+                'ent-juguetes': {
+                    name: `Juguetes Fantasía S.R.L.`,
+                    specialty: 'Importación y distribución mayorista de juguetes, cotillón, artículos de fiesta y souvenirs para jugueterías y librerías.',
+                    img: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=500',
+                    offerName: 'Pack Cotillón Fiesta x100',
+                    price: 55000
+                },
+                'ent-mascotas-ind': {
+                    name: `NutriPet Industrial`,
+                    specialty: 'Fabricación de alimento balanceado premium para mascotas. Distribución a veterinarias, pet shops y cadenas especializadas.',
+                    img: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=500',
+                    offerName: 'Pallet Alimento Premium x40 bolsas',
+                    price: 320000
+                }
+            };
+
+            let totalEmpresas = 0;
+
+            for (const [catSlug, catData] of Object.entries(B2B_SEED_DATA)) {
+                const id = `ent-sample-${catSlug}-${selectedTownId}`;
+                const slug = `ent-sample-${catSlug}-${selectedTownId}`;
+
+                const enterpriseData = {
+                    id,
+                    slug,
+                    name: catData.name,
+                    category: catSlug,
+                    specialty: catData.specialty,
+                    entityType: 'enterprise',
+                    reach: 'regional',
+                    zone: zoneName,
+                    address: `Parque Industrial ${zoneName}, Lote ${10 + totalEmpresas}, Argentina`,
+                    phone: `11${5000 + Math.floor(Math.random() * 5000)}${1000 + Math.floor(Math.random() * 9000)}`,
+                    image: catData.img,
+                    bannerImage: catData.img,
+                    description: `${catData.name} es una empresa industrial con base operativa en ${zoneName}. ${catData.specialty} Formamos parte de la Red ShopDigital Industrial B2B, conectando proveedores directamente con comerciantes y emprendedores.`,
+                    mapUrl: `https://maps.google.com/maps?q=${encodeURIComponent(catData.name + ', ' + zoneName + ', Argentina')}&t=&z=15&ie=UTF8&iwloc=&output=embed`,
+                    website: `https://shopdigital.tech/empresas/${slug}`,
+                    isActive: true,
+                    townId: selectedTownId,
+                    verified: true,
+                    visits: Math.floor(10 + Math.random() * 50),
+                    subscribers: Math.floor(2 + Math.random() * 15),
+                    schedule: 'Lun-Vie 8:00 - 17:00 · Sáb 8:00 - 12:00',
+                    isSeed: true,
+                    status: 'incubacion',
+                    offers: [
+                        {
+                            id: `offer-ent-${catSlug}-${selectedTownId}`,
+                            name: catData.offerName,
+                            price: catData.price,
+                            image: catData.img,
+                            description: `Oferta mayorista exclusiva para comerciantes de la Red ShopDigital. Precio directo de fábrica con entrega programada.`
+                        }
+                    ]
+                };
+
+                await guardarComercio(enterpriseData, selectedTownId);
+                totalEmpresas++;
+            }
+
+            setHasSeeded(true);
+            alert(`🏭🌱 ¡Siembra Industrial B2B completada con éxito en ${zoneName}!\n\nSe crearon ${totalEmpresas} empresas industriales de muestra (una por cada categoría B2B).\n\nTodas marcadas con "isSeed: true" y en estado de incubación.`);
+        } catch (error: any) {
+            console.error('Error en la siembra industrial B2B:', error);
+            alert(`❌ Error al sembrar muestras industriales: ${error.message || error}`);
+        } finally {
+            setIsSeeding(false);
         }
     };
 
@@ -316,6 +538,23 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             <Zap size={18} className="text-violet-400" />
                             <span className="text-[13px] text-violet-300">BÚNKER CENTRAL DEL DIRECTOR - WALY</span>
                         </div>
+
+                        {/* 🌱 SIEMBRA INDUSTRIAL B2B */}
+                        <button
+                            disabled={isSeeding || hasSeeded}
+                            onClick={seedB2BMuestrasHiperrealistas}
+                            className={`w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed
+                                ${hasSeeded 
+                                    ? 'border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.2)] bg-emerald-500/10' 
+                                    : 'border-green-500/40 hover:border-green-400 shadow-[0_0_30px_rgba(34,197,94,0.2)]'
+                                }`}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-white/5 to-green-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <Factory size={18} className={hasSeeded ? 'text-emerald-400' : 'text-green-400 animate-pulse'} />
+                            <span className={hasSeeded ? 'text-[13px] text-emerald-300' : 'text-[13px] text-green-300'}>
+                                {isSeeding ? '⏳ Sembrando Industrias...' : hasSeeded ? '✅ Muestras Industriales Pobladas' : '🌱 Sembrar Muestras Industriales B2B'}
+                            </span>
+                        </button>
 
                         {/* ════════════════════════════════════════════════════════ */}
                         {/* 🎨 DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR             */}
