@@ -336,6 +336,57 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                         <div className="flex flex-wrap justify-center gap-2.5 px-2 pb-2 max-w-[95%] mx-auto">
                             {TRASLASIERRA_REGION.towns.map((town) => {
                                 const isActive = townId === town.id;
+                                const themeMode = globalConfig?.themeMode || 'auto';
+                                const isDayMode = themeMode === 'light' 
+                                    ? true 
+                                    : themeMode === 'dark' 
+                                        ? false 
+                                        : new Date().getHours() >= 8 && new Date().getHours() < 20;
+
+                                // Clases para Modo Día vs Modo Noche
+                                const btnClass = isDayMode
+                                    ? `px-4 py-2.5 rounded-full text-[8.5px] font-[1000] uppercase tracking-widest transition-all duration-150 active:translate-y-[2px] ${
+                                        isActive 
+                                            ? 'border-sky-400 bg-sky-500/20 text-sky-950 scale-105 shadow-[0_0_15px_rgba(14,165,233,0.3)]' 
+                                            : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 hover:-translate-y-[1.5px]'
+                                      }`
+                                    : `px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
+                                        isActive
+                                            ? 'backdrop-blur-md text-white scale-105 animate-pulse'
+                                            : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
+                                      }`;
+
+                                // Estilos en línea específicos para relieve y glow
+                                const btnStyle = isDayMode
+                                    ? (isActive 
+                                        ? {
+                                            borderWidth: '1.5px',
+                                            borderBottomWidth: '1.5px',
+                                            borderBottomColor: '#0ea5e9',
+                                            boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.4)}, inset 0 1px 0 rgba(255,255,255,0.4)`,
+                                            transform: 'translateY(2px)'
+                                          }
+                                        : {
+                                            borderWidth: '1px',
+                                            borderBottomWidth: '4px',
+                                            borderBottomColor: '#cda488', // Relieve color arcilla/champagne
+                                            boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
+                                          }
+                                      )
+                                    : (isActive 
+                                        ? {
+                                            backgroundColor: hexToRgba(themeColor, 0.35),
+                                            borderColor: '#ffffff',
+                                            boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
+                                            textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
+                                          } 
+                                        : {
+                                            backgroundColor: hexToRgba(themeColor, 0.1),
+                                            borderColor: hexToRgba(themeColor, 0.3),
+                                            boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
+                                          }
+                                      );
+
                                 return (
                                     <button
                                         key={town.id}
@@ -343,21 +394,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                             playNeonClick();
                                             if (!isActive) navigate(`/${town.id}/home`);
                                         }}
-                                        className={`px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
-                                            isActive
-                                                ? 'backdrop-blur-md text-white scale-105 animate-pulse'
-                                                : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
-                                        }`}
-                                        style={isActive ? {
-                                            backgroundColor: hexToRgba(themeColor, 0.35),
-                                            borderColor: '#ffffff',
-                                            boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
-                                            textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
-                                        } : {
-                                            backgroundColor: hexToRgba(themeColor, 0.1),
-                                            borderColor: hexToRgba(themeColor, 0.3),
-                                            boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
-                                        }}
+                                        className={btnClass}
+                                        style={btnStyle}
                                     >
                                         {town.name}
                                     </button>
