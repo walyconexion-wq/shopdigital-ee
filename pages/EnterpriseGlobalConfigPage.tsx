@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { 
     ChevronLeft, Save, Palette, Type, Globe, 
     Snowflake, Sun, Flower2, TreePine, Layout,
@@ -10,6 +10,10 @@ import { subscribeToEnterpriseConfig, saveEnterpriseConfig } from '../firebase_e
 
 const EnterpriseGlobalConfigPage: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    
+    const queryParams = new URLSearchParams(location.search);
+    const provinciaParam = queryParams.get('provincia') || 'buenos-aires';
     
     const [config, setConfig] = useState<any>({
         mainTitle: "Directorio Industrial",
@@ -17,7 +21,8 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
         theme: 'default',
         primaryColor: '#f59e0b',
         townName: 'Argentina',
-        bgColor: '#000000'
+        bgColor: '#000000',
+        themeMode: 'auto'
     });
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -77,7 +82,7 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
 
             {/* Header Sticky */}
             <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-amber-500/20 pt-10 pb-4 px-6 relative z-10 sticky top-0 shadow-2xl flex items-center justify-between">
-                <button onClick={() => { playNeonClick(); navigate(`/empresas/tablero-maestro`); }} className="text-white/50 hover:text-white transition-colors">
+                <button onClick={() => { playNeonClick(); navigate(`/empresas/tablero-maestro?provincia=${provinciaParam}`); }} className="text-white/50 hover:text-white transition-colors">
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center flex-1">
@@ -140,6 +145,33 @@ const EnterpriseGlobalConfigPage: React.FC = () => {
                                         <Check size={14} strokeWidth={3} />
                                     </div>
                                 )}
+                            </button>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Section: Modo de Brillo */}
+                <section className="space-y-4">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500/50 flex items-center gap-2 border-b border-amber-500/10 pb-2">
+                        <Sun size={14} /> Brillo de Interfaz
+                    </h2>
+                    <div className="grid grid-cols-3 gap-3">
+                        {[
+                            { id: 'auto', name: 'Automático 🔄', desc: 'Día / Noche según horario' },
+                            { id: 'light', name: 'Modo Día ☀️', desc: 'Champagne y Claridad' },
+                            { id: 'dark', name: 'Modo Noche 🌙', desc: 'Cyberpunk Industrial' },
+                        ].map((mode) => (
+                            <button
+                                key={mode.id}
+                                onClick={() => { playNeonClick(); setConfig({ ...config, themeMode: mode.id }); }}
+                                className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-center text-center gap-1.5 cursor-pointer ${
+                                    (config.themeMode || 'auto') === mode.id
+                                    ? 'bg-amber-500/10 border-amber-500/40 ring-2 ring-amber-500/10'
+                                    : 'bg-zinc-900/40 border-white/5 hover:border-white/20'
+                                }`}
+                            >
+                                <span className="text-[11px] font-[1000] uppercase tracking-wider">{mode.name}</span>
+                                <span className="text-[7.5px] text-white/30 uppercase tracking-widest leading-tight">{mode.desc}</span>
                             </button>
                         ))}
                     </div>

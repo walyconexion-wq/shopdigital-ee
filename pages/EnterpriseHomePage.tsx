@@ -22,20 +22,21 @@ const PROVINCES = [
 const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig }) => {
     const navigate = useNavigate();
 
-    // Nueva Paleta Tecnológica (Tech Neon)
-    const primaryColor = '#06b6d4'; // Cyan brillante
+    // Nueva Paleta Tecnológica (Tech Neon) - Conectada a la Configuración Global
+    const primaryColor = globalConfig?.primaryColor || '#f59e0b'; // Amber por defecto
     const secondaryColor = '#3b82f6'; // Azul Royal
-    const bgColor = '#020617'; // Slate 950 (Azul marino casi negro)
+    const bgColor = globalConfig?.bgColor || '#020617'; // Slate 950 (Azul marino casi negro)
     const mainTitle  = globalConfig?.mainTitle  || 'Directorio Industrial';
     const mainSubtitle = globalConfig?.mainSubtitle || 'Proveedores & Mayoristas';
 
     const hexToRgba = (hex: string, alpha: number) => {
         try {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
+            const cleanHex = hex.replace('#', '');
+            const r = parseInt(cleanHex.slice(0, 2), 16);
+            const g = parseInt(cleanHex.slice(2, 4), 16);
+            const b = parseInt(cleanHex.slice(4, 6), 16);
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        } catch { return `rgba(6,182,212,${alpha})`; }
+        } catch { return `rgba(245,158,11,${alpha})`; }
     };
 
     const [selectedProvince, setSelectedProvince] = React.useState('buenos-aires');
@@ -63,7 +64,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     };
 
     return (
-        <div className="flex flex-col pt-6 pb-16 animate-in fade-in duration-1000 relative overflow-hidden min-h-screen" style={{ backgroundColor: bgColor }}>
+        <div className="flex flex-col pt-6 pb-16 animate-in fade-in duration-1000 relative overflow-hidden min-h-screen enterprise-home-root day-mode-bg-reset" style={{ backgroundColor: bgColor }}>
             {/* ── CSS Animations Inline ── */}
             <style>{`
                 @keyframes levitate {
@@ -78,6 +79,10 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                     0% { transform: translateY(-100%); }
                     100% { transform: translateY(200%); }
                 }
+                @keyframes radialGlow {
+                    0%, 100% { transform: scale(1); opacity: 0.2; }
+                    50% { transform: scale(1.15); opacity: 0.35; }
+                }
                 .tech-grid-bg {
                     background-size: 30px 30px;
                     background-image: 
@@ -89,6 +94,113 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                     backdrop-filter: blur(12px);
                     border: 1px solid ${hexToRgba(primaryColor, 0.2)};
                     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+                }
+                .glow-orb {
+                    position: absolute;
+                    width: 140px;
+                    height: 140px;
+                    border-radius: 50%;
+                    filter: blur(40px);
+                    z-index: 0;
+                    pointer-events: none;
+                    animation: radialGlow 4s infinite alternate;
+                }
+                /* ☀️ REGLAS TÁCTICAS PARA EL MODO DÍA B2B */
+                .day-mode .day-mode-bg-reset {
+                    background: transparent !important;
+                }
+                .day-mode .glow-orb {
+                    opacity: 0 !important;
+                }
+                .day-mode .enterprise-home-title {
+                    color: #2d1e15 !important;
+                    text-shadow: 
+                        0 1px 0 #ffffff,
+                        0 2px 0 #ebd7c8,
+                        0 3px 6px rgba(45, 30, 21, 0.15) !important;
+                }
+                .day-mode .enterprise-home-subtitle {
+                    color: #5c4033 !important;
+                    opacity: 0.9 !important;
+                }
+                .day-mode .section-header-text {
+                    color: #3d2b1f !important;
+                    opacity: 0.95 !important;
+                }
+                .day-mode .back-home-btn {
+                    background: rgba(255, 255, 255, 0.8) !important;
+                    border-color: rgba(88, 70, 50, 0.15) !important;
+                    box-shadow: 0 4px 10px rgba(88, 70, 50, 0.05) !important;
+                }
+                .day-mode .back-home-btn svg {
+                    color: #2d1e15 !important;
+                }
+                .day-mode .factory-header-card {
+                    background: #ffffff !important;
+                    border: 1px solid rgba(88, 70, 50, 0.15) !important;
+                    border-bottom: 4px solid var(--theme-primary, ${primaryColor}) !important;
+                    box-shadow: 0 10px 25px rgba(88, 70, 50, 0.08) !important;
+                }
+                .day-mode .factory-header-card svg {
+                    color: var(--theme-primary, ${primaryColor}) !important;
+                    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08)) !important;
+                }
+                .day-mode .prov-select-btn {
+                    background: rgba(255, 255, 255, 0.45) !important;
+                    border-color: rgba(88, 70, 50, 0.15) !important;
+                    color: #5c4033 !important;
+                    box-shadow: 0 2px 6px rgba(88, 70, 50, 0.04) !important;
+                    text-shadow: none !important;
+                }
+                .day-mode .prov-select-btn:hover {
+                    background: rgba(255, 255, 255, 0.75) !important;
+                    border-color: rgba(88, 70, 50, 0.3) !important;
+                }
+                .day-mode .prov-select-btn.active {
+                    background: #ffffff !important;
+                    color: #2d1e15 !important;
+                    border: 2px solid var(--theme-primary, ${primaryColor}) !important;
+                    box-shadow: 0 4px 12px rgba(88, 70, 50, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+                    text-shadow: none !important;
+                }
+                .day-mode .glass-card-neon {
+                    background: #ffffff !important;
+                    border: 1px solid rgba(88, 70, 50, 0.12) !important;
+                    border-bottom: 3.5px solid rgba(88, 70, 50, 0.2) !important;
+                    box-shadow: 0 4px 10px rgba(88, 70, 50, 0.05) !important;
+                }
+                .day-mode .glass-card-neon:hover {
+                    background: #fdfbf7 !important;
+                    transform: translateY(-4px) scale(1.02) !important;
+                    border-color: rgba(88, 70, 50, 0.25) !important;
+                    border-bottom-color: var(--theme-primary, ${primaryColor}) !important;
+                    box-shadow: 0 8px 20px rgba(88, 70, 50, 0.1) !important;
+                }
+                .day-mode .glass-card-neon span {
+                    color: #2d1e15 !important;
+                }
+                .day-mode .glass-card-neon svg {
+                    color: var(--theme-primary, ${primaryColor}) !important;
+                    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05)) !important;
+                }
+                .day-mode .auth-factory-btn {
+                    background: var(--theme-primary, ${primaryColor}) !important;
+                    border-color: var(--theme-primary, ${primaryColor}) !important;
+                    color: #ffffff !important;
+                    box-shadow: 0 8px 20px rgba(88, 70, 50, 0.15) !important;
+                }
+                .day-mode .auth-factory-btn:hover {
+                    opacity: 0.92 !important;
+                }
+                .day-mode .share-coords-btn span {
+                    color: #2d1e15 !important;
+                }
+                .day-mode .share-coords-btn svg {
+                    color: var(--theme-primary, ${primaryColor}) !important;
+                }
+                .day-mode footer p {
+                    color: #5c4033 !important;
+                    opacity: 0.75 !important;
                 }
             `}</style>
 
@@ -107,36 +219,39 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
             <header className="flex flex-col items-center relative z-10 px-6 mb-8 mt-2">
                 <button
                     onClick={() => { playNeonClick(); navigate(-1); }}
-                    className="self-start mb-6 w-11 h-11 rounded-2xl glass-card-neon flex items-center justify-center transition-all hover:scale-105 active:scale-95 group relative overflow-hidden"
+                    className="self-start mb-6 w-11 h-11 rounded-2xl glass-card-neon flex items-center justify-center transition-all hover:scale-105 active:scale-95 group relative overflow-hidden back-home-btn"
                 >
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <ChevronLeft size={24} style={{ color: primaryColor }} />
                 </button>
 
-                {/* Animated Logo Container */}
-                <div 
-                    onClick={handleBunkerClick} 
-                    className="relative rounded-3xl p-6 mb-6 glass-card-neon cursor-pointer overflow-hidden border-t border-l"
-                    style={{ 
-                        animation: 'levitate 4s ease-in-out infinite',
-                        borderTopColor: hexToRgba(primaryColor, 0.4),
-                        borderLeftColor: hexToRgba(primaryColor, 0.2)
-                    }}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-                    <Factory 
-                        size={56} 
-                        strokeWidth={1.5}
-                        style={{ color: primaryColor, animation: 'pulseGlow 3s infinite alternate' }} 
-                    />
+                {/* Animated Logo Container with background glow-orb at night */}
+                <div className="relative flex items-center justify-center w-full mb-6">
+                    <div className="glow-orb" style={{ backgroundColor: hexToRgba(primaryColor, 0.45) }} />
+                    <div 
+                        onClick={handleBunkerClick} 
+                        className="relative rounded-3xl p-6 glass-card-neon cursor-pointer overflow-hidden border-t border-l factory-header-card z-10"
+                        style={{ 
+                            animation: 'levitate 4s ease-in-out infinite',
+                            borderTopColor: hexToRgba(primaryColor, 0.4),
+                            borderLeftColor: hexToRgba(primaryColor, 0.2)
+                        }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                        <Factory 
+                            size={56} 
+                            strokeWidth={1.5}
+                            style={{ color: primaryColor, animation: 'pulseGlow 3s infinite alternate' }} 
+                        />
+                    </div>
                 </div>
 
-                <h1 className="text-xl font-bold text-white uppercase tracking-[0.25em] text-center mb-2" style={{ textShadow: `0 0 20px ${hexToRgba(primaryColor, 0.5)}` }}>
+                <h1 className="text-xl font-bold text-white uppercase tracking-[0.25em] text-center mb-2 enterprise-home-title" style={{ textShadow: `0 0 20px ${hexToRgba(primaryColor, 0.5)}` }}>
                     {mainTitle}
                 </h1>
                 <div className="flex items-center gap-3">
                     <div className="h-[2px] w-12 rounded-full" style={{ backgroundImage: `linear-gradient(to right, transparent, ${primaryColor})` }} />
-                    <p className="text-[10px] font-medium text-cyan-100 uppercase tracking-[0.3em] opacity-80">
+                    <p className="text-[10px] font-medium text-cyan-100 uppercase tracking-[0.3em] opacity-80 enterprise-home-subtitle">
                         Argentina · {mainSubtitle}
                     </p>
                     <div className="h-[2px] w-12 rounded-full" style={{ backgroundImage: `linear-gradient(to left, transparent, ${primaryColor})` }} />
@@ -145,7 +260,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
 
             {/* ── Selector de Provincias ── */}
             <section className="px-4 mb-10 relative z-10">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-center mb-4 flex items-center justify-center gap-2 text-cyan-200/60">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-center mb-4 flex items-center justify-center gap-2 text-cyan-200/60 section-header-text">
                     <MapPin size={12} className="text-cyan-400" /> Coordenadas Regionales
                 </p>
                 <div className="flex flex-wrap gap-2.5 justify-center">
@@ -155,7 +270,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                             <button
                                 key={prov.id}
                                 onClick={() => { playNeonClick(); setSelectedProvince(prov.id); }}
-                                className="px-4 py-2.5 rounded-xl border transition-all duration-300 text-[10px] font-bold uppercase tracking-wider relative overflow-hidden"
+                                className={`px-4 py-2.5 rounded-xl border transition-all duration-300 text-[10px] font-bold uppercase tracking-wider relative overflow-hidden prov-select-btn cursor-pointer ${isActive ? 'active' : ''}`}
                                 style={isActive ? {
                                     backgroundColor: hexToRgba(secondaryColor, 0.3),
                                     borderColor: primaryColor,
@@ -178,7 +293,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
 
             {/* ── Grid de Rubros Industriales ── */}
             <section className="px-5 relative z-10">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-center mb-6 text-cyan-200/60">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-center mb-6 text-cyan-200/60 section-header-text">
                     Sectores Productivos Activos
                 </p>
                 <div className="grid grid-cols-3 gap-3">
@@ -213,7 +328,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
             <div className="mt-14 px-6 flex flex-col gap-4 items-center w-full relative z-10">
                 <button
                     onClick={() => { playNeonClick(); navigate('/empresas/inscripcion'); }}
-                    className="w-full py-5 rounded-2xl font-bold uppercase tracking-[0.15em] text-[11px] transition-all flex items-center justify-center gap-3 relative overflow-hidden group border"
+                    className="w-full py-5 rounded-2xl font-bold uppercase tracking-[0.15em] text-[11px] transition-all flex items-center justify-center gap-3 relative overflow-hidden group border cursor-pointer auth-factory-btn"
                     style={{
                         background: `linear-gradient(135deg, ${hexToRgba(secondaryColor, 0.8)}, ${hexToRgba(primaryColor, 0.6)})`,
                         color: '#ffffff',
@@ -229,11 +344,11 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
 
                 <button
                     onClick={handleShare}
-                    className="w-full py-4 text-[10px] font-semibold uppercase tracking-[0.2em] transition-all border flex items-center justify-center gap-3 rounded-2xl glass-card-neon hover:bg-white/5"
+                    className="w-full py-4 text-[10px] font-semibold uppercase tracking-[0.2em] transition-all border flex items-center justify-center gap-3 rounded-2xl glass-card-neon hover:bg-white/5 cursor-pointer share-coords-btn"
                     style={{ borderColor: 'rgba(255,255,255,0.1)' }}
                 >
                     <Share2 size={16} style={{ color: secondaryColor }} />
-                    <span className="text-slate-300">Transmitir Coordenadas</span>
+                    <span>Transmitir Coordenadas</span>
                 </button>
             </div>
 
