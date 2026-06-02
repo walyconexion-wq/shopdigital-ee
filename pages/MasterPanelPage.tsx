@@ -9,7 +9,7 @@ import {
     guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, 
     saveCategoriesConfig, migrarDatosLegados, subscribeToGlobalConfig,
     guardarBroadcast, obtenerBroadcasts, eliminarBroadcast, toggleBroadcast, Broadcast,
-    guardarCliente
+    guardarCliente, saveTown
 } from '../firebase';
 import { Offer } from '../types';
 import { DobermanBadge } from '../components/DobermanBadge';
@@ -114,15 +114,53 @@ const MasterPanelPage: React.FC = () => {
         setIsSeeding(true);
         try {
             playNeonClick();
-            // ─── Leer localidades reales de la zona activa ────────────────
-            const { getTowns } = await import('../firebase');
-            const towns = await getTowns();
-            const thisTown = towns.find((t: any) => t.id === townId) as any;
-            const baseLocs: string[] = (thisTown && Array.isArray((thisTown as any).localities) && (thisTown as any).localities.length > 0)
-                ? (thisTown as any).localities
-                : ['Centro'];
+            
+            // ─── Asegurar que el documento del Town existe en Firebase ────────
+            const defaultTownMetadata: Record<string, { name: string; localities: string[]; description: string }> = {
+                'esteban-echeverria': {
+                    name: 'Esteban Echeverría',
+                    localities: ['Monte Grande', 'Luis Guillón', 'El Jagüel'],
+                    description: 'Zona Madre — Origen de ShopDigital'
+                },
+                'ezeiza': {
+                    name: 'Ezeiza',
+                    localities: ['Ezeiza', 'La Unión', 'Tristán Suárez', 'Spegazzini'],
+                    description: 'Zona Sur — Puerta de entrada internacional'
+                },
+                'lomas-de-zamora': {
+                    name: 'Lomas de Zamora',
+                    localities: ['Lomas de Zamora', 'Banfield', 'Temperley'],
+                    description: 'Zona Sur — Núcleo comercial'
+                },
+                'mina-clavero': { name: 'Mina Clavero', localities: ['Mina Clavero'], description: 'Traslasierra — Corazón turístico' },
+                'nono': { name: 'Nono', localities: ['Nono'], description: 'Traslasierra — Alta gama artesanal' },
+                'cura-brochero': { name: 'Cura Brochero', localities: ['Villa Cura Brochero'], description: 'Traslasierra — Capital espiritual' },
+                'panaholma': { name: 'Panaholma', localities: ['Panaholma'], description: 'Traslasierra — Valle serrano' },
+                'villa-las-rosas': { name: 'Villa Las Rosas', localities: ['Villa Las Rosas'], description: 'Traslasierra — Eco-gastronomía' },
+                'san-javier': { name: 'San Javier', localities: ['San Javier'], description: 'Traslasierra — Sierra y tradición' },
+                'villa-dolores': { name: 'Villa Dolores', localities: ['Villa Dolores'], description: 'Traslasierra — Capital del Valle' },
+                'las-rabonas': { name: 'Las Rabonas', localities: ['Las Rabonas'], description: 'Traslasierra — Cabañas y tranquilidad' }
+            };
 
-            // ─── Definir rubros sembrables (24 rubros) ────────────────────
+            const townMeta = defaultTownMetadata[townId] || {
+                name: formatTownName(townId),
+                localities: ['Centro'],
+                description: `Localidad autónoma de ${formatTownName(townId)}`
+            };
+
+            // Escribir/Actualizar el Town en Firestore para asegurar sintonía absoluta
+            await saveTown({
+                id: townId,
+                name: townMeta.name,
+                localities: townMeta.localities,
+                description: townMeta.description,
+                isActive: true,
+                createdAt: new Date().toISOString()
+            });
+
+            const baseLocs = townMeta.localities;
+
+            // ─── Definir rubros sembrables (24 rubros estándar) ───────────
             const seedCategoriesData: Record<string, { name: string; names: string[]; img: string; offerName: string; price: number }> = {
                 pizzerias: { name: "Pizzería", names: ["Don Carlos", "El Tano", "Napolitana"], img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500", offerName: "Pizza Grande Especial", price: 6500 },
                 restaurantes: { name: "Bodegón", names: ["Lo de Charly", "Don Miguel", "El Boliche"], img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500", offerName: "Milanesa Completa con Fritas", price: 8500 },
@@ -150,6 +188,21 @@ const MasterPanelPage: React.FC = () => {
                 farmacias: { name: "Farmacia", names: ["Central", "Del Pueblo", "Social Sur"], img: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500", offerName: "Medidor de Presión Digital", price: 14500 }
             };
 
+            // ─── Definir rubros específicos de Traslasierra (Matriz Turística) ─
+            const traslasierraCategoriesData: Record<string, { name: string; names: string[]; img: string; offerName: string; price: number }> = {
+                hospedaje: { name: "Cabañas", names: ["Altas Sierras", "Del Sol", "Senderos"], img: "https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=500", offerName: "Estadía Mínima 3 Noches", price: 25000 },
+                entretenimiento: { name: "Entretenimiento", names: ["Casino", "Teatro El Tala", "Pub Central"], img: "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=500", offerName: "Entrada + Trago de Bienvenida", price: 3500 },
+                excursiones: { name: "Excursiones", names: ["Champaquí Aventura", "Trekking Serrano", "Senderos del Valle"], img: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=500", offerName: "Trekking Guiado de Medio Día", price: 12000 },
+                vinos_regionales: { name: "Bodega", names: ["Noble San Javier", "Viñedos del Valle", "La Caroyense"], img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500", offerName: "Caja de Vinos Malbec Blend", price: 18000 },
+                chocolaterias: { name: "Chocolatería", names: ["El Tala", "Sabores Serranos", "Alfajores Brochero"], img: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=500", offerName: "Caja de Alfajores Artesanales x12", price: 7200 },
+                taxis_transporte: { name: "Traslados", names: ["Altas Cumbres", "Remís del Valle", "Servicio Express"], img: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=500", offerName: "Viaje Programado Interurbano", price: 9500 }
+            };
+
+            const activeCategoriesData = {
+                ...seedCategoriesData,
+                ...(isTraslasierra ? traslasierraCategoriesData : {})
+            };
+
             // Mapas específicos de Esteban Echeverría para conservar fidelidad original
             const EE_MAPS: Record<string, string> = {
                 "monte-grande": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3274.6547638367746!2d-58.468205423450914!3d-34.82728286950269!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcd1625fe9f8b9%3A0xe54ef864fb8c1d56!2sMonte%20Grande%2C%20Provincia%20de%20Buenos%20Aires!5e0!3m2!1ses!4far!4v1716800000000!5m2!1ses!4far",
@@ -165,7 +218,7 @@ const MasterPanelPage: React.FC = () => {
 
             let totalComercios = 0;
 
-            for (const [catKey, catVal] of Object.entries(seedCategoriesData)) {
+            for (const [catKey, catVal] of Object.entries(activeCategoriesData)) {
                 for (let i = 0; i < baseLocs.length; i++) {
                     const locName = baseLocs[i];
                     const locSlug = locName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');

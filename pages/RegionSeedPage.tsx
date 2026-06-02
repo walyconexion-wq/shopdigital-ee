@@ -22,7 +22,7 @@ const SEED_REGIONS = [
         name: 'Valle de Traslasierra',
         provinceId: 'cordoba',
         type: 'region' as const,
-        towns: ['mina-clavero', 'cura-brochero', 'panaholma', 'villa-las-rosas', 'san-javier', 'villa-dolores'],
+        towns: ['mina-clavero', 'nono', 'cura-brochero', 'panaholma', 'villa-las-rosas', 'san-javier', 'villa-dolores', 'las-rabonas'],
         icon: 'mountain',
         color: '#a855f7', // violeta
         isActive: true,
@@ -31,15 +31,17 @@ const SEED_REGIONS = [
 ];
 
 const SEED_TOWNS = [
-    { id: 'esteban-echeverria', name: 'Esteban Echeverría', localities: ['Monte Grande', 'El Jagüel', 'Canning', 'Luis Guillón', 'San José'], description: 'Zona Madre — Origen de ShopDigital', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'ezeiza', name: 'Ezeiza', localities: ['Ezeiza Centro', 'Tristán Suárez', 'Spegazzini', 'La Unión'], description: 'Zona Sur — Puerta de entrada internacional', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'lomas-de-zamora', name: 'Lomas de Zamora', localities: ['Banfield', 'Llavallol', 'Temperley', 'Turdera', 'Lomas Centro'], description: 'Zona Sur — Núcleo comercial', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'mina-clavero', name: 'Mina Clavero', localities: ['Centro', 'Río Mina Clavero', 'Nono'], description: 'Traslasierra — Corazón turístico', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'cura-brochero', name: 'Cura Brochero', localities: ['Brochero Centro', 'Villa Cura Brochero'], description: 'Traslasierra — Capital espiritual', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'panaholma', name: 'Panaholma', localities: ['Panaholma Centro'], description: 'Traslasierra — Valle serrano', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'villa-las-rosas', name: 'Villa Las Rosas', localities: ['Villa Las Rosas Centro'], description: 'Traslasierra — Pueblo turístico', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'san-javier', name: 'San Javier', localities: ['San Javier Centro', 'Yacanto'], description: 'Traslasierra — Sierra y tradición', isActive: true, createdAt: new Date().toISOString() },
-    { id: 'villa-dolores', name: 'Villa Dolores', localities: ['Villa Dolores Centro'], description: 'Traslasierra — Capital del Valle', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'esteban-echeverria', name: 'Esteban Echeverría', localities: ['Monte Grande', 'Luis Guillón', 'El Jagüel'], description: 'Zona Madre — Origen de ShopDigital', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'ezeiza', name: 'Ezeiza', localities: ['Ezeiza', 'La Unión', 'Tristán Suárez', 'Spegazzini'], description: 'Zona Sur — Puerta de entrada internacional', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'lomas-de-zamora', name: 'Lomas de Zamora', localities: ['Lomas de Zamora', 'Banfield', 'Temperley'], description: 'Zona Sur — Núcleo comercial', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'mina-clavero', name: 'Mina Clavero', localities: ['Mina Clavero'], description: 'Traslasierra — Corazón turístico', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'nono', name: 'Nono', localities: ['Nono'], description: 'Traslasierra — Alta gama artesanal', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'cura-brochero', name: 'Cura Brochero', localities: ['Villa Cura Brochero'], description: 'Traslasierra — Capital espiritual', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'panaholma', name: 'Panaholma', localities: ['Panaholma'], description: 'Traslasierra — Valle serrano', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'villa-las-rosas', name: 'Villa Las Rosas', localities: ['Villa Las Rosas'], description: 'Traslasierra — Eco-gastronomía', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'san-javier', name: 'San Javier', localities: ['San Javier'], description: 'Traslasierra — Sierra y tradición', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'villa-dolores', name: 'Villa Dolores', localities: ['Villa Dolores'], description: 'Traslasierra — Capital del Valle', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'las-rabonas', name: 'Las Rabonas', localities: ['Las Rabonas'], description: 'Traslasierra — Cabañas y tranquilidad', isActive: true, createdAt: new Date().toISOString() },
 ];
 
 const RegionSeedPage: React.FC = () => {
