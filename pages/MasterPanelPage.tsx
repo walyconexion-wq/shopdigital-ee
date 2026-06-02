@@ -391,7 +391,7 @@ const MasterPanelPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+        <div className="min-h-screen bg-[#020617] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30 master-panel-container">
             <style>{`
                 @keyframes pulseGlow {
                     0%, 100% { filter: drop-shadow(0 0 15px ${hexToRgba(zoneColor, 0.4)}); }
@@ -412,6 +412,37 @@ const MasterPanelPage: React.FC = () => {
                 .glass-card-neon:hover {
                     box-shadow: 0 0 20px ${hexToRgba(zoneColor, 0.2)};
                     background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(0,0,0,0.6));
+                }
+                /* Protege el panel hacker oscuro de que las reglas de modo día inviertan y arruinen los colores de texto */
+                .day-mode .master-panel-container .text-white {
+                    color: #ffffff !important;
+                }
+                .day-mode .master-panel-container .text-white\/90 {
+                    color: rgba(255, 255, 255, 0.9) !important;
+                }
+                .day-mode .master-panel-container .text-white\/80 {
+                    color: rgba(255, 255, 255, 0.8) !important;
+                }
+                .day-mode .master-panel-container .text-white\/70 {
+                    color: rgba(255, 255, 255, 0.7) !important;
+                }
+                .day-mode .master-panel-container .text-white\/60 {
+                    color: rgba(255, 255, 255, 0.6) !important;
+                }
+                .day-mode .master-panel-container .text-white\/50 {
+                    color: rgba(255, 255, 255, 0.5) !important;
+                }
+                .day-mode .master-panel-container .text-white\/45 {
+                    color: rgba(255, 255, 255, 0.45) !important;
+                }
+                .day-mode .master-panel-container .text-white\/40 {
+                    color: rgba(255, 255, 255, 0.4) !important;
+                }
+                .day-mode .master-panel-container .text-white\/30 {
+                    color: rgba(255, 255, 255, 0.3) !important;
+                }
+                .day-mode .master-panel-container .text-white\/20 {
+                    color: rgba(255, 255, 255, 0.2) !important;
                 }
             `}</style>
             {/* Background Tecnológico — Modo Camaleón: responde al color de la zona */}
@@ -533,14 +564,22 @@ const MasterPanelPage: React.FC = () => {
                 <div 
                     role="button" tabIndex={0}
                     onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro/configuracion`); }} 
-                    className="w-full glass-card-neon text-white p-6 rounded-3xl font-[1000] uppercase tracking-widest border transition-all flex flex-col items-center justify-center gap-2 cursor-pointer group hover:bg-zinc-800"
-                    style={{ borderColor: hexToRgba(zoneColor, 0.3) }}
+                    className="w-full glass-card-neon text-white p-6 rounded-3xl font-[1000] uppercase tracking-widest border-2 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer group hover:bg-zinc-800/80 active:scale-98"
+                    style={{ 
+                        borderColor: zoneColor,
+                        boxShadow: `0 0 20px ${hexToRgba(zoneColor, 0.4)}, inset 0 0 12px ${hexToRgba(zoneColor, 0.25)}`,
+                        background: 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.65))'
+                    }}
                 >
-                    <div className="flex items-center gap-3">
-                        <Palette size={20} style={{ color: zoneColor }} />
-                        <span className="text-[14px]">DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR</span>
+                    <div className="flex items-center gap-3 pointer-events-none">
+                        <Palette size={22} style={{ color: zoneColor, filter: `drop-shadow(0 0 8px ${zoneColor})` }} className="animate-pulse" />
+                        <span className="text-[14px]" style={{ color: '#ffffff', textShadow: `0 0 10px ${hexToRgba(zoneColor, 0.6)}` }}>
+                            DISEÑADOR DE INTERFAZ / SINFONÍA EDITOR
+                        </span>
                     </div>
-                    <span className="text-[8px] opacity-40 uppercase tracking-[0.3em]">Control visual total · Colores · Temas · Identidad</span>
+                    <span className="text-[8.5px] uppercase tracking-[0.3em]" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                        Control visual total · Colores · Temas · Identidad
+                    </span>
                 </div>
 
                 {/* 🏭 NODO EMPRESARIAL B2B */}
@@ -681,11 +720,24 @@ const MasterPanelPage: React.FC = () => {
                 {/* ═══════════════════════════════════════════ */}
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/director/transmision-en-vivo`); }}
-                    className="w-full mt-8 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[12px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all glass-card-neon border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_30px_rgba(239,68,68,0.4)]"
+                    className="w-full mt-8 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[13px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all glass-card-neon border-2 hover:bg-zinc-800/80"
+                    style={{
+                        borderColor: '#ef4444',
+                        boxShadow: '0 0 25px rgba(239, 68, 68, 0.4), inset 0 0 12px rgba(239, 68, 68, 0.2)',
+                        background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.05), rgba(0, 0, 0, 0.75))'
+                    }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                    <Megaphone size={20} className="drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-                    <span className="drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]">📡 Entrar al Centro de Transmisión en Vivo</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    
+                    <div className="relative flex items-center justify-center w-3 h-3 mr-1">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                    </div>
+                    
+                    <Megaphone size={20} className="text-red-500" style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }} />
+                    <span className="font-[1000]" style={{ color: '#ffffff', textShadow: '0 0 12px rgba(239, 68, 68, 0.8)' }}>
+                        Entrar al Centro de Transmisión en Vivo
+                    </span>
                 </button>
             </div>
         </div>
