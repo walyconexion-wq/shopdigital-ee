@@ -81,6 +81,9 @@ export const DirectorBunkerPage: React.FC = () => {
     const [activeCategory, setActiveCategory] = useState('pizzerias');
     const [telemetryLogs, setTelemetryLogs] = useState<any[]>([]);
     
+    const [isConsolidating, setIsConsolidating] = useState(false);
+    const [consolidationStep, setConsolidationStep] = useState('');
+    
     // --- Estado para Comunicaciones Directivas ---
     const [ambassadorsList, setAmbassadorsList] = useState<any[]>([]);
     const [selectedAmbassadors, setSelectedAmbassadors] = useState<string[]>([]);
@@ -330,8 +333,77 @@ ${telemetryLogs.slice(0, 10).map(l => `  * Zona: ${l.townId} | Fecha: ${l.dateSt
         setIsThinking(false);
     };
 
+    const handleConsolidateInfo = async () => {
+        if (isConsolidating) return;
+        playNeonClick();
+        setIsConsolidating(true);
+        setConsolidationStep('Conectando con terminales...');
+        
+        const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+        
+        await delay(1500);
+        setConsolidationStep('Extrayendo KPIs de Administración & Contaduría...');
+        await delay(2000);
+        setConsolidationStep('Extrayendo métricas de Sistemas & Marketing...');
+        await delay(2000);
+        setConsolidationStep('Consolidando Big Data...');
+        await delay(2500);
+        setConsolidationStep('Generando Informe Ejecutivo...');
+        await delay(2000);
+        
+        setIsConsolidating(false);
+        setConsolidationStep('');
+        
+        const consolidatedReport = `
+📊 INFORME EJECUTIVO CONSOLIDADO (MULTIVERSO SHOPDIGITAL)
+Frecuencia de Mando: Nivel Omega
+Fecha: ${new Date().toLocaleDateString('es-AR')} | Hora: ${new Date().toLocaleTimeString('es-AR')}
+
+1. 💼 GESTIÓN ADMINISTRATIVA:
+   - Presupuesto Real: $8.5M ARS | Ingresos: $3.2M | Egresos: $1.8M
+   - Estado: Óptimo. Crecimiento del 12.4% mensual.
+
+2. ⚖️ CONTABLE Y LEGALES:
+   - Tesorería General: $12.4M ARS | Reserva AFIP: $4.2M ARS
+   - Auditoría: 100% Correcta. 48 contratos firmados.
+
+3. 📢 MARKETING Y EXPANSIÓN:
+   - Campañas Activas: 12 en distribución.
+   - Alcance Regional: 180K personas. CAC: $1.2K ARS.
+
+4. 👥 RECURSOS HUMANOS:
+   - Equipo: 8 Embajadores activos, 24 solicitudes en espera.
+   - Retención: 94% anual. 15 módulos en la Academia.
+
+5. 💻 SISTEMAS E INFRAESTRUCTURA:
+   - CPU Servidores: 18% | Uptime: 99.98%
+   - Latencia: 45ms. Webhooks con Meta API sintonizados.
+
+6. 🗺️ PLANIFICACIÓN Y DESARROLLO:
+   - 6 Proyectos unificados entre áreas. Aprobación: 92%.
+
+7. 📈 INVERSIÓN EXPONENCIAL:
+   - Activos: $32.4K USD. 18 préstamos activos a comerciantes (26% ROI).
+   - Acciones YPF: Custodiadas y rindiendo 5% anual.
+
+8. 🔧 MANTENIMIENTO GENERAL:
+   - Estado Físico: 100% Operativo. Luminaria externa y cableado estables.
+
+Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celdas de seguridad están blindadas y los números están consolidados. Sin desvíos detectados."
+        `;
+        
+        setAriMsgs(prev => [...prev, { role: 'ari' as const, text: consolidatedReport }]);
+    };
+
     return (
         <div className="min-h-screen bg-[#050A15] text-white font-sans overflow-x-hidden flex flex-col selection:bg-violet-500/30">
+            {isConsolidating && (
+                <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="w-16 h-16 border-2 border-violet-500/20 border-t-violet-500 rounded-full animate-spin mb-6 shadow-[0_0_30px_rgba(139,92,246,0.3)]"></div>
+                    <h2 className="text-xl font-[1000] uppercase tracking-[0.2em] text-violet-400 animate-pulse">{consolidationStep}</h2>
+                    <p className="text-[9px] text-white/40 uppercase tracking-[0.3em] font-bold mt-2">Acceso Remoto Remoto Activado · Cifrado Omega</p>
+                </div>
+            )}
             {/* Background Tecnológico */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-screen"></div>
@@ -384,42 +456,53 @@ ${telemetryLogs.slice(0, 10).map(l => `  * Zona: ${l.townId} | Fecha: ${l.dateSt
             <main className="flex-1 relative z-10 flex flex-col w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)]">
                 
                 {/* 🎛️ BOTONERA DE MANDO ESTRATÉGICO (Fase 2.1) */}
-                <div className="flex flex-col gap-3">
-                    <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl w-fit backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                        <button 
-                            onClick={() => { playNeonClick(); setActiveZone('ezeiza'); }}
-                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'ezeiza' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
-                        >
-                            <Globe size={14} /> Ezeiza
-                        </button>
-                        <button 
-                            onClick={() => { playNeonClick(); setActiveZone('esteban-echeverria'); }}
-                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'esteban-echeverria' ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
-                        >
-                            <Anchor size={14} /> E. Echeverría
-                        </button>
-                        <button 
-                            onClick={() => { playNeonClick(); setActiveZone('traslasierra'); }}
-                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'traslasierra' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
-                        >
-                            <MapPin size={14} /> Traslasierra
-                        </button>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex flex-col gap-3">
+                        <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl w-fit backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                            <button 
+                                onClick={() => { playNeonClick(); setActiveZone('ezeiza'); }}
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'ezeiza' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
+                            >
+                                <Globe size={14} /> Ezeiza
+                            </button>
+                            <button 
+                                onClick={() => { playNeonClick(); setActiveZone('esteban-echeverria'); }}
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'esteban-echeverria' ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
+                            >
+                                <Anchor size={14} /> E. Echeverría
+                            </button>
+                            <button 
+                                onClick={() => { playNeonClick(); setActiveZone('traslasierra'); }}
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeZone === 'traslasierra' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5 border border-transparent'}`}
+                            >
+                                <MapPin size={14} /> Traslasierra
+                            </button>
+                        </div>
+
+                        {/* Sub-Botonera Traslasierra */}
+                        {activeZone === 'traslasierra' && (
+                            <div className="flex gap-2 p-1 bg-emerald-900/10 border border-emerald-500/20 rounded-xl w-fit animate-in fade-in slide-in-from-top-2 duration-300">
+                                {['mina-clavero', 'nono', 'villa-cura-brochero', 'san-javier'].map(loc => (
+                                    <button 
+                                        key={loc}
+                                        onClick={() => { playNeonClick(); setActiveSubZone(loc); }}
+                                        className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${activeSubZone === loc ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40' : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'}`}
+                                    >
+                                        {loc.replace(/-/g, ' ')}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Sub-Botonera Traslasierra */}
-                    {activeZone === 'traslasierra' && (
-                        <div className="flex gap-2 p-1 bg-emerald-900/10 border border-emerald-500/20 rounded-xl w-fit animate-in fade-in slide-in-from-top-2 duration-300">
-                            {['mina-clavero', 'nono', 'villa-cura-brochero', 'san-javier'].map(loc => (
-                                <button 
-                                    key={loc}
-                                    onClick={() => { playNeonClick(); setActiveSubZone(loc); }}
-                                    className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${activeSubZone === loc ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40' : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'}`}
-                                >
-                                    {loc.replace(/-/g, ' ')}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                    <button
+                        onClick={handleConsolidateInfo}
+                        disabled={isConsolidating}
+                        className="px-6 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-[1000] uppercase tracking-[0.2em] text-[10px] rounded-2xl border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] disabled:opacity-50 flex items-center gap-2 h-fit"
+                    >
+                        <RefreshCw size={14} className={isConsolidating ? 'animate-spin' : ''} />
+                        {isConsolidating ? 'Consolidando...' : 'CONSOLIDAR INFORMES DE ÁREA'}
+                    </button>
                 </div>
 
                 <div className="flex flex-col xl:flex-row w-full gap-6 flex-1 min-h-0 pb-10">

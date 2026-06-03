@@ -21,6 +21,14 @@ import LandingPage from './pages/LandingPage';
 import AboutPage from './pages/AboutPage';
 import MasterPanelPage from './pages/MasterPanelPage';
 import { DirectorBunkerPage } from './pages/DirectorBunkerPage';
+import { AdminBunkerPage } from './pages/AdminBunkerPage';
+import { AccountingBunkerPage } from './pages/AccountingBunkerPage';
+import { MarketingBunkerPage } from './pages/MarketingBunkerPage';
+import { HRBunkerPage } from './pages/HRBunkerPage';
+import { SystemsBunkerPage } from './pages/SystemsBunkerPage';
+import { PlanningBunkerPage } from './pages/PlanningBunkerPage';
+import { InvestmentBunkerPage } from './pages/InvestmentBunkerPage';
+import { MaintenanceBunkerPage } from './pages/MaintenanceBunkerPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
@@ -341,6 +349,26 @@ const App: React.FC = () => {
                     {/* Alias sin townId — redirige al búnker de EE por defecto */}
                     <Route path="/director/transmision-en-vivo" element={<Navigate to="/esteban-echeverria/director/transmision-en-vivo" replace />} />
                     <Route path="/bunker-waly" element={<Navigate to="/esteban-echeverria/bunker-waly" replace />} />
+
+                    {/* 🛡️ BÚNKERS DE CONTROL COMPARTIMENTADO */}
+                    <Route path="/:townId/bunker/administracion" element={<AdminBunkerPage />} />
+                    <Route path="/:townId/bunker/contable-legales" element={<AccountingBunkerPage />} />
+                    <Route path="/:townId/bunker/marketing" element={<MarketingBunkerPage />} />
+                    <Route path="/:townId/bunker/recursos-humanos" element={<HRBunkerPage />} />
+                    <Route path="/:townId/bunker/sistemas" element={<SystemsBunkerPage />} />
+                    <Route path="/:townId/bunker/planificacion-desarrollo" element={<PlanningBunkerPage />} />
+                    <Route path="/:townId/bunker/inversion-exponencial" element={<InvestmentBunkerPage />} />
+                    <Route path="/:townId/bunker/mantenimiento" element={<MaintenanceBunkerPage />} />
+
+                    {/* Alias sin townId */}
+                    <Route path="/bunker/administracion" element={<Navigate to="/esteban-echeverria/bunker/administracion" replace />} />
+                    <Route path="/bunker/contable-legales" element={<Navigate to="/esteban-echeverria/bunker/contable-legales" replace />} />
+                    <Route path="/bunker/marketing" element={<Navigate to="/esteban-echeverria/bunker/marketing" replace />} />
+                    <Route path="/bunker/recursos-humanos" element={<Navigate to="/esteban-echeverria/bunker/recursos-humanos" replace />} />
+                    <Route path="/bunker/sistemas" element={<Navigate to="/esteban-echeverria/bunker/sistemas" replace />} />
+                    <Route path="/bunker/planificacion-desarrollo" element={<Navigate to="/esteban-echeverria/bunker/planificacion-desarrollo" replace />} />
+                    <Route path="/bunker/inversion-exponencial" element={<Navigate to="/esteban-echeverria/bunker/inversion-exponencial" replace />} />
+                    <Route path="/bunker/mantenimiento" element={<Navigate to="/esteban-echeverria/bunker/mantenimiento" replace />} />
 
                     {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}
                     <Route path="/:townId/tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />

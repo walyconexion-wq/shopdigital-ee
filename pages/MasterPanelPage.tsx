@@ -492,15 +492,93 @@ const MasterPanelPage: React.FC = () => {
 
             <div className="px-6 mt-8 space-y-10 relative z-10 pb-20 max-w-lg mx-auto">
                 
-                {/* 🛡️ ACCESO DIRECTO AL BÚNKER CENTRAL (Solo Director) */}
-                <div 
-                    role="button" tabIndex={0}
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/bunker-waly`); }}
-                    className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(139,92,246,0.2)] relative overflow-hidden group"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500/0 via-white/5 to-violet-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    <Zap size={18} className="text-violet-400" />
-                    <span className="text-[13px] text-violet-300">BÚNKER CENTRAL DEL DIRECTOR - WALY</span>
+                {/* 🛡️ BÚNKERS DE CONTROL COMPARTIMENTADO (NIVEL OMEGA) */}
+                <div className="border border-white/10 rounded-[2rem] p-6 bg-black/45 backdrop-blur-md space-y-4 shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 border-b border-white/10 pb-2 mb-2 flex items-center gap-2">
+                        <Lock size={12} className="text-white/40 animate-pulse" /> BÚNKERS DE CONTROL COMPARTIMENTADO
+                    </h3>
+                    <div className="grid grid-cols-1 gap-3">
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker-waly`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(139,92,246,0.1)] hover:bg-violet-900/10"
+                        >
+                            <span className="text-[11px] text-violet-300">🏛️ BÚNKER DIRECCIÓN GENERAL (WALY)</span>
+                            <span className="text-[9px] text-violet-400 px-2 py-0.5 bg-violet-500/10 rounded-md border border-violet-500/20">Omega</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/administracion`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-amber-500/40 hover:border-amber-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.1)] hover:bg-amber-900/10"
+                        >
+                            <span className="text-[11px] text-amber-300">💼 BÚNKER GESTIÓN ADMINISTRATIVA</span>
+                            <span className="text-[9px] text-amber-400 px-2 py-0.5 bg-amber-500/10 rounded-md border border-amber-500/20">Administración</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/contable-legales`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-red-500/40 hover:border-red-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:bg-red-900/10"
+                        >
+                            <span className="text-[11px] text-red-300">⚖️ BÚNKER CONTABLE Y LEGALES</span>
+                            <span className="text-[9px] text-red-400 px-2 py-0.5 bg-red-500/10 rounded-md border border-red-500/20">Contaduría</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/marketing`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-emerald-500/40 hover:border-emerald-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:bg-emerald-900/10"
+                        >
+                            <span className="text-[11px] text-emerald-300">📢 BÚNKER MARKETING Y EXPANSIÓN</span>
+                            <span className="text-[9px] text-emerald-400 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/20">Marketing</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/recursos-humanos`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-cyan-500/40 hover:border-cyan-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.1)] hover:bg-cyan-900/10"
+                        >
+                            <span className="text-[11px] text-cyan-300">👥 BÚNKER RECURSOS HUMANOS</span>
+                            <span className="text-[9px] text-cyan-400 px-2 py-0.5 bg-cyan-500/10 rounded-md border border-cyan-500/20">Personal</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/sistemas`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-indigo-500/40 hover:border-indigo-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(99,102,241,0.1)] hover:bg-indigo-900/10"
+                        >
+                            <span className="text-[11px] text-indigo-300">💻 BÚNKER SISTEMAS E INFRAESTRUCTURA</span>
+                            <span className="text-[9px] text-indigo-400 px-2 py-0.5 bg-indigo-500/10 rounded-md border border-indigo-500/20">IT / Dev</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/planificacion-desarrollo`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-blue-500/40 hover:border-blue-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.1)] hover:bg-blue-900/10"
+                        >
+                            <span className="text-[11px] text-blue-300">🗺️ BÚNKER PLANIFICACIÓN Y DESARROLLO</span>
+                            <span className="text-[9px] text-blue-400 px-2 py-0.5 bg-blue-500/10 rounded-md border border-blue-500/20">Estrategia</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/inversion-exponencial`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-yellow-500/40 hover:border-yellow-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(234,179,8,0.1)] hover:bg-yellow-900/10"
+                        >
+                            <span className="text-[11px] text-yellow-300">📈 BÚNKER INVERSIÓN EXPONENCIAL</span>
+                            <span className="text-[9px] text-yellow-400 px-2 py-0.5 bg-yellow-500/10 rounded-md border border-yellow-500/20">Finanzas</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/mantenimiento`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-slate-500/40 hover:border-slate-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(100,116,139,0.1)] hover:bg-slate-900/10"
+                        >
+                            <span className="text-[11px] text-slate-300">🔧 BÚNKER MANTENIMIENTO GENERAL</span>
+                            <span className="text-[9px] text-slate-400 px-2 py-0.5 bg-slate-500/10 rounded-md border border-slate-500/20">Soporte</span>
+                        </div>
+                    </div>
                 </div>
 
                 
