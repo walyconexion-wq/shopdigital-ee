@@ -9,7 +9,7 @@ import { playNeonClick } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 import { Shop } from '../types';
 
-type AudienceType = 'clientes' | 'comerciantes';
+type AudienceType = 'cliente_calle' | 'comerciante' | 'empresario';
 type CampaignType = 'persuasion' | 'fidelizacion' | 'informativa';
 
 interface Campaign {
@@ -50,7 +50,7 @@ const MarketingPanelPage: React.FC = () => {
     const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
     const dateStr = now.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
 
-    const [audience, setAudience] = useState<AudienceType>('clientes');
+    const [audience, setAudience] = useState<AudienceType>('cliente_calle');
     const [campaignType, setCampaignType] = useState<CampaignType>('persuasion');
     const [message, setMessage] = useState('');
     const [title, setTitle] = useState('');
@@ -62,23 +62,33 @@ const MarketingPanelPage: React.FC = () => {
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
     // Bases of contacts & Social configs (localStorage storage)
-    const [b2cContacts, setB2cContacts] = useState<string>(() => {
-        return localStorage.getItem('marketing_b2c_contacts') || '1123456789, 1198765432';
+    const [calleContacts, setCalleContacts] = useState<string>(() => {
+        return localStorage.getItem('marketing_calle_contacts') || localStorage.getItem('marketing_b2c_contacts') || '1123456789, 1198765432';
     });
-    const [b2bContacts, setB2bContacts] = useState<string>(() => {
-        return localStorage.getItem('marketing_b2b_contacts') || '1133334444, 1155556666';
+    const [comercianteContacts, setComercianteContacts] = useState<string>(() => {
+        return localStorage.getItem('marketing_comerciante_contacts') || localStorage.getItem('marketing_b2b_contacts') || '1133334444, 1155556666';
+    });
+    const [empresarioContacts, setEmpresarioContacts] = useState<string>(() => {
+        return localStorage.getItem('marketing_empresario_contacts') || '1177778888, 1199990000';
     });
     const [instagramLink, setInstagramLink] = useState(() => localStorage.getItem('marketing_ig_link') || '');
     const [facebookLink, setFacebookLink] = useState(() => localStorage.getItem('marketing_fb_link') || '');
     const [tiktokLink, setTiktokLink] = useState(() => localStorage.getItem('marketing_tk_link') || '');
     const [whatsappLink, setWhatsappLink] = useState(() => localStorage.getItem('marketing_wa_link') || '');
 
+    // Display helpers
+    const getAudienceLabel = (aud: AudienceType) => {
+        if (aud === 'cliente_calle') return 'Cliente de Calle';
+        if (aud === 'comerciante') return 'Comerciante';
+        return 'Empresario';
+    };
+
     // Aesthetics based on audience
-    const themeColor = audience === 'clientes' ? '#06b6d4' : '#f59e0b'; // Cyan for Clientes, Amber for Comerciantes
-    const themeGradient = audience === 'clientes' ? 'from-cyan-500/20 to-blue-600/20' : 'from-amber-500/20 to-orange-600/20';
-    const borderTheme = audience === 'clientes' ? 'border-cyan-500/30' : 'border-amber-500/30';
-    const textTheme = audience === 'clientes' ? 'text-cyan-400' : 'text-amber-400';
-    const buttonBgHover = audience === 'clientes' ? 'hover:bg-cyan-500/20' : 'hover:bg-amber-500/20';
+    const themeColor = audience === 'cliente_calle' ? '#06b6d4' : audience === 'comerciante' ? '#f59e0b' : '#a855f7'; // Cyan for Calle, Amber for Comerciante, Purple for Empresario
+    const themeGradient = audience === 'cliente_calle' ? 'from-cyan-500/20 to-blue-600/20' : audience === 'comerciante' ? 'from-amber-500/20 to-orange-600/20' : 'from-purple-500/20 to-indigo-600/20';
+    const borderTheme = audience === 'cliente_calle' ? 'border-cyan-500/30' : audience === 'comerciante' ? 'border-amber-500/30' : 'border-purple-500/30';
+    const textTheme = audience === 'cliente_calle' ? 'text-cyan-400' : audience === 'comerciante' ? 'text-amber-400' : 'text-purple-400';
+    const buttonBgHover = audience === 'cliente_calle' ? 'hover:bg-cyan-500/20' : audience === 'comerciante' ? 'hover:bg-amber-500/20' : 'hover:bg-purple-500/20';
 
     const hexToRgba = (hex: string, alpha: number) => {
         try {
@@ -123,19 +133,19 @@ const MarketingPanelPage: React.FC = () => {
             return;
         }
         if (window.confirm("¿Estás seguro de disparar esta campaña AHORA MISMO a los grupos de WhatsApp?")) {
-            alert(`🚀 ¡Campaña disparada con éxito al gremio de ${audience}!`);
+            alert(`🚀 ¡Campaña disparada con éxito al gremio de ${getAudienceLabel(audience)}!`);
         }
     };
 
     // Public pages to share
     const publicPages = [
-        { title: 'Landing Nosotros', desc: 'Presentación de la empresa', path: `/${townId}/nosotros`, icon: <Globe size={18} />, color: 'cyan', target: 'clientes' as AudienceType },
-        { title: 'Landing Unirse', desc: 'Registro para comercios / Embajador', path: `/${townId}/unirse`, icon: <Store size={18} />, color: 'amber', target: 'comerciantes' as AudienceType },
-        { title: 'Landing Descubrir', desc: 'Presentación para Clientes B2C', path: `/${townId}/descubrir`, icon: <Users size={18} />, color: 'cyan', target: 'clientes' as AudienceType },
-        { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={18} />, color: 'amber', target: 'comerciantes' as AudienceType },
-        { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={18} />, color: 'cyan', target: 'clientes' as AudienceType },
-        { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: `/${townId}/reclutamiento`, icon: <Globe size={18} />, color: 'violet', target: 'comerciantes' as AudienceType },
-        { title: 'Directorio Industrial', desc: 'Portal B2B de Proveedores y Mayoristas', path: `/empresas`, icon: <Factory size={18} />, color: 'amber', target: 'comerciantes' as AudienceType },
+        { title: 'Landing Nosotros', desc: 'Presentación de la empresa', path: `/${townId}/nosotros`, icon: <Globe size={18} />, color: 'cyan', target: 'cliente_calle' as AudienceType },
+        { title: 'Landing Unirse', desc: 'Registro para comercios / Embajador', path: `/${townId}/unirse`, icon: <Store size={18} />, color: 'amber', target: 'comerciante' as AudienceType },
+        { title: 'Landing Descubrir', desc: 'Presentación para Clientes B2C', path: `/${townId}/descubrir`, icon: <Users size={18} />, color: 'cyan', target: 'cliente_calle' as AudienceType },
+        { title: 'Ofertas B2B Red', desc: 'Descuentos exclusivos entre comercios', path: `/${townId}/red-comercial/descuentos`, icon: <Tag size={18} />, color: 'amber', target: 'comerciante' as AudienceType },
+        { title: 'Ofertas B2C VIP', desc: 'Ofertas para red de clientes locales', path: `/${townId}/red-comercial/ofertas`, icon: <ShoppingBag size={18} />, color: 'cyan', target: 'cliente_calle' as AudienceType },
+        { title: 'Reclutamiento Público', desc: 'Formulario inicial (Paso 1)', path: `/${townId}/reclutamiento`, icon: <Globe size={18} />, color: 'violet', target: 'comerciante' as AudienceType },
+        { title: 'Directorio Industrial', desc: 'Portal B2B de Proveedores y Mayoristas', path: `/empresas`, icon: <Factory size={18} />, color: 'purple', target: 'empresario' as AudienceType },
     ];
 
     const handleShare = async (path: string, titleStr: string, desc: string) => {
@@ -173,15 +183,25 @@ const MarketingPanelPage: React.FC = () => {
         setAudience(target);
         setTitle(`Campaña: ${titleStr}`);
         const fullUrl = `${window.location.origin}${path}`;
-        setMessage(`¡Hola! Te invitamos a conocer nuestra nueva sección: ${titleStr}.\n${target === 'clientes' ? 'Disfrutá de las mejores ofertas locales.' : 'Conectá tu comercio y potenciá tus ventas.'}\n\nAccedé aquí 👉 ${fullUrl}`);
+        const infoText = target === 'cliente_calle' 
+            ? 'Disfrutá de las mejores ofertas locales.' 
+            : target === 'comerciante'
+                ? 'Conectá tu comercio y potenciá tus ventas.'
+                : 'Impulsá tu empresa en la red industrial.';
+        setMessage(`¡Hola! Te invitamos a conocer nuestra nueva sección: ${titleStr}.\n${infoText}\n\nAccedé aquí 👉 ${fullUrl}`);
         setActiveTab('automatizador');
     };
 
     // Save Databases & Networks
     const handleSaveBases = () => {
         playNeonClick();
-        localStorage.setItem('marketing_b2c_contacts', b2cContacts);
-        localStorage.setItem('marketing_b2b_contacts', b2bContacts);
+        localStorage.setItem('marketing_calle_contacts', calleContacts);
+        localStorage.setItem('marketing_comerciante_contacts', comercianteContacts);
+        localStorage.setItem('marketing_empresario_contacts', empresarioContacts);
+        // Also save legacy keys for compatibility
+        localStorage.setItem('marketing_b2c_contacts', calleContacts);
+        localStorage.setItem('marketing_b2b_contacts', comercianteContacts);
+        
         localStorage.setItem('marketing_ig_link', instagramLink);
         localStorage.setItem('marketing_fb_link', facebookLink);
         localStorage.setItem('marketing_tk_link', tiktokLink);
@@ -224,13 +244,13 @@ const MarketingPanelPage: React.FC = () => {
                 {/* Base oscura */}
                 <div className="absolute inset-0 bg-[#020810]"></div>
                 {/* Gradiente radial central */}
-                <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(6,182,212,0.07) 0%, transparent 70%)' }} />
+                <div className="absolute inset-0 transition-all duration-1000" style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${hexToRgba(themeColor, 0.07)} 0%, transparent 70%)` }} />
                 {/* Grid de circuitos fino */}
-                <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(6,182,212,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.04) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                <div className="absolute inset-0 transition-all duration-1000" style={{ backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.04)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.04)} 1px, transparent 1px)`, backgroundSize: '32px 32px' }} />
                 {/* Grid secundario más grueso */}
-                <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)', backgroundSize: '160px 160px' }} />
+                <div className="absolute inset-0 transition-all duration-1000" style={{ backgroundImage: `linear-gradient(${hexToRgba(themeColor, 0.08)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(themeColor, 0.08)} 1px, transparent 1px)`, backgroundSize: '160px 160px' }} />
                 {/* Punto de intersección (nodos de circuito) */}
-                <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, rgba(6,182,212,0.15) 1px, transparent 1px)', backgroundSize: '160px 160px' }} />
+                <div className="absolute inset-0 transition-all duration-1000" style={{ backgroundImage: `radial-gradient(circle, ${hexToRgba(themeColor, 0.15)} 1px, transparent 1px)`, backgroundSize: '160px 160px' }} />
                 {/* Glow orbs de color según audiencia */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] transition-colors duration-1000" style={{ backgroundColor: hexToRgba(themeColor, 0.07) }} />
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full blur-[120px] transition-colors duration-1000" style={{ backgroundColor: hexToRgba(themeColor, 0.05) }} />
@@ -343,22 +363,30 @@ const MarketingPanelPage: React.FC = () => {
                             <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 ${textTheme}`}>
                                 <Users size={14} /> Foco de Audiencia (Targeting)
                             </h3>
-                            <div className="flex bg-black/40 rounded-xl p-1 border border-white/5 relative">
+                            <div className="flex bg-black/40 rounded-xl p-1 border border-white/5 relative gap-1.5 flex-wrap">
                                 <button 
-                                    onClick={() => { playNeonClick(); setAudience('clientes'); }}
-                                    className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all z-10 cursor-pointer
-                                        ${audience === 'clientes' ? 'text-black shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'text-white/40 hover:text-white/80'}`}
-                                    style={{ backgroundColor: audience === 'clientes' ? '#06b6d4' : 'transparent' }}
+                                    onClick={() => { playNeonClick(); setAudience('cliente_calle'); }}
+                                    className={`flex-1 min-w-[100px] py-3 flex items-center justify-center gap-1.5 rounded-lg text-[9.5px] font-black uppercase tracking-wider transition-all z-10 cursor-pointer
+                                        ${audience === 'cliente_calle' ? 'text-black shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'text-white/40 hover:text-white/80'}`}
+                                    style={{ backgroundColor: audience === 'cliente_calle' ? '#06b6d4' : 'transparent' }}
                                 >
-                                    <Users size={14} /> Clientes B2C
+                                    <Users size={12} /> Cliente de Calle
                                 </button>
                                 <button 
-                                    onClick={() => { playNeonClick(); setAudience('comerciantes'); }}
-                                    className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all z-10 cursor-pointer
-                                        ${audience === 'comerciantes' ? 'text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'text-white/40 hover:text-white/80'}`}
-                                    style={{ backgroundColor: audience === 'comerciantes' ? '#f59e0b' : 'transparent' }}
+                                    onClick={() => { playNeonClick(); setAudience('comerciante'); }}
+                                    className={`flex-1 min-w-[100px] py-3 flex items-center justify-center gap-1.5 rounded-lg text-[9.5px] font-black uppercase tracking-wider transition-all z-10 cursor-pointer
+                                        ${audience === 'comerciante' ? 'text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'text-white/40 hover:text-white/80'}`}
+                                    style={{ backgroundColor: audience === 'comerciante' ? '#f59e0b' : 'transparent' }}
                                 >
-                                    <Factory size={14} /> Comerciantes B2B
+                                    <Store size={12} /> Comerciante
+                                </button>
+                                <button 
+                                    onClick={() => { playNeonClick(); setAudience('empresario'); }}
+                                    className={`flex-1 min-w-[100px] py-3 flex items-center justify-center gap-1.5 rounded-lg text-[9.5px] font-black uppercase tracking-wider transition-all z-10 cursor-pointer
+                                        ${audience === 'empresario' ? 'text-black shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'text-white/40 hover:text-white/80'}`}
+                                    style={{ backgroundColor: audience === 'empresario' ? '#a855f7' : 'transparent' }}
+                                >
+                                    <Factory size={12} /> Empresario
                                 </button>
                             </div>
                         </div>
@@ -378,7 +406,7 @@ const MarketingPanelPage: React.FC = () => {
                                     <button key={type.id} onClick={() => { playNeonClick(); setCampaignType(type.id as CampaignType); }}
                                         className={`py-2 rounded-lg border text-[8px] font-black uppercase tracking-widest flex flex-col items-center gap-1 transition-all cursor-pointer
                                             ${campaignType === type.id 
-                                                ? `bg-black/60 border-${audience==='clientes'?'cyan':'amber'}-500/50 ${textTheme}` 
+                                                ? `bg-black/60 border-${audience==='cliente_calle'?'cyan':audience==='comerciante'?'amber':'purple'}-500/50 ${textTheme}` 
                                                 : 'bg-black/20 border-white/10 text-white/40 hover:bg-black/40'}`}>
                                         {type.icon}
                                         {type.label}
@@ -391,7 +419,7 @@ const MarketingPanelPage: React.FC = () => {
                                     <label className="text-[8px] font-black uppercase text-white/50 block mb-1">Título Interno</label>
                                     <input 
                                         type="text" placeholder="Ej: Oferta Finde Largo" value={title} onChange={e => setTitle(e.target.value)}
-                                        className={`w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-${audience==='clientes'?'cyan':'amber'}-500/50 transition-colors`}
+                                        className={`w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-${audience==='cliente_calle'?'cyan':audience==='comerciante'?'amber':'purple'}-500/50 transition-colors`}
                                     />
                                 </div>
                                 
@@ -399,7 +427,7 @@ const MarketingPanelPage: React.FC = () => {
                                     <label className="text-[8px] font-black uppercase text-white/50 block mb-1">Cuerpo del Mensaje (Bot WhatsApp)</label>
                                     <textarea 
                                         rows={4} placeholder="Escribí el texto persuasivo acá..." value={message} onChange={e => setMessage(e.target.value)}
-                                        className={`w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-${audience==='clientes'?'cyan':'amber'}-500/50 transition-colors resize-none`}
+                                        className={`w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-${audience==='cliente_calle'?'cyan':audience==='comerciante'?'amber':'purple'}-500/50 transition-colors resize-none`}
                                     />
                                 </div>
 
@@ -432,7 +460,7 @@ const MarketingPanelPage: React.FC = () => {
                                     </div>
                                     <button 
                                         onClick={() => setAttachCatalog(!attachCatalog)}
-                                        className={`w-10 h-5 rounded-full relative transition-colors duration-300 cursor-pointer ${attachCatalog ? (audience==='clientes'?'bg-cyan-500':'bg-amber-500') : 'bg-white/10'}`}>
+                                        className={`w-10 h-5 rounded-full relative transition-colors duration-300 cursor-pointer ${attachCatalog ? (audience==='cliente_calle'?'bg-cyan-500':audience==='comerciante'?'bg-amber-500':'bg-purple-500') : 'bg-white/10'}`}>
                                         <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all duration-300 ${attachCatalog ? 'left-[22px]' : 'left-0.5'}`} />
                                     </button>
                                 </div>
@@ -458,14 +486,14 @@ const MarketingPanelPage: React.FC = () => {
                                 <div className="space-y-3">
                                     {campaigns.map(camp => (
                                         <div key={camp.id} className="bg-zinc-900/50 border border-white/5 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden">
-                                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${camp.audience === 'clientes' ? 'bg-cyan-500' : 'bg-amber-500'}`} />
+                                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${camp.audience === 'cliente_calle' ? 'bg-cyan-500' : camp.audience === 'comerciante' ? 'bg-amber-500' : 'bg-purple-500'}`} />
                                             <div className="flex justify-between items-start pl-2">
                                                 <div>
                                                     <p className="text-[10px] font-black text-white uppercase">{camp.title}</p>
                                                     <p className="text-[8px] text-white/40 uppercase">{camp.date} · {camp.type}</p>
                                                 </div>
-                                                <div className="bg-black/50 px-2 py-1 rounded text-[7px] font-black uppercase tracking-widest" style={{ color: camp.audience === 'clientes' ? '#06b6d4' : '#f59e0b' }}>
-                                                    {camp.audience === 'clientes' ? 'B2C' : 'B2B'}
+                                                <div className="bg-black/50 px-2 py-1 rounded text-[7px] font-black uppercase tracking-widest" style={{ color: camp.audience === 'cliente_calle' ? '#06b6d4' : camp.audience === 'comerciante' ? '#f59e0b' : '#a855f7' }}>
+                                                    {camp.audience === 'cliente_calle' ? 'CALLE' : camp.audience === 'comerciante' ? 'COMERCIO' : 'EMPRESA'}
                                                 </div>
                                             </div>
                                         </div>
@@ -548,27 +576,39 @@ const MarketingPanelPage: React.FC = () => {
                             </h3>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[8px] font-black uppercase text-white/50 block mb-1">Destinatarios B2C (Teléfonos de Clientes)</label>
+                                    <label className="text-[8px] font-black uppercase text-white/50 block mb-1">Destinatarios Calle (Teléfonos de Clientes de Calle)</label>
                                     <textarea 
-                                        rows={3} 
+                                        rows={2} 
                                         placeholder="Ej: 1123456789, 1198765432..." 
-                                        value={b2cContacts} 
-                                        onChange={e => setB2cContacts(e.target.value)}
+                                        value={calleContacts} 
+                                        onChange={e => setCalleContacts(e.target.value)}
                                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-cyan-500/50 transition-colors resize-none"
                                     />
-                                    <span className="text-[7px] text-white/40 uppercase tracking-wider block mt-1">Números de teléfono separados por comas.</span>
+                                    <span className="text-[7px] text-white/40 uppercase tracking-wider block mt-1">Números de teléfono de la base de clientes de calle.</span>
                                 </div>
 
                                 <div>
-                                    <label className="text-[8px] font-black uppercase text-white/50 block mb-1">Destinatarios B2B (Teléfonos de Comercios/Industrias)</label>
+                                    <label className="text-[8px] font-black uppercase text-white/50 block mb-1">Destinatarios Comercios (Teléfonos de Comerciantes)</label>
                                     <textarea 
-                                        rows={3} 
+                                        rows={2} 
                                         placeholder="Ej: 1133334444, 1155556666..." 
-                                        value={b2bContacts} 
-                                        onChange={e => setB2bContacts(e.target.value)}
+                                        value={comercianteContacts} 
+                                        onChange={e => setComercianteContacts(e.target.value)}
                                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-amber-500/50 transition-colors resize-none"
                                     />
-                                    <span className="text-[7px] text-white/40 uppercase tracking-wider block mt-1">Base de datos de comercios habilitados para campañas.</span>
+                                    <span className="text-[7px] text-white/40 uppercase tracking-wider block mt-1">Base de datos de comercios locales.</span>
+                                </div>
+
+                                <div>
+                                    <label className="text-[8px] font-black uppercase text-white/50 block mb-1">Destinatarios Empresas (Teléfonos de Empresarios)</label>
+                                    <textarea 
+                                        rows={2} 
+                                        placeholder="Ej: 1177778888, 1199990000..." 
+                                        value={empresarioContacts} 
+                                        onChange={e => setEmpresarioContacts(e.target.value)}
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-purple-500/50 transition-colors resize-none"
+                                    />
+                                    <span className="text-[7px] text-white/40 uppercase tracking-wider block mt-1">Base de datos de industriales y empresarios B2B.</span>
                                 </div>
                             </div>
                         </div>
