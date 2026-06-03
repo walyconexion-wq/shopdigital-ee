@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
+import Logo from '../components/Logo';
 import { Shop } from '../types';
 
 type AudienceType = 'cliente_calle' | 'comerciante' | 'empresario';
@@ -391,7 +392,7 @@ const MarketingPanelPage: React.FC = () => {
             </div>
             {/* ════════════ HEADER — BÚNKER DE PUBLICIDAD ════════════ */}
             <div
-                className="backdrop-blur-xl pt-6 pb-5 px-5 flex flex-col items-center border-b mb-6 sticky top-0 z-50 transition-colors duration-1000 relative overflow-hidden"
+                className="backdrop-blur-xl pt-5 pb-5 px-5 flex flex-col items-center border-b mb-6 sticky top-0 z-50 transition-colors duration-1000 relative overflow-hidden"
                 style={{ 
                     background: `linear-gradient(135deg, rgba(2,8,16,0.94) 0%, ${hexToRgba(themeColor, 0.06)} 100%)`,
                     borderColor: hexToRgba(themeColor, 0.25),
@@ -403,55 +404,60 @@ const MarketingPanelPage: React.FC = () => {
                 {/* Grid interno del header */}
                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
+                {/* Logotipo de la App en el Header */}
+                <div className="mb-4 transform scale-90 origin-top z-10 hover:brightness-110 active:scale-95 transition-all">
+                    <Logo />
+                </div>
+
                 {/* Fila superior: botón volver + reloj + badge */}
-                <div className="w-full flex items-center justify-between mb-3 relative z-10">
+                <div className="w-full flex items-center justify-between mb-4 relative z-10">
                     <button onClick={() => { playNeonClick(); navigate(basePath); }}
-                        className="w-9 h-9 rounded-xl flex items-center justify-center border transition-all hover:scale-110 active:scale-95"
+                        className="w-9 h-9 rounded-xl flex items-center justify-center border transition-all hover:scale-110 active:scale-95 cursor-pointer"
                         style={{ backgroundColor: hexToRgba(themeColor, 0.1), borderColor: hexToRgba(themeColor, 0.3), color: themeColor }}>
                         <ChevronLeft size={18} />
                     </button>
-
-                    {/* ⏱️ RELOJ DIGITAL */}
-                    <div className="flex flex-col items-center gap-0.5">
-                        <div
-                            className="font-mono font-black tracking-[0.1em] leading-none"
-                            style={{ 
-                                fontSize: '20px',
-                                color: themeColor,
-                                textShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, 0 0 40px ${hexToRgba(themeColor, 0.4)}`
-                            }}
-                        >
-                            {timeStr.slice(0,2)}
-                            <span style={{ opacity: colonVisible ? 1 : 0.15, transition: 'opacity 0.1s' }}>:</span>
-                            {timeStr.slice(3,5)}
-                            <span style={{ fontSize: '13px', opacity: 0.55 }}>:{timeStr.slice(6,8)}</span>
-                        </div>
-                        <span className="text-[7px] font-black uppercase tracking-[0.15em] opacity-50" style={{ color: themeColor }}>{dateStr}</span>
-                    </div>
-
-                    {/* 🟢 BADGE SISTEMA ONLINE */}
-                    <div className="flex items-center gap-1.5 bg-black/50 border border-emerald-500/30 rounded-full px-2 py-1.5 backdrop-blur-sm">
-                        <div className="relative flex h-2 w-2 flex-shrink-0">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </div>
-                        <span className="text-[6.5px] font-black uppercase tracking-[0.12em] text-emerald-400" style={{ textShadow: '0 0 8px rgba(52,211,153,0.6)' }}>ONLINE</span>
-                    </div>
-                </div>
-
-                {/* Centro: Ícono + Título */}
-                <div className="flex flex-col items-center gap-1 relative z-10">
-                    <div className="relative mb-0.5">
-                        <Megaphone size={28} className="transition-colors duration-1000" style={{ color: themeColor, filter: `drop-shadow(0 0 16px ${hexToRgba(themeColor, 0.7)})` }} />
-                    </div>
-                    <h1 className="text-[16px] font-black text-white uppercase tracking-[0.22em] text-center" style={{ textShadow: `0 0 20px ${hexToRgba(themeColor, 0.5)}` }}>
-                        Búnker de Publicidad
-                    </h1>
-                    <p className={`text-[8px] font-bold uppercase tracking-[0.25em] mt-0.5 transition-colors duration-1000 ${textTheme}`}>
-                        Inteligente · {headerTitle} · Cañón Activo 🚀
-                    </p>
-                </div>
-            </div>
+ 
+                     {/* ⏱️ RELOJ DIGITAL */}
+                     <div className="flex flex-col items-center gap-0.5">
+                         <div
+                             className="font-mono font-black tracking-[0.1em] leading-none"
+                             style={{ 
+                                 fontSize: '20px',
+                                 color: themeColor,
+                                 textShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, 0 0 40px ${hexToRgba(themeColor, 0.4)}`
+                             }}
+                         >
+                             {timeStr.slice(0,2)}
+                             <span style={{ opacity: colonVisible ? 1 : 0.15, transition: 'opacity 0.1s' }}>:</span>
+                             {timeStr.slice(3,5)}
+                             <span style={{ fontSize: '13px', opacity: 0.55 }}>:{timeStr.slice(6,8)}</span>
+                         </div>
+                         <span className="text-[7px] font-black uppercase tracking-[0.15em] opacity-50" style={{ color: themeColor }}>{dateStr}</span>
+                     </div>
+ 
+                     {/* 🟢 BADGE SISTEMA ONLINE */}
+                     <div className="flex items-center gap-1.5 bg-black/50 border border-emerald-500/30 rounded-full px-2 py-1.5 backdrop-blur-sm">
+                         <div className="relative flex h-2 w-2 flex-shrink-0">
+                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                         </div>
+                         <span className="text-[6.5px] font-black uppercase tracking-[0.12em] text-emerald-400" style={{ textShadow: '0 0 8px rgba(52,211,153,0.6)' }}>ONLINE</span>
+                     </div>
+                 </div>
+ 
+                 {/* Centro: Ícono + Título */}
+                 <div className="flex flex-col items-center gap-1.5 relative z-10">
+                     <div className="relative mb-0.5">
+                         <Megaphone size={28} className="transition-colors duration-1000 animate-pulse" style={{ color: themeColor, filter: `drop-shadow(0 0 12px ${themeColor})` }} />
+                     </div>
+                     <h1 className="text-[18px] font-black uppercase tracking-[0.25em] text-center transition-all duration-1000" style={{ color: '#ffffff', textShadow: `0 0 10px ${themeColor}, 0 0 20px ${themeColor}, 0 0 35px ${hexToRgba(themeColor, 0.6)}` }}>
+                         Búnker de Publicidad
+                     </h1>
+                     <p className={`text-[8px] font-bold uppercase tracking-[0.25em] mt-0.5 transition-colors duration-1000 ${textTheme}`}>
+                         Inteligente · {headerTitle} · Cañón Activo 🚀
+                     </p>
+                 </div>
+             </div>
 
             <div className="px-5 space-y-6 relative z-10 max-w-lg mx-auto">
                 
