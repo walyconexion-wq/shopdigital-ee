@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { Factory, ChevronLeft, Share2, MapPin, ShieldCheck, Zap } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db, incrementarVisitasZona, registrarVisitaConTelemetria } from '../firebase';
+import { useLanguage } from '../components/LanguageContext';
 
 interface EnterpriseHomePageProps {
     globalConfig?: any;
@@ -19,8 +22,36 @@ const PROVINCES = [
     { id: 'neuquen',      name: 'NEUQUÉN',       emoji: '⛽' },
 ];
 
+interface Coordinates {
+    lat: number;
+    lon: number;
+}
+
+const PROVINCE_COORDINATES: Record<string, Coordinates> = {
+    'buenos-aires': { lat: -34.60, lon: -58.38 },
+    'cordoba': { lat: -31.42, lon: -64.18 },
+    'santa-fe': { lat: -31.63, lon: -60.70 },
+    'mendoza': { lat: -32.89, lon: -68.84 },
+    'tucuman': { lat: -26.81, lon: -65.22 },
+    'entre-rios': { lat: -31.73, lon: -60.53 },
+    'misiones': { lat: -27.37, lon: -55.90 },
+    'neuquen': { lat: -38.95, lon: -68.06 },
+};
+
+const getWeatherEmoji = (code: number | null): string => {
+    if (code === null) return '🌡️';
+    if (code === 0) return '☀️';
+    if ([1, 2, 3].includes(code)) return '⛅';
+    if ([45, 48].includes(code)) return '🌫️';
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️';
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return '❄️';
+    if ([95, 96, 99].includes(code)) return '⛈️';
+    return '🌡️';
+};
+
 const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig }) => {
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     // Nueva Paleta Tecnológica (Tech Neon) - Conectada a la Configuración Global
     const primaryColor = globalConfig?.primaryColor || '#f59e0b'; // Amber por defecto
@@ -40,6 +71,80 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     };
 
     const [selectedProvince, setSelectedProvince] = React.useState('buenos-aires');
+
+    // --- Telemetría y Clima ---
+    const [time, setTime] = React.useState(new Date());
+    const [temp, setTemp] = React.useState<number | null>(null);
+    const [weatherCode, setWeatherCode] = React.useState<number | null>(null);
+    const [weatherError, setWeatherError] = React.useState(false);
+    const [visits, setVisits] = React.useState<number>(1);
+    const loggedRef = React.useRef<string | null>(null);
+
+    // Incrementar visitas de empresas atómicamente al montar
+    React.useEffect(() => {
+        incrementarVisitasZona('empresas');
+    }, []);
+
+    // Suscribirse a las visitas de empresas para tener tiempo real
+    React.useEffect(() => {
+        const docRef = doc(db, 'appConfig', 'empresas');
+        const unsubscribe = onSnapshot(docRef, (snap) => {
+            if (snap.exists()) {
+                setVisits(snap.data().visits || 1);
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // Timer de Reloj Local (1 segundo)
+    React.useEffect(() => {
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Consulta Meteorológica y Registro de Telemetría por Provincia
+    React.useEffect(() => {
+        setTemp(null);
+        setWeatherCode(null);
+        setWeatherError(false);
+
+        const coords = PROVINCE_COORDINATES[selectedProvince] || PROVINCE_COORDINATES['buenos-aires'];
+        const fetchWeather = async () => {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const currentTemp = data.current?.temperature_2m;
+                    const currentCode = data.current?.weather_code;
+                    if (typeof currentTemp === 'number') {
+                        const roundedTemp = Math.round(currentTemp);
+                        setTemp(roundedTemp);
+                        setWeatherCode(typeof currentCode === 'number' ? currentCode : null);
+
+                        // Registrar telemetría de visita una única vez por provincia seleccionada en esta sesión
+                        const logKey = `empresas-${selectedProvince}`;
+                        if (loggedRef.current !== logKey) {
+                            loggedRef.current = logKey;
+                            registrarVisitaConTelemetria('empresas', roundedTemp, currentCode);
+                        }
+                    }
+                } else {
+                    setWeatherError(true);
+                }
+            } catch (err) {
+                console.error("Error fetching weather:", err);
+                setWeatherError(true);
+            }
+        };
+
+        fetchWeather();
+        const interval = setInterval(fetchWeather, 600000); // 10 min
+        return () => clearInterval(interval);
+    }, [selectedProvince]);
+
+    // Formateadores de Reloj y Fecha (es-AR)
+    const currentTimeStr = time.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const currentDateStr = time.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
 
     // 🔐 5-Click Búnker
     const [bunkerClicks, setBunkerClicks] = React.useState(0);
@@ -255,6 +360,39 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                         Argentina · {mainSubtitle}
                     </p>
                     <div className="h-[2px] w-12 rounded-full" style={{ backgroundImage: `linear-gradient(to left, transparent, ${primaryColor})` }} />
+                </div>
+
+                {/* Panel de Telemetría */}
+                <div 
+                    className="telemetry-widget mt-6 flex items-center justify-between w-full max-w-[340px] px-4 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-widest relative overflow-hidden backdrop-blur-md shadow-lg"
+                >
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('HORA')}</span>
+                        <span className="telemetry-widget-value text-white font-mono text-[10px] tracking-wider">
+                            {currentTimeStr}
+                        </span>
+                    </div>
+                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('FECHA')}</span>
+                        <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
+                            {currentDateStr}
+                        </span>
+                    </div>
+                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('VISITAS')}</span>
+                        <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
+                            👁️ {visits}
+                        </span>
+                    </div>
+                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="flex flex-col items-center flex-1">
+                        <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('CLIMA')}</span>
+                        <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
+                            {getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : (weatherError ? '18°C' : '...')}
+                        </span>
+                    </div>
                 </div>
             </header>
 
