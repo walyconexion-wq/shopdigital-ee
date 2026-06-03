@@ -58,7 +58,20 @@ const MarketingPanelPage: React.FC = () => {
     const [attachCatalog, setAttachCatalog] = useState(true);
     const [scheduledDate, setScheduledDate] = useState('');
     
-    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    // Cola de campañas persistida
+    const [campaigns, setCampaigns] = useState<Campaign[]>(() => {
+        const stored = localStorage.getItem('marketing_campaigns');
+        if (stored) {
+            try { return JSON.parse(stored); } catch { return []; }
+        }
+        return [];
+    });
+    
+    useEffect(() => {
+        localStorage.setItem('marketing_campaigns', JSON.stringify(campaigns));
+    }, [campaigns]);
+
+    const [editingCampaignId, setEditingCampaignId] = useState<string | null>(null);
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
     // Bases of contacts & Social configs (localStorage storage)
@@ -90,6 +103,45 @@ const MarketingPanelPage: React.FC = () => {
     const textTheme = audience === 'cliente_calle' ? 'text-cyan-400' : audience === 'comerciante' ? 'text-amber-400' : 'text-purple-400';
     const buttonBgHover = audience === 'cliente_calle' ? 'hover:bg-cyan-500/20' : audience === 'comerciante' ? 'hover:bg-amber-500/20' : 'hover:bg-purple-500/20';
 
+    // Funciones de control de la cola de distribución
+    const togglePauseCampaign = (id: string) => {
+        playNeonClick();
+        setCampaigns(campaigns.map(camp => {
+            if (camp.id === id) {
+                const newStatus = camp.status === 'paused' ? 'scheduled' : 'paused';
+                return { ...camp, status: newStatus };
+            }
+            return camp;
+        }));
+    };
+
+    const editCampaign = (camp: Campaign) => {
+        playNeonClick();
+        setEditingCampaignId(camp.id);
+        setTitle(camp.title);
+        setAudience(camp.audience);
+        setCampaignType(camp.type);
+        setMessage(camp.message);
+        setMediaUrl(camp.mediaUrl);
+        setAttachCatalog(camp.attachCatalog);
+        setScheduledDate(camp.date);
+        setActiveTab('automatizador');
+    };
+
+    const deleteCampaign = (id: string) => {
+        playNeonClick();
+        if (window.confirm("¿Estás seguro de detener y borrar esta campaña de la cola?")) {
+            setCampaigns(campaigns.filter(camp => camp.id !== id));
+            if (editingCampaignId === id) {
+                setEditingCampaignId(null);
+                setTitle('');
+                setMessage('');
+                setMediaUrl('');
+                setScheduledDate('');
+            }
+        }
+    };
+
     const hexToRgba = (hex: string, alpha: number) => {
         try {
             const r = parseInt(hex.slice(1, 3), 16);
@@ -106,24 +158,45 @@ const MarketingPanelPage: React.FC = () => {
             return;
         }
         
-        const newCamp: Campaign = {
-            id: Date.now().toString(),
-            title,
-            audience,
-            type: campaignType,
-            message,
-            mediaUrl,
-            attachCatalog,
-            date: scheduledDate || new Date().toISOString().split('T')[0],
-            status: 'scheduled'
-        };
-
-        setCampaigns([...campaigns, newCamp]);
+        if (editingCampaignId) {
+            setCampaigns(campaigns.map(camp => {
+                if (camp.id === editingCampaignId) {
+                    return {
+                        ...camp,
+                        title,
+                        audience,
+                        type: campaignType,
+                        message,
+                        mediaUrl,
+                        attachCatalog,
+                        date: scheduledDate || new Date().toISOString().split('T')[0],
+                    };
+                }
+                return camp;
+            }));
+            setEditingCampaignId(null);
+            alert("✨ ¡Campaña editada y guardada en cola!");
+        } else {
+            const newCamp: Campaign = {
+                id: Date.now().toString(),
+                title,
+                audience,
+                type: campaignType,
+                message,
+                mediaUrl,
+                attachCatalog,
+                date: scheduledDate || new Date().toISOString().split('T')[0],
+                status: 'scheduled'
+            };
+            setCampaigns([...campaigns, newCamp]);
+            alert("🚀 ¡Campaña programada y agregada a la cola!");
+        }
         
         // Reset form
         setTitle('');
         setMessage('');
         setMediaUrl('');
+        setScheduledDate('');
     };
 
     const handleFireNow = () => {
@@ -234,6 +307,64 @@ const MarketingPanelPage: React.FC = () => {
         bannerImage: '',
         createdAt: new Date().toISOString()
     } as any), [isEnterprisePath]);
+
+    const renderCampaignCard = (camp: Campaign) => {
+        const isPaused = camp.status === 'paused';
+        const cardThemeColor = camp.audience === 'cliente_calle' ? '#06b6d4' : camp.audience === 'comerciante' ? '#f59e0b' : '#a855f7';
+        return (
+            <div 
+                key={camp.id} 
+                className={`bg-zinc-900/50 border border-white/5 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden transition-all duration-300 ${
+                    isPaused ? 'opacity-60' : ''
+                }`}
+            >
+                <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: cardThemeColor }} />
+                <div className="flex justify-between items-start pl-2">
+                    <div>
+                        <p className="text-[10px] font-black text-white uppercase flex items-center gap-1.5">
+                            {camp.title}
+                            {isPaused && (
+                                <span className="px-1.5 py-0.5 rounded bg-amber-500 text-black text-[6.5px] font-black uppercase tracking-wider animate-pulse">PAUSADA</span>
+                            )}
+                        </p>
+                        <p className="text-[8px] text-white/40 uppercase mt-0.5">{camp.date} · {camp.type.toUpperCase()}</p>
+                    </div>
+                    <div className="bg-black/50 px-2 py-1 rounded text-[7px] font-black uppercase tracking-widest" style={{ color: cardThemeColor }}>
+                        {camp.audience === 'cliente_calle' ? 'CALLE' : camp.audience === 'comerciante' ? 'COMERCIO' : 'EMPRESA'}
+                    </div>
+                </div>
+                
+                {/* Vista previa del mensaje */}
+                <p className="text-[9.5px] text-white/70 pl-2 line-clamp-2 whitespace-pre-wrap leading-relaxed">{camp.message}</p>
+
+                {/* Controles de la campaña */}
+                <div className="flex gap-2 justify-end mt-1 pt-2 border-t border-white/5 z-10 relative">
+                    <button 
+                        onClick={() => togglePauseCampaign(camp.id)}
+                        className={`px-2.5 py-1 rounded text-[8px] font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1 ${
+                            isPaused
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
+                                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20'
+                        }`}
+                    >
+                        {isPaused ? '▶️ Reanudar' : '⏸️ Pausar'}
+                    </button>
+                    <button 
+                        onClick={() => editCampaign(camp)}
+                        className="px-2.5 py-1 rounded text-[8px] font-bold uppercase tracking-wider bg-sky-500/10 text-sky-400 border border-sky-500/20 hover:bg-sky-500/20 cursor-pointer flex items-center gap-1"
+                    >
+                        ✏️ Editar
+                    </button>
+                    <button 
+                        onClick={() => deleteCampaign(camp.id)}
+                        className="px-2.5 py-1 rounded text-[8px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 cursor-pointer flex items-center gap-1"
+                    >
+                        🗑️ Borrar
+                    </button>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden transition-colors duration-1000">
@@ -393,9 +524,26 @@ const MarketingPanelPage: React.FC = () => {
 
                         {/* Constructor */}
                         <div className={`glass-card-3d bg-gradient-to-br ${themeGradient} border rounded-2xl p-5 transition-colors duration-1000 ${borderTheme}`}>
-                            <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 text-white`}>
-                                <Zap size={14} /> Motor de Propulsión
-                            </h3>
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-white`}>
+                                    <Zap size={14} /> Motor de Propulsión
+                                </h3>
+                                {editingCampaignId && (
+                                    <button 
+                                        onClick={() => {
+                                            playNeonClick();
+                                            setEditingCampaignId(null);
+                                            setTitle('');
+                                            setMessage('');
+                                            setMediaUrl('');
+                                            setScheduledDate('');
+                                        }}
+                                        className="text-[8px] font-black text-red-400 hover:text-red-300 uppercase tracking-widest border border-red-500/20 bg-red-950/20 px-2 py-1 rounded cursor-pointer"
+                                    >
+                                        ❌ Cancelar Edición
+                                    </button>
+                                )}
+                            </div>
 
                             <div className="grid grid-cols-3 gap-2 mb-4">
                                 {[
@@ -477,30 +625,6 @@ const MarketingPanelPage: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Cola de Distribución */}
-                        {campaigns.length > 0 && (
-                            <div className={`glass-card-3d bg-white/[0.02] border rounded-2xl p-5 transition-colors duration-1000 ${borderTheme}`}>
-                                <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 ${textTheme}`}>
-                                    <Clock size={14} /> Cola de Distribución
-                                </h3>
-                                <div className="space-y-3">
-                                    {campaigns.map(camp => (
-                                        <div key={camp.id} className="bg-zinc-900/50 border border-white/5 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden">
-                                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${camp.audience === 'cliente_calle' ? 'bg-cyan-500' : camp.audience === 'comerciante' ? 'bg-amber-500' : 'bg-purple-500'}`} />
-                                            <div className="flex justify-between items-start pl-2">
-                                                <div>
-                                                    <p className="text-[10px] font-black text-white uppercase">{camp.title}</p>
-                                                    <p className="text-[8px] text-white/40 uppercase">{camp.date} · {camp.type}</p>
-                                                </div>
-                                                <div className="bg-black/50 px-2 py-1 rounded text-[7px] font-black uppercase tracking-widest" style={{ color: camp.audience === 'cliente_calle' ? '#06b6d4' : camp.audience === 'comerciante' ? '#f59e0b' : '#a855f7' }}>
-                                                    {camp.audience === 'cliente_calle' ? 'CALLE' : camp.audience === 'comerciante' ? 'COMERCIO' : 'EMPRESA'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
 
@@ -671,6 +795,61 @@ const MarketingPanelPage: React.FC = () => {
                         </button>
                     </div>
                 )}
+
+                {/* ─── COLA DE DISTRIBUCIÓN GLOBAL Y SEGMENTADA ─── */}
+                {(() => {
+                    if (campaigns.length === 0) return null;
+                    const calleCamps = campaigns.filter(c => c.audience === 'cliente_calle');
+                    const comercianteCamps = campaigns.filter(c => c.audience === 'comerciante');
+                    const empresarioCamps = campaigns.filter(c => c.audience === 'empresario');
+                    return (
+                        <div className={`glass-card-3d bg-white/[0.02] border rounded-2xl p-5 transition-colors duration-1000 ${borderTheme}`}>
+                            <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 ${textTheme}`}>
+                                <Clock size={14} /> Cola de Distribución Global
+                            </h3>
+                            <div className="space-y-5">
+                                {/* Cliente de Calle */}
+                                {calleCamps.length > 0 && (
+                                    <div className="space-y-2.5">
+                                        <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-1.5">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                                            <span className="text-[8.5px] font-black text-cyan-400 uppercase tracking-widest">Cola Cliente de Calle ({calleCamps.length})</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {calleCamps.map(camp => renderCampaignCard(camp))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Comerciante */}
+                                {comercianteCamps.length > 0 && (
+                                    <div className="space-y-2.5">
+                                        <div className="flex items-center gap-2 border-b border-amber-500/20 pb-1.5">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                                            <span className="text-[8.5px] font-black text-amber-400 uppercase tracking-widest">Cola Comerciante ({comercianteCamps.length})</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {comercianteCamps.map(camp => renderCampaignCard(camp))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Empresario */}
+                                {empresarioCamps.length > 0 && (
+                                    <div className="space-y-2.5">
+                                        <div className="flex items-center gap-2 border-b border-purple-500/20 pb-1.5">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                                            <span className="text-[8.5px] font-black text-purple-400 uppercase tracking-widest">Cola Empresario ({empresarioCamps.length})</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {empresarioCamps.map(camp => renderCampaignCard(camp))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
             
             {/* ════════════ ARI INLINE — CEREBRO DEL BÚNKER ════════════ */}
