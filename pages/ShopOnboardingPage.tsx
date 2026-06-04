@@ -16,6 +16,25 @@ const SD_CANAL_CLIENTES = 'https://whatsapp.com/channel/0029VbCS4rvInlqNj9tcA40m
 const SD_CANAL_COMERCIANTES = 'https://whatsapp.com/channel/0029VbCU0awK0IBrdkOWkR2I';
 const SD_ARI_OFICIAL = 'https://wa.me/5491140607059';
 
+// 🔗 MAKE.COM WEBHOOK — Escenario 5260209 "Oido_ShopDigital" (ACTIVO)
+const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/b428rov524nlileo9bhjpxh3wpxzoynb';
+
+// Enviar payload al webhook de Make.com
+const sendMakeWebhook = async (payload: Record<string, any>): Promise<{ ok: boolean; error?: string }> => {
+    try {
+        const res = await fetch(MAKE_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return { ok: true };
+    } catch (err: any) {
+        console.error('❌ Make.com webhook error:', err);
+        return { ok: false, error: err.message };
+    }
+};
+
 interface ShopOnboardingPageProps {
     allShops: Shop[];
 }
@@ -182,6 +201,7 @@ const ShopOnboardingPage: React.FC<ShopOnboardingPageProps> = ({ allShops }) => 
     const [fuegoProgress, setFuegoProgress] = useState(0);
     const [isFuegoRunning, setIsFuegoRunning] = useState(false);
     const [missionComplete, setMissionComplete] = useState(false);
+    const [autoStatus, setAutoStatus] = useState<Record<string, 'idle' | 'sending' | 'ok' | 'error'>>({});
 
     // ARI audit — detect missing fields
     const ariAlerts: string[] = [];
@@ -204,6 +224,60 @@ const ShopOnboardingPage: React.FC<ShopOnboardingPageProps> = ({ allShops }) => 
         next.add(triggerId);
         setSentTriggers(next);
         localStorage.setItem(SENT_KEY, JSON.stringify([...next]));
+    };
+
+    const buildPayload = (shop: Shop, triggerType: string) => ({
+        triggerType,
+        shopId: shop.id,
+        shopName: shop.name,
+        ownerName: shop.ownerName || '',
+        phone: shop.phone || '',
+        memberNumber: shop.memberNumber || shop.shopNumber || '001',
+        credencialUrl: buildCredentialUrl(shop, townId),
+        landingUrl: buildLandingUrl(townId),
+        descuentosUrl: buildDiscountsUrl(townId),
+        facturaUrl: buildInvoiceUrl(shop, townId),
+        canalComerciantesUrl: SD_CANAL_COMERCIANTES,
+        canalClientesUrl: SD_CANAL_CLIENTES,
+        ariUrl: SD_ARI_OFICIAL,
+        townId,
+        timestamp: new Date().toISOString(),
+    });
+
+    const sendAutoTrigger = async (shop: Shop, trigger: Trigger) => {
+        if (!shop.phone) { alert('⚠️ Sin teléfono registrado. La artillería no puede disparar.'); return; }
+        setAutoStatus(prev => ({ ...prev, [trigger.id]: 'sending' }));
+        const result = await sendMakeWebhook(buildPayload(shop, trigger.id));
+        if (result.ok) {
+            markSent(trigger.id);
+            setAutoStatus(prev => ({ ...prev, [trigger.id]: 'ok' }));
+            playSuccessSound();
+        } else {
+            setAutoStatus(prev => ({ ...prev, [trigger.id]: 'error' }));
+            alert(`⚠️ Make.com no respondió. Usar modo Manual como respaldo.\nError: ${result.error}`);
+        }
+    };
+
+    const triggerFuegoAuto = async () => {
+        if (!shop) return;
+        if (!shop.phone) { alert('⚠️ El comercio no tiene teléfono. La artillería no puede disparar.'); return; }
+        setIsFuegoRunning(true);
+        setFuegoProgress(0);
+        const result = await sendMakeWebhook(buildPayload(shop, 'fuego_total'));
+        if (result.ok) {
+            // Marcar todos como enviados y animar progreso
+            for (let i = 0; i <= 100; i += 20) {
+                setFuegoProgress(i);
+                await new Promise(r => setTimeout(r, 150));
+            }
+            TRIGGERS.forEach(t => markSent(t.id));
+            setIsFuegoRunning(false);
+            setMissionComplete(true);
+            playSuccessSound();
+        } else {
+            setIsFuegoRunning(false);
+            alert(`⚠️ Make.com no respondió. Intentá el Fuego Manual como respaldo.\nError: ${result.error}`);
+        }
     };
 
     const openWhatsApp = (shop: Shop, trigger: Trigger) => {
@@ -421,22 +495,36 @@ const ShopOnboardingPage: React.FC<ShopOnboardingPageProps> = ({ allShops }) => 
                                     {/* Dual buttons */}
                                     {!isLocked && (
                                         <div className="flex gap-2">
-                                            {/* MANUAL — always available */}
+                                            {/* MANUAL — respaldo siempre disponible */}
                                             <button
                                                 onClick={() => openWhatsApp(shop, trigger)}
                                                 className={`flex-1 border ${trigger.borderColor} ${trigger.bgColor} ${trigger.textColor} py-2.5 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:brightness-110`}
                                             >
                                                 <Smartphone size={11} /> Manual
                                             </button>
-                                            {/* AUTO — webhook placeholder (future Make.com) */}
+                                            {/* AUTO — Make.com webhook ACTIVO ⚡ */}
                                             <button
-                                                onClick={() => {
-                                                    alert('⚡ Modo Automático (Make.com) en configuración. Usando modo Manual por ahora.');
-                                                    openWhatsApp(shop, trigger);
-                                                }}
-                                                className={`flex-1 border border-white/20 bg-white/5 text-white/50 py-2.5 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-white/10`}
+                                                disabled={autoStatus[trigger.id] === 'sending'}
+                                                onClick={() => sendAutoTrigger(shop, trigger)}
+                                                className={`flex-1 border py-2.5 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-50 ${
+                                                    autoStatus[trigger.id] === 'ok'
+                                                        ? 'border-green-400/40 bg-green-500/10 text-green-300'
+                                                        : autoStatus[trigger.id] === 'error'
+                                                        ? 'border-red-400/40 bg-red-500/10 text-red-300'
+                                                        : autoStatus[trigger.id] === 'sending'
+                                                        ? 'border-yellow-400/40 bg-yellow-500/10 text-yellow-300 animate-pulse'
+                                                        : 'border-yellow-400/40 bg-yellow-500/10 text-yellow-300 hover:bg-yellow-500/20'
+                                                }`}
                                             >
-                                                <Zap size={11} /> Auto
+                                                {autoStatus[trigger.id] === 'sending' ? (
+                                                    <><div className="w-3 h-3 border border-yellow-300 border-t-transparent rounded-full animate-spin" /> Enviando...</>
+                                                ) : autoStatus[trigger.id] === 'ok' ? (
+                                                    <><CheckCircle2 size={11} /> ⚡ Enviado</>
+                                                ) : autoStatus[trigger.id] === 'error' ? (
+                                                    <><AlertTriangle size={11} /> Error</>
+                                                ) : (
+                                                    <><Zap size={11} /> ⚡ Auto</>
+                                                )}
                                             </button>
                                         </div>
                                     )}
@@ -484,23 +572,27 @@ const ShopOnboardingPage: React.FC<ShopOnboardingPageProps> = ({ allShops }) => 
                         )}
 
                         <div className="flex gap-3">
-                            {/* FUEGO AUTOMÁTICO (future) */}
-                            <button
-                                disabled={isFuegoRunning}
-                                onClick={() => alert('⚡ Fuego Automático vía Make.com — configuración pendiente. Usar Fuego Manual.')}
-                                className="flex-1 bg-white/5 border border-white/20 text-white/40 py-3 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30"
-                            >
-                                <Zap size={14} /> ⚡ Auto (Make)
-                            </button>
-                            {/* FUEGO MANUAL */}
-                            <button
-                                disabled={isFuegoRunning || missionComplete}
-                                onClick={triggerFuegoManual}
-                                className="flex-1 bg-red-500/20 border border-red-400/50 text-red-300 py-3 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.3)] disabled:opacity-40"
-                            >
-                                <Rocket size={14} /> 📱 Fuego Manual
-                            </button>
-                        </div>
+                                {/* FUEGO AUTOMÁTICO — Make.com webhook REAL ⚡ */}
+                                <button
+                                    disabled={isFuegoRunning || missionComplete}
+                                    onClick={triggerFuegoAuto}
+                                    className="flex-1 bg-yellow-500/10 border border-yellow-400/40 text-yellow-300 py-3 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-yellow-500/20 shadow-[0_0_20px_rgba(234,179,8,0.3)] disabled:opacity-30"
+                                >
+                                    {isFuegoRunning ? (
+                                        <><div className="w-3 h-3 border border-yellow-300 border-t-transparent rounded-full animate-spin" /> Make.com...</>
+                                    ) : (
+                                        <><Zap size={14} /> ⚡ Auto (Make)  🔥</>
+                                    )}
+                                </button>
+                                {/* FUEGO MANUAL — respaldo */}
+                                <button
+                                    disabled={isFuegoRunning || missionComplete}
+                                    onClick={triggerFuegoManual}
+                                    className="flex-1 bg-red-500/20 border border-red-400/50 text-red-300 py-3 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.3)] disabled:opacity-40"
+                                >
+                                    <Rocket size={14} /> 📱 Manual
+                                </button>
+                            </div>
                     </div>
                 )}
 
