@@ -227,8 +227,7 @@ export const obtenerComercios = async () => {
 // 1b. Suscribirse a los comercios en tiempo real (Filtrado por Zona)
 export const suscribirseAComercios = (callback: (comercios: any[]) => void, townId?: string, onError?: (error: any) => void) => {
     const colRef = collection(db, "comercios");
-    // Si es la zona por defecto ('esteban-echeverria' o vacío), mostramos todo el legado
-    const q = (townId && townId !== 'esteban-echeverria') 
+    const q = townId 
         ? query(colRef, where("townId", "==", townId)) 
         : colRef;
     
@@ -445,7 +444,7 @@ export const actualizarPuntosCliente = async (clientId: string, pointsDelta: num
 
 export const suscribirseAOfertas = (callback: (ofertas: any[]) => void, townId?: string) => {
     const colRef = collection(db, "ofertas");
-    const q = (townId && townId !== 'esteban-echeverria') 
+    const q = townId 
         ? query(colRef, where("townId", "==", townId)) 
         : colRef;
     
