@@ -73,6 +73,7 @@ import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
 import GlobalHomePage from './pages/GlobalHomePage';
 import RegionSelectPage from './pages/RegionSelectPage';
 import RegionSeedPage from './pages/RegionSeedPage';
+import ShopOnboardingPage from './pages/ShopOnboardingPage';
 import { TRASLASIERRA_REGION } from './data/regionalTemplates/traslasierraConfig';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
@@ -228,6 +229,8 @@ const TownController: React.FC = () => {
                     <Route path="embajador/agenda" element={<ProtectedRoute roles={['admin', 'ambassador']}><AmbassadorAgendaPage /></ProtectedRoute>} />
                     <Route path="embajador/gestion" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="embajador/editar/:shopId" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopEditPage allShops={allShops} /></ProtectedRoute>} />
+                    {/* 🚀 ONBOARDING BLITZKRIEG — Pantalla de Artillería */}
+                    <Route path="embajador/onboarding/:shopId" element={<ProtectedRoute roles={['admin', 'ambassador']}><ShopOnboardingPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path=":categorySlug/:shopSlug/editar" element={<ShopEditPage allShops={allShops} />} />
                     <Route path="mi-catalogo/editar/:shopId" element={<ShopEditPage allShops={allShops} />} />
                     <Route path="embajador/clientes" element={<ProtectedRoute roles={['admin', 'ambassador']}><ClientManagementPage allShops={allShops} allClients={allClients} /></ProtectedRoute>} />

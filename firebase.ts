@@ -271,6 +271,41 @@ export const updateComercio = async (id: string, updates: any) => {
     }
 };
 
+// 🚀 ONBOARDING BLITZKRIEG — Aprobar comercio con registro completo de onboarding
+export const aprobarComercioOnboarding = async (shopId: string, ambassadorEmail: string): Promise<boolean> => {
+    try {
+        const docRef = doc(db, "comercios", shopId);
+        await updateDoc(docRef, {
+            isActive: true,
+            onboardingStatus: 'approved',
+            onboardingApprovedAt: new Date().toISOString(),
+            onboardingApprovedBy: ambassadorEmail,
+            memberSince: new Date().toISOString(),
+        });
+        console.log(`✅ Comercio ${shopId} aprobado por ${ambassadorEmail}`);
+        return true;
+    } catch (error) {
+        console.error("Error al aprobar comercio:", error);
+        throw error;
+    }
+};
+
+// 🚀 ONBOARDING BLITZKRIEG — Marcar comercio como pendiente de revisión por embajador
+export const marcarPendienteRevision = async (shopId: string): Promise<boolean> => {
+    try {
+        const docRef = doc(db, "comercios", shopId);
+        await updateDoc(docRef, {
+            onboardingStatus: 'pending_review',
+            onboardingSubmittedAt: new Date().toISOString(),
+        });
+        console.log(`⏳ Comercio ${shopId} marcado como pendiente de revisión`);
+        return true;
+    } catch (error) {
+        console.error("Error al marcar pendiente:", error);
+        throw error;
+    }
+};
+
 // Incrementar visitas de un comercio (contador atómico)
 export const incrementarVisitas = async (comercioId: string) => {
     try {

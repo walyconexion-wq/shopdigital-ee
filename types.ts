@@ -196,4 +196,13 @@ export interface Shop {
   verified?: boolean; // Empresa verificada por embajador
   ownerId?: string; // Owner del comercio
   color?: string; // Color temático del comercio
+  // 🚀 ONBOARDING BLITZKRIEG — Sistema de Alta de Comercios
+  onboardingStatus?: 'draft' | 'pending_review' | 'approved' | 'rejected';
+  onboardingSubmittedAt?: string;   // ISO date — cuando el comerciante envió su solicitud
+  onboardingApprovedAt?: string;    // ISO date — cuando el embajador aprobó
+  onboardingApprovedBy?: string;    // Email del embajador que aprobó
+  onboardingNotes?: string;         // Notas del embajador durante la revisión
+  credentialUrl?: string;           // URL a la credencial electrónica
+  invoiceSimulationUrl?: string;    // URL a la factura del mes gratis
+  memberSince?: string;             // ISO date — fecha oficial de alta
 }

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
-import { guardarComercio, eliminarComercio } from '../firebase';
+import { guardarComercio, eliminarComercio, aprobarComercioOnboarding } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import {
     ChevronLeft,
@@ -16,16 +16,20 @@ import {
     Image as ImageIcon,
     ArrowLeft,
     Edit3,
-    RefreshCw
+    RefreshCw,
+    Rocket,
+    CheckCircle2,
+    Clock
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 interface ShopManagementPageProps {
     allShops: Shop[];
+    userEmail?: string;
 }
 
-const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => {
+const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userEmail }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const { localities } = useTownLocalities(townId);
@@ -116,6 +120,23 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
             } catch (error) {
                 console.error("Error al activar:", error);
                 alert("Error al activar el comercio.");
+            } finally {
+                setProcessingId(null);
+            }
+        }
+    };
+
+    const handleApproveOnboarding = async (shop: Shop) => {
+        playNeonClick();
+        if (window.confirm(`🚀 ¿APROBAR Y DESPLEGAR ONBOARDING de "${shop.name}"?\n\nEl comercio quedará ACTIVO y se abrirá la Pantalla de Artillería para enviar los disparadores de bienvenida al comerciante.`)) {
+            setProcessingId(shop.id);
+            try {
+                await aprobarComercioOnboarding(shop.id, userEmail || 'embajador@shopdigital.ar');
+                playSuccessSound();
+                navigate(`/${townId}/embajador/onboarding/${shop.id}`);
+            } catch (error) {
+                console.error("Error al aprobar onboarding:", error);
+                alert("Error al aprobar el comercio.");
             } finally {
                 setProcessingId(null);
             }
@@ -281,11 +302,23 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                 ) : (
                     filteredShops.map(shop => {
                         const isShopActive = shop.isActive === true;
+                        const obStatus = shop.onboardingStatus;
+                        const isApproved = isShopActive && (obStatus === 'approved' || (!obStatus && isShopActive));
+                        const isPending = obStatus === 'pending_review';
                         return (
-                            <div key={shop.id} className={`glass-card-3d bg-white/[0.02] border rounded-3xl p-5 overflow-hidden relative transition-all ${isShopActive ? 'border-green-500/30' : 'border-red-500/30 opacity-80'}`}>
+                            <div key={shop.id} className={`glass-card-3d bg-white/[0.02] border rounded-3xl p-5 overflow-hidden relative transition-all ${
+                                isPending ? 'border-amber-500/50' :
+                                isApproved ? 'border-green-500/30' : 'border-red-500/30 opacity-80'
+                            }`}>
                                 {/* Status Badge */}
-                                <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest ${isShopActive ? 'bg-green-500/20 text-green-300 border border-green-400/30' : 'bg-red-500/20 text-red-300 border border-red-400/30'}`}>
-                                    {isShopActive ? '● Activo' : '● Suspendido'}
+                                <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest ${
+                                    isPending ? 'bg-amber-500/20 text-amber-300 border border-amber-400/30 animate-pulse' :
+                                    isApproved ? 'bg-green-500/20 text-green-300 border border-green-400/30' :
+                                    'bg-red-500/20 text-red-300 border border-red-400/30'
+                                }`}>
+                                    {isPending ? <span className="flex items-center gap-1"><Clock size={8} /> Pend. Revisión</span> :
+                                     isApproved ? <span className="flex items-center gap-1"><CheckCircle2 size={8} /> Activa</span> :
+                                     '● Suspendida'}
                                 </div>
 
                                 {/* Shop Info */}
@@ -321,44 +354,78 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops }) => 
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="flex gap-2 pt-2 border-t border-white/5">
-                                    {/* Edit - REGIONAL LINK 🛡️ */}
-                                    <button
-                                        onClick={() => {
-                                            playNeonClick();
-                                            navigate(`/${townId}/embajador/editar/${shop.id}`);
-                                        }}
-                                        className="flex-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
-                                    >
-                                        <Edit3 size={14} /> Editar
-                                    </button>
+                                <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
+                                    {/* Row 1: Primary action based on onboarding status */}
+                                    <div className="flex gap-2">
+                                        {isPending ? (
+                                            /* Aprobar + Desplegar — para tarjetas pendientes */
+                                            <button
+                                                disabled={processingId === shop.id}
+                                                onClick={() => handleApproveOnboarding(shop)}
+                                                className="flex-1 bg-green-500/20 border border-green-400/50 text-green-300 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.3)] disabled:opacity-50"
+                                            >
+                                                <CheckCircle2 size={14} /> Aprobar + Desplegar
+                                            </button>
+                                        ) : isApproved ? (
+                                            /* Ver Onboarding — para tarjetas ya aprobadas */
+                                            <button
+                                                onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/onboarding/${shop.id}`); }}
+                                                className="flex-1 bg-violet-500/20 border border-violet-400/50 text-violet-300 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.3)] animate-pulse"
+                                            >
+                                                <Rocket size={14} /> Ver Onboarding
+                                            </button>
+                                        ) : (
+                                            /* Edit - para tarjetas no aprobadas */
+                                            <button
+                                                onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/editar/${shop.id}`); }}
+                                                className="flex-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
+                                            >
+                                                <Edit3 size={14} /> Editar
+                                            </button>
+                                        )}
 
-                                    {/* Delete */}
-                                    <button
-                                        disabled={processingId === shop.id}
-                                        onClick={() => handleDelete(shop)}
-                                        className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-red-500/20 disabled:opacity-50"
-                                    >
-                                        <Trash2 size={14} /> Eliminar
-                                    </button>
+                                        {/* Editar — siempre disponible como secundario para aprobados */}
+                                        {isApproved && (
+                                            <button
+                                                onClick={() => { playNeonClick(); navigate(`/${townId}/embajador/editar/${shop.id}`); }}
+                                                className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-3 px-4 rounded-xl flex items-center justify-center gap-1 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-cyan-500/20"
+                                            >
+                                                <Edit3 size={12} />
+                                            </button>
+                                        )}
+                                    </div>
 
-                                    {/* Suspend */}
-                                    <button
-                                        disabled={processingId === shop.id || !isShopActive}
-                                        onClick={() => handleSuspend(shop)}
-                                        className={`flex-1 border py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30 ${isShopActive ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20' : 'bg-white/5 border-white/10 text-white/30'}`}
-                                    >
-                                        <PauseCircle size={14} /> Suspender
-                                    </button>
+                                    {/* Row 2: Suspend / Activate / Delete */}
+                                    <div className="flex gap-2">
+                                        {/* Delete */}
+                                        <button
+                                            disabled={processingId === shop.id}
+                                            onClick={() => handleDelete(shop)}
+                                            className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-2.5 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-red-500/20 disabled:opacity-50"
+                                        >
+                                            <Trash2 size={12} /> Eliminar
+                                        </button>
 
-                                    {/* Activate */}
-                                    <button
-                                        disabled={processingId === shop.id || isShopActive}
-                                        onClick={() => handleActivate(shop)}
-                                        className={`flex-1 border py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30 ${!isShopActive ? 'bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'bg-white/5 border-white/10 text-white/30'}`}
-                                    >
-                                        <PlayCircle size={14} /> Activar
-                                    </button>
+                                        {/* Suspend */}
+                                        <button
+                                            disabled={processingId === shop.id || !isShopActive}
+                                            onClick={() => handleSuspend(shop)}
+                                            className={`flex-1 border py-2.5 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30 ${isShopActive ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20' : 'bg-white/5 border-white/10 text-white/30'}`}
+                                        >
+                                            <PauseCircle size={12} /> Suspender
+                                        </button>
+
+                                        {/* Activate (legacy — for non-onboarded shops) */}
+                                        {!isShopActive && !isPending && (
+                                            <button
+                                                disabled={processingId === shop.id}
+                                                onClick={() => handleActivate(shop)}
+                                                className="flex-1 bg-green-500/10 border border-green-500/30 text-green-400 py-2.5 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.2)] disabled:opacity-30"
+                                            >
+                                                <PlayCircle size={12} /> Activar
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {processingId === shop.id && (
