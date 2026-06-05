@@ -49,14 +49,11 @@ export const runFinancialAudit = async (townId: string) => {
                             isActive: false // Optional: hide them from the app
                         });
 
-                        // Notify Director via Frecuencia Directiva
                         await enviarMensajeBunker({
-                            type: 'alert',
-                            title: 'Suspensión por Mora (ARI)',
-                            message: `He suspendido automáticamente el comercio "${shopData.name}" por presentar ${invoices.length} meses de mora (Facturas Pendientes).`,
-                            targetAmbassadorId: 'all', // Or send to a specific channel/admin
-                            sender: 'ARI Directora Financiera',
-                            townId
+                            text: `[ALERTA SUSPENSIÓN] He suspendido automáticamente el comercio "${shopData.name}" por presentar ${invoices.length} meses de mora.`,
+                            sender: 'director',
+                            recipientId: 'all',
+                            recipientName: 'Todos los Embajadores'
                         });
 
                         // Optionally, update the invoices to 'suspended' status

@@ -22,7 +22,7 @@ interface Campaign {
     mediaUrl: string;
     attachCatalog: boolean;
     date: string;
-    status: 'scheduled' | 'sent';
+    status: 'scheduled' | 'sent' | 'paused';
 }
 
 const MarketingPanelPage: React.FC = () => {

@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shop, Client } from '../types';
+import { Shop, Client, LiveEvent } from '../types';
+import { db, suscribirseAEventos } from '../firebase';
 import { actualizarFotoCliente } from '../firebaseVIP';
 import { 
     ShieldCheck, 
@@ -18,7 +19,8 @@ import {
     Camera,
     Wallet,
     CheckCircle2,
-    X
+    X,
+    Ticket
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -40,10 +42,19 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
 
     // 1. Encontrar al socio con soporte para delay de Firebase
     const [client, setClient] = useState<Client | null>(null);
     const [isLoadingClient, setIsLoadingClient] = useState(true);
+
+    // Subscribe to live events
+    useEffect(() => {
+        const unsubscribe = suscribirseAEventos((events) => {
+            setLiveEvents(events);
+        });
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         if (!clientId) {
@@ -63,7 +74,6 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
         const fetchDirect = async () => {
             try {
                 const { doc, getDoc } = await import('firebase/firestore');
-                const { db } = await import('../firebase');
                 const docRef = doc(db, 'clientes', clientId);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
@@ -78,6 +88,21 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
         
         fetchDirect();
     }, [allClients, clientId]);
+
+    // Match active event with client's active ticket
+    const ticketEvent = useMemo(() => {
+        if (!client?.activeTicket?.eventId) return null;
+        return liveEvents.find(e => e.id === client.activeTicket?.eventId);
+    }, [liveEvents, client?.activeTicket?.eventId]);
+
+    // Active event for client zone if they don't have a ticket
+    const generalActiveEvent = useMemo(() => {
+        if (client?.activeTicket) return null;
+        return liveEvents.find(e => 
+            (e.status === 'active_live' || e.status === 'suspended') &&
+            e.targetRoles.includes('empresario')
+        );
+    }, [liveEvents, client]);
 
     // 2. Encontrar el comercio origen (con fallback para links genéricos de club)
     const shop = useMemo(() => {
@@ -185,7 +210,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 title: `Credencial VIP de ${client.name}`,
                                 text: `Mirá mi Credencial VIP en ShopDigital: ${shop.name}`,
                                 url: window.location.href,
-                            });
+                             });
                         }
                     }}
                     className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all shadow-inner"
@@ -194,23 +219,70 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                 </button>
             </div>
 
-            {/* SELLO DE VIDA (RELÓJ EN VIVO) ⏱️ */}
-            <div className="relative z-10 mb-8 bg-cyan-500/5 border border-cyan-500/20 px-4 py-2 rounded-full backdrop-blur-md animate-pulse">
-                <p className="text-[10px] font-black font-mono text-cyan-400 flex items-center gap-2 tracking-widest">
-                    <Clock size={12} /> {formatClock(currentTime)}
+            {/* ═══════════ LIVE EVENT TICKER BANNER 🟢🔴 ═══════════ */}
+            {client.activeTicket && ticketEvent && (
+                <div className="w-full max-w-sm mb-6 relative z-10 animate-in slide-in-from-top-6 duration-500">
+                    {ticketEvent.status === 'active_live' ? (
+                        <div className="bg-gradient-to-r from-emerald-500/15 via-emerald-600/25 to-teal-500/15 border border-emerald-400/50 rounded-3xl p-5 shadow-[0_0_20px_rgba(16,185,129,0.2)] flex flex-col items-center justify-center relative overflow-hidden">
+                            <span className="text-[12px] font-[1000] text-emerald-400 uppercase tracking-[0.2em] text-center mb-1 animate-pulse">
+                                🟢 EVENTO ACTIVO - ENTRADA EXCLUSIVA
+                            </span>
+                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                                {ticketEvent.name}
+                            </h3>
+                            <div className="bg-emerald-500/15 border border-emerald-400/30 px-3 py-1.5 rounded-2xl text-center w-full">
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest block font-mono">
+                                    SECTOR: {client.activeTicket.seatSector || 'General VIP'} · FILA: {client.activeTicket.fila || '-'} · ASIENTO: {client.activeTicket.asiento || '-'}
+                                </span>
+                            </div>
+                        </div>
+                    ) : ticketEvent.status === 'suspended' ? (
+                        <div className="bg-gradient-to-r from-red-500/15 via-red-600/25 to-rose-500/15 border border-red-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(239,68,68,0.2)] flex flex-col items-center justify-center relative overflow-hidden">
+                            <span className="text-[12px] font-[1000] text-red-400 uppercase tracking-[0.2em] text-center mb-1 animate-bounce">
+                                🔴 EVENTO SUSPENDIDO / APLAZADO
+                            </span>
+                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                                {ticketEvent.name}
+                            </h3>
+                            <p className="text-[9px] font-black text-red-300 uppercase tracking-widest text-center animate-pulse">
+                                MÁS INFO VÍA ASISTENTE ARI 🤖
+                            </p>
+                        </div>
+                    ) : null}
+                </div>
+            )}
+
+            {/* General Promo banner if no ticket bought */}
+            {!client.activeTicket && generalActiveEvent && (
+                <div className="w-full max-w-sm mb-6 relative z-10 animate-in slide-in-from-top-6 duration-500">
+                    <div className="bg-gradient-to-r from-cyan-500/15 via-indigo-600/20 to-cyan-500/15 border border-cyan-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(34,211,238,0.15)] flex flex-col items-center justify-center relative overflow-hidden animate-pulse">
+                        <span className="text-[10px] font-[1000] text-cyan-400 uppercase tracking-[0.2em] text-center mb-1">
+                            ✨ EVENTO VIP DISPONIBLE EN TU ZONA
+                        </span>
+                        <h3 className="text-xs font-black text-white uppercase tracking-wider text-center mb-2">
+                            {generalActiveEvent.name}
+                        </h3>
+                        <p className="text-[8px] font-black text-cyan-300 uppercase tracking-widest text-center">
+                            Adquirí tus pases con descuento B2B consultando a Ari 🤖
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* SELLO DE VIDA (RELÓJ EN VIVO CON SEGUNDERO INVIOLABLE) ⏱️ */}
+            <div className="relative z-10 mb-8 bg-cyan-500/5 border border-cyan-500/20 px-4 py-2 rounded-2xl backdrop-blur-md">
+                <p className="text-[10px] font-black font-mono text-cyan-400 flex items-center gap-2 tracking-widest drop-shadow-[0_0_5px_rgba(34,211,238,0.3)] tabular-nums">
+                    <Clock size={12} className="text-cyan-400 animate-spin" style={{ animationDuration: '8s' }} /> {formatClock(currentTime)}
                 </p>
             </div>
 
             {/* VIP CARD */}
             <div className="w-full max-w-sm relative z-10 group animate-in zoom-in duration-700 delay-100">
-                {/* Glow Effect Dynamized */}
                 <div className="absolute -inset-1 rounded-[2.5rem] blur opacity-25" style={{ backgroundColor: isSuspended ? '#ef4444' : cardColor }}></div>
                 
                 <div className="relative bg-zinc-900 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                    {/* Card Header Background */}
                     <div className="absolute top-0 left-0 w-full h-44 opacity-20" style={{ background: `linear-gradient(135deg, ${cardColor}, transparent)` }} />
                     
-                    {/* SUSPENDED OVERLAY 🚫 */}
                     {isSuspended && (
                         <div className="absolute inset-0 z-50 bg-red-600/10 backdrop-blur-[2px] flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
                             <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,rgba(239,68,68,0.05)_20px,rgba(239,68,68,0.05)_40px)]" />
@@ -224,7 +296,6 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                     )}
 
                     <div className="p-8 pb-10">
-                        {/* Status Badge */}
                         <div className="flex justify-between items-start mb-8">
                             <div className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-full flex items-center gap-2" style={{ borderColor: `${cardColor}4D` }}>
                                 <Activity size={10} className="animate-pulse" style={{ color: cardColor }} />
@@ -233,7 +304,6 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                             <Star size={24} className="text-cyan-400" style={{ color: cardColor, fill: cardColor }} />
                         </div>
 
-                        {/* Shop Info */}
                         <div className="mb-10 relative">
                             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-1">Membresía ShopDigital</p>
                             <h3 className="text-3xl font-[1000] text-white uppercase tracking-tighter leading-none mb-2">
@@ -245,7 +315,6 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                             </div>
                         </div>
 
-                        {/* PHOTO IDENTITY AREA 📸 */}
                         <div className="w-full aspect-square bg-white/[0.03] border border-white/10 rounded-[2rem] flex flex-col items-center justify-center p-8 mb-8 relative overflow-hidden group/photo">
                             <div className="absolute inset-0" style={{ background: `radial-gradient(circle at center, ${cardColor}1A, transparent 70%)` }} />
                             
@@ -283,7 +352,6 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                             </div>
                         </div>
 
-                        {/* IDENTITY DATA: DNI / CREDITS 💰🆔 */}
                         <div className="space-y-6 border-t border-white/5 pt-8">
                             <div className="flex justify-between items-start">
                                 <div>
@@ -300,7 +368,6 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 </div>
                             </div>
 
-                            {/* BILLETERA DIGITAL 💰 */}
                             <div className="bg-gradient-to-br from-white/[0.05] to-transparent p-5 rounded-3xl border border-white/10 flex justify-between items-center shadow-inner group/wallet">
                                 <div>
                                     <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] mb-1 flex items-center gap-1.5">
@@ -316,31 +383,6 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                     </div>
                                 </div>
                             </div>
-
-                            {/* HISTORIAL DE TRANSACCIONES 📋 */}
-                            {(client as any).creditsHistory && (client as any).creditsHistory.length > 0 && (
-                                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4">
-                                    <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] mb-3 flex items-center gap-1.5">
-                                        <Activity size={10} /> Últimos Movimientos
-                                    </p>
-                                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                                        {((client as any).creditsHistory as any[]).slice(0, 5).map((tx: any, i: number) => (
-                                            <div key={tx.id || i} className="flex items-center gap-3 py-1.5 border-b border-white/5 last:border-0">
-                                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black ${tx.type === 'load' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
-                                                    {tx.type === 'load' ? '↑' : '↓'}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-[9px] font-black text-white/70 truncate">{tx.description || (tx.type === 'load' ? 'Carga de créditos' : 'Canje de créditos')}</p>
-                                                    <p className="text-[7px] text-white/30">{new Date(tx.date).toLocaleDateString('es-AR')}</p>
-                                                </div>
-                                                <span className={`text-[11px] font-[1000] tabular-nums ${tx.type === 'load' ? 'text-green-400' : 'text-red-400'}`}>
-                                                    {tx.type === 'load' ? '+' : '-'}{tx.amount}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>

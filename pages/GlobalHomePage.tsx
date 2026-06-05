@@ -16,7 +16,9 @@ const STATIC_REGIONS: Region[] = [
         towns: ['esteban-echeverria'], 
         color: '#22d3ee', 
         icon: 'building', 
-        isActive: true 
+        isActive: true,
+        provinceId: 'buenos-aires',
+        createdAt: '2026-01-01T00:00:00.000Z'
     },
     { 
         id: 'ezeiza', 
@@ -25,7 +27,9 @@ const STATIC_REGIONS: Region[] = [
         towns: ['ezeiza'], 
         color: '#22d3ee', 
         icon: 'building', 
-        isActive: true 
+        isActive: true,
+        provinceId: 'buenos-aires',
+        createdAt: '2026-01-01T00:00:00.000Z'
     },
     { 
         id: 'traslasierra', 
@@ -34,7 +38,9 @@ const STATIC_REGIONS: Region[] = [
         towns: ['mina-clavero', 'nono', 'cura-brochero', 'panaholma', 'villa-dolores', 'villa-las-rosas', 'san-javier', 'las-rabonas'], 
         color: '#0ea5e9', 
         icon: 'mountain', 
-        isActive: true 
+        isActive: true,
+        provinceId: 'cordoba',
+        createdAt: '2026-01-01T00:00:00.000Z'
     }
 ];
 
@@ -84,6 +90,7 @@ const GlobalHomePage: React.FC = () => {
         bannerImage: '',
         mapUrl: '',
         slug: 'red-digital-argentina',
+        gmail: 'admin@shopdigital.ar',
     };
 
     useEffect(() => {

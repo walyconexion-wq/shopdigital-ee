@@ -29,7 +29,8 @@ export type AriRole =
     | 'enterprise' 
     | 'home' 
     | 'baquiana' 
-    | 'subscription';
+    | 'subscription'
+    | 'onboarding_deployer';
 
 interface AriMerchantAssistantProps {
     shop: Shop;
@@ -50,8 +51,13 @@ interface AriMerchantAssistantProps {
 export const ARI_AMBASSADOR_FIELD_PROMPT = `Sos ARI, la asistente táctica de los Embajadores de Shop Digital.
 Tu misión principal es asistir a los embajadores mientras están "en la calle" dando de alta comercios.
 El embajador está usando su panel táctico para suscribir un nuevo comercio.
+Guíalo en qué datos son críticos para el alta (como el Gmail de acceso obligatorio y la foto biométrica del titular para la credencial).
+Para verificar la credencial de un comerciante en la calle:
+1. Control Físico: El guardia o embajador mira la credencial en la pantalla del comerciante.
+2. Validación Visual: Compara la foto biométrica de la credencial con la cara de la persona o su DNI.
+3. Segundero Inviolable: Revisa que el segundero del reloj de la credencial esté corriendo en vivo (si está congelado, es una captura y no es válida).
+4. Chequeo de Base: Puedes consultar la base al instante si te preguntan: "ARI, ¿chequeame a vista ahora la credencial [ID_Comercio]?" y responderás confirmando si está activa o no.
 Dale la bienvenida con tono militar/táctico ("Operativo", "Misión", "Radar", "Socio").
-Guíalo en qué datos son críticos para el alta.
 Sé concisa, enérgica y al grano.`;
 
 export const ARI_AMBASSADOR_CRM_PROMPT = `Sos ARI, la asistente ejecutiva táctica de los Embajadores de Shop Digital.
@@ -233,7 +239,7 @@ Regla de Oro: El activo más valioso es la atención del cliente. Cada VIP es un
 `;
 
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode: isDayModeProp = false, globalConfig }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode: isDayModeProp = false, globalConfig, shopStats, clientStats }) => {
     const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
@@ -759,10 +765,10 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                 onChange={(e) => {
                                     if (e.target.files && e.target.files.length > 0) {
                                         const file = e.target.files[0];
-                                        setMessages(prev => [...prev, { role: 'user', text: `📸 Imagen enviada: ${file.name}` }]);
+                                        setMessages(prev => [...prev, { role: 'user', text: `📸 Imagen enviada: ${file.name}`, timestamp: new Date() }]);
                                         setIsLoading(true);
                                         setTimeout(() => {
-                                            setMessages(prev => [...prev, { role: 'ari', text: `¡Foto recibida y analizada, Jefe! Todo en orden. ¿Querés que armemos un reporte con esta evidencia?` }]);
+                                            setMessages(prev => [...prev, { role: 'ari', text: `¡Foto recibida y analizada, Jefe! Todo en orden. ¿Querés que armemos un reporte con esta evidencia?`, timestamp: new Date() }]);
                                             setIsLoading(false);
                                             scrollToBottom();
                                         }, 1500);
@@ -1062,10 +1068,10 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                 onChange={(e) => {
                                     if (e.target.files && e.target.files.length > 0) {
                                         const file = e.target.files[0];
-                                        setMessages(prev => [...prev, { role: 'user', text: `📸 Imagen enviada: ${file.name}` }]);
+                                        setMessages(prev => [...prev, { role: 'user', text: `📸 Imagen enviada: ${file.name}`, timestamp: new Date() }]);
                                         setIsLoading(true);
                                         setTimeout(() => {
-                                            setMessages(prev => [...prev, { role: 'ari', text: `¡Foto recibida y analizada, Jefe! Todo en orden. ¿Querés que armemos un reporte con esta evidencia?` }]);
+                                            setMessages(prev => [...prev, { role: 'ari', text: `¡Foto recibida y analizada, Jefe! Todo en orden. ¿Querés que armemos un reporte con esta evidencia?`, timestamp: new Date() }]);
                                             setIsLoading(false);
                                             scrollToBottom();
                                         }, 1500);

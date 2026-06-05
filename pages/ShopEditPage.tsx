@@ -234,6 +234,18 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   ))}
                 </select>
               </div>
+
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold uppercase tracking-widest text-violet-300/40 ml-1">Gmail de Acceso (Obligatorio)</label>
+                <input 
+                  type="email" 
+                  required
+                  value={shop.gmail || ''}
+                  onChange={(e) => handleInputChange('gmail', e.target.value)}
+                  placeholder="comercio@gmail.com"
+                  className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all placeholder-white/20"
+                />
+              </div>
             </div>
 
             <div className="bg-white/[0.03] backdrop-blur-xl border border-violet-500/15 rounded-[1.5rem] p-5 space-y-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">

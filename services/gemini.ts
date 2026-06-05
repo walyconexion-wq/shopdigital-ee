@@ -60,7 +60,7 @@ export const generateAriResponse = async (
     }
 
     // Convertir historial al formato de la API
-    const contents = history.map(msg => ({
+    const contents: any[] = history.map(msg => ({
         role: msg.role === 'ari' ? 'model' : 'user',
         parts: [{ text: msg.text }]
     }));

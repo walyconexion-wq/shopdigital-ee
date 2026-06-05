@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+// @ts-ignore
 import * as dotenv from 'dotenv';
 dotenv.config();
 

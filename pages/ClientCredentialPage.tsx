@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
-import { Client } from '../types';
-import { db } from '../firebase';
+import { Client, LiveEvent } from '../types';
+import { db, suscribirseAEventos } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { ShieldCheck, User, Clock, ChevronLeft, Ticket, Wallet, Coins, ArrowRightLeft, ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { ShieldCheck, User, Clock, ChevronLeft, Ticket, Wallet, Coins, ArrowRightLeft, ArrowDownRight, ArrowUpRight, Zap } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -15,6 +15,15 @@ const ClientCredentialPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [showWallet, setShowWallet] = useState(false);
+    const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
+
+    // Subscribe to live events
+    useEffect(() => {
+        const unsubscribe = suscribirseAEventos((events) => {
+            setLiveEvents(events);
+        });
+        return () => unsubscribe();
+    }, []);
 
     // Anti-screenshot real-time clock
     useEffect(() => {
@@ -22,6 +31,7 @@ const ClientCredentialPage: React.FC = () => {
         return () => clearInterval(timer);
     }, []);
 
+    // Fetch client
     useEffect(() => {
         const fetchClient = async () => {
             if (!clientId) return;
@@ -39,6 +49,21 @@ const ClientCredentialPage: React.FC = () => {
         };
         fetchClient();
     }, [clientId]);
+
+    // Match active event with client's active ticket
+    const ticketEvent = useMemo(() => {
+        if (!client?.activeTicket?.eventId) return null;
+        return liveEvents.find(e => e.id === client.activeTicket?.eventId);
+    }, [liveEvents, client?.activeTicket?.eventId]);
+
+    // Active event for the client's zone if they don't have a ticket
+    const generalActiveEvent = useMemo(() => {
+        if (client?.activeTicket) return null;
+        return liveEvents.find(e => 
+            (e.status === 'active_live' || e.status === 'suspended') &&
+            e.targetRoles.includes('cliente_calle')
+        );
+    }, [liveEvents, client]);
 
     if (loading) return (
         <div className="min-h-screen bg-black z-50 fixed inset-0 flex items-center justify-center">
@@ -59,8 +84,8 @@ const ClientCredentialPage: React.FC = () => {
         );
     }
 
-    // Determine color theme based on active pulse
-    const validationUrl = `https://shopdigital.tech/cliente/${clientId}/validar`;
+    const validationUrl = `https://shopdigital.ar/cliente/${clientId}/validar`;
+    const formattedTown = client.locality ? client.locality.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Zona Norte';
 
     return (
         <div className="min-h-screen bg-black text-white relative flex flex-col items-center pb-24 overflow-hidden selection:bg-cyan-500/30">
@@ -84,8 +109,58 @@ const ClientCredentialPage: React.FC = () => {
                 </div>
             </div>
 
+            {/* ═══════════ LIVE EVENT TICKER BANNER 🟢🔴 ═══════════ */}
+            {client.activeTicket && ticketEvent && (
+                <div className="w-full max-w-sm px-5 mb-4 relative z-10 animate-in slide-in-from-top-6 duration-500">
+                    {ticketEvent.status === 'active_live' ? (
+                        <div className="bg-gradient-to-r from-emerald-500/15 via-emerald-600/25 to-teal-500/15 border border-emerald-400/50 rounded-3xl p-5 shadow-[0_0_20px_rgba(16,185,129,0.2)] flex flex-col items-center justify-center relative overflow-hidden">
+                            <span className="text-[12px] font-[1000] text-emerald-400 uppercase tracking-[0.2em] text-center mb-1 animate-pulse">
+                                🟢 EVENTO ACTIVO - ENTRADA VÁLIDA
+                            </span>
+                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                                {ticketEvent.name}
+                            </h3>
+                            <div className="bg-emerald-500/15 border border-emerald-400/30 px-3 py-1.5 rounded-2xl text-center w-full">
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest block font-mono">
+                                    SECTOR: {client.activeTicket.seatSector || 'General'} · FILA: {client.activeTicket.fila || '-'} · ASIENTO: {client.activeTicket.asiento || '-'}
+                                </span>
+                            </div>
+                        </div>
+                    ) : ticketEvent.status === 'suspended' ? (
+                        <div className="bg-gradient-to-r from-red-500/15 via-red-600/25 to-rose-500/15 border border-red-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(239,68,68,0.2)] flex flex-col items-center justify-center relative overflow-hidden">
+                            <span className="text-[12px] font-[1000] text-red-400 uppercase tracking-[0.2em] text-center mb-1 animate-bounce">
+                                🔴 EVENTO SUSPENDIDO / APLAZADO
+                            </span>
+                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                                {ticketEvent.name}
+                            </h3>
+                            <p className="text-[9px] font-black text-red-300 uppercase tracking-widest text-center animate-pulse">
+                                MÁS INFO VÍA ASISTENTE ARI 🤖
+                            </p>
+                        </div>
+                    ) : null}
+                </div>
+            )}
+
+            {/* General Promo banner if no ticket bought */}
+            {!client.activeTicket && generalActiveEvent && (
+                <div className="w-full max-w-sm px-5 mb-4 relative z-10 animate-in slide-in-from-top-6 duration-500">
+                    <div className="bg-gradient-to-r from-cyan-500/15 via-indigo-600/20 to-cyan-500/15 border border-cyan-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(34,211,238,0.15)] flex flex-col items-center justify-center relative overflow-hidden animate-pulse">
+                        <span className="text-[10px] font-[1000] text-cyan-400 uppercase tracking-[0.2em] text-center mb-1">
+                            ✨ EVENTO DISPONIBLE EN TU ZONA
+                        </span>
+                        <h3 className="text-xs font-black text-white uppercase tracking-wider text-center mb-2">
+                            {generalActiveEvent.name}
+                        </h3>
+                        <p className="text-[8px] font-black text-cyan-300 uppercase tracking-widest text-center">
+                            Adquirí tus entradas con descuento B2B consultando a Ari 🤖
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* Credential Main Card */}
-            <div className="w-full max-w-sm px-5 relative z-10 mt-4 perspective-[1000px]">
+            <div className="w-full max-w-sm px-5 relative z-10 mt-2 perspective-[1000px]">
                 <div className="glass-card-3d bg-zinc-900/60 backdrop-blur-xl border border-cyan-500/30 rounded-[2rem] p-8 flex flex-col items-center relative overflow-hidden shadow-[0_0_50px_rgba(34,211,238,0.15)] transform transition-transform duration-500 hover:rotate-y-2 hover:rotate-x-2">
                     
                     {/* Holographic corner accents */}
@@ -100,10 +175,10 @@ const ClientCredentialPage: React.FC = () => {
                             <h2 className="text-[12px] font-[1000] text-cyan-300 uppercase tracking-[0.25em]">PASE VIP</h2>
                         </div>
                         
-                        {/* Real Time Clock */}
-                        <div className="flex items-center gap-1.5 text-white/80">
-                            <Clock size={12} className="text-cyan-400 animate-pulse" />
-                            <span className="text-[10px] font-mono tracking-widest">
+                        {/* Real Time Clock - SEGUNDERO INVIOLABLE ⏱️ */}
+                        <div className="flex items-center gap-1.5 text-white/80 py-1.5 px-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20 shadow-[inset_0_0_10px_rgba(6,182,212,0.1)]">
+                            <Clock size={11} className="text-cyan-400 animate-spin" style={{ animationDuration: '8s' }} />
+                            <span className="text-[10px] font-mono tracking-widest font-bold text-cyan-400 drop-shadow-[0_0_5px_rgba(6,182,212,0.3)] tabular-nums">
                                 {currentTime.toLocaleDateString('es-AR')} {currentTime.toLocaleTimeString('es-AR', { hour12: false })}
                             </span>
                         </div>
@@ -112,9 +187,7 @@ const ClientCredentialPage: React.FC = () => {
                     {/* CENTER: Identity */}
                     <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 p-1 mt-2 mb-6 shadow-[0_0_30px_rgba(34,211,238,0.4)] relative">
                         <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden border-2 border-black">
-                            {/* Generic Avatar since clients don't upload photos yet */}
                             <User size={40} className="text-cyan-400/50" />
-                            {/* Radar scan line effect */}
                             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-400/20 to-transparent h-[200%] -top-[100%] animate-[scan_3s_ease-in-out_infinite]" />
                         </div>
                         <div className="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-black flex items-center justify-center shadow-[0_0_10px_rgba(34,197,94,0.6)]">
@@ -129,7 +202,7 @@ const ClientCredentialPage: React.FC = () => {
                                     {client.name}
                                 </h3>
                                 <p className="text-[10px] text-cyan-400 uppercase tracking-[0.2em] font-bold">
-                                    Miembro Verificado
+                                    Miembro Verificado · {formattedTown}
                                 </p>
                             </div>
 

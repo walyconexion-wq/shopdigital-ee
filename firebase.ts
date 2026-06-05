@@ -249,8 +249,19 @@ export const guardarComercio = async (comercioData: any, townId: string = 'esteb
         const id = comercioData.id;
         if (!id) throw new Error("ID de comercio es requerido para guardar.");
 
+        // Generar slug automático si falta
+        let slug = comercioData.slug;
+        if (!slug && comercioData.name) {
+            slug = comercioData.name.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+
         // Inyectar townId si no lo tiene
-        const finalData = { ...comercioData, townId: comercioData.townId || townId };
+        const finalData = { ...comercioData, slug, townId: comercioData.townId || townId };
         await setDoc(doc(db, "comercios", id), finalData);
         console.log("Comercio guardado con éxito. ID:", id, "Zona:", finalData.townId);
         return id;
@@ -263,7 +274,19 @@ export const guardarComercio = async (comercioData: any, townId: string = 'esteb
 export const updateComercio = async (id: string, updates: any) => {
     try {
         const docRef = doc(db, "comercios", id);
-        await updateDoc(docRef, updates);
+        
+        // Generar slug si viene el nombre y falta el slug
+        let finalUpdates = { ...updates };
+        if (updates.name && !updates.slug) {
+            finalUpdates.slug = updates.name.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+
+        await updateDoc(docRef, finalUpdates);
         return true;
     } catch (error) {
         console.error("Error al actualizar comercio:", error);
@@ -271,11 +294,31 @@ export const updateComercio = async (id: string, updates: any) => {
     }
 };
 
-// 🚀 ONBOARDING BLITZKRIEG — Aprobar comercio con registro completo de onboarding
+// 🚀 ONBOARDING BLITZKRIEG — Aprobar comercio con registro completo de onboarding y validación estricta de Gmail
 export const aprobarComercioOnboarding = async (shopId: string, ambassadorEmail: string): Promise<boolean> => {
     try {
         const docRef = doc(db, "comercios", shopId);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            throw new Error("El comercio a aprobar no existe en el sistema.");
+        }
+        const shopData = docSnap.data();
+        if (!shopData.gmail || !shopData.gmail.trim() || !shopData.gmail.includes('@')) {
+            throw new Error("Gmail obligatorio: El comercio debe poseer un Gmail de acceso válido para poder ser aprobado e ingresar al sistema.");
+        }
+
+        let slug = shopData.slug;
+        if (!slug && shopData.name) {
+            slug = shopData.name.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+
         await updateDoc(docRef, {
+            slug,
             isActive: true,
             onboardingStatus: 'approved',
             onboardingApprovedAt: new Date().toISOString(),
@@ -1265,6 +1308,59 @@ export const marcarMensajeComoLeido = async (messageId: string) => {
         console.log(`[BÚNKER] Mensaje ${messageId} marcado como leído.`);
     } catch (error) {
         console.error("[BÚNKER] Error marcando mensaje como leído:", error);
+    }
+};
+
+// ==============================
+// 🟢 MÓDULO DE EVENTOS LIVE (ShopDigital Live)
+// ==============================
+import { LiveEvent } from './types';
+
+export const guardarEvento = async (event: LiveEvent) => {
+    try {
+        const id = event.id || `evt-${Date.now()}`;
+        await setDoc(doc(db, "eventos_live", id), { ...event, id });
+        console.log("Evento guardado con éxito. ID:", id);
+        return id;
+    } catch (error) {
+        console.error("Error al guardar evento en Firestore:", error);
+        throw error;
+    }
+};
+
+export const suscribirseAEventos = (callback: (events: LiveEvent[]) => void) => {
+    const colRef = collection(db, "eventos_live");
+    return onSnapshot(colRef, (snapshot) => {
+        const events = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        })) as LiveEvent[];
+        callback(events);
+    }, (error) => {
+        console.error("Error en la suscripción de eventos live:", error);
+    });
+};
+
+export const eliminarEvento = async (eventId: string) => {
+    try {
+        await deleteDoc(doc(db, "eventos_live", eventId));
+        console.log("Evento eliminado con éxito. ID:", eventId);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar evento de Firestore:", error);
+        throw error;
+    }
+};
+
+export const actualizarEntradaCliente = async (clientId: string, ticketData: any) => {
+    try {
+        const docRef = doc(db, "clientes", clientId);
+        await updateDoc(docRef, { activeTicket: ticketData });
+        console.log(`Entrada asignada a cliente ${clientId}`);
+        return true;
+    } catch (error) {
+        console.error("Error al asignar entrada en Firestore:", error);
+        throw error;
     }
 };
 

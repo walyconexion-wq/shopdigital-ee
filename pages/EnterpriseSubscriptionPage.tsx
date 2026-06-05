@@ -32,6 +32,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
         phone: '',
         address: '',
         bannerImage: '',
+        gmail: '',
     });
 
     const generateSlug = (text: string) =>
@@ -64,7 +65,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
         e.preventDefault();
         playNeonClick();
 
-        if (!formData.name || !formData.ownerName || !formData.phone) {
+        if (!formData.name || !formData.ownerName || !formData.phone || !formData.gmail) {
             alert('⚠️ Por favor completá todos los datos requeridos.');
             return;
         }
@@ -88,6 +89,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
             address: formData.address,
             offers: [],
             mapUrl: '',
+            gmail: formData.gmail.trim().toLowerCase(),
             mapSheetUrl: '',
             instagram: '',
             facebook: '',
@@ -375,6 +377,19 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                             placeholder="Ej: 1122334455"
                             value={formData.phone}
                             onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/40 mb-2 block">Gmail de Acceso (Obligatorio)</label>
+                        <input
+                            required
+                            type="email"
+                            placeholder="Ej: responsable@gmail.com"
+                            value={formData.gmail}
+                            onChange={e => setFormData({ ...formData, gmail: e.target.value })}
                             className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
                             style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         />

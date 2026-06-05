@@ -3,14 +3,23 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { 
     ChevronLeft, Megaphone, Radio, Tv, Signal, 
     Trash2, Power, MonitorPlay, MessageSquare, Cpu, Anchor,
-    Play, Pause, Edit2, Clock, Calendar, Server, Save
+    Play, Pause, Edit2, Clock, Calendar, Server, Save, Plus, AlertOctagon, ShieldAlert
 } from 'lucide-react';
-import { playNeonClick } from '../utils/audio';
+import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { 
-    guardarBroadcast, obtenerBroadcasts, eliminarBroadcast, toggleBroadcast, editarBroadcast, Broadcast 
+    guardarBroadcast, 
+    obtenerBroadcasts, 
+    eliminarBroadcast, 
+    toggleBroadcast, 
+    editarBroadcast, 
+    Broadcast,
+    guardarEvento,
+    suscribirseAEventos,
+    eliminarEvento
 } from '../firebase';
 import { CATEGORIES } from '../constants';
+import { LiveEvent } from '../types';
 
 const ARI_TRANSMISSION_PROMPT = `
 Sos ARI, la Directora de Transmisión y Especialista en Pautas Publicitarias de la Red Digital de Shop Digital. Tu tono es el de una operadora de radiofrecuencia de elite: veloz, ultra-creativa, analítica y enfocada en el impacto masivo en tiempo real. Te comunicás en la Frecuencia Azul con el Director (Waly): usás palabras como "Señal", "Antena", "Frecuencia", "Lanzar pauta", "Saturación de zona", "Mete mecha", "Jefe".
@@ -22,6 +31,7 @@ Tus funciones clave:
 2. 🎯 Segmentación Geográfica y Fractal: Entendés cómo enviar pautas específicas a Ezeiza, Lomas de Zamora o Traslasierra sin que las señales se crucen.
 3. 📲 Control de Alertas de Alta Frecuencia: Estructurás "Copywriting de Impacto" para alertas push (canal Ntfy). Condensás ofertas en 10 palabras irresistibles.
 4. 📊 Monitoreo de Tráfico (Net Traffic): Analizás "Zonas Calientes" para aconsejar dónde encender campañas de descuentos cruzados.
+5. 🎟️ Soporte de Eventos en Vivo (ShopDigital Live): Guías al Director para activar/suspender credenciales para recitales y control de segunderos.
 
 Reglas de Oro:
 - Calculá el impacto visual y sugerí el mejor "gancho" creativo para cada campaña.
@@ -34,6 +44,9 @@ const LiveBroadcastPage: React.FC = () => {
     const navigate = useNavigate();
     const chatEndRef = useRef<HTMLDivElement>(null);
 
+    // Left Panel Navigation Tab
+    const [leftTab, setLeftTab] = useState<'publicidades' | 'eventos'>('publicidades');
+
     // Formulario de Transmisión
     const [broadcastUrl, setBroadcastUrl] = useState('');
     const [broadcastTitle, setBroadcastTitle] = useState('');
@@ -42,6 +55,16 @@ const LiveBroadcastPage: React.FC = () => {
     const [targetTowns, setTargetTowns] = useState<string[]>(['global']);
     const [allBroadcasts, setAllBroadcasts] = useState<Broadcast[]>([]);
     const [transmitting, setTransmitting] = useState(false);
+
+    // Eventos Live
+    const [events, setEvents] = useState<LiveEvent[]>([]);
+    const [eventName, setEventName] = useState('');
+    const [eventArtist, setEventArtist] = useState('');
+    const [eventDate, setEventDate] = useState('');
+    const [eventTime, setEventTime] = useState('');
+    const [eventLocalities, setEventLocalities] = useState<string[]>(['all']);
+    const [eventRoles, setEventRoles] = useState<Array<'cliente_calle' | 'comerciante' | 'empresario'>>(['cliente_calle', 'comerciante']);
+    const [isSavingEvent, setIsSavingEvent] = useState(false);
     
     // Gestión de Campañas
     const [selectedPreviewId, setSelectedPreviewId] = useState<string | null>(null);
@@ -51,7 +74,7 @@ const LiveBroadcastPage: React.FC = () => {
 
     // Ari Terminal
     const [ariMsgs, setAriMsgs] = useState([
-        { role: 'ari' as 'ari' | 'director', text: 'Sistemas enganchados, Director. El Centro de Transmisión global está listo para inyectar sobre la señal de los muros. ¿Qué campaña corremos primero?' }
+        { role: 'ari' as 'ari' | 'director', text: 'Sistemas enganchados, Director. El Centro de Transmisión global está listo para inyectar sobre la señal de los muros y coordinar los recitales en vivo. ¿Qué hacemos primero?' }
     ]);
     const [msgInput, setMsgInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
@@ -59,6 +82,14 @@ const LiveBroadcastPage: React.FC = () => {
     useEffect(() => {
         obtenerBroadcasts(townId).then(setAllBroadcasts);
     }, [townId]);
+
+    // Subscribe to events in real time
+    useEffect(() => {
+        const unsubscribe = suscribirseAEventos((liveEvts) => {
+            setEvents(liveEvts);
+        });
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -84,8 +115,10 @@ ${ARI_TRANSMISSION_PROMPT}
 [ESTADO ACTUAL DE LA RED DE TRANSMISIÓN]:
 - Total de campañas en base: ${allBroadcasts.length}
 - Campañas ON-AIR (Actualmente emitiendo): ${activeCount}
+- Eventos Live Programados: ${events.length}
+- Eventos Activos en Vivo: ${events.filter(e => e.status === 'active_live').map(e => e.name).join(', ') || 'Ninguno'}
 - Detalle de Pautas:
-${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" | Target: ${!b.targetTowns || b.targetTowns.includes('global') ? 'Cadena Nacional' : b.targetTowns.join(', ')} | Inicia: ${b.scheduledStart ? new Date(b.scheduledStart).toLocaleString('es-AR') : 'Manual'} | Termina: ${b.scheduledEnd ? new Date(b.scheduledEnd).toLocaleString('es-AR') : 'S/ Fin'}`).join('\n')}
+${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" | Target: ${!b.targetTowns || b.targetTowns.includes('global') ? 'Cadena Nacional' : b.targetTowns.join(', ')}`).join('\n')}
 `;
     };
 
@@ -130,11 +163,84 @@ ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" 
         setIsThinking(false);
     };
 
-    const handleToggle = async (id: string, active: boolean) => {
+    // Event Management functions
+    const handleCreateEvent = async () => {
+        if (!eventName.trim() || !eventDate || !eventTime) {
+            alert('⚠️ Por favor completa los campos obligatorios del evento (Nombre, Fecha, Hora).');
+            return;
+        }
+        setIsSavingEvent(true);
         playNeonClick();
-        await toggleBroadcast(id, !active);
-        const updated = await obtenerBroadcasts(townId);
-        setAllBroadcasts(updated);
+        try {
+            const newEvent: LiveEvent = {
+                id: `evt-${Date.now()}`,
+                name: eventName.trim(),
+                artist: eventArtist.trim() || undefined,
+                dateStr: eventDate,
+                timeStr: eventTime,
+                status: 'draft',
+                targetRegion: townId,
+                targetLocalities: eventLocalities,
+                targetRoles: eventRoles
+            };
+            await guardarEvento(newEvent);
+            playSuccessSound();
+            setEventName('');
+            setEventArtist('');
+            setEventDate('');
+            setEventTime('');
+            
+            // Log to Ari chat
+            setAriMsgs(prev => [...prev, { role: 'ari', text: `📡 Evento "${newEvent.name}" programado con éxito en modo Draft para la región ${townId}. Listo para inyectar.` }]);
+        } catch (error) {
+            console.error("Error creating event:", error);
+            alert("Error al guardar el evento.");
+        } finally {
+            setIsSavingEvent(false);
+        }
+    };
+
+    const handleUpdateEventStatus = async (eventId: string, newStatus: LiveEvent['status']) => {
+        playNeonClick();
+        const targetEvent = events.find(e => e.id === eventId);
+        if (!targetEvent) return;
+
+        try {
+            const updatedEvent = { ...targetEvent, status: newStatus };
+            await guardarEvento(updatedEvent);
+            playSuccessSound();
+
+            let txt = `Evento "${targetEvent.name}" actualizado a estado ${newStatus.toUpperCase()}.`;
+            if (newStatus === 'active_live') {
+                txt = `🟢 ATENCIÓN: Se ha activado EN VIVO el evento "${targetEvent.name}". Todas las credenciales VIP de la zona mostrarán el segundero de acceso y el pase activo en tiempo real. Malla sintonizada.`;
+            } else if (newStatus === 'suspended') {
+                txt = `🔴 ALERTA DE EMERGENCIA: Se ha SUSPENDIDO el evento "${targetEvent.name}". Banners de advertencia activados en toda la zona en tiempo real.`;
+            }
+            setAriMsgs(prev => [...prev, { role: 'ari', text: txt }]);
+        } catch (error) {
+            console.error("Error updating event status:", error);
+            alert("Error al actualizar estado del evento.");
+        }
+    };
+
+    const handleDeleteEvent = async (eventId: string) => {
+        if (!window.confirm("¿Seguro que deseas eliminar este evento permanentemente de la base de datos?")) return;
+        playNeonClick();
+        try {
+            await eliminarEvento(eventId);
+            playSuccessSound();
+            setAriMsgs(prev => [...prev, { role: 'ari', text: `🗑️ Evento con ID: ${eventId} purgado permanentemente del sistema.` }]);
+        } catch (error) {
+            console.error("Error deleting event:", error);
+            alert("Error al eliminar evento.");
+        }
+    };
+
+    const handleToggle = (id: string, active: boolean) => {
+        playNeonClick();
+        toggleBroadcast(id, !active).then(() => {
+            obtenerBroadcasts(townId).then(setAllBroadcasts);
+        });
     };
 
     const handleDelete = async (id: string) => {
@@ -221,116 +327,273 @@ ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" 
             <main className="flex-1 min-h-0 relative z-10 flex flex-col xl:flex-row w-full h-full p-4 xl:p-8 gap-6 xl:gap-8 origin-top">
                 
                 {/* ==================================================== */}
-                {/* PILAR 1: PANEL DE TRANSMISIÓN PRO (IZQUIERDA)        */}
+                {/* PILAR 1: PANEL DE TRANSMISIÓN / EVENTOS (IZQUIERDA) */}
                 {/* ==================================================== */}
                 <div className="flex-none xl:w-[450px] shrink-0 flex flex-col gap-6 h-full overflow-y-auto pr-0 xl:pr-2 no-scrollbar">
                     
-                    {/* Status Bar Elegante */}
-                    <div className="bg-black/90 backdrop-blur-2xl border-2 border-purple-900/50 rounded-3xl p-5 flex items-center justify-between shadow-[0_0_20px_rgba(88,28,135,0.3)]">
-                        <div className="flex items-center gap-3">
-                            <div className={`w-3 h-3 rounded-full ${activeCount > 0 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)] animate-pulse' : 'bg-white/10'}`} />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Canal Maestro</span>
-                        </div>
-                        <div className="flex items-center gap-5">
-                            <div className="text-center">
-                                <p className="text-[20px] font-[1000] text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)] leading-none">{activeCount}</p>
-                                <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1.5">Activas</p>
-                            </div>
-                            <div className="w-[1px] h-8 bg-white/10" />
-                            <div className="text-center">
-                                <p className="text-[20px] font-[1000] text-violet-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)] leading-none">{allBroadcasts.length}</p>
-                                <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1.5">Total</p>
-                            </div>
-                        </div>
+                    {/* Switcher de Pestañas Cyberpunk */}
+                    <div className="grid grid-cols-2 p-1.5 bg-zinc-950 border border-white/5 rounded-2xl">
+                        <button
+                            onClick={() => { playNeonClick(); setLeftTab('publicidades'); }}
+                            className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${leftTab === 'publicidades' ? 'bg-gradient-to-r from-violet-600/30 to-indigo-600/30 border border-violet-500/50 text-white shadow-[0_0_15px_rgba(139,92,246,0.15)]' : 'text-white/40 hover:text-white/70'}`}
+                        >
+                            📢 Publicidades ON-AIR
+                        </button>
+                        <button
+                            onClick={() => { playNeonClick(); setLeftTab('eventos'); }}
+                            className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${leftTab === 'eventos' ? 'bg-gradient-to-r from-emerald-600/30 to-teal-600/30 border border-emerald-500/50 text-white shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'text-white/40 hover:text-white/70'}`}
+                        >
+                            🎪 Eventos Live
+                        </button>
                     </div>
 
-                    {/* Nuevo Contenedor Formulario */}
-                    <div className="bg-[#050505] border-2 border-purple-900/50 shadow-[0_0_30px_rgba(88,28,135,0.2)] rounded-3xl p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/10 blur-[50px] pointer-events-none rounded-full" />
-                        
-                        <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400 flex items-center gap-2 mb-6">
-                            <Megaphone size={16} className="drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
-                            Configuración de Campaña
-                        </h2>
-
-                        <div className="space-y-4 relative z-10">
-                            {/* Titulo */}
-                            <div className="space-y-1.5">
-                                <input 
-                                    type="text" 
-                                    value={broadcastTitle}
-                                    onChange={e => setBroadcastTitle(e.target.value)}
-                                    placeholder="Nombre de campaña (Ej: Promo Quilmes)"
-                                    className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_20px_rgba(139,92,246,0.15)] transition-all"
-                                />
-                            </div>
-
-                            {/* URL Media */}
-                            <div className="space-y-1.5">
-                                <input 
-                                    type="text" 
-                                    value={broadcastUrl}
-                                    onChange={e => {
-                                        setBroadcastUrl(e.target.value);
-                                        if (/\.(mp4|webm|mov)($|\?)/i.test(e.target.value)) setBroadcastType('video');
-                                        else setBroadcastType('image');
-                                    }}
-                                    placeholder="https://... URL (Video .mp4 o Imagen)"
-                                    className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_20px_rgba(139,92,246,0.15)] transition-all"
-                                />
-                            </div>
-
-                            {/* Chips de Zonas (Target Towns) */}
-                            <div className="pt-2 border-b border-white/5 pb-4">
-                                <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Zonas Geográficas :</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <button 
-                                        onClick={() => toggleTown('global')}
-                                        className={`col-span-2 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetTowns.includes('global') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
-                                    >🌐 Global / Cadena Nacional</button>
-                                    <button 
-                                        onClick={() => toggleTown('ezeiza')}
-                                        className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetTowns.includes('ezeiza') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
-                                    >🏙️ Ezeiza</button>
-                                    <button 
-                                        onClick={() => toggleTown('esteban-echeverria')}
-                                        className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetTowns.includes('esteban-echeverria') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
-                                    >🌳 Esteban Echeverría</button>
+                    {leftTab === 'publicidades' ? (
+                        <>
+                            {/* Status Bar Elegante */}
+                            <div className="bg-black/90 backdrop-blur-2xl border-2 border-purple-900/50 rounded-3xl p-5 flex items-center justify-between shadow-[0_0_20px_rgba(88,28,135,0.3)]">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-3 h-3 rounded-full ${activeCount > 0 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)] animate-pulse' : 'bg-white/10'}`} />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Canal Maestro</span>
+                                </div>
+                                <div className="flex items-center gap-5">
+                                    <div className="text-center">
+                                        <p className="text-[20px] font-[1000] text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)] leading-none">{activeCount}</p>
+                                        <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1.5">Activas</p>
+                                    </div>
+                                    <div className="w-[1px] h-8 bg-white/10" />
+                                    <div className="text-center">
+                                        <p className="text-[20px] font-[1000] text-violet-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)] leading-none">{allBroadcasts.length}</p>
+                                        <p className="text-[7px] font-black uppercase tracking-widest text-white/30 mt-1.5">Total</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Chips de Categorías (Compact Grid Symmetrical) */}
-                            <div className="pt-2">
-                                <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Target en Muros :</label>
-                                <div className="grid grid-cols-3 gap-2">
+                            {/* Nuevo Contenedor Formulario */}
+                            <div className="bg-[#050505] border-2 border-purple-900/50 shadow-[0_0_30px_rgba(88,28,135,0.2)] rounded-3xl p-6 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/10 blur-[50px] pointer-events-none rounded-full" />
+                                
+                                <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-violet-400 flex items-center gap-2 mb-6">
+                                    <Megaphone size={16} className="drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
+                                    Configuración de Campaña
+                                </h2>
+
+                                <div className="space-y-4 relative z-10">
+                                    <input 
+                                        type="text" 
+                                        value={broadcastTitle}
+                                        onChange={e => setBroadcastTitle(e.target.value)}
+                                        placeholder="Nombre de campaña (Ej: Promo Quilmes)"
+                                        className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_20px_rgba(139,92,246,0.15)] transition-all"
+                                    />
+
+                                    <input 
+                                        type="text" 
+                                        value={broadcastUrl}
+                                        onChange={e => {
+                                            setBroadcastUrl(e.target.value);
+                                            if (/\.(mp4|webm|mov)($|\?)/i.test(e.target.value)) setBroadcastType('video');
+                                            else setBroadcastType('image');
+                                        }}
+                                        placeholder="https://... URL (Video .mp4 o Imagen)"
+                                        className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_20px_rgba(139,92,246,0.15)] transition-all"
+                                    />
+
+                                    <div className="pt-2 border-b border-white/5 pb-4">
+                                        <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Zonas Geográficas :</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <button 
+                                                onClick={() => toggleTown('global')}
+                                                className={`col-span-2 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetTowns.includes('global') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
+                                            >🌐 Global / Cadena Nacional</button>
+                                            <button 
+                                                onClick={() => toggleTown('ezeiza')}
+                                                className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetTowns.includes('ezeiza') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
+                                            >🏙️ Ezeiza</button>
+                                            <button 
+                                                onClick={() => toggleTown('esteban-echeverria')}
+                                                className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetTowns.includes('esteban-echeverria') ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
+                                            >🌳 Esteban Echeverría</button>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <label className="text-[8px] font-bold uppercase tracking-[0.25em] text-white/30 ml-1 block mb-3">Target en Muros :</label>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <button 
+                                                onClick={() => toggleCat('all')}
+                                                className={`col-span-3 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes('all') ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
+                                            >🌐 Todos los Sectores</button>
+                                            {CATEGORIES.map(cat => (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => toggleCat(cat.id)}
+                                                    className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetCats.includes(cat.id) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
+                                                >{cat.name}</button>
+                                            ))}
+                                        </div>
+                                    </div>
+
                                     <button 
-                                        onClick={() => toggleCat('all')}
-                                        className={`col-span-3 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes('all') ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
-                                    >🌐 Todos los Sectores</button>
-                                    {CATEGORIES.map(cat => (
-                                        <button
-                                            key={cat.id}
-                                            onClick={() => toggleCat(cat.id)}
-                                            className={`px-2 py-2 rounded-xl text-[7px] font-black uppercase tracking-widest border transition-all duration-300 truncate ${targetCats.includes(cat.id) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/[0.05] text-white/20 hover:border-white/15'}`}
-                                        >{cat.name}</button>
-                                    ))}
+                                        onClick={handleTransmit}
+                                        disabled={transmitting || !broadcastUrl.trim() || !broadcastTitle.trim()}
+                                        className="w-full mt-4 py-4 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 rounded-2xl text-white font-[1000] uppercase tracking-[0.3em] text-[12px] shadow-[0_5px_0_rgba(6,95,70,1),0_10px_30px_rgba(16,185,129,0.25)] active:translate-y-[5px] active:shadow-[0_0_0_rgba(6,95,70,1),0_5px_15px_rgba(16,185,129,0.15)] transition-all duration-75 flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group relative overflow-hidden"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                                        <Signal size={18} className={transmitting ? 'animate-ping' : ''} />
+                                        <span>{transmitting ? 'INYECTANDO...' : 'INYECTAR EN LA RED'}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            {/* EVENT CREATOR FORM */}
+                            <div className="bg-[#050505] border-2 border-emerald-950/60 shadow-[0_0_30px_rgba(16,185,129,0.1)] rounded-3xl p-6 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-600/10 blur-[50px] pointer-events-none rounded-full" />
+                                
+                                <h2 className="text-[11px] font-[1000] uppercase tracking-[0.2em] text-emerald-400 flex items-center gap-2 mb-6">
+                                    <Plus size={16} className="drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                                    Crear Nuevo Evento Live
+                                </h2>
+
+                                <div className="space-y-4 relative z-10">
+                                    <input 
+                                        type="text" 
+                                        value={eventName}
+                                        onChange={e => setEventName(e.target.value)}
+                                        placeholder="Nombre del Evento * (Ej: Recital Luciano Pereyra)"
+                                        className="w-full bg-black border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all"
+                                    />
+
+                                    <input 
+                                        type="text" 
+                                        value={eventArtist}
+                                        onChange={e => setEventArtist(e.target.value)}
+                                        placeholder="Artista / Grupo (Opcional)"
+                                        className="w-full bg-black border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all"
+                                    />
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 block ml-2">Fecha *</label>
+                                            <input 
+                                                type="date" 
+                                                value={eventDate}
+                                                onChange={e => setEventDate(e.target.value)}
+                                                className="w-full bg-black border border-white/10 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 block ml-2">Hora *</label>
+                                            <input 
+                                                type="time" 
+                                                value={eventTime}
+                                                onChange={e => setEventTime(e.target.value)}
+                                                className="w-full bg-black border border-white/10 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Localities & Roles target */}
+                                    <div className="border-t border-white/5 pt-4 space-y-4">
+                                        <div>
+                                            <label className="text-[8px] font-bold uppercase tracking-widest text-white/40 block mb-2 ml-1">Público Destinatario (Roles):</label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {(['cliente_calle', 'comerciante', 'empresario'] as const).map(roleOption => {
+                                                    const isChecked = eventRoles.includes(roleOption);
+                                                    return (
+                                                        <button
+                                                            key={roleOption}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                playNeonClick();
+                                                                if (isChecked) {
+                                                                    setEventRoles(eventRoles.filter(r => r !== roleOption));
+                                                                } else {
+                                                                    setEventRoles([...eventRoles, roleOption]);
+                                                                }
+                                                            }}
+                                                            className={`px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-wider border transition-all ${isChecked ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.15)]' : 'bg-white/[0.02] border-white/10 text-white/40'}`}
+                                                        >
+                                                            {roleOption === 'cliente_calle' ? 'Calle B2C' : roleOption === 'comerciante' ? 'Comercio B2C' : 'Industrial B2B'}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onClick={handleCreateEvent}
+                                        disabled={isSavingEvent || !eventName.trim() || !eventDate || !eventTime}
+                                        className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl text-white font-[1000] uppercase tracking-[0.2em] text-[11px] shadow-[0_5px_0_rgba(4,120,87,1),0_10px_20px_rgba(16,185,129,0.15)] active:translate-y-[5px] active:shadow-[0_0_0_rgba(4,120,87,1)] transition-all duration-75 flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <Plus size={16} />
+                                        <span>REGISTRAR EVENTO</span>
+                                    </button>
                                 </div>
                             </div>
 
-                            {/* Botón Transmitir */}
-                            <button 
-                                onClick={handleTransmit}
-                                disabled={transmitting || !broadcastUrl.trim() || !broadcastTitle.trim()}
-                                className="w-full mt-4 py-4 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 rounded-2xl text-white font-[1000] uppercase tracking-[0.3em] text-[12px] shadow-[0_5px_0_rgba(6,95,70,1),0_10px_30px_rgba(16,185,129,0.25)] active:translate-y-[5px] active:shadow-[0_0_0_rgba(6,95,70,1),0_5px_15px_rgba(16,185,129,0.15)] transition-all duration-75 flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group relative overflow-hidden"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                                <Signal size={18} className={transmitting ? 'animate-ping' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]'} />
-                                <span className="drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-                                    {transmitting ? 'INYECTANDO...' : 'INYECTAR EN LA RED'}
-                                </span>
-                            </button>
-                        </div>
-                    </div>
+                            {/* LISTA DE EVENTOS E INTERFAZ DE CONTROL DIRECTO */}
+                            <div className="bg-[#050505] border-2 border-white/5 rounded-3xl p-5 space-y-4">
+                                <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Panel de Control de Eventos Live</h3>
+                                
+                                <div className="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar">
+                                    {events.length === 0 ? (
+                                        <p className="text-[10px] text-white/30 italic text-center py-6">No hay eventos live registrados.</p>
+                                    ) : (
+                                        events.map(evt => (
+                                            <div key={evt.id} className="bg-black/60 border border-white/5 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h4 className="text-xs font-black text-white uppercase tracking-wider">{evt.name}</h4>
+                                                        <p className="text-[7px] text-white/40 uppercase tracking-widest font-mono mt-1">
+                                                            {evt.dateStr} @ {evt.timeStr}
+                                                        </p>
+                                                    </div>
+                                                    <button onClick={() => handleDeleteEvent(evt.id)} className="text-white/20 hover:text-red-400 p-1 hover:bg-red-500/10 rounded-lg transition-colors">
+                                                        <Trash2 size={12} />
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-2 text-[8px] text-white/40 border-t border-b border-white/5 py-2">
+                                                    <span className="font-bold">ROLES: {evt.targetRoles.map(r => r.split('_')[0].toUpperCase()).join(', ')}</span>
+                                                </div>
+
+                                                {/* Emergency Action Status Gating */}
+                                                <div className="flex items-center gap-2 pt-1">
+                                                    <span className="text-[8px] font-black text-white/30 uppercase tracking-widest mr-auto">ESTADO:</span>
+                                                    
+                                                    <select
+                                                        value={evt.status}
+                                                        onChange={(e) => handleUpdateEventStatus(evt.id, e.target.value as any)}
+                                                        className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-1 text-[9px] text-white outline-none focus:border-emerald-500"
+                                                        style={{ color: '#ffffff', backgroundColor: '#09090b' }}
+                                                    >
+                                                        <option value="draft">Borrador</option>
+                                                        <option value="published">Publicado</option>
+                                                        <option value="active_live">En Vivo 🟢</option>
+                                                        <option value="suspended">Suspendido 🔴</option>
+                                                        <option value="canceled">Cancelado 🚫</option>
+                                                    </select>
+
+                                                    {/* BOTÓN DE SUSPENSIÓN INMEDIATA */}
+                                                    {evt.status === 'active_live' && (
+                                                        <button
+                                                            onClick={() => handleUpdateEventStatus(evt.id, 'suspended')}
+                                                            className="bg-red-600 hover:bg-red-500 border border-red-500 text-white font-black uppercase tracking-widest text-[8px] px-2.5 py-1.5 rounded-lg active:scale-95 transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse flex items-center gap-1"
+                                                        >
+                                                            <AlertOctagon size={10} /> SUSPENDER
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* ==================================================== */}
@@ -339,7 +602,7 @@ ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" 
                 <div className="flex-[2] hidden xl:flex flex-col items-center justify-start relative p-2 pt-12 min-h-0">
                     
                     {/* TV Monitor Container con Efecto Cristal */}
-                    <div className="relative w-full max-w-[850px] aspect-video rounded-[2rem] border-2 border-purple-900/50 bg-black overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,1),0_0_40px_rgba(88,28,135,0.2)] ring-4 ring-black shrink-0 relative">
+                    <div className="relative w-full max-w-[850px] aspect-video rounded-[2rem] border-2 border-purple-900/50 bg-black overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,1),0_0_40px_rgba(88,28,135,0.2)] ring-4 ring-black shrink-0">
                         
                         {/* Brillo Bisel TV */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none rounded-[3rem] z-20" />
@@ -419,7 +682,6 @@ ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" 
                                             onClick={() => setSelectedPreviewId(isSelected ? null : bc.id!)}
                                             className={`flex flex-col p-4 rounded-[1.5rem] border transition-all duration-300 cursor-pointer ${isSelected ? 'border-amber-400/50 shadow-[0_0_20px_rgba(251,191,36,0.15)] bg-amber-900/10' : 'border-white/5 opacity-80 hover:opacity-100 hover:border-white/10 bg-[#050505]'}`}
                                         >
-                                            {/* Card Header */}
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-2">
                                                     <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${bc.active ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]'}`} />
@@ -438,12 +700,10 @@ ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" 
                                                 </div>
                                             </div>
 
-                                            {/* Detalles Target */}
                                             <p className={`text-[7px] uppercase tracking-widest px-1 mb-2 truncate ${isSelected ? 'text-amber-400/50' : 'text-white/30'}`}>
                                                 {!bc.targetTowns || bc.targetTowns.includes('global') ? '🌐 GLOBAL' : '📍 ' + bc.targetTowns.join(', ').replace(/-/g, ' ').toUpperCase()} | {bc.targetCategories.includes('all') ? 'TODO' : bc.targetCategories.length + ' CATS'}
                                             </p>
 
-                                            {/* Schedule Edit Panel */}
                                             {isEditing ? (
                                                 <div className="mt-auto pt-3 border-t border-white/5 space-y-2" onClick={e => e.stopPropagation()}>
                                                     <div className="flex items-center gap-2">
@@ -461,8 +721,6 @@ ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" 
                                                             const updated = await obtenerBroadcasts(townId);
                                                             setAllBroadcasts(updated);
                                                             setEditingBcId(null);
-                                                            
-                                                            // Inform Ari
                                                             setAriMsgs(prev => [...prev, { role: 'ari', text: `Calendario actualizado para la campaña "${bc.title}". Todo en línea, Director.` }]);
                                                         }} className="px-2 py-1 text-[8px] font-bold bg-violet-600/20 text-violet-300 hover:bg-violet-600/40 border border-violet-500/30 rounded-lg flex items-center gap-1"><Save size={10}/> GO</button>
                                                     </div>

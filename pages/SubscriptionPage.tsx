@@ -37,7 +37,8 @@ const SubscriptionPage: React.FC = () => {
         address: '',
         bannerImage: '',
         ownerName: '',
-        phone: ''
+        phone: '',
+        gmail: ''
     });
 
     // Setear la primera localidad como default una vez que carguen
@@ -99,8 +100,13 @@ const SubscriptionPage: React.FC = () => {
         e.preventDefault();
         playNeonClick();
         
-        if (!formData.name || !formData.ownerName || !formData.phone) {
+        if (!formData.name || !formData.ownerName || !formData.phone || !formData.gmail) {
             alert("Por favor completá todos los datos mínimos para crear tu catálogo.");
+            return;
+        }
+
+        if (!formData.gmail.trim().toLowerCase().endsWith('@gmail.com')) {
+            alert("⚠️ El correo electrónico debe ser una cuenta de Gmail válida (@gmail.com) para poder acceder a las credenciales y al panel de autogestión.");
             return;
         }
 
@@ -117,6 +123,7 @@ const SubscriptionPage: React.FC = () => {
             image: formData.bannerImage, // Same as banner initially
             ownerName: formData.ownerName,
             phone: formData.phone,
+            gmail: formData.gmail.trim().toLowerCase(),
             rating: 5.0, // Initial perfect rating
             isActive: false, // Security: Must be approved by an ambassador
             specialty: '',
@@ -421,6 +428,19 @@ const SubscriptionPage: React.FC = () => {
                             placeholder="Ej: Juan Pérez"
                             value={formData.ownerName}
                             onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/40 mb-2 block">Gmail de Acceso (Obligatorio)</label>
+                        <input
+                            required
+                            type="email"
+                            placeholder="Ej: juan.perez@gmail.com"
+                            value={formData.gmail}
+                            onChange={(e) => setFormData({ ...formData, gmail: e.target.value })}
                             className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
                             style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         />

@@ -1,15 +1,15 @@
-// ShopDigital — Credencial de Comerciante PRO (v4.0 POSNET Integrado) 🪪💳
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shop, Client } from '../types';
-import { db } from '../firebase';
+import { Shop, Client, LiveEvent } from '../types';
+import { db, suscribirseAEventos, registrarIntrusionBunker } from '../firebase';
+import { useAuth } from '../components/AuthContext';
 import { transaccionarCreditos } from '../firebaseVIP';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { QRCodeCanvas } from 'qrcode.react';
 import {
     ChevronLeft, Star, QrCode, ShieldCheck, Clock, IdCard,
     Wallet, CreditCard, ArrowUpRight, ArrowDownRight,
-    CheckCircle, XCircle, Search, User, Store, MapPin
+    CheckCircle, XCircle, Search, User, Store, MapPin, Zap, Lock
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -23,10 +23,31 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     }>();
     const navigate = useNavigate();
 
+    // Auth gating
+    const { user, role, status, login, logoutUser, loading: authLoading } = useAuth();
+
     // --- Shop ---
     const selectedShop = useMemo(() =>
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
     [shopSlug, allShops]);
+
+    // --- Live Event Listener ---
+    const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
+    useEffect(() => {
+        const unsubscribe = suscribirseAEventos((events) => {
+            setLiveEvents(events);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // Active/Suspended event matching this locality & role 'comerciante'
+    const activeEvent = useMemo(() => {
+        return liveEvents.find(e => 
+            (e.status === 'active_live' || e.status === 'suspended') &&
+            (e.targetRegion === townId || e.targetLocalities.includes('all')) &&
+            e.targetRoles.includes('comerciante')
+        );
+    }, [liveEvents, townId]);
 
     // --- Clock ---
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -34,7 +55,12 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
-    const formatClock = (d: Date) => `${d.toLocaleDateString('es-AR')} - ${d.toLocaleTimeString('es-AR')}`;
+    
+    const formatClock = (d: Date) => {
+        const dateStr = d.toLocaleDateString('es-AR');
+        const hourStr = d.toLocaleTimeString('es-AR', { hour12: false });
+        return `${dateStr} - ${hourStr}`;
+    };
 
     // --- POSNET State ---
     const [posnetOpen, setPosnetOpen] = useState(false);
@@ -111,11 +137,108 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
         `${window.location.origin}/${townId}/${categorySlug}/${shopSlug}/validar`,
     [townId, categorySlug, shopSlug]);
 
+    // Permissions Gating Check
+    const userEmail = user?.email?.trim().toLowerCase() || null;
+    const isDG = userEmail === 'walyconexion@gmail.com';
+    const isAmbassador = (role === 'admin' || role === 'ambassador') && status === 'active';
+    const isShopOwner = userEmail && (
+        userEmail === selectedShop?.gmail?.trim().toLowerCase() ||
+        userEmail === selectedShop?.authorizedEmail?.trim().toLowerCase()
+    );
+    const isAuthorized = isDG || isAmbassador || isShopOwner;
+
+    // Log intrusion to Bunker if unauthorized
+    useEffect(() => {
+        if (user && !isAuthorized && !authLoading) {
+            registrarIntrusionBunker(userEmail).catch(console.error);
+        }
+    }, [user, isAuthorized, authLoading, userEmail]);
+
     if (!selectedShop) return null;
 
-    // Color scheme: Slate/Blue Deep for merchant — different from client's Cyan
-    const ACCENT = '#6366f1'; // Indigo
-    const ACCENT_LIGHT = 'rgba(99, 102, 241, ';
+    // Loading State
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-t-2 border-indigo-400 rounded-full animate-spin shadow-[0_0_15px_rgba(99,102,241,0.3)]" />
+                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest animate-pulse">Autenticando Credencial...</span>
+                </div>
+            </div>
+        );
+    }
+
+    // Unauthenticated State
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
+                <div className="fixed inset-0 pointer-events-none z-0">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.05),transparent_60%)]" />
+                </div>
+                
+                <div className="w-full max-w-sm bg-zinc-950/40 border border-indigo-500/20 rounded-[2.5rem] p-8 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(99,102,241,0.1)]">
+                    <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)] mx-auto">
+                        <Lock size={24} className="text-indigo-400 animate-pulse" />
+                    </div>
+                    <h2 className="text-xl font-black text-white uppercase tracking-tighter text-center mb-1">Credencial Protegida</h2>
+                    <p className="text-[9px] font-bold text-indigo-400/60 uppercase tracking-widest text-center mb-8">Requiere Verificación de Identidad B2B</p>
+
+                    <button
+                        onClick={() => { playNeonClick(); login(); }}
+                        className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black uppercase tracking-[0.15em] py-4.5 rounded-2xl active:scale-95 transition-all shadow-[0_0_25px_rgba(99,102,241,0.25)] flex items-center justify-center gap-3 text-xs"
+                    >
+                        <User size={16} /> Iniciar Sesión con Google
+                    </button>
+                    
+                    <button
+                        onClick={() => { playNeonClick(); navigate(-1); }}
+                        className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white font-bold uppercase tracking-wider py-3.5 rounded-2xl active:scale-95 transition-all mt-4 text-xs"
+                    >
+                        Volver
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // Unauthorized Access State (Gated)
+    if (!isAuthorized) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
+                <div className="fixed inset-0 pointer-events-none z-0">
+                    <div className="absolute inset-0 bg-red-950/10 pointer-events-none" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none" />
+                </div>
+                
+                <div className="w-full max-w-sm bg-red-950/20 border border-red-500/30 rounded-[2.5rem] p-8 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(239,68,68,0.1)]">
+                    <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.2)] mx-auto">
+                        <Zap size={24} className="text-red-500 animate-bounce" />
+                    </div>
+                    <h2 className="text-xl font-black text-red-500 uppercase tracking-tighter text-center mb-2">Acceso Denegado</h2>
+                    <p className="text-[10px] font-bold text-red-400/80 uppercase tracking-widest leading-relaxed text-center mb-6">
+                        SU CORREO <span className="font-mono text-white select-all">{user.email}</span> NO TIENE PERMISO PARA VER ESTA CREDENCIAL DE COMERCIO.
+                    </p>
+                    <p className="text-[8px] text-white/40 uppercase tracking-widest leading-normal mb-8 border-l-2 border-red-500/30 pl-3">
+                        El protocolo de seguridad Doberman ha registrado este evento.
+                    </p>
+
+                    <button
+                        onClick={() => { playNeonClick(); logoutUser(); }}
+                        className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.15em] py-4 rounded-2xl active:scale-95 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)] text-xs"
+                    >
+                        Cerrar Sesión / Cambiar Cuenta
+                    </button>
+                    
+                    <button
+                        onClick={() => { playNeonClick(); navigate(-1); }}
+                        className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white font-bold uppercase tracking-wider py-3.5 rounded-2xl active:scale-95 transition-all mt-4 text-[10px]"
+                    >
+                        Volver
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black flex flex-col items-center px-6 py-8 relative overflow-hidden selection:bg-indigo-500/30">
@@ -132,24 +255,70 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                 <ChevronLeft size={20} />
             </button>
 
+            {/* ═══════════ LIVE EVENT TICKER BANNER 🟢🔴 ═══════════ */}
+            {activeEvent && (
+                <div className="w-full max-w-sm mb-6 relative z-10 animate-in slide-in-from-top-6 duration-500">
+                    {activeEvent.status === 'active_live' ? (
+                        <div className="bg-gradient-to-r from-emerald-500/15 via-emerald-600/20 to-teal-500/15 border border-emerald-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(16,185,129,0.15)] flex flex-col items-center justify-center relative overflow-hidden animate-pulse">
+                            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(16,185,129,0.05)_25%,rgba(16,185,129,0.05)_50%,transparent_50%,transparent_75%,rgba(16,185,129,0.05)_75%)] bg-[size:40px_40px] animate-[scan_6s_linear_infinite]" />
+                            <span className="text-[12px] font-[1000] text-emerald-400 uppercase tracking-[0.25em] text-center mb-1">
+                                🟢 EVENTO ACTIVO EN REGIONAL
+                            </span>
+                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                                {activeEvent.name}
+                            </h3>
+                            <div className="bg-emerald-500/25 border border-emerald-400/30 px-4 py-1.5 rounded-full text-center">
+                                <span className="text-[9px] font-black text-emerald-300 uppercase tracking-widest block">
+                                    🎫 BENEFICIO EXCLUSIVO: ENTRADA GRATIS
+                                </span>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-gradient-to-r from-red-500/15 via-red-600/25 to-rose-500/15 border border-red-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(239,68,68,0.15)] flex flex-col items-center justify-center relative overflow-hidden">
+                            <span className="text-[12px] font-[1000] text-red-400 uppercase tracking-[0.25em] text-center mb-1">
+                                🔴 EVENTO SUSPENDIDO / APLAZADO
+                            </span>
+                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                                {activeEvent.name}
+                            </h3>
+                            <p className="text-[8px] font-black text-red-300 uppercase tracking-widest animate-pulse">
+                                MÁS INFO VÍA ASISTENTE ARI 🤖
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* ═══════════ CREDENCIAL CARD ═══════════ */}
             <div className="w-full max-w-sm relative z-10">
                 <div className="bg-gradient-to-br from-indigo-500/20 to-blue-900/30 rounded-[2.5rem] p-[1.5px] shadow-[0_0_40px_rgba(99,102,241,0.15)]">
                     <div className="bg-[#060612] rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/5">
+                        
                         {/* Ambient glow */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -mr-16 -mt-16 blur-2xl" />
 
-                        {/* SELLO DE VIDA: RELOJ EN TIEMPO REAL ⏱️ */}
-                        <div className="w-full flex items-center justify-center gap-2 mb-6 py-2 px-4 rounded-full bg-indigo-500/5 border border-indigo-500/10">
-                            <Clock size={10} className="text-indigo-400 animate-pulse" />
-                            <span className="text-[9px] font-[1000] text-indigo-400/80 uppercase tracking-widest tabular-nums">
-                                {formatClock(currentTime)}
-                            </span>
+                        {/* SELLO DE VIDA INVIOLABLE CON SEGUNDEROS ⏱️ */}
+                        <div className="w-full flex flex-col items-center justify-center gap-1 mb-6 py-2 px-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1/3 h-[1px] bg-indigo-400/30 animate-[scan_2s_infinite_ease-in-out]" />
+                            <div className="flex items-center gap-2">
+                                <Clock size={11} className="text-indigo-400 animate-spin" style={{ animationDuration: '6s' }} />
+                                <span className="text-[10px] font-black font-mono text-indigo-400 tracking-wider tabular-nums">
+                                    {formatClock(currentTime)}
+                                </span>
+                            </div>
                         </div>
 
-                        {/* Shop Avatar */}
-                        <div className="w-24 h-24 rounded-2xl overflow-hidden mb-5 border-2 border-indigo-500/40 shadow-[0_0_25px_rgba(99,102,241,0.3)] bg-black p-1">
-                            <img src={selectedShop.image} alt={selectedShop.name} className="w-full h-full object-cover rounded-xl" />
+                        {/* ownerPhoto / Shop Image - Biométrica Circular */}
+                        <div className="relative w-24 h-24 rounded-full p-0.5 bg-gradient-to-br from-indigo-500 to-blue-600 shadow-[0_0_25px_rgba(99,102,241,0.3)] mb-5 flex-shrink-0">
+                            <div className="w-full h-full bg-zinc-950 rounded-full overflow-hidden flex items-center justify-center p-0.5 border border-black/40">
+                                {selectedShop.ownerPhoto ? (
+                                    <img src={selectedShop.ownerPhoto} alt={selectedShop.ownerName} className="w-full h-full object-cover rounded-full" />
+                                ) : selectedShop.image ? (
+                                    <img src={selectedShop.image} alt={selectedShop.name} className="w-full h-full object-cover rounded-full" />
+                                ) : (
+                                    <User size={36} className="text-indigo-400/30" />
+                                )}
+                            </div>
                         </div>
 
                         {/* Shop Name */}
@@ -171,7 +340,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                             <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5">
                                 <p className="text-[7px] font-black text-white/20 uppercase tracking-widest mb-0.5">Titular</p>
                                 <p className="text-[11px] font-[1000] text-white/80 uppercase tracking-tight truncate">
-                                    {selectedShop.ownerName || selectedShop.name}
+                                    {selectedShop.ownerName || 'Sin Registrar'}
                                 </p>
                             </div>
                             <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5">
@@ -197,7 +366,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                                     level="H"
                                     includeMargin={false}
                                     imageSettings={{
-                                        src: selectedShop.image,
+                                        src: selectedShop.image || '',
                                         x: undefined, y: undefined,
                                         height: 28, width: 28, excavate: true,
                                     }}
@@ -210,7 +379,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t border-white/5 pt-4">
                             <span className="text-white/30">Membresía Activa</span>
                             <span className="text-indigo-400 drop-shadow-[0_0_5px_rgba(99,102,241,0.4)]">
-                                {selectedShop.billingStatus === 'active' ? '✅ ACTIVA' : '⏳ PENDIENTE'}
+                                {selectedShop.isActive ? '✅ ACTIVA' : '⏳ PENDIENTE'}
                             </span>
                         </div>
                     </div>
@@ -395,6 +564,13 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                     <div className="h-[1px] w-8 bg-indigo-500/40" />
                 </div>
             </div>
+            
+            <style dangerouslySetInnerHTML={{__html: `
+                @keyframes scan {
+                    0% { background-position: 0% 0%; }
+                    100% { background-position: 0% 100%; }
+                }
+            `}} />
         </div>
     );
 };

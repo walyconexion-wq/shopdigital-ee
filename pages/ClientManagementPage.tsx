@@ -114,9 +114,13 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     }, [clientsInZone, shopToCategoryMap]);
 
     const clientStats = useMemo(() => {
+        const total = clientsInZone.length;
+        const active = clientsInZone.filter(c => c.status !== 'suspended').length;
+        const suspended = total - active;
         return {
-            total: clientsInZone.length,
-            active: clientsInZone.length,
+            total,
+            active,
+            suspended,
             engagement: 85
         };
     }, [clientsInZone]);

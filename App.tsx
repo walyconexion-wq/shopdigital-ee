@@ -74,6 +74,7 @@ import GlobalHomePage from './pages/GlobalHomePage';
 import RegionSelectPage from './pages/RegionSelectPage';
 import RegionSeedPage from './pages/RegionSeedPage';
 import ShopOnboardingPage from './pages/ShopOnboardingPage';
+import EventLandingPage from './pages/EventLandingPage';
 import { TRASLASIERRA_REGION } from './data/regionalTemplates/traslasierraConfig';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
@@ -238,6 +239,7 @@ const TownController: React.FC = () => {
                     <Route path="embajador/ofertas/crear/:target" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferFormPage /></ProtectedRoute>} />
                     <Route path="embajador/ofertas/editar/:offerId" element={<ProtectedRoute roles={['admin', 'ambassador']}><OfferFormPage allOffers={allOffers} /></ProtectedRoute>} />
                     <Route path="nosotros" element={<AboutPage />} />
+                    <Route path="eventos/:eventId" element={<EventLandingPage allShops={allShops} />} />
                     <Route path="cliente/:clientId/credencial" element={<ClientCredentialPage />} />
                     <Route path="cliente/:clientId/validar" element={<ClientValidationPage />} />
                     <Route path="validar/:clientId" element={<ClientValidationPage />} />

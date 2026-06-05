@@ -96,6 +96,17 @@ export interface Client {
   creditsHistory?: any[];
   locality?: string; // Sello geográfico del socio 📍
   updatedAt?: string; // Última actualización del perfil
+  activeTicket?: {
+    eventId: string;
+    eventName: string;
+    date: string;
+    time: string;
+    seatSector?: string;
+    fila?: string;
+    asiento?: string;
+    status: 'active' | 'used' | 'suspended';
+    pricePaid?: number;
+  };
 }
 
 export interface Offer {
@@ -205,4 +216,18 @@ export interface Shop {
   credentialUrl?: string;           // URL a la credencial electrónica
   invoiceSimulationUrl?: string;    // URL a la factura del mes gratis
   memberSince?: string;             // ISO date — fecha oficial de alta
+  gmail: string;                    // Gmail de acceso obligatorio para credencial 🛡️
+}
+
+export interface LiveEvent {
+  id: string;
+  name: string;
+  artist?: string;
+  dateStr: string;
+  timeStr: string;
+  status: 'draft' | 'published' | 'active_live' | 'suspended' | 'canceled';
+  targetRegion: string;
+  targetLocalities: string[]; // ['monte-grande', 'all']
+  targetRoles: Array<'cliente_calle' | 'comerciante' | 'empresario'>;
+  ticketPageUrl?: string;
 }

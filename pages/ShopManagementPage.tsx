@@ -128,6 +128,10 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userE
 
     const handleApproveOnboarding = async (shop: Shop) => {
         playNeonClick();
+        if (!shop.gmail || !shop.gmail.trim() || !shop.gmail.includes('@')) {
+            alert("⚠️ ERROR DE SEGURIDAD: El comercio no posee un Gmail válido configurado. Edite los datos del comercio e ingrese un Gmail antes de aprobar.");
+            return;
+        }
         if (window.confirm(`🚀 ¿APROBAR Y DESPLEGAR ONBOARDING de "${shop.name}"?\n\nEl comercio quedará ACTIVO y se abrirá la Pantalla de Artillería para enviar los disparadores de bienvenida al comerciante.`)) {
             setProcessingId(shop.id);
             try {
