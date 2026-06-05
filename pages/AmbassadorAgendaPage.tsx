@@ -13,7 +13,8 @@ import {
     Send,
     ListTodo,
     Radar,
-    Check
+    Check,
+    Image as ImageIcon
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
@@ -440,13 +441,50 @@ const AmbassadorAgendaPage: React.FC = () => {
 
                                 {/* Foto */}
                                 <div className="pt-2">
-                                    <label className="w-full flex flex-col items-center justify-center py-4 border-2 border-dashed border-white/20 rounded-xl cursor-pointer hover:border-emerald-400/50 hover:bg-emerald-500/5 transition-all">
-                                        <Camera size={20} className="text-emerald-400 mb-1" />
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/50">Saca foto del local o tarjeta</span>
-                                        <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
-                                    </label>
+                                    <label className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/40 mb-2 block">Foto del Local o Tarjeta</label>
+                                    
+                                    <input
+                                        id="image-file-upload"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        className="hidden"
+                                    />
+                                    <input
+                                        id="image-camera-upload"
+                                        type="file"
+                                        accept="image/*"
+                                        capture="environment"
+                                        onChange={handleImageUpload}
+                                        className="hidden"
+                                    />
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('image-file-upload')?.click()}
+                                            className="flex flex-col items-center justify-center py-6 border border-white/10 rounded-2xl bg-slate-950/60 hover:bg-emerald-500/5 hover:border-emerald-400/50 transition-all active:scale-95 cursor-pointer"
+                                            style={{ color: '#ffffff' }}
+                                        >
+                                            <ImageIcon size={22} className="text-emerald-400 mb-2" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Subir Archivo</span>
+                                            <span className="text-[7px] text-white/40 uppercase tracking-widest mt-1">Galería</span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('image-camera-upload')?.click()}
+                                            className="flex flex-col items-center justify-center py-6 border border-white/10 rounded-2xl bg-slate-950/60 hover:bg-emerald-500/5 hover:border-emerald-400/50 transition-all active:scale-95 cursor-pointer"
+                                            style={{ color: '#ffffff' }}
+                                        >
+                                            <Camera size={22} className="text-emerald-400 mb-2" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Tomar Foto</span>
+                                            <span className="text-[7px] text-white/40 uppercase tracking-widest mt-1">Cámara</span>
+                                        </button>
+                                    </div>
+
                                     {formData.photo && (
-                                        <div className="mt-2 relative w-full h-32 rounded-xl overflow-hidden border border-emerald-400/30">
+                                        <div className="mt-4 relative w-full h-32 rounded-xl overflow-hidden border border-emerald-400/30">
                                             <img src={formData.photo} alt="Preview" className="w-full h-full object-cover" />
                                         </div>
                                     )}

@@ -294,11 +294,46 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                     <label className="text-[10px] flex items-center gap-2 font-black uppercase tracking-[0.2em] text-amber-400 mb-4">
                         <Camera size={14} /> Logo / Imagen (Opcional)
                     </label>
-                    <label className="w-full flex flex-col items-center justify-center py-6 border-2 border-dashed border-white/15 rounded-2xl cursor-pointer hover:border-amber-400/40 hover:bg-amber-500/5 transition-all">
-                        <ImagePlus size={24} className="text-amber-400 mb-2" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Cargar imagen</span>
-                        <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="hidden" />
-                    </label>
+                    <div className="flex flex-col gap-4">
+                        <input
+                            id="image-file-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                        />
+                        <input
+                            id="image-camera-upload"
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById('image-file-upload')?.click()}
+                                className="flex flex-col items-center justify-center py-6 border border-white/10 rounded-2xl bg-slate-950/60 hover:bg-amber-500/5 hover:border-amber-400/50 transition-all active:scale-95 cursor-pointer"
+                                style={{ color: '#ffffff' }}
+                            >
+                                <ImagePlus size={22} className="text-amber-400 mb-2" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Subir Archivo</span>
+                                <span className="text-[7px] text-white/40 uppercase tracking-widest mt-1">Galería</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById('image-camera-upload')?.click()}
+                                className="flex flex-col items-center justify-center py-6 border border-white/10 rounded-2xl bg-slate-950/60 hover:bg-amber-500/5 hover:border-amber-400/50 transition-all active:scale-95 cursor-pointer"
+                                style={{ color: '#ffffff' }}
+                            >
+                                <Camera size={22} className="text-amber-400 mb-2" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Tomar Foto</span>
+                                <span className="text-[7px] text-white/40 uppercase tracking-widest mt-1">Cámara</span>
+                            </button>
+                        </div>
                     {formData.bannerImage && (
                         <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-amber-400/30 mt-4">
                             <img src={formData.bannerImage} alt="Preview" className="w-full h-full object-cover" />
@@ -307,6 +342,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                             </div>
                         </div>
                     )}
+                    </div>
                 </div>
 
                 {/* Datos de Contacto */}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, Send, Share2, User, Phone, MapPin, Calendar, CheckCircle, Mail, Briefcase, Cpu, Smartphone, Monitor, Camera } from 'lucide-react';
+import { ChevronLeft, Send, Share2, User, Phone, MapPin, Calendar, CheckCircle, Mail, Briefcase, Cpu, Smartphone, Monitor, Camera, ImagePlus } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { crearAspirante } from '../firebase';
 
@@ -164,23 +164,53 @@ const AmbassadorRecruitPage1: React.FC = () => {
 
                         {/* 📸 Foto de Perfil */}
                         <div className="flex flex-col items-center mb-4">
-                            <label htmlFor="photo-upload" className="cursor-pointer group">
-                                <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 mx-auto transition-all group-hover:scale-105" style={{ borderColor: hexToRgba(zoneColor, 0.5), backgroundColor: hexToRgba(zoneColor, 0.1) }}>
-                                    {photoPreview ? (
-                                        <img src={photoPreview} alt="Foto" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-                                            <Camera size={24} style={{ color: zoneColor }} />
-                                            <span className="text-[8px] font-bold uppercase tracking-widest" style={{ color: zoneColor }}>Tu Foto</span>
-                                        </div>
-                                    )}
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <Camera size={20} className="text-white" />
+                            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 mx-auto transition-all" style={{ borderColor: hexToRgba(zoneColor, 0.5), backgroundColor: hexToRgba(zoneColor, 0.1) }}>
+                                {photoPreview ? (
+                                    <img src={photoPreview} alt="Foto" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center gap-1">
+                                        <Camera size={24} style={{ color: zoneColor }} />
+                                        <span className="text-[8px] font-bold uppercase tracking-widest" style={{ color: zoneColor }}>Tu Foto</span>
                                     </div>
-                                </div>
-                                <p className="text-[9px] uppercase tracking-widest text-white/40 text-center mt-2 font-bold">Tocar para subir foto</p>
-                            </label>
-                            <input id="photo-upload" type="file" accept="image/*" capture="user" onChange={handlePhotoChange} className="hidden" />
+                                )}
+                            </div>
+                            
+                            <input
+                                id="photo-file-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handlePhotoChange}
+                                className="hidden"
+                            />
+                            <input
+                                id="photo-camera-upload"
+                                type="file"
+                                accept="image/*"
+                                capture="user"
+                                onChange={handlePhotoChange}
+                                className="hidden"
+                            />
+
+                            <div className="flex gap-3 mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => document.getElementById('photo-file-upload')?.click()}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer bg-white/5 hover:bg-white/10"
+                                    style={{ borderColor: hexToRgba(zoneColor, 0.3), color: '#ffffff' }}
+                                >
+                                    <ImagePlus size={10} style={{ color: zoneColor }} />
+                                    Subir Archivo
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => document.getElementById('photo-camera-upload')?.click()}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer bg-white/5 hover:bg-white/10"
+                                    style={{ borderColor: hexToRgba(zoneColor, 0.3), color: '#ffffff' }}
+                                >
+                                    <Camera size={10} style={{ color: zoneColor }} />
+                                    Tomar Foto
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-2 flex items-center gap-2"><User size={12} style={{ color: zoneColor }} /> Nombre Completo</label>

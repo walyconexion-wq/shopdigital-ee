@@ -16,7 +16,9 @@ import {
     Type,
     FileText,
     DollarSign,
-    Coins
+    Coins,
+    Camera,
+    ImagePlus
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -252,8 +254,47 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                             <img src={formData.image} alt="Preview" className="w-full h-40 object-cover" />
                         </div>
                     )}
-                    <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload}
-                        className="w-full text-xs text-white/50 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border file:border-cyan-400/30 file:bg-cyan-500/10 file:text-cyan-300 file:font-black file:text-[9px] file:uppercase file:tracking-widest file:cursor-pointer" />
+                    <div className="flex flex-col gap-4">
+                        <input
+                            id="image-file-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                        />
+                        <input
+                            id="image-camera-upload"
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById('image-file-upload')?.click()}
+                                className="flex flex-col items-center justify-center py-6 border border-white/10 rounded-2xl bg-slate-950/60 hover:bg-cyan-500/5 hover:border-cyan-400/50 transition-all active:scale-95 cursor-pointer"
+                                style={{ color: '#ffffff' }}
+                            >
+                                <ImagePlus size={22} className="text-cyan-400 mb-2" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Subir Archivo</span>
+                                <span className="text-[7px] text-white/40 uppercase tracking-widest mt-1">Galería</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById('image-camera-upload')?.click()}
+                                className="flex flex-col items-center justify-center py-6 border border-white/10 rounded-2xl bg-slate-950/60 hover:bg-cyan-500/5 hover:border-cyan-400/50 transition-all active:scale-95 cursor-pointer"
+                                style={{ color: '#ffffff' }}
+                            >
+                                <Camera size={22} className="text-cyan-400 mb-2" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Tomar Foto</span>
+                                <span className="text-[7px] text-white/40 uppercase tracking-widest mt-1">Cámara</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Submit */}
