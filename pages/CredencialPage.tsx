@@ -241,17 +241,23 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     }
 
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center px-6 py-8 relative overflow-hidden selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-[#020208] flex flex-col items-center px-6 py-8 relative overflow-hidden selection:bg-indigo-500/30">
             {/* HUD Background */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[100px]" />
-                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.01)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
+                <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px]" />
+                {/* Tech Grid Mesh */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.06)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                {/* Tech Dots Mesh */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(34,211,238,0.08)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
+                {/* Scanline Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.02] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
             </div>
 
             {/* Back Button */}
             <button onClick={() => { playNeonClick(); navigate(-1); }}
-                className="self-start mb-6 w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/20 transition-all z-10">
+                className="self-start mb-6 w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-400/60 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all z-10">
                 <ChevronLeft size={20} />
             </button>
 
@@ -291,25 +297,27 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
 
             {/* ═══════════ CREDENCIAL CARD ═══════════ */}
             <div className="w-full max-w-sm relative z-10">
-                <div className="bg-gradient-to-br from-indigo-500/20 to-blue-900/30 rounded-[2.5rem] p-[1.5px] shadow-[0_0_40px_rgba(99,102,241,0.15)]">
-                    <div className="bg-[#060612] rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/5">
+                <div className="bg-gradient-to-br from-indigo-400 via-purple-500 to-cyan-400 rounded-[2.5rem] p-[2px] shadow-[0_0_50px_rgba(99,102,241,0.4)] hover:shadow-[0_0_65px_rgba(99,102,241,0.65)] transition-all duration-500">
+                    <div className="bg-[#060614]/95 rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/10 backdrop-blur-2xl">
                         
                         {/* Ambient glow */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/20 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/15 rounded-full -ml-16 -mb-16 blur-3xl pointer-events-none" />
 
                         {/* SELLO DE VIDA INVIOLABLE CON SEGUNDEROS ⏱️ */}
-                        <div className="w-full flex flex-col items-center justify-center gap-1 mb-6 py-2 px-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-1/3 h-[1px] bg-indigo-400/30 animate-[scan_2s_infinite_ease-in-out]" />
-                            <div className="flex items-center gap-2">
-                                <Clock size={11} className="text-indigo-400 animate-spin" style={{ animationDuration: '6s' }} />
-                                <span className="text-[10px] font-black font-mono text-indigo-400 tracking-wider tabular-nums">
+                        <div className="w-full flex flex-col items-center justify-center gap-1 mb-6 py-3 px-4 rounded-2xl bg-indigo-500/15 border-2 border-indigo-400/40 relative overflow-hidden shadow-[inset_0_0_15px_rgba(99,102,241,0.25),0_0_20px_rgba(99,102,241,0.2)]">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan-400/80 animate-[scan_2s_infinite_ease-in-out]" />
+                            <div className="flex items-center gap-2 relative z-10">
+                                <Clock size={13} className="text-cyan-400 animate-spin" style={{ animationDuration: '4s' }} />
+                                <span className="text-[12px] font-black font-mono text-cyan-300 tracking-[0.15em] tabular-nums drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
                                     {formatClock(currentTime)}
                                 </span>
                             </div>
+                            <span className="text-[7px] font-[900] text-cyan-400/80 uppercase tracking-[0.25em] relative z-10 animate-pulse">Sello de Seguridad Activo</span>
                         </div>
 
                         {/* ownerPhoto / Shop Image - Biométrica Circular */}
-                        <div className="relative w-24 h-24 rounded-full p-0.5 bg-gradient-to-br from-indigo-500 to-blue-600 shadow-[0_0_25px_rgba(99,102,241,0.3)] mb-5 flex-shrink-0">
+                        <div className="relative w-24 h-24 rounded-full p-0.5 bg-gradient-to-br from-indigo-400 to-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.4)] mb-5 flex-shrink-0">
                             <div className="w-full h-full bg-zinc-950 rounded-full overflow-hidden flex items-center justify-center p-0.5 border border-black/40">
                                 {selectedShop.ownerPhoto ? (
                                     <img src={selectedShop.ownerPhoto} alt={selectedShop.ownerName} className="w-full h-full object-cover rounded-full" />
@@ -322,44 +330,53 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </div>
 
                         {/* Shop Name */}
-                        <h2 className="text-xl font-[1000] text-white uppercase tracking-tight mb-1 text-center leading-tight">
+                        <h2 className="text-xl font-[1000] text-white uppercase tracking-tight mb-1 text-center leading-tight drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]">
                             {selectedShop.name}
                         </h2>
-                        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-4 text-center">
+                        <p className="text-[8px] font-black text-cyan-400/60 uppercase tracking-widest mb-4 text-center">
                             {selectedShop.specialty || selectedShop.category}
                         </p>
 
                         {/* Badge */}
-                        <div className="flex items-center gap-2 mb-6 bg-indigo-500/10 px-4 py-1.5 rounded-full border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-                            <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-                            <span className="text-indigo-400 text-[9px] font-black uppercase tracking-[0.2em]">Comercio Verificado</span>
+                        <div className="flex items-center gap-2 mb-6 bg-indigo-500/20 px-5 py-2 rounded-full border border-indigo-400/50 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+                            <ShieldCheck className="w-4 h-4 text-indigo-300 drop-shadow-[0_0_5px_rgba(165,180,252,0.8)]" />
+                            <span className="text-indigo-200 text-[9px] font-[1000] uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(165,180,252,0.6)]">Comercio Verificado</span>
                         </div>
 
                         {/* Data Grid */}
                         <div className="w-full grid grid-cols-2 gap-3 mb-6">
-                            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5">
-                                <p className="text-[7px] font-black text-white/20 uppercase tracking-widest mb-0.5">Titular</p>
-                                <p className="text-[11px] font-[1000] text-white/80 uppercase tracking-tight truncate">
+                            <div className="bg-black/60 rounded-2xl p-3.5 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                                <p className="text-[7px] font-black text-indigo-400/60 uppercase tracking-widest mb-1">Titular</p>
+                                <p className="text-[11px] font-[1000] text-white uppercase tracking-tight truncate drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]">
                                     {selectedShop.ownerName || 'Sin Registrar'}
                                 </p>
                             </div>
-                            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5">
-                                <p className="text-[7px] font-black text-white/20 uppercase tracking-widest mb-0.5">ID Comercio</p>
-                                <p className="text-[11px] font-[1000] text-indigo-400/80 tracking-tight truncate">
+                            <div className="bg-black/60 rounded-2xl p-3.5 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                                <p className="text-[7px] font-black text-indigo-400/60 uppercase tracking-widest mb-1">ID Comercio</p>
+                                <p className="text-[11px] font-[1000] text-cyan-400 tracking-tight truncate drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
                                     {selectedShop.shopNumber || selectedShop.id.slice(0, 8).toUpperCase()}
                                 </p>
                             </div>
-                            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/5 col-span-2">
-                                <p className="text-[7px] font-black text-white/20 uppercase tracking-widest mb-0.5 flex items-center gap-1">
-                                    <MapPin size={8} /> Dirección
+                            <div className="bg-black/60 rounded-2xl p-3.5 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)] col-span-2">
+                                <p className="text-[7px] font-black text-indigo-400/60 uppercase tracking-widest mb-1 flex items-center gap-1">
+                                    <MapPin size={8} className="text-cyan-400" /> Dirección
                                 </p>
-                                <p className="text-[10px] font-bold text-white/60 truncate">{selectedShop.address}</p>
+                                <p className="text-[10px] font-bold text-white/80 truncate">{selectedShop.address}</p>
                             </div>
                         </div>
 
                         {/* QR Code */}
-                        <div className="w-full bg-indigo-500/[0.03] rounded-[2rem] p-6 flex flex-col items-center border border-indigo-500/10 mb-6 relative group/qr">
-                            <div className="bg-white p-4 rounded-2xl mb-4 shadow-[0_0_30px_rgba(255,255,255,0.05)] relative z-10">
+                        <div className="w-full bg-black/75 rounded-[2.2rem] p-6 flex flex-col items-center border-2 border-indigo-500/40 mb-6 relative group/qr shadow-[0_0_30px_rgba(99,102,241,0.2),inset_0_0_20px_rgba(99,102,241,0.15)] overflow-hidden">
+                            {/* Scanning Laser Line */}
+                            <div className="absolute left-0 right-0 h-[2px] bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-[scan-laser_3s_infinite_linear] pointer-events-none z-20" />
+                            
+                            {/* Corner Scanner brackets */}
+                            <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-cyan-400 pointer-events-none" />
+                            <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-cyan-400 pointer-events-none" />
+                            <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-cyan-400 pointer-events-none" />
+                            <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-cyan-400 pointer-events-none" />
+
+                            <div className="bg-white p-4.5 rounded-2xl mb-4 shadow-[0_0_35px_rgba(255,255,255,0.1)] relative z-10 border-2 border-cyan-400/30">
                                 <QRCodeCanvas
                                     value={validationUrl}
                                     size={140}
@@ -372,14 +389,14 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                                     }}
                                 />
                             </div>
-                            <p className="text-[9px] font-black text-indigo-400/50 uppercase tracking-[0.3em]">Código de Validación</p>
+                            <p className="text-[9px] font-black text-cyan-400 uppercase tracking-[0.25em] drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Código de Validación</p>
                         </div>
 
                         {/* Status */}
-                        <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t border-white/5 pt-4">
-                            <span className="text-white/30">Membresía Activa</span>
-                            <span className="text-indigo-400 drop-shadow-[0_0_5px_rgba(99,102,241,0.4)]">
-                                {selectedShop.isActive ? '✅ ACTIVA' : '⏳ PENDIENTE'}
+                        <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t border-indigo-500/20 pt-4">
+                            <span className="text-white/40">Membresía Activa</span>
+                            <span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] font-black">
+                                {selectedShop.isActive ? '⚡ ACTIVA' : '⏳ PENDIENTE'}
                             </span>
                         </div>
                     </div>
@@ -541,13 +558,13 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             <div className="w-full max-w-sm mt-6 space-y-3 relative z-10">
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/${categorySlug}/${shopSlug}/panel-autogestion`); }}
-                    className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-white/5 flex items-center justify-center gap-2"
+                    className="w-full h-12 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)] flex items-center justify-center gap-2"
                 >
-                    <Store size={14} /> Panel de Autogestión
+                    <Store size={14} className="text-cyan-400" /> Panel de Autogestión
                 </button>
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                    className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 text-white/30 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-white/5"
+                    className="w-full h-12 rounded-2xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)] flex items-center justify-center"
                 >
                     Volver a Inicio
                 </button>
@@ -566,9 +583,18 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             </div>
             
             <style dangerouslySetInnerHTML={{__html: `
+                @keyframes scan-laser {
+                    0% { top: 5%; }
+                    50% { top: 95%; }
+                    100% { top: 5%; }
+                }
                 @keyframes scan {
                     0% { background-position: 0% 0%; }
                     100% { background-position: 0% 100%; }
+                }
+                @keyframes scanner-line {
+                    0% { transform: translateY(-50%); }
+                    100% { transform: translateY(50%); }
                 }
             `}} />
         </div>

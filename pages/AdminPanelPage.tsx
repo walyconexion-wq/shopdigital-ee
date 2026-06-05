@@ -391,54 +391,61 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
     }
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden">
-            {/* Tech backgrounds */}
+        <div className="min-h-screen bg-[#020208] text-white pb-24 relative overflow-hidden selection:bg-cyan-500/30">
+            {/* Tech backgrounds & Glowing Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[150px]" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[150px]" />
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[160px] animate-pulse" style={{ animationDuration: '10s' }} />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute top-1/2 left-1/3 w-[350px] h-[350px] bg-indigo-500/5 rounded-full blur-[130px]" />
+                {/* Tech Grid Mesh */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:35px_35px]" />
+                {/* Tech Dots Mesh */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(139,92,246,0.06)_1px,transparent_1.5px)] bg-[size:18px_18px]" />
+                {/* Scanline Sweep */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.015] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_10s_linear_infinite]" />
             </div>
 
             {/* Header */}
-            <div className="bg-zinc-950/80 backdrop-blur-xl border-b border-white/5 pt-10 pb-6 px-8 flex flex-col items-center sticky top-0 z-50 shadow-md">
+            <div className="bg-zinc-950/90 backdrop-blur-2xl border-b-2 border-cyan-500/30 pt-10 pb-6 px-8 flex flex-col items-center sticky top-0 z-50 shadow-[0_4px_30px_rgba(6,182,212,0.15)]">
                 <div className="w-full flex justify-between items-center mb-2">
                     <button onClick={() => {
                         playNeonClick();
                         navigate(`/${townId}/home`);
-                    }} className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10 hover:bg-white/10 transition-colors"><ChevronLeft size={20} /></button>
+                    }} className="w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-400/60 transition-all shadow-[0_0_10px_rgba(6,182,212,0.1)]"><ChevronLeft size={20} /></button>
                     
                     <div className="text-right">
                         <span className="text-[8px] font-bold text-white/40 uppercase tracking-widest block">Operador:</span>
-                        <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider block max-w-[150px] truncate">{user.displayName || user.email}</span>
+                        <span className="text-[10px] font-black text-cyan-300 uppercase tracking-wider block max-w-[150px] truncate drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">{user.displayName || user.email}</span>
                     </div>
                 </div>
-                <h2 className="text-[16px] font-[1000] text-white uppercase tracking-[0.2em] mb-1">Carga de Comercio</h2>
-                <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Panel de Autogestión Conectado</p>
+                <h2 className="text-[16px] font-[1000] text-white uppercase tracking-[0.2em] mb-1 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Carga de Comercio</h2>
+                <p className="text-[9px] font-bold text-cyan-400/80 uppercase tracking-widest animate-pulse">Panel de Autogestión Conectado</p>
             </div>
 
             <div className="px-6 max-w-lg mx-auto mt-8 space-y-8 relative z-10">
                 
                 {/* BIO-PHOTO DUAL UPLOADER */}
-                <div className="bg-zinc-950/60 border border-cyan-500/20 rounded-[2rem] p-6 relative overflow-hidden shadow-[0_0_30px_rgba(6,182,212,0.02)]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/5 rounded-full blur-[40px] pointer-events-none" />
+                <div className="bg-[#0b0b1f]/80 border border-cyan-400/40 rounded-[2.2rem] p-6 relative overflow-hidden shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl animate-[pulse-glow_6s_infinite_ease-in-out]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 rounded-full blur-[40px] pointer-events-none" />
                     
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-400/30">
-                            <Camera size={20} className="text-cyan-400" />
+                        <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center border border-cyan-400/40 shadow-[0_0_15px_rgba(6,182,212,0.25)]">
+                            <Camera size={20} className="text-cyan-300 drop-shadow-[0_0_4px_rgba(6,182,212,0.5)]" />
                         </div>
                         <div>
-                            <h3 className="text-[12px] font-[1000] text-cyan-400 uppercase tracking-[0.2em]">Foto Biométrica</h3>
-                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">Control de Identidad de Acceso</p>
+                            <h3 className="text-[12px] font-[1000] text-cyan-300 uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Foto Biométrica</h3>
+                            <p className="text-[9px] text-cyan-400/60 uppercase tracking-widest mt-0.5">Control de Identidad de Acceso</p>
                         </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-6">
                         {/* Circular Neon Preview */}
-                        <div className="relative w-24 h-24 rounded-full p-0.5 bg-gradient-to-br from-cyan-400 to-indigo-500 shadow-[0_0_20px_rgba(6,182,212,0.25)] flex-shrink-0 animate-[pulse_4s_infinite_ease-in-out]">
-                            <div className="w-full h-full bg-zinc-900 rounded-full overflow-hidden flex items-center justify-center relative">
+                        <div className="relative w-24 h-24 rounded-full p-0.5 bg-gradient-to-br from-cyan-400 via-indigo-500 to-purple-500 shadow-[0_0_25px_rgba(34,211,238,0.4)] flex-shrink-0">
+                            <div className="w-full h-full bg-zinc-950 rounded-full overflow-hidden flex items-center justify-center relative">
                                 {editableShop.ownerPhoto ? (
                                     <img src={editableShop.ownerPhoto} alt="Owner" className="w-full h-full object-cover" />
                                 ) : (
-                                    <User size={36} className="text-white/20" />
+                                    <User size={36} className="text-white/20 animate-pulse" />
                                 )}
                             </div>
                         </div>
@@ -464,13 +471,13 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                             <div className="grid grid-cols-2 gap-2">
                                 <button
                                     onClick={() => document.getElementById('fileUpload')?.click()}
-                                    className="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wider text-white transition-all active:scale-95"
+                                    className="bg-cyan-500/10 border border-cyan-400/30 hover:bg-cyan-500/20 hover:border-cyan-400/60 rounded-xl py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wider text-cyan-300 transition-all active:scale-95 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
                                 >
                                     <Upload size={14} className="text-cyan-400" /> Archivo
                                 </button>
                                 <button
                                     onClick={() => document.getElementById('cameraUpload')?.click()}
-                                    className="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wider text-white transition-all active:scale-95"
+                                    className="bg-cyan-500/10 border border-cyan-400/30 hover:bg-cyan-500/20 hover:border-cyan-400/60 rounded-xl py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wider text-cyan-300 transition-all active:scale-95 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
                                 >
                                     <Camera size={14} className="text-cyan-400" /> Tomar Selfie
                                 </button>
@@ -482,7 +489,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                                         playNeonClick();
                                         setEditableShop(prev => ({ ...prev, ownerPhoto: '' }));
                                     }}
-                                    className="w-full bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 rounded-xl py-2 flex items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-red-400 transition-colors"
+                                    className="w-full bg-red-500/15 border border-red-500/40 hover:bg-red-500/25 rounded-xl py-2 flex items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-red-400 transition-colors shadow-[0_0_10px_rgba(239,68,68,0.1)]"
                                 >
                                     <Trash2 size={10} /> Quitar Foto
                                 </button>
@@ -493,95 +500,95 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                 </div>
 
                 {/* FORM FIELDS */}
-                <div className="space-y-6 bg-zinc-950/40 border border-white/5 rounded-[2rem] p-6">
-                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.25em] mb-4 border-b border-white/5 pb-2">Información de Catálogo</h3>
+                <div className="space-y-6 bg-[#0b0b1f]/80 border border-indigo-500/30 rounded-[2.2rem] p-6 shadow-[0_0_30px_rgba(99,102,241,0.1)] backdrop-blur-xl">
+                    <h3 className="text-[10px] font-black text-indigo-300 uppercase tracking-[0.25em] mb-4 border-b border-indigo-500/20 pb-2 drop-shadow-[0_0_5px_rgba(165,180,252,0.4)]">Información de Catálogo</h3>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-white/40 ml-2 mb-2">Nombre del Comercio *</label>
+                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400 ml-2 mb-2">Nombre del Comercio *</label>
                             <input
                                 required
                                 value={editableShop.name}
                                 onChange={(e) => setEditableShop({ ...editableShop, name: e.target.value })}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-500 text-sm font-bold placeholder:text-white/20"
+                                className="w-full bg-black/60 border border-zinc-700/80 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.25)] text-sm font-bold text-white placeholder:text-white/20 transition-all"
                                 placeholder="Ej: Pizza Blu"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-white/40 ml-2 mb-2">Slug (URL del comercio)</label>
+                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400 ml-2 mb-2">Slug (URL del comercio)</label>
                             <input
                                 value={editableShop.slug}
                                 onChange={(e) => setEditableShop({ ...editableShop, slug: e.target.value })}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-500 text-sm font-mono placeholder:text-white/20"
+                                className="w-full bg-black/60 border border-zinc-700/80 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.25)] text-sm font-mono text-white placeholder:text-white/20 transition-all"
                                 placeholder="Ej: pizza-blu"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-white/40 ml-2 mb-2">Nombre del Propietario</label>
+                        <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400 ml-2 mb-2">Nombre del Propietario</label>
                         <input
                             value={editableShop.ownerName}
                             onChange={(e) => setEditableShop({ ...editableShop, ownerName: e.target.value })}
-                            className="w-full bg-zinc-900 border border-white/10 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-500 text-sm font-bold"
+                            className="w-full bg-black/60 border border-zinc-700/80 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.25)] text-sm font-bold text-white transition-all"
                             placeholder="Ej: Juan Pérez"
                         />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-white/40 ml-2 mb-2">Especialidad / Descripción Corta</label>
+                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400 ml-2 mb-2">Especialidad / Descripción Corta</label>
                             <input
                                 value={editableShop.specialty}
                                 onChange={(e) => setEditableShop({ ...editableShop, specialty: e.target.value })}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-500 text-sm"
+                                className="w-full bg-black/60 border border-zinc-700/80 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.25)] text-sm text-white transition-all"
                                 placeholder="Ej: Especialistas en masa madre"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-white/40 ml-2 mb-2">Teléfono de WhatsApp</label>
+                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400 ml-2 mb-2">Teléfono de WhatsApp</label>
                             <input
                                 type="tel"
                                 value={editableShop.phone}
                                 onChange={(e) => setEditableShop({ ...editableShop, phone: e.target.value })}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-500 text-sm font-mono"
+                                className="w-full bg-black/60 border border-zinc-700/80 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.25)] text-sm font-mono text-white transition-all"
                                 placeholder="Ej: 1122334455"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-white/40 ml-2 mb-2">Dirección Física</label>
+                        <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400 ml-2 mb-2">Dirección Física</label>
                         <input
                             value={editableShop.address}
                             onChange={(e) => setEditableShop({ ...editableShop, address: e.target.value })}
-                            className="w-full bg-zinc-900 border border-white/10 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-500 text-sm"
+                            className="w-full bg-black/60 border border-zinc-700/80 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.25)] text-sm text-white transition-all"
                             placeholder="Ej: Alem 450, Monte Grande"
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-white/5 pt-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-indigo-500/20 pt-6">
                         <div>
-                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-cyan-400 ml-2 mb-2">Gmail del Propietario *</label>
+                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-cyan-300 ml-2 mb-2">Gmail del Propietario *</label>
                             <input
                                 required
                                 type="email"
                                 value={editableShop.gmail}
                                 onChange={(e) => setEditableShop({ ...editableShop, gmail: e.target.value })}
-                                className="w-full bg-zinc-900 border border-cyan-500/25 rounded-2xl py-3 px-4 focus:outline-none focus:border-cyan-400 text-sm font-bold text-cyan-400"
+                                className="w-full bg-black/60 border border-cyan-500/40 rounded-2xl py-3 px-4 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_20px_rgba(34,211,238,0.3)] text-sm font-bold text-cyan-300 transition-all"
                                 placeholder="Ej: juan.perez@gmail.com"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-white/40 ml-2 mb-2">Gmail Adicional Autorizado</label>
+                            <label className="block text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400 ml-2 mb-2">Gmail Adicional Autorizado</label>
                             <input
                                 type="email"
                                 value={editableShop.authorizedEmail}
                                 onChange={(e) => setEditableShop({ ...editableShop, authorizedEmail: e.target.value })}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-500 text-sm"
+                                className="w-full bg-black/60 border border-zinc-700/80 rounded-2xl py-3 px-4 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.25)] text-sm text-white transition-all"
                                 placeholder="Ej: encargado@gmail.com"
                             />
                         </div>
@@ -589,15 +596,15 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                 </div>
 
                 {/* VIP LOYALTY TERMINAL */}
-                <div className="bg-zinc-900/40 border border-cyan-500/20 rounded-[2rem] p-6 relative overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.05)]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/5 rounded-full blur-[40px] pointer-events-none" />
+                <div className="bg-[#0b0b1f]/80 border border-cyan-400/45 rounded-[2.2rem] p-6 relative overflow-hidden shadow-[0_0_35px_rgba(34,211,238,0.15)] backdrop-blur-xl">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 rounded-full blur-[40px] pointer-events-none" />
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-                            <Award size={20} className="text-cyan-400" />
+                        <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center border border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.25)]">
+                            <Award size={20} className="text-cyan-300 drop-shadow-[0_0_4px_rgba(34,211,238,0.5)]" />
                         </div>
                         <div>
-                            <h3 className="text-[12px] font-[1000] text-cyan-400 uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Punto de Venta VIP</h3>
-                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">Gestión de Puntos</p>
+                            <h3 className="text-[12px] font-[1000] text-cyan-300 uppercase tracking-[0.2em] drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]">Punto de Venta VIP</h3>
+                            <p className="text-[9px] text-cyan-400/60 uppercase tracking-widest mt-0.5">Gestión de Puntos</p>
                         </div>
                     </div>
 
@@ -607,12 +614,12 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearchClient()}
-                            className="flex-1 bg-black/50 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_10px_rgba(34,211,238,0.2)] transition-all font-mono"
+                            className="flex-1 bg-black/60 border border-zinc-700/80 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.25)] transition-all font-mono"
                             placeholder="DNI, Teléfono o Nombre"
                         />
                         <button
                             onClick={handleSearchClient}
-                            className="bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 rounded-xl px-4 flex items-center justify-center hover:bg-cyan-500/30 active:scale-95 transition-all"
+                            className="bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 rounded-xl px-4 flex items-center justify-center hover:bg-cyan-500/30 active:scale-95 transition-all shadow-[0_0_10px_rgba(34,211,238,0.15)]"
                         >
                             <Search size={18} />
                         </button>
@@ -621,7 +628,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                     {searchError && <p className="text-red-400 text-[10px] font-bold mt-2 uppercase tracking-wide px-2">{searchError}</p>}
 
                     {foundClient && (
-                        <div className="mt-6 bg-black/60 border border-cyan-500/20 rounded-2xl p-5 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                        <div className="mt-6 bg-black/70 border border-cyan-500/35 rounded-2xl p-5 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-[0_0_20px_rgba(34,211,238,0.1)]">
                             <div className="flex justify-between items-start mb-6">
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 p-0.5 shadow-[0_0_15px_rgba(34,211,238,0.3)]">
@@ -631,51 +638,51 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-sm font-black text-white uppercase tracking-wider">{foundClient.name}</span>
-                                        <span className="text-[10px] text-cyan-400/80 uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                                        <span className="text-[10px] text-cyan-400/85 uppercase tracking-widest flex items-center gap-1 mt-0.5 drop-shadow-[0_0_4px_rgba(34,211,238,0.4)]">
                                             <Coins size={10} /> Saldo: {foundClient.points || 0} pts
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3 ml-1">Sumar Puntos de Compra</p>
+                            <p className="text-[8px] font-bold text-white/40 uppercase tracking-[0.2em] mb-3 ml-1">Sumar Puntos de Compra</p>
                             <div className="grid grid-cols-4 gap-2 mb-4">
                                 {[5, 10, 15, 20].map((pts) => (
                                     <button
                                         key={pts}
                                         onClick={() => handleAwardPoints(pts)}
                                         disabled={isUpdatingPoints}
-                                        className="bg-green-500/10 border border-green-500/30 rounded-xl py-3 flex flex-col items-center justify-center hover:bg-green-500/20 active:scale-95 transition-all disabled:opacity-50"
+                                        className="bg-emerald-500/10 border-2 border-emerald-400/50 rounded-xl py-3 flex flex-col items-center justify-center hover:bg-emerald-500/20 active:scale-95 transition-all disabled:opacity-50 shadow-[0_0_10px_rgba(16,185,129,0.15)] text-emerald-300"
                                     >
-                                        <span className="text-[14px] font-[1000] text-green-400 leading-none">+{pts}</span>
-                                        <span className="text-[7px] text-green-400/60 uppercase tracking-widest mt-1">Pts</span>
+                                        <span className="text-[14px] font-[1000] leading-none">{pts}</span>
+                                        <span className="text-[7px] text-emerald-400/80 uppercase tracking-widest mt-1">Pts</span>
                                     </button>
                                 ))}
                             </div>
 
-                            <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3 ml-1 mt-6">Canjear Recompensas</p>
+                            <p className="text-[8px] font-bold text-white/40 uppercase tracking-[0.2em] mb-3 ml-1 mt-6">Canjear Recompensas</p>
                             <button
                                 onClick={handleRedeemPoints}
                                 disabled={isUpdatingPoints || (foundClient.points || 0) === 0}
-                                className="w-full relative group bg-indigo-500/10 border border-indigo-500/30 rounded-xl py-4 flex items-center justify-center gap-2 hover:bg-indigo-500/20 active:scale-95 transition-all disabled:opacity-50"
+                                className="w-full relative group bg-indigo-500/15 border-2 border-indigo-400/50 rounded-xl py-4 flex items-center justify-center gap-2 hover:bg-indigo-500/25 active:scale-95 transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(99,102,241,0.2)] text-indigo-300 font-black uppercase tracking-widest text-[10px]"
                             >
                                 <Coins size={16} className="text-indigo-400 relative z-10" />
-                                <span className="text-[11px] font-black uppercase tracking-widest text-indigo-400 relative z-10">Cobrar con Puntos</span>
+                                <span className="relative z-10">Cobrar con Puntos</span>
                             </button>
                         </div>
                     )}
                 </div>
 
                 {/* MIS FACTURAS TERMINAL */}
-                <div className="bg-zinc-900/40 border border-green-500/20 rounded-[2rem] p-6 relative overflow-hidden shadow-[0_0_30px_rgba(34,197,94,0.05)]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-400/5 rounded-full blur-[40px] pointer-events-none" />
+                <div className="bg-[#0b0b1f]/80 border border-green-400/40 rounded-[2.2rem] p-6 relative overflow-hidden shadow-[0_0_35px_rgba(34,197,94,0.15)] backdrop-blur-xl">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-400/10 rounded-full blur-[40px] pointer-events-none" />
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center border border-green-400/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
-                            <FileText size={20} className="text-green-400" />
+                        <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center border border-green-400/40 shadow-[0_0_15px_rgba(34,197,94,0.25)]">
+                            <FileText size={20} className="text-green-300 drop-shadow-[0_0_4px_rgba(34,197,94,0.5)]" />
                         </div>
                         <div>
-                            <h3 className="text-[12px] font-[1000] text-green-400 uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]">Suscripción y Pagos</h3>
-                            <p className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">Mis Facturas Mensuales</p>
+                            <h3 className="text-[12px] font-[1000] text-green-300 uppercase tracking-[0.2em] drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]">Suscripción y Pagos</h3>
+                            <p className="text-[9px] text-green-400/60 uppercase tracking-widest mt-0.5">Mis Facturas Mensuales</p>
                         </div>
                     </div>
 
@@ -684,20 +691,20 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                             <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest text-center py-4">No tenés facturas registradas</p>
                         ) : (
                             shopInvoices.map(inv => (
-                                <div key={inv.id} className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden hover:border-green-500/30 transition-colors">
+                                <div key={inv.id} className="bg-black/60 border border-zinc-700/60 rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden hover:border-green-500/40 transition-colors shadow-[0_0_10px_rgba(0,0,0,0.3)]">
                                     <div className="flex justify-between items-start z-10">
                                         <div>
                                             <p className="text-[11px] font-[1000] text-white uppercase tracking-wider">{inv.concept}</p>
                                             <p className="text-[8px] font-bold text-white/40 uppercase tracking-widest mt-1">Vence: {new Date(inv.dueDate).toLocaleDateString()}</p>
                                         </div>
-                                        <div className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 ${inv.status === 'paid' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-500'}`}>
+                                        <div className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 ${inv.status === 'paid' ? 'bg-green-500/10 border-green-500/30 text-green-400 animate-pulse' : 'bg-red-500/10 border-red-500/30 text-red-500 animate-pulse'}`}>
                                             {inv.status === 'paid' ? <CheckCircle size={10} /> : <Clock size={10} />}
                                             {inv.status === 'paid' ? 'Pagado' : 'Pendiente'}
                                         </div>
                                     </div>
                                     
                                     <div className="flex items-center justify-between mt-1 z-10 border-t border-white/5 pt-3">
-                                        <div className="text-xl font-[1000] text-green-400 tracking-wider">${inv.amount}</div>
+                                        <div className="text-xl font-[1000] text-green-400 tracking-wider drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">${inv.amount}</div>
                                         <button 
                                             onClick={() => {
                                                 playNeonClick();
@@ -727,15 +734,15 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                                 alert('Faltan datos para generar la ruta de la credencial');
                             }
                         }}
-                        className="w-full glass-action-btn btn-cyan-neon py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[11px] active:scale-95 transition-all shadow-[0_0_20px_rgba(34,211,238,0.15)]"
+                        className="w-full bg-gradient-to-r from-cyan-500 via-teal-500 to-indigo-500 hover:from-cyan-400 hover:via-teal-400 hover:to-indigo-400 text-black font-[1000] py-5 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-[0.2em] text-[11px] active:scale-95 transition-all shadow-[0_0_35px_rgba(6,182,212,0.4)] hover:shadow-[0_0_45px_rgba(6,182,212,0.6)] border border-cyan-300/30"
                     >
-                        <ExternalLink size={20} className="text-cyan-400 animate-pulse" /> Ver Credencial
+                        <ExternalLink size={20} className="text-black drop-shadow-[0_0_4px_rgba(255,255,255,0.8)]" /> Ver Credencial
                     </button>
 
                     <button 
                         onClick={handleSave} 
                         disabled={isSaving}
-                        className="w-full bg-violet-600 hover:bg-violet-500 py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[11px] shadow-[0_0_30px_rgba(139,92,246,0.3)] active:scale-95 transition-all disabled:opacity-50"
+                        className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-purple-600 hover:from-violet-500 hover:via-fuchsia-500 hover:to-purple-500 text-white font-[1000] py-5 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-[0.2em] text-[11px] shadow-[0_0_35px_rgba(139,92,246,0.4)] hover:shadow-[0_0_45px_rgba(139,92,246,0.6)] border border-violet-400/30 active:scale-95 transition-all disabled:opacity-50"
                     >
                         {isSaving ? (
                             <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -748,6 +755,17 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                 </div>
 
             </div>
+            
+            <style dangerouslySetInnerHTML={{__html: `
+                @keyframes pulse-glow {
+                    0%, 100% { box-shadow: 0 0 25px rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.3); }
+                    50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.3); border-color: rgba(6, 182, 212, 0.5); }
+                }
+                @keyframes scanner-line {
+                    0% { transform: translateY(-50%); }
+                    100% { transform: translateY(50%); }
+                }
+            `}} />
         </div>
     );
 };
