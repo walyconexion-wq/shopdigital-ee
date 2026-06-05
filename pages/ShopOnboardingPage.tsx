@@ -263,21 +263,35 @@ const ShopOnboardingPage: React.FC<ShopOnboardingPageProps> = ({ allShops }) => 
         if (!shop.phone) { alert('⚠️ El comercio no tiene teléfono. La artillería no puede disparar.'); return; }
         setIsFuegoRunning(true);
         setFuegoProgress(0);
-        const result = await sendMakeWebhook(buildPayload(shop, 'fuego_total'));
-        if (result.ok) {
-            // Marcar todos como enviados y animar progreso
-            for (let i = 0; i <= 100; i += 20) {
-                setFuegoProgress(i);
-                await new Promise(r => setTimeout(r, 150));
+        
+        const activeTriggers = TRIGGERS.filter(t => t.id !== 'validar');
+        
+        for (let i = 0; i < activeTriggers.length; i++) {
+            const t = activeTriggers[i];
+            setAutoStatus(prev => ({ ...prev, [t.id]: 'sending' }));
+            const result = await sendMakeWebhook(buildPayload(shop, t.id));
+            
+            if (result.ok) {
+                markSent(t.id);
+                setAutoStatus(prev => ({ ...prev, [t.id]: 'ok' }));
+            } else {
+                setAutoStatus(prev => ({ ...prev, [t.id]: 'error' }));
+                setIsFuegoRunning(false);
+                alert(`⚠️ Error enviando ${t.label} automático. Secuencia abortada.\nError: ${result.error}`);
+                return;
             }
-            TRIGGERS.forEach(t => markSent(t.id));
-            setIsFuegoRunning(false);
-            setMissionComplete(true);
-            playSuccessSound();
-        } else {
-            setIsFuegoRunning(false);
-            alert(`⚠️ Make.com no respondió. Intentá el Fuego Manual como respaldo.\nError: ${result.error}`);
+            
+            setFuegoProgress(Math.round(((i + 1) / activeTriggers.length) * 100));
+            
+            if (i < activeTriggers.length - 1) {
+                // Esperar 30 segundos entre envíos automáticos para evitar bloqueo de Meta
+                await new Promise(r => setTimeout(r, 30000));
+            }
         }
+        
+        setIsFuegoRunning(false);
+        setMissionComplete(true);
+        playSuccessSound();
     };
 
     const openWhatsApp = (shop: Shop, trigger: Trigger) => {

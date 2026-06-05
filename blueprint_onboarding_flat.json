@@ -1,0 +1,999 @@
+{
+  "flow": [
+    {
+      "id": 1,
+      "mapper": {},
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "metadata": {
+        "restore": {
+          "parameters": {
+            "hook": {
+              "data": {
+                "editable": "true"
+              },
+              "label": "Oido_ShopDigital."
+            }
+          }
+        },
+        "designer": {
+          "x": 300,
+          "y": 300
+        }
+      },
+      "parameters": {
+        "hook": 2395810,
+        "maxResults": 1
+      }
+    },
+    {
+      "id": 6,
+      "mapper": {
+        "body": "{{1.`hub.challenge`}}",
+        "status": "200"
+      },
+      "module": "gateway:WebhookRespond",
+      "version": 1,
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 150
+        }
+      },
+      "parameters": {}
+    },
+    {
+      "id": 7,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "metadata": {
+        "designer": {
+          "x": 500,
+          "y": 300
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 2,
+              "filter": {
+                "label": "Only on WhatsApp Message",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{1.object}}",
+                      "b": "whatsapp_business_account",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              },
+              "mapper": {
+                "model": "gemini-2.5-flash",
+                "contents": [
+                  {
+                    "role": "user",
+                    "parts": [
+                      {
+                        "text": "{{1.entry[1].changes[1].value.messages[1].text.body}}",
+                        "type": "text"
+                      }
+                    ]
+                  }
+                ],
+                "generationConfig": {
+                  "imageConfig": {},
+                  "thinkingConfig": {}
+                },
+                "system_instruction": {
+                  "parts": [
+                    {
+                      "text": "Sos Luz, el asistente oficial de ShopDigital. Eres un bot de atención al cliente útil, amable y eficiente."
+                    }
+                  ]
+                }
+              },
+              "module": "gemini-ai:createACompletionGeminiPro",
+              "version": 1,
+              "metadata": {
+                "expect": [
+                  {
+                    "name": "model",
+                    "type": "select",
+                    "label": "AI Model",
+                    "required": true
+                  },
+                  {
+                    "name": "contents",
+                    "spec": [
+                      {
+                        "name": "role",
+                        "type": "select",
+                        "label": "Role",
+                        "options": [
+                          {
+                            "label": "User",
+                            "value": "user"
+                          },
+                          {
+                            "label": "Model",
+                            "value": "model"
+                          }
+                        ],
+                        "required": true
+                      },
+                      {
+                        "name": "parts",
+                        "spec": [
+                          {
+                            "name": "type",
+                            "type": "select",
+                            "label": "Message Type",
+                            "options": [
+                              {
+                                "label": "Text",
+                                "value": "text",
+                                "nested": [
+                                  {
+                                    "name": "text",
+                                    "type": "text",
+                                    "label": "Text",
+                                    "required": true
+                                  }
+                                ]
+                              },
+                              {
+                                "label": "File",
+                                "value": "file",
+                                "nested": [
+                                  {
+                                    "name": "file_data",
+                                    "spec": [
+                                      {
+                                        "name": "mime_type",
+                                        "type": "text",
+                                        "label": "Mime Type",
+                                        "required": true
+                                      },
+                                      {
+                                        "help": "You can use public or signed URLs as input by using the URLs.",
+                                        "name": "file_uri",
+                                        "type": "text",
+                                        "label": "File URI",
+                                        "required": true
+                                      }
+                                    ],
+                                    "type": "collection",
+                                    "label": "File Data",
+                                    "required": true
+                                  }
+                                ]
+                              },
+                              {
+                                "label": "Function Call",
+                                "value": "functionCall",
+                                "nested": [
+                                  {
+                                    "name": "functionCall",
+                                    "spec": [
+                                      {
+                                        "help": "The name of the function to call.",
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name",
+                                        "required": true,
+                                        "validate": {
+                                          "max": 64
+                                        }
+                                      },
+                                      {
+                                        "help": "The function parameters and values in JSON object format.",
+                                        "name": "args",
+                                        "type": "json",
+                                        "label": "Arguments"
+                                      },
+                                      {
+                                        "help": "The unique ID of the function call.",
+                                        "name": "id",
+                                        "type": "text",
+                                        "label": "Function Call ID"
+                                      }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Function Call"
+                                  }
+                                ]
+                              },
+                              {
+                                "label": "Function Response",
+                                "value": "functionResponse",
+                                "nested": [
+                                  {
+                                    "name": "functionResponse",
+                                    "spec": [
+                                      {
+                                        "help": "The name of the function to call.",
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name",
+                                        "required": true,
+                                        "validate": {
+                                          "max": 64
+                                        }
+                                      },
+                                      {
+                                        "help": "The function response in JSON object format.",
+                                        "name": "response",
+                                        "type": "json",
+                                        "label": "Response",
+                                        "required": true
+                                      }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Function Response"
+                                  }
+                                ]
+                              }
+                            ],
+                            "required": true
+                          },
+                          {
+                            "name": "thoughtSignature",
+                            "type": "text",
+                            "label": "Thought Signature"
+                          }
+                        ],
+                        "type": "array",
+                        "label": "Parts",
+                        "required": true
+                      }
+                    ],
+                    "type": "array",
+                    "label": "Messages",
+                    "required": true
+                  },
+                  {
+                    "name": "system_instruction",
+                    "spec": [
+                      {
+                        "name": "parts",
+                        "spec": {
+                          "name": "value",
+                          "spec": [
+                            {
+                              "name": "text",
+                              "type": "text",
+                              "label": "Value"
+                            }
+                          ],
+                          "type": "collection",
+                          "label": "Prompt"
+                        },
+                        "type": "array",
+                        "label": "Prompts"
+                      }
+                    ],
+                    "type": "collection",
+                    "label": "System Instructions"
+                  },
+                  {
+                    "name": "safetySettings",
+                    "spec": [
+                      {
+                        "name": "category",
+                        "type": "select",
+                        "label": "Category",
+                        "options": [
+                          {
+                            "label": "Harassment content",
+                            "value": "HARM_CATEGORY_HARASSMENT"
+                          },
+                          {
+                            "label": "Hate speech and content",
+                            "value": "HARM_CATEGORY_HATE_SPEECH"
+                          },
+                          {
+                            "label": "Sexually explicit content.",
+                            "value": "HARM_CATEGORY_SEXUALLY_EXPLICIT"
+                          },
+                          {
+                            "label": "Dangerous content:",
+                            "value": "HARM_CATEGORY_DANGEROUS_CONTENT"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "threshold",
+                        "type": "select",
+                        "label": "Threshold",
+                        "options": [
+                          {
+                            "label": "Block low and above.",
+                            "value": "BLOCK_LOW_AND_ABOVE"
+                          },
+                          {
+                            "label": "Block medium and above.",
+                            "value": "BLOCK_MEDIUM_AND_ABOVE"
+                          },
+                          {
+                            "label": "Block only high.",
+                            "value": "BLOCK_ONLY_HIGH"
+                          },
+                          {
+                            "label": "Block none.",
+                            "value": "BLOCK_NONE"
+                          }
+                        ]
+                      }
+                    ],
+                    "type": "array",
+                    "label": "Safety Settings"
+                  },
+                  {
+                    "name": "generationConfig",
+                    "spec": [
+                      {
+                        "name": "stopSequences",
+                        "spec": {
+                          "name": "value",
+                          "type": "text",
+                          "label": "Stop Sequence"
+                        },
+                        "type": "array",
+                        "label": "Stop Sequences"
+                      },
+                      {
+                        "name": "responseModalities",
+                        "type": "select",
+                        "label": "Response Modalities",
+                        "multiple": true,
+                        "validate": {
+                          "enum": [
+                            "text",
+                            "image"
+                          ]
+                        }
+                      },
+                      {
+                        "name": "maxOutputTokens",
+                        "type": "number",
+                        "label": "Max Output Tokens"
+                      },
+                      {
+                        "name": "temperature",
+                        "type": "number",
+                        "label": "Temperature",
+                        "validate": {
+                          "max": 1,
+                          "min": 0
+                        }
+                      },
+                      {
+                        "name": "topP",
+                        "type": "number",
+                        "label": "Top P",
+                        "validate": {
+                          "max": 1,
+                          "min": 0
+                        }
+                      },
+                      {
+                        "name": "topK",
+                        "type": "number",
+                        "label": "Top K"
+                      },
+                      {
+                        "name": "thinkingConfig",
+                        "spec": [
+                          {
+                            "name": "thinkingBudget",
+                            "type": "number",
+                            "label": "Thinking Budget"
+                          },
+                          {
+                            "name": "include_thoughts",
+                            "type": "boolean",
+                            "label": "Include Thoughts"
+                          },
+                          {
+                            "name": "thinking_level",
+                            "type": "select",
+                            "label": "Thinking Level",
+                            "validate": {
+                              "enum": [
+                                "low",
+                                "high"
+                              ]
+                            }
+                          }
+                        ],
+                        "type": "collection",
+                        "label": "Thinking Config"
+                      },
+                      {
+                        "name": "mediaResolution",
+                        "type": "select",
+                        "label": "Media Resolution",
+                        "validate": {
+                          "enum": [
+                            "media_resolution_low",
+                            "media_resolution_medium",
+                            "media_resolution_high"
+                          ]
+                        }
+                      },
+                      {
+                        "name": "imageConfig",
+                        "spec": [
+                          {
+                            "name": "imageSize",
+                            "type": "select",
+                            "label": "Image Size",
+                            "validate": {
+                              "enum": [
+                                "1K",
+                                "2K",
+                                "4K"
+                              ]
+                            }
+                          }
+                        ],
+                        "type": "collection",
+                        "label": "Image Configuration"
+                      },
+                      {
+                        "name": "responseMimeType",
+                        "type": "select",
+                        "label": "Response Format"
+                      }
+                    ],
+                    "type": "collection",
+                    "label": "Generation configurations"
+                  },
+                  {
+                    "name": "tools",
+                    "type": "any",
+                    "label": "Tools"
+                  },
+                  {
+                    "name": "tool_config",
+                    "type": "any",
+                    "label": "Tool Config"
+                  },
+                  {
+                    "name": "function_declarations_context",
+                    "type": "boolean",
+                    "label": "Function Declarations Grounding"
+                  },
+                  {
+                    "name": "url_context",
+                    "type": "boolean",
+                    "label": "URL Context"
+                  },
+                  {
+                    "name": "google_search_context",
+                    "type": "boolean",
+                    "label": "Google Search Grounding"
+                  },
+                  {
+                    "name": "code_execution",
+                    "type": "boolean",
+                    "label": "Code Execution"
+                  },
+                  {
+                    "name": "google_maps_context",
+                    "type": "boolean",
+                    "label": "Google Maps Grounding"
+                  },
+                  {
+                    "name": "file_search_store_context",
+                    "type": "boolean",
+                    "label": "File Search Store Context"
+                  },
+                  {
+                    "name": "serviceTier",
+                    "type": "select",
+                    "label": "Inference Service Tier"
+                  }
+                ],
+                "restore": {
+                  "expect": {
+                    "model": {
+                      "mode": "chose",
+                      "label": "Géminis 2.5 FlashFecha de descontinuación: 16 de octubre de 2026"
+                    },
+                    "contents": {
+                      "mode": "chose",
+                      "items": [
+                        {
+                          "role": {
+                            "mode": "chose",
+                            "label": "Usuario"
+                          },
+                          "parts": {
+                            "mode": "chose",
+                            "items": [
+                              {
+                                "type": {
+                                  "mode": "chose",
+                                  "label": "Texto"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "serviceTier": {
+                      "mode": "chose",
+                      "label": "Vacío"
+                    },
+                    "url_context": {
+                      "mode": "chose"
+                    },
+                    "code_execution": {
+                      "mode": "chose"
+                    },
+                    "safetySettings": {
+                      "mode": "chose"
+                    },
+                    "generationConfig": {
+                      "nested": {
+                        "imageConfig": {
+                          "nested": {
+                            "imageSize": {
+                              "mode": "chose",
+                              "label": "Vacío"
+                            }
+                          }
+                        },
+                        "stopSequences": {
+                          "mode": "chose"
+                        },
+                        "thinkingConfig": {
+                          "nested": {
+                            "thinking_level": {
+                              "mode": "chose",
+                              "label": "Vacío"
+                            },
+                            "include_thoughts": {
+                              "mode": "chose"
+                            }
+                          }
+                        },
+                        "mediaResolution": {
+                          "mode": "chose",
+                          "label": "Vacío"
+                        },
+                        "responseMimeType": {
+                          "mode": "chose",
+                          "label": "Vacío"
+                        },
+                        "responseModalities": {
+                          "mode": "chose"
+                        }
+                      }
+                    },
+                    "system_instruction": {
+                      "nested": {
+                        "parts": {
+                          "mode": "chose",
+                          "items": [
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "google_maps_context": {
+                      "mode": "chose"
+                    },
+                    "google_search_context": {
+                      "mode": "chose"
+                    },
+                    "file_search_store_context": {
+                      "mode": "chose"
+                    },
+                    "function_declarations_context": {
+                      "mode": "chose"
+                    }
+                  },
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "data": {
+                        "scoped": "true",
+                        "connection": "gemini-ai-q9zyjp"
+                      },
+                      "label": "Mi conexión con la IA de Géminis"
+                    }
+                  }
+                },
+                "designer": {
+                  "x": 750,
+                  "y": 100
+                },
+                "parameters": [
+                  {
+                    "name": "__IMTCONN__",
+                    "type": "account:gemini-ai-q9zyjp",
+                    "label": "Connection",
+                    "required": true
+                  }
+                ]
+              },
+              "parameters": {
+                "__IMTCONN__": 7290067
+              }
+            },
+            {
+              "id": 5,
+              "mapper": {
+                "to": "{{1.entry[1].changes[1].value.messages[1].from}}",
+                "text": {
+                  "body": "{{2.candidates[1].content.parts[1].text}}",
+                  "preview_url": false
+                },
+                "type": "text",
+                "fromId": "{{1.entry[1].changes[1].value.metadata.phone_number_id}}"
+              },
+              "module": "whatsapp-business-cloud:sendMessage",
+              "version": 1,
+              "metadata": {
+                "expect": [
+                  {
+                    "name": "fromId",
+                    "type": "select",
+                    "label": "Sender ID",
+                    "required": true
+                  },
+                  {
+                    "name": "to",
+                    "type": "text",
+                    "label": "Receiver",
+                    "required": true
+                  },
+                  {
+                    "name": "type",
+                    "type": "select",
+                    "label": "Message Type",
+                    "required": true,
+                    "validate": {
+                      "enum": [
+                        "text",
+                        "image",
+                        "audio",
+                        "video",
+                        "document",
+                        "sticker",
+                        "location",
+                        "contacts",
+                        "interactive"
+                      ]
+                    }
+                  },
+                  {
+                    "name": "text",
+                    "spec": [
+                      {
+                        "name": "body",
+                        "type": "text",
+                        "label": "Body",
+                        "required": true,
+                        "validate": {
+                          "max": 4096
+                        }
+                      },
+                      {
+                        "name": "preview_url",
+                        "type": "boolean",
+                        "label": "Preview URL",
+                        "required": true
+                      }
+                    ],
+                    "type": "collection",
+                    "label": "Text"
+                  }
+                ],
+                "restore": {
+                  "expect": {
+                    "text": {
+                      "nested": {
+                        "preview_url": {
+                          "mode": "chose"
+                        }
+                      }
+                    },
+                    "type": {
+                      "label": "Texto"
+                    },
+                    "fromId": {
+                      "mode": "chose",
+                      "label": "Tienda Digital (+54 9 11 4060-7059)"
+                    }
+                  },
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "data": {
+                        "scoped": "true",
+                        "connection": "whatsapp-business-cloud"
+                      },
+                      "label": "Mi conexión a la nube de WhatsApp Business (Tienda digital (938226901870944))"
+                    }
+                  }
+                },
+                "designer": {
+                  "x": 1000,
+                  "y": 100
+                },
+                "parameters": [
+                  {
+                    "name": "__IMTCONN__",
+                    "type": "account:whatsapp-business-cloud,whatsapp-business-cloud2",
+                    "label": "Connection",
+                    "required": true
+                  }
+                ]
+              },
+              "parameters": {
+                "__IMTCONN__": 9201390
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 10,
+              "module": "whatsapp-business-cloud:sendMessage",
+              "version": 1,
+              "parameters": {
+                "__IMTCONN__": 9201390
+              },
+              "mapper": {
+                "to": "{{1.phone}}",
+                "text": {
+                  "body": "🚀 ¡Hola {{1.ownerName}}! Soy tu Embajadora de ShopDigital.\n\nTu local *{{1.shopName}}* acaba de ser incorporado oficialmente a nuestra red comercial.\n\n¿Estás listo para recibir tu *Kit de Bienvenida Digital*? 🎯\n\nRespondé *\"SI\"* para confirmar y activar tu arsenal completo ✅",
+                  "preview_url": false
+                },
+                "type": "text",
+                "fromId": "1059176120608663"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 750,
+                  "y": 250
+                }
+              },
+              "filter": {
+                "label": "Trigger: validar",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{1.triggerType}}",
+                      "b": "validar",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 11,
+              "module": "whatsapp-business-cloud:sendMessage",
+              "version": 1,
+              "parameters": {
+                "__IMTCONN__": 9201390
+              },
+              "mapper": {
+                "to": "{{1.phone}}",
+                "text": {
+                  "body": "🏆 ¡Excelente {{1.ownerName}}! Aquí está tu *Credencial Electrónica Oficial* de ShopDigital:\n\n🔗 {{1.credencialUrl}}\n\nMostrásela a tus clientes para que accedan a descuentos y beneficios exclusivos en tu local 💎\n\nTu número de socio: *#{{1.memberNumber}}*",
+                  "preview_url": false
+                },
+                "type": "text",
+                "fromId": "1059176120608663"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 750,
+                  "y": 400
+                }
+              },
+              "filter": {
+                "label": "Trigger: credencial",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{1.triggerType}}",
+                      "b": "credencial",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 12,
+              "module": "whatsapp-business-cloud:sendMessage",
+              "version": 1,
+              "parameters": {
+                "__IMTCONN__": 9201390
+              },
+              "mapper": {
+                "to": "{{1.phone}}",
+                "text": {
+                  "body": "🛍️ {{1.ownerName}}, como socio de ShopDigital tenés acceso a nuestra *Página de Descuentos B2B* exclusiva:\n\n🔗 {{1.descuentosUrl}}\n\nAhorrá en tus compras mayoristas y accedé a precios preferenciales para comerciantes asociados 💰",
+                  "preview_url": false
+                },
+                "type": "text",
+                "fromId": "1059176120608663"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 750,
+                  "y": 550
+                }
+              },
+              "filter": {
+                "label": "Trigger: descuentos",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{1.triggerType}}",
+                      "b": "descuentos",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 13,
+              "module": "whatsapp-business-cloud:sendMessage",
+              "version": 1,
+              "parameters": {
+                "__IMTCONN__": 9201390
+              },
+              "mapper": {
+                "to": "{{1.phone}}",
+                "text": {
+                  "body": "📡 {{1.ownerName}}, te conectamos a nuestros canales oficiales:\n\n🏆 *Canal para Comerciantes Premium* (info, actualizaciones, novedades del sistema):\n{{1.canalComerciantesUrl}}\n\n😎 *Canal \"Clientes Felices\"* (para que veas tu publicidad y lo que ven tus clientes):\n{{1.canalClientesUrl}}\n\n🤖 Para consultas privadas con *ARI*, tu asistente IA 24/7:\n{{1.ariUrl}}",
+                  "preview_url": false
+                },
+                "type": "text",
+                "fromId": "1059176120608663"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 750,
+                  "y": 700
+                }
+              },
+              "filter": {
+                "label": "Trigger: canales",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{1.triggerType}}",
+                      "b": "canales",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 14,
+              "module": "whatsapp-business-cloud:sendMessage",
+              "version": 1,
+              "parameters": {
+                "__IMTCONN__": 9201390
+              },
+              "mapper": {
+                "to": "{{1.phone}}",
+                "text": {
+                  "body": "📖 {{1.ownerName}}, aquí tenés tu *Landing Page* con toda la información de ShopDigital:\n\n🔗 {{1.landingUrl}}\n\nTutorial interactivo, beneficios del sistema y guía completa de uso 🌟\n\n*ARI* te va a guiar en cada paso y está disponible 24/7 en: {{1.ariUrl}}",
+                  "preview_url": false
+                },
+                "type": "text",
+                "fromId": "1059176120608663"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 750,
+                  "y": 850
+                }
+              },
+              "filter": {
+                "label": "Trigger: manual",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{1.triggerType}}",
+                      "b": "manual",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 15,
+              "module": "whatsapp-business-cloud:sendMessage",
+              "version": 1,
+              "parameters": {
+                "__IMTCONN__": 9201390
+              },
+              "mapper": {
+                "to": "{{1.phone}}",
+                "text": {
+                  "body": "🎁 ¡Bienvenido a la red, {{1.ownerName}}! Tu *primer mes es completamente GRATIS*.\n\nPara que veas cómo funciona nuestro sistema de facturación, aquí está tu comprobante:\n\n🔗 {{1.facturaUrl}}\n\n*{{1.shopName}}* ya es parte oficial de ShopDigital. ¡Gracias por confiar en nosotros! 🚀",
+                  "preview_url": false
+                },
+                "type": "text",
+                "fromId": "1059176120608663"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 750,
+                  "y": 1000
+                }
+              },
+              "filter": {
+                "label": "Trigger: factura",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{1.triggerType}}",
+                      "b": "factura",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "designer": {
+      "orphans": []
+    },
+    "scenario": {
+      "dlq": false,
+      "slots": null,
+      "dataloss": false,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "roundtrips": 1,
+      "sequential": false,
+      "confidential": false,
+      "freshVariables": false,
+      "autoCommitTriggerLast": true
+    }
+  }
+}
