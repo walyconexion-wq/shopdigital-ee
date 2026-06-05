@@ -6,15 +6,18 @@ service cloud.firestore {
     // 🛡️ PROTOCOLO DOBERMAN 2.0 — FIRESTORE RULES
     // ═══════════════════════════════════════════
     
-    // Comercios: lectura pública (catálogo), escritura solo autenticados
+    // Comercios: lectura pública (catálogo), creación pública (restringida a inactivos para aprobación), edición solo autenticados
     match /comercios/{comercioId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create: if request.resource.data.isActive == false;
+      allow update, delete: if request.auth != null;
     }
     
-    // Clientes: solo autenticados
+    // Clientes: creación pública (para registro VIP), lectura/edición solo autenticados
     match /clientes/{clienteId} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
     }
     
     // Ofertas: lectura pública, escritura autenticados

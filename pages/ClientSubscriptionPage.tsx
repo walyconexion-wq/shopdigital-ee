@@ -106,6 +106,25 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
 
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+            <style>{`
+                /* Finetuning: Legibilidad de inputs y opciones de select en modo oscuro */
+                input, select, textarea, option {
+                    color: #ffffff !important;
+                    background-color: #0b1329 !important;
+                }
+                input::placeholder, textarea::placeholder {
+                    color: rgba(255, 255, 255, 0.4) !important;
+                }
+                /* Corrección de autocompletado en navegadores móviles/escritorio */
+                input:-webkit-autofill,
+                input:-webkit-autofill:hover, 
+                input:-webkit-autofill:focus, 
+                input:-webkit-autofill:active {
+                    -webkit-box-shadow: 0 0 0 30px #0b1329 inset !important;
+                    -webkit-text-fill-color: #ffffff !important;
+                    transition: background-color 5000s ease-in-out 0s;
+                }
+            `}</style>
             {/* HUD Background Layers */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] animate-pulse" />

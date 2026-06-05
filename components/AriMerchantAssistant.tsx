@@ -208,7 +208,7 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     }, [isDayModeProp]);
 
     useEffect(() => {
-        if (isDayModeProp) return;
+        if (isDayModeProp !== undefined) return;
         const checkTheme = () => {
             const hasDayMode = document.body.classList.contains('day-mode') || 
                                !!document.querySelector('.day-mode');

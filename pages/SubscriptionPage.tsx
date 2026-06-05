@@ -213,6 +213,23 @@ const SubscriptionPage: React.FC = () => {
                     border: 1px solid rgba(34,211,238,0.15);
                     box-shadow: inset 0 0 20px rgba(34,211,238,0.02), 0 8px 32px rgba(0,0,0,0.4);
                 }
+                /* Finetuning: Legibilidad de inputs y opciones de select en modo oscuro */
+                input, select, textarea, option {
+                    color: #ffffff !important;
+                    background-color: #0b1329 !important;
+                }
+                input::placeholder, textarea::placeholder {
+                    color: rgba(255, 255, 255, 0.4) !important;
+                }
+                /* Corrección de autocompletado en navegadores móviles/escritorio */
+                input:-webkit-autofill,
+                input:-webkit-autofill:hover, 
+                input:-webkit-autofill:focus, 
+                input:-webkit-autofill:active {
+                    -webkit-box-shadow: 0 0 0 30px #0b1329 inset !important;
+                    -webkit-text-fill-color: #ffffff !important;
+                    transition: background-color 5000s ease-in-out 0s;
+                }
             `}</style>
 
             <div className="fixed inset-0 pointer-events-none z-0 tech-grid-bg" />
@@ -251,6 +268,7 @@ const SubscriptionPage: React.FC = () => {
                     role="merchant"
                     townId={townId}
                     inline={true}
+                    isDayMode={false}
                 />
             </div>
 
