@@ -16,6 +16,21 @@ interface Message {
     timestamp: Date;
 }
 
+export type AriRole = 
+    | 'merchant' 
+    | 'industrial' 
+    | 'marketing' 
+    | 'academy' 
+    | 'ambassador-field' 
+    | 'ambassador-crm' 
+    | 'financial' 
+    | 'network_manager' 
+    | 'crm_manager' 
+    | 'enterprise' 
+    | 'home' 
+    | 'baquiana' 
+    | 'subscription';
+
 interface AriMerchantAssistantProps {
     shop: Shop;
     role?: AriRole;
@@ -63,6 +78,33 @@ Reglas de Oro:
 - Mencioná que la red fue diseñada por el Director (Waly) para que los locales de barrio prosperen.
 - Usá la "Frecuencia Azul" como sinónimo de calidad y tecnología premium.
 - SI PROPONES UNA CAMPAÑA: Redactá el mensaje, sugerí la fecha y terminá SIEMPRE con: "JEFE, ¿QUIERE QUE AGENDE ESTA MISIÓN AHORA MISMO?".
+`;
+
+export const ARI_SUBSCRIPTION_PROMPT = `
+Sos ARI, la asistente virtual de la Red ShopDigital, entrenada específicamente para guiar y ayudar a los comerciantes en el proceso de inscripción y alta de su negocio en esta pantalla.
+Tu tono es super amable, alentador, profesional, empático y cercano (usás "vos", "che", "dale", "Jefe", "Socio").
+
+Tu único objetivo en esta pantalla es ayudar al comerciante a completar el formulario de inscripción de forma correcta, respondiendo cualquier duda sobre los campos a rellenar.
+
+GUÍA DE RESPUESTAS RÁPIDAS SOBRE LOS CAMPOS DEL FORMULARIO:
+1. 🏪 MARCA COMERCIAL: Es el nombre público o de fantasía de su negocio (ej: "Pizzería El Buen Gusto" o "Fiambrería La Aurora").
+2. 🏷️ RUBRO: El rubro principal de su negocio (ej: Gastronomía, Indumentaria, Kiosco, etc.). Si selecciona uno, se guardará bajo esa categoría.
+3. 📍 LOCALIDAD: Seleccione la localidad o barrio de la zona activa en la que opera físicamente su local.
+4. 🗺️ DIRECCIÓN DEL LOCAL: La dirección física exacta del comercio (ej: "Av. Principal 123"). Es requerido para que los clientes puedan ubicarlo en el mapa interactivo.
+5. 📷 LOGO / FOTO (OPCIONAL): Permite al usuario subir una foto de portada o el logo de su comercio. Dispone de dos opciones:
+   - "Subir Archivo" (Galería): Para elegir una foto o archivo existente en su celular o computadora.
+   - "Tomar Foto" (Cámara): Abre la cámara trasera de su celular para tomar una foto del local en tiempo real.
+6. 👤 TITULAR DE CONTACTO: Nombre y apellido del dueño o encargado responsable del negocio.
+7. 📱 CELULAR / WHATSAPP: Teléfono de contacto. Es muy importante porque los clientes le enviarán pedidos y consultas directamente a este WhatsApp, y el sistema le enviará notificaciones relevantes.
+
+¿QUÉ SUCEDE DESPUÉS DE ENVIAR EL FORMULARIO?
+- Los datos se guardan de forma segura en la base de datos de ShopDigital.
+- Un Embajador Oficial de su zona lo visitará en su comercio para validar los datos, entregarle su sticker oficial de la red con código QR y ayudarle a activar y configurar su catálogo digital y su primer menú/oferta inteligente gratis.
+
+COMPARTIR EL FORMULARIO:
+- Explicá que este formulario es 100% público. Cualquier comerciante amigo o colega puede ingresar desde este link para auto-inscribirse en el sistema. Pueden compartirlo usando el botón "Compartir este formulario con mis colegas" que está abajo de todo.
+
+Sé breve, empática, y asistí al comerciante de forma clara en cada paso para que complete el formulario con éxito.
 `;
 
 
@@ -241,8 +283,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
         headerGlow: isField ? 'bg-rose-500/20 border-rose-400/40 shadow-[0_0_15px_rgba(244,63,94,0.2)]' : isNetwork ? 'bg-yellow-500/20 border-yellow-400/40 shadow-[0_0_15px_rgba(234,179,8,0.2)]' : isIndustrial ? 'bg-amber-500/20 border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : isMarketing ? 'bg-emerald-500/20 border-emerald-400/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : isAcademy ? 'bg-violet-500/20 border-violet-400/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-cyan-500/20 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]',
         headerIconColor: isField ? 'text-rose-300' : isNetwork ? 'text-yellow-300' : isIndustrial ? 'text-amber-300' : isMarketing ? 'text-emerald-300' : isAcademy ? 'text-violet-300' : 'text-cyan-300',
         headerStatusText: isField ? 'text-rose-400/70' : isNetwork ? 'text-yellow-400/70' : isIndustrial ? 'text-amber-400/70' : isMarketing ? 'text-emerald-400/70' : isAcademy ? 'text-violet-400/70' : 'text-cyan-400/70',
-        headerTitle: isField ? 'ARI - Operadora Base' : isNetwork ? 'ARI - Sup. de Red' : isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : isCrm ? 'ARI - CRM Analista' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Asistente Virtual IA' : 'ARI - Consultora',
-        headerSubtitle: isField ? 'Radio Base Táctica Activa' : isNetwork ? 'Frecuencia Amarilla Activa' : isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : isCrm ? 'Frecuencia Cyan Activa' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
+        headerTitle: isField ? 'ARI - Operadora Base' : isNetwork ? 'ARI - Sup. de Red' : isIndustrial ? 'ARI - Inteligencia B2B' : isMarketing ? 'ARI - Directora de Campañas' : isAcademy ? 'ARI - Agente R.R.H.H.' : isCrm ? 'ARI - CRM Analista' : role === 'subscription' ? 'ARI - Guía de Alta' : role === 'home' || role === 'baquiana' ? 'ARI - Tu Asistente Virtual IA' : 'ARI - Consultora',
+        headerSubtitle: isField ? 'Radio Base Táctica Activa' : isNetwork ? 'Frecuencia Amarilla Activa' : isIndustrial ? 'Frecuencia Ámbar Activa' : isMarketing ? 'Cañón Publicitario Online 🚀' : isAcademy ? '🎓 Mentora de la Academia Activa' : isCrm ? 'Frecuencia Cyan Activa' : role === 'subscription' ? '¿Cómo te ayudo a registrar tu negocio?' : role === 'home' || role === 'baquiana' ? 'En línea y lista para guiarte' : 'Inteligencia de Marketing',
         messageUser: isField ? 'bg-rose-500/20 border-rose-500/30 text-rose-100' : isNetwork ? 'bg-yellow-500/20 border-yellow-500/30 text-yellow-100' : isIndustrial ? 'bg-amber-500/20 border-amber-500/30 text-amber-100' : isMarketing ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-100' : isAcademy ? 'bg-violet-500/20 border-violet-500/30 text-violet-100' : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-100',
         messageAri: isField ? 'bg-white/5 border-white/10 text-rose-50' : isNetwork ? 'bg-white/5 border-white/10 text-yellow-50' : isIndustrial ? 'bg-white/5 border-white/10 text-amber-50' : isMarketing ? 'bg-white/5 border-white/10 text-emerald-50' : isAcademy ? 'bg-white/5 border-white/10 text-violet-50' : 'bg-white/5 border-white/10 text-cyan-50',
         inputFocus: isField ? 'focus:border-rose-500/50 focus:ring-rose-500/20' : isNetwork ? 'focus:border-yellow-500/50 focus:ring-yellow-500/20' : isIndustrial ? 'focus:border-amber-500/50 focus:ring-amber-500/20' : isMarketing ? 'focus:border-emerald-500/50 focus:ring-emerald-500/20' : isAcademy ? 'focus:border-violet-500/50 focus:ring-violet-500/20' : 'focus:border-cyan-500/50 focus:ring-cyan-500/20',
@@ -406,8 +448,8 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? ARI_NETWORK_MANAGER_PROMPT
                 : role === 'crm_manager'
                 ? ARI_CRM_MANAGER_PROMPT
-                : role === 'enterprise'
-                ? ARI_ENTERPRISE_PROMPT
+                : role === 'subscription'
+                ? ARI_SUBSCRIPTION_PROMPT
                 : ARI_MERCHANT_PROMPT;
             const industrialContext = role === 'industrial' ? `
 - Total empresas registradas: ${allShops?.filter(s => s.entityType === 'enterprise').length || 0}

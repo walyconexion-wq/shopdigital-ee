@@ -268,7 +268,7 @@ const SubscriptionPage: React.FC = () => {
             <div className="relative z-10 px-5 mt-6 mb-8 max-w-lg mx-auto">
                 <AriMerchantAssistant 
                     shop={{ id: 'suscripcion', name: 'Nuevo Comercio' } as any}
-                    role="merchant"
+                    role="subscription"
                     townId={townId}
                     inline={true}
                     isDayMode={false}

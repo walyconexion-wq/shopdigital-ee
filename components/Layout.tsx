@@ -63,8 +63,13 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
         }
     }, [themeMode]);
     
-    // Ocultar ARI en páginas de edición y paneles que tienen su propio ARI (como Embajador)
-    const isEditPage = location.pathname.includes('/editar') || location.pathname.includes('/mi-catalogo') || location.pathname.includes('/embajador');
+    // Ocultar ARI en páginas de edición, paneles y formularios de suscripción que tienen su propio ARI o no lo requieren flotante
+    const isEditPage = 
+        location.pathname.includes('/editar') || 
+        location.pathname.includes('/mi-catalogo') || 
+        location.pathname.includes('/embajador') ||
+        location.pathname.includes('/subscripcion') ||
+        location.pathname.includes('/inscripcion');
 
     // Helper to convert hex to rgba
     const hexToRgba = (hex: string, alpha: number) => {
