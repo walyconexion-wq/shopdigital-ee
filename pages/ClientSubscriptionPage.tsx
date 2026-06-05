@@ -105,7 +105,7 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
     const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-[#0a1e2d] to-slate-950 text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
             <style>{`
                 /* Finetuning: Legibilidad de inputs y opciones de select en modo oscuro */
                 input, select, textarea, option {
@@ -162,7 +162,8 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                                 placeholder="EJ: WALY MIRANDA"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value.toUpperCase() })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-black text-white placeholder:text-white/10 focus:outline-none focus:border-cyan-400/50 transition-all uppercase"
+                                className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-sm font-black text-white placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 transition-all uppercase"
+                                style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                             />
                         </div>
 
@@ -176,7 +177,8 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                                 placeholder="EJ: 1122334455"
                                 value={formData.phone}
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-black text-white focus:outline-none focus:border-cyan-400/50 transition-all tabular-nums"
+                                className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-sm font-black text-white placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 transition-all tabular-nums"
+                                style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                             />
                         </div>
 
@@ -190,7 +192,8 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                                 placeholder="EJ: WALY@SHOPDIGITAL.AR"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none focus:border-cyan-400/50 transition-all"
+                                className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 transition-all"
+                                style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                             />
                         </div>
                     </div>

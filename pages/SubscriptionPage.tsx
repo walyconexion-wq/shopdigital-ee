@@ -195,7 +195,7 @@ const SubscriptionPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-[#0b1329] to-slate-950 text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
             <style>{`
                 @keyframes pulseGlow {
                     0%, 100% { filter: drop-shadow(0 0 15px rgba(34,211,238,0.4)); }
@@ -252,13 +252,16 @@ const SubscriptionPage: React.FC = () => {
                             <Rocket size={20} className="text-cyan-400" />
                         </div>
                         <div>
-                            <h1 className="text-[12px] sm:text-sm font-black uppercase tracking-widest text-white leading-none text-center">Suma Tu Comercio</h1>
+                            <h1 className="text-[12px] sm:text-sm font-black uppercase tracking-widest text-white leading-none text-center">Formulario de Inscripción de Comercio</h1>
                             <span className="text-[9px] font-bold text-cyan-500/60 uppercase tracking-widest block text-center mt-1">{townId.replace(/-/g, ' ')}</span>
                         </div>
                     </div>
                     <div className="w-10" /> {/* Spacer */}
                 </div>
-                <p className="text-[8px] font-bold text-white/50 uppercase tracking-widest text-center">Completá los datos y ganá visibilidad en la red comercial.</p>
+                <p className="text-[8px] font-bold text-white/50 uppercase tracking-widest text-center mt-1 px-4 leading-relaxed">
+                    Completá los datos para registrar tu negocio. <br/>
+                    📢 <span className="text-cyan-400">Este formulario es público:</span> compartilo con otros comerciantes y colegas para que puedan sumarse a la red.
+                </p>
             </div>
 
             {/* PANEL ARI INLINE */}
@@ -286,7 +289,8 @@ const SubscriptionPage: React.FC = () => {
                         placeholder="Ej: Pizzería El Buen Gusto"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-lg font-bold placeholder:text-white/20 focus:outline-none focus:border-cyan-400 transition-all"
+                        className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                        style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                     />
                 </div>
 
@@ -299,10 +303,11 @@ const SubscriptionPage: React.FC = () => {
                         <select
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold focus:outline-none focus:border-cyan-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black focus:outline-none focus:border-cyan-400/50 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         >
                             {CATEGORIES.map(cat => (
-                                <option key={cat.id} value={cat.id} className="bg-zinc-900 text-white">{cat.name}</option>
+                                <option key={cat.id} value={cat.id} className="bg-slate-950 text-white" style={{ color: '#ffffff', backgroundColor: '#0b1329' }}>{cat.name}</option>
                             ))}
                         </select>
                     </div>
@@ -314,10 +319,11 @@ const SubscriptionPage: React.FC = () => {
                         <select
                             value={formData.zone}
                             onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold focus:outline-none focus:border-cyan-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black focus:outline-none focus:border-cyan-400/50 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         >
                             {localities.map(loc => (
-                                <option key={loc} value={loc} className="bg-zinc-900 text-white">{loc}</option>
+                                <option key={loc} value={loc} className="bg-slate-950 text-white" style={{ color: '#ffffff', backgroundColor: '#0b1329' }}>{loc}</option>
                             ))}
                         </select>
                     </div>
@@ -336,7 +342,8 @@ const SubscriptionPage: React.FC = () => {
                         placeholder={`Ej: Av. Principal 123, ${formData.zone || (localities[0] || 'tu localidad')}`}
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold placeholder:text-white/20 focus:outline-none focus:border-cyan-400 transition-all"
+                        className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                        style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                     />
                 </div>
 
@@ -379,18 +386,19 @@ const SubscriptionPage: React.FC = () => {
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400">Titular de Contacto</h3>
                     </div>
                     
-                    <div className="focus-within:bg-white/[0.01] rounded-xl transition-colors">
+                    <div>
                         <label className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/40 mb-2 block">Nombre Completo</label>
                         <input
                             required
                             placeholder="Ej: Juan Pérez"
                             value={formData.ownerName}
                             onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/10 pb-2 text-white text-sm focus:outline-none focus:border-cyan-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         />
                     </div>
 
-                    <div className="focus-within:bg-white/[0.01] rounded-xl transition-colors">
+                    <div>
                         <div className="flex justify-between items-center mb-2">
                             <label className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/40 block">Celular / WhatsApp</label>
                             <Phone size={10} className="text-green-400" />
@@ -401,12 +409,13 @@ const SubscriptionPage: React.FC = () => {
                             placeholder="Ej: 1122334455"
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/10 pb-2 text-white text-sm focus:outline-none focus:border-cyan-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         />
                     </div>
                 </div>
 
-                <div className="pt-4 space-y-4">
+                <div className="pt-4 space-y-6">
                     <button 
                         type="submit"
                         disabled={isSubmitting}
@@ -421,14 +430,23 @@ const SubscriptionPage: React.FC = () => {
                         )}
                     </button>
                     
-                    <button
-                        type="button"
-                        onClick={handleShare}
-                        className="w-full bg-white/5 border border-white/10 py-4 rounded-2xl flex items-center justify-center gap-2 font-bold uppercase tracking-[0.1em] text-[10px] text-white/70 hover:bg-white/10 hover:text-white transition-all active:scale-95"
-                    >
-                        <Share2 size={16} />
-                        Compartir este formulario
-                    </button>
+                    <div className="pt-4 border-t border-white/10 mt-6 bg-cyan-950/10 rounded-2xl p-4 border border-cyan-500/20">
+                        <p className="text-[9px] text-cyan-400 font-black uppercase tracking-widest text-center mb-1">
+                            📢 ¿Conocés a otros comerciantes o colegas?
+                        </p>
+                        <p className="text-[8px] text-white/60 uppercase tracking-wider text-center mb-3 leading-normal px-2">
+                            Ayudalos a digitalizar su negocio. Copiá y enviales el link de este formulario para que puedan auto-inscribirse en el sistema.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={handleShare}
+                            className="w-full bg-cyan-500 text-black py-4 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-[10px] hover:bg-cyan-400 transition-all active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)]"
+                            style={{ color: '#000000', backgroundColor: '#22d3ee' }}
+                        >
+                            <Share2 size={14} />
+                            Compartir este formulario con mis colegas
+                        </button>
+                    </div>
 
                     <p className="text-[7px] text-center text-white/30 uppercase tracking-[0.3em] font-bold mt-4">
                         Al enviar, aceptás los términos y condiciones de la red ShopDigital.

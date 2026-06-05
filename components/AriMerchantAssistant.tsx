@@ -558,7 +558,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
             {/* ═══ MODO INLINE: Panel siempre abierto, empotrado en la página ═══ */}
             {inline && (
                 <div
-                    className={`w-full ari-chat-container ${isDayMode ? 'bg-[#faf8f5] border-slate-200/80 shadow-xl' : 'bg-[#020810]/95 border-white/10'} backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
+                    className={`w-full ari-chat-container ${isDayMode ? 'bg-[#faf8f5] border-slate-200/80 shadow-xl' : 'bg-slate-950/40 border-white/10'} backdrop-blur-3xl border rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden relative`}
                     style={{ borderColor: isMarketing ? 'rgba(16,185,129,0.2)' : isIndustrial ? 'rgba(245,158,11,0.2)' : 'rgba(34,211,238,0.2)', minHeight: isOpen ? '420px' : 'auto' }}
                 >
                     {/* Background grid */}
@@ -639,7 +639,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                 <div className={`max-w-[88%] p-3 rounded-[1.1rem] text-[11px] leading-relaxed border backdrop-blur-md ${
                                     msg.role === 'user'
                                     ? styles.userMsgBg + ' text-white rounded-tr-sm user-msg-bubble'
-                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)] ari-bubble-ari' : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm')
+                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)] ari-bubble-ari' : 'bg-slate-900/80 border-white/10 text-white/90 rounded-tl-sm')
                                 }`}>
                                     {msg.text}
                                     {msg.role === 'ari' && (
@@ -670,7 +670,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Quick chips inline */}
-                    <div className={`px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t relative z-10 ${isDayMode ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-white/[0.02]'}`}>
+                    <div className={`px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t relative z-10 ${isDayMode ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-slate-900/40'}`}>
                         {isAcademy ? (
                             <>
                                 <button onClick={() => { setInput('¿Qué recibo cuando me gradúo?'); scrollToBottom(); }} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}><Sparkles size={9}/> Kit Oficial</button>
@@ -699,7 +699,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Input inline */}
-                    <div className={`p-3 relative z-10 ${isDayMode ? 'bg-[#faf8f5] border-t border-slate-200' : 'bg-black/40 backdrop-blur-xl border-t border-white/10'}`}>
+                    <div className={`p-3 relative z-10 ${isDayMode ? 'bg-[#faf8f5] border-t border-slate-200' : 'bg-slate-950/60 backdrop-blur-xl border-t border-white/10'}`}>
                         <div className={`flex items-center gap-2 ${isDayMode ? 'bg-slate-100 border border-slate-200 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)]' : 'bg-white/5 border border-white/10 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]'} rounded-2xl p-1 px-3`}>
                             <input
                                 type="text"

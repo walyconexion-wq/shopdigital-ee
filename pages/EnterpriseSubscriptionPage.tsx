@@ -163,7 +163,7 @@ const EnterpriseSubscriptionPage: React.FC = () => {
     const formattedTown = 'NACIONAL';
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden selection:bg-amber-500/30">
+        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-[#1e150f] to-slate-950 text-white pb-24 relative overflow-x-hidden selection:bg-amber-500/30">
             <style>{`
                 /* Finetuning: Legibilidad de inputs y opciones de select en modo oscuro */
                 input, select, textarea, option {
@@ -221,7 +221,8 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                         placeholder="Ej: Distribuidora Los Andes S.A."
                         value={formData.name}
                         onChange={e => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-lg font-bold placeholder:text-white/20 focus:outline-none focus:border-amber-400 transition-all"
+                        className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                        style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                     />
                 </div>
 
@@ -234,10 +235,11 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                         <select
                             value={formData.category}
                             onChange={e => setFormData({ ...formData, category: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold focus:outline-none focus:border-amber-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black focus:outline-none focus:border-amber-500/50 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         >
                             {ENTERPRISE_CATEGORIES.map(cat => (
-                                <option key={cat.id} value={cat.id} className="bg-zinc-900 text-white">{cat.name}</option>
+                                <option key={cat.id} value={cat.id} className="bg-slate-950 text-white" style={{ color: '#ffffff', backgroundColor: '#0b1329' }}>{cat.name}</option>
                             ))}
                         </select>
                     </div>
@@ -249,10 +251,11 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                         <select
                             value={formData.reach}
                             onChange={e => setFormData({ ...formData, reach: e.target.value as 'national' | 'regional' })}
-                            className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold focus:outline-none focus:border-amber-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black focus:outline-none focus:border-amber-500/50 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         >
                             {REACH_OPTIONS.map(opt => (
-                                <option key={opt.value} value={opt.value} className="bg-zinc-900 text-white">{opt.label}</option>
+                                <option key={opt.value} value={opt.value} className="bg-slate-950 text-white" style={{ color: '#ffffff', backgroundColor: '#0b1329' }}>{opt.label}</option>
                             ))}
                         </select>
                     </div>
@@ -267,7 +270,8 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                         placeholder="Ej: Fabricante de indumentaria deportiva al por mayor"
                         value={formData.specialty}
                         onChange={e => setFormData({ ...formData, specialty: e.target.value })}
-                        className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold placeholder:text-white/20 focus:outline-none focus:border-amber-400 transition-all"
+                        className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                        style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                     />
                 </div>
 
@@ -280,7 +284,8 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                         placeholder="Ej: Parque Industrial Ezeiza, Nave 12"
                         value={formData.address}
                         onChange={e => setFormData({ ...formData, address: e.target.value })}
-                        className="w-full bg-transparent border-b border-white/20 pb-2 text-white text-sm font-bold placeholder:text-white/20 focus:outline-none focus:border-amber-400 transition-all"
+                        className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                        style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                     />
                 </div>
 
@@ -318,7 +323,8 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                             placeholder="Ej: Carlos Martínez"
                             value={formData.ownerName}
                             onChange={e => setFormData({ ...formData, ownerName: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/10 pb-2 text-white text-sm focus:outline-none focus:border-amber-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         />
                     </div>
 
@@ -333,7 +339,8 @@ const EnterpriseSubscriptionPage: React.FC = () => {
                             placeholder="Ej: 1122334455"
                             value={formData.phone}
                             onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                            className="w-full bg-transparent border-b border-white/10 pb-2 text-white text-sm focus:outline-none focus:border-amber-400 transition-all"
+                            className="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 text-white text-sm font-black placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                            style={{ color: '#ffffff', backgroundColor: '#0b1329' }}
                         />
                     </div>
                 </div>

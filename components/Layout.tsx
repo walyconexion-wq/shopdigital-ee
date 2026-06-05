@@ -39,7 +39,10 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
             path.includes('/relevamiento') ||
             path.includes('/academia-embajadores') ||
             path.includes('/factura') ||
-            path.includes('/panel-autogestion')
+            path.includes('/panel-autogestion') ||
+            path.includes('/subscripcion') ||
+            path.includes('/inscripcion') ||
+            path.includes('/cliente-subscripcion')
         );
     }, [location.pathname]);
 
