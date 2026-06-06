@@ -9,7 +9,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import {
     ChevronLeft, Star, QrCode, ShieldCheck, Clock, IdCard,
     Wallet, CreditCard, ArrowUpRight, ArrowDownRight,
-    CheckCircle, XCircle, Search, User, Store, MapPin, Zap, Lock
+    CheckCircle, XCircle, Search, User, Store, MapPin, Zap, Lock, Radio
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -52,12 +52,13 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
 
     // Active/Suspended event matching this locality & role 'comerciante'
     const activeEvent = useMemo(() => {
+        const requiredRole = isEnterprise ? 'empresario' : 'comerciante';
         return liveEvents.find(e => 
             (e.status === 'active_live' || e.status === 'suspended') &&
             (e.targetRegion === townId || e.targetLocalities.includes('all')) &&
-            e.targetRoles.includes('comerciante')
+            e.targetRoles.includes(requiredRole)
         );
-    }, [liveEvents, townId]);
+    }, [liveEvents, townId, isEnterprise]);
 
     // --- Clock ---
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -308,6 +309,8 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             <div className="w-full max-w-sm relative z-10">
                 <div className={`bg-gradient-to-br ${borderGradient} rounded-[2.5rem] p-[2px] transition-all duration-500 ${cardGlowStyle}`}>
                     <div className="bg-[#060614]/95 rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/10 backdrop-blur-2xl neon-credential-card">
+                        {/* Dynamic electronic mesh background */}
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(37,99,235,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(37,99,235,0.05)_1px,transparent_1px)] bg-[size:25px_25px] pointer-events-none z-0" style={{ backgroundImage: `linear-gradient(${neonColor}0D 1px, transparent 1px), linear-gradient(90deg, ${neonColor}0D 1px, transparent 1px)` }} />
                         
                         {/* Ambient glow */}
                         <div className="absolute top-0 right-0 w-48 h-48 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none opacity-20" style={{ backgroundColor: neonColor }} />
@@ -401,9 +404,48 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                             <p className="text-[9px] font-black text-cyan-400 uppercase tracking-[0.25em] drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Código de Validación</p>
                         </div>
 
+                        {/* 🛰️ SINTONIZADOR DE ACCESO / EVENTOS LIVE */}
+                        <div className="w-full bg-black/60 rounded-[1.5rem] p-4.5 border border-white/10 space-y-3 relative overflow-hidden mb-6 z-10">
+                            <div className="flex justify-between items-center relative z-10">
+                                <label className="text-[8px] font-black text-cyan-300 uppercase tracking-[0.2em] flex items-center gap-1.5">
+                                    <Radio size={10} className="text-cyan-400 animate-pulse" /> Sintonizador de Acceso
+                                </label>
+                                <span className="text-[7.5px] font-[900] bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">LIVE SINFONÍA</span>
+                            </div>
+                            
+                            {activeEvent ? (
+                                <div className="space-y-2 relative z-10">
+                                    <p className="text-[11px] font-[1000] text-white uppercase tracking-tight leading-tight">
+                                        {activeEvent.name}
+                                    </p>
+                                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest leading-none">
+                                        ARTISTA: {activeEvent.artist || 'Red ShopDigital'} · LOCALIDAD: {activeEvent.targetLocalities.join(', ').toUpperCase()}
+                                    </p>
+                                    <div className="flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-xl w-fit">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                        <span className="text-[8.5px] font-[1000] text-emerald-400 uppercase tracking-widest">
+                                            {isEnterprise ? 'ACCESO INDUSTRIAL VERIFICADO' : 'ACCESO COMERCIO VERIFICADO'}
+                                        </span>
+                                    </div>
+                                    <p className="text-[7px] font-bold text-white/45 uppercase tracking-wider leading-relaxed">
+                                        Seguridad: Permitir el ingreso al personal asociado acreditado.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-1 relative z-10">
+                                    <p className="text-[9px] font-black text-white/45 uppercase tracking-widest italic">
+                                        Buscando transmisiones...
+                                    </p>
+                                    <p className="text-[7.5px] font-bold text-white/30 uppercase tracking-wider leading-relaxed">
+                                        Sin eventos live activos para este nodo en este radar.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+ 
                         {/* Status */}
                         <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t pt-4" style={{ borderColor: `${neonColor}33` }}>
-                            <span className="text-white/40">Membresía Activa</span>
+                            <span className="text-white/70">Membresía Activa</span>
                             <span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] font-black">
                                 {selectedShop.isActive ? '⚡ ACTIVA' : '⏳ PENDIENTE'}
                             </span>
