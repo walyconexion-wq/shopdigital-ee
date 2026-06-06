@@ -88,7 +88,7 @@ export interface Client {
   townId?: string; // Sello Regional B2C 🛡️
   dni?: string;
   photo?: string;
-  status?: 'active' | 'suspended';
+  status?: 'active' | 'suspended' | 'pending';
   cardColor?: string;
   points?: number;
   credits?: number;
@@ -96,6 +96,9 @@ export interface Client {
   creditsHistory?: any[];
   locality?: string; // Sello geográfico del socio 📍
   updatedAt?: string; // Última actualización del perfil
+  eventPassEnabled?: boolean; // Sintonizar eventos y transmisión en vivo 📡
+  verificationCode?: string; // OTP de 6 dígitos para verificación
+  verificationExpires?: string; // Fecha de expiración de OTP (ISO string)
   activeTicket?: {
     eventId: string;
     eventName: string;

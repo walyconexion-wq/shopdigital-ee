@@ -31,6 +31,16 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
         allShops.find(shop => (shop.slug || shop.id) === shopSlug),
     [shopSlug, allShops]);
 
+    // Dynamic Neon color scheme based on node type
+    const isEnterprise = selectedShop?.entityType === 'enterprise';
+    const neonColor = isEnterprise ? '#8b5cf6' : '#2563eb'; // Violeta vs Azul
+    const borderGradient = isEnterprise
+        ? 'from-purple-500 via-fuchsia-500 to-violet-500'
+        : 'from-blue-500 via-indigo-500 to-cyan-500';
+    const cardGlowStyle = isEnterprise
+        ? 'shadow-[0_0_50px_rgba(139,92,246,0.45)] hover:shadow-[0_0_65px_rgba(139,92,246,0.65)]'
+        : 'shadow-[0_0_50px_rgba(37,99,235,0.45)] hover:shadow-[0_0_65px_rgba(37,99,235,0.65)]';
+
     // --- Live Event Listener ---
     const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
     useEffect(() => {
@@ -244,15 +254,15 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
         <div className="min-h-screen bg-[#020208] flex flex-col items-center px-6 py-8 relative overflow-hidden selection:bg-indigo-500/30">
             {/* HUD Background */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
-                <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
+                <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-indigo-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-cyan-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
                 <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px]" />
                 {/* Tech Grid Mesh */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.06)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.18)_1px,transparent_1px)] bg-[size:30px_30px]" />
                 {/* Tech Dots Mesh */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(34,211,238,0.08)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(34,211,238,0.22)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
                 {/* Scanline Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.02] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.03] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
             </div>
 
             {/* Back Button */}
@@ -295,20 +305,19 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                 </div>
             )}
 
-            {/* ═══════════ CREDENCIAL CARD ═══════════ */}
             <div className="w-full max-w-sm relative z-10">
-                <div className="bg-gradient-to-br from-indigo-400 via-purple-500 to-cyan-400 rounded-[2.5rem] p-[2px] shadow-[0_0_50px_rgba(99,102,241,0.4)] hover:shadow-[0_0_65px_rgba(99,102,241,0.65)] transition-all duration-500">
-                    <div className="bg-[#060614]/95 rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/10 backdrop-blur-2xl">
+                <div className={`bg-gradient-to-br ${borderGradient} rounded-[2.5rem] p-[2px] transition-all duration-500 ${cardGlowStyle}`}>
+                    <div className="bg-[#060614]/95 rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/10 backdrop-blur-2xl neon-credential-card">
                         
                         {/* Ambient glow */}
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/20 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/15 rounded-full -ml-16 -mb-16 blur-3xl pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-48 h-48 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none opacity-20" style={{ backgroundColor: neonColor }} />
+                        <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full -ml-16 -mb-16 blur-3xl pointer-events-none opacity-15" style={{ backgroundColor: isEnterprise ? '#a855f7' : '#06b6d4' }} />
 
                         {/* SELLO DE VIDA INVIOLABLE CON SEGUNDEROS ⏱️ */}
-                        <div className="w-full flex flex-col items-center justify-center gap-1 mb-6 py-3 px-4 rounded-2xl bg-indigo-500/15 border-2 border-indigo-400/40 relative overflow-hidden shadow-[inset_0_0_15px_rgba(99,102,241,0.25),0_0_20px_rgba(99,102,241,0.2)]">
+                        <div className={`w-full flex flex-col items-center justify-center gap-1 mb-6 py-3 px-4 rounded-2xl relative overflow-hidden border-2 transition-all ${isEnterprise ? 'bg-purple-500/15 border-purple-400/40 shadow-[inset_0_0_15px_rgba(139,92,246,0.25),0_0_20px_rgba(139,92,246,0.2)]' : 'bg-blue-500/15 border-blue-400/40 shadow-[inset_0_0_15px_rgba(37,99,235,0.25),0_0_20px_rgba(37,99,235,0.2)]'}`}>
                             <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan-400/80 animate-[scan_2s_infinite_ease-in-out]" />
                             <div className="flex items-center gap-2 relative z-10">
-                                <Clock size={13} className="text-cyan-400 animate-spin" style={{ animationDuration: '4s' }} />
+                                <Clock size={13} className="animate-spin" style={{ animationDuration: '4s', color: isEnterprise ? '#c084fc' : '#22d3ee' }} />
                                 <span className="text-[12px] font-black font-mono text-cyan-300 tracking-[0.15em] tabular-nums drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
                                     {formatClock(currentTime)}
                                 </span>
@@ -317,14 +326,14 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </div>
 
                         {/* ownerPhoto / Shop Image - Biométrica Circular */}
-                        <div className="relative w-24 h-24 rounded-full p-0.5 bg-gradient-to-br from-indigo-400 to-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.4)] mb-5 flex-shrink-0">
+                        <div className={`relative w-24 h-24 rounded-full p-0.5 mb-5 flex-shrink-0 bg-gradient-to-br ${isEnterprise ? 'from-purple-400 to-fuchsia-500 shadow-[0_0_30px_rgba(139,92,246,0.4)]' : 'from-blue-400 to-cyan-500 shadow-[0_0_30px_rgba(37,99,235,0.4)]'}`}>
                             <div className="w-full h-full bg-zinc-950 rounded-full overflow-hidden flex items-center justify-center p-0.5 border border-black/40">
                                 {selectedShop.ownerPhoto ? (
                                     <img src={selectedShop.ownerPhoto} alt={selectedShop.ownerName} className="w-full h-full object-cover rounded-full" />
                                 ) : selectedShop.image ? (
                                     <img src={selectedShop.image} alt={selectedShop.name} className="w-full h-full object-cover rounded-full" />
                                 ) : (
-                                    <User size={36} className="text-indigo-400/30" />
+                                    <User size={36} className={isEnterprise ? 'text-purple-400/30' : 'text-blue-400/30'} />
                                 )}
                             </div>
                         </div>
@@ -338,27 +347,27 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </p>
 
                         {/* Badge */}
-                        <div className="flex items-center gap-2 mb-6 bg-indigo-500/20 px-5 py-2 rounded-full border border-indigo-400/50 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                            <ShieldCheck className="w-4 h-4 text-indigo-300 drop-shadow-[0_0_5px_rgba(165,180,252,0.8)]" />
-                            <span className="text-indigo-200 text-[9px] font-[1000] uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(165,180,252,0.6)]">Comercio Verificado</span>
+                        <div className={`flex items-center gap-2 mb-6 px-5 py-2 rounded-full border transition-all ${isEnterprise ? 'bg-purple-500/20 border-purple-400/50 shadow-[0_0_20px_rgba(139,92,246,0.3)] text-purple-200' : 'bg-blue-500/20 border-blue-400/50 shadow-[0_0_20px_rgba(37,99,235,0.3)] text-blue-200'}`}>
+                            <ShieldCheck className={`w-4 h-4 drop-shadow-[0_0_5px_rgba(255,255,255,0.4)] ${isEnterprise ? 'text-purple-300' : 'text-blue-300'}`} />
+                            <span className={`text-[9px] font-[1000] uppercase tracking-[0.2em] ${isEnterprise ? 'text-purple-200' : 'text-blue-200'}`}>{isEnterprise ? 'Empresa Industrial Verificada' : 'Comercio Verificado'}</span>
                         </div>
 
                         {/* Data Grid */}
                         <div className="w-full grid grid-cols-2 gap-3 mb-6">
-                            <div className="bg-black/60 rounded-2xl p-3.5 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-                                <p className="text-[7px] font-black text-indigo-400/60 uppercase tracking-widest mb-1">Titular</p>
+                            <div className={`bg-black/60 rounded-2xl p-3.5 border transition-all ${isEnterprise ? 'border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' : 'border-blue-500/30 shadow-[0_0_15px_rgba(37,99,235,0.1)]'}`}>
+                                <p className="text-[7px] font-black uppercase tracking-widest mb-1" style={{ color: `${neonColor}99` }}>Titular</p>
                                 <p className="text-[11px] font-[1000] text-white uppercase tracking-tight truncate drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]">
                                     {selectedShop.ownerName || 'Sin Registrar'}
                                 </p>
                             </div>
-                            <div className="bg-black/60 rounded-2xl p-3.5 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-                                <p className="text-[7px] font-black text-indigo-400/60 uppercase tracking-widest mb-1">ID Comercio</p>
+                            <div className={`bg-black/60 rounded-2xl p-3.5 border transition-all ${isEnterprise ? 'border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' : 'border-blue-500/30 shadow-[0_0_15px_rgba(37,99,235,0.1)]'}`}>
+                                <p className="text-[7px] font-black uppercase tracking-widest mb-1" style={{ color: `${neonColor}99` }}>{isEnterprise ? 'ID Empresa' : 'ID Comercio'}</p>
                                 <p className="text-[11px] font-[1000] text-cyan-400 tracking-tight truncate drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
                                     {selectedShop.shopNumber || selectedShop.id.slice(0, 8).toUpperCase()}
                                 </p>
                             </div>
-                            <div className="bg-black/60 rounded-2xl p-3.5 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)] col-span-2">
-                                <p className="text-[7px] font-black text-indigo-400/60 uppercase tracking-widest mb-1 flex items-center gap-1">
+                            <div className={`bg-black/60 rounded-2xl p-3.5 border transition-all col-span-2 ${isEnterprise ? 'border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' : 'border-blue-500/30 shadow-[0_0_15px_rgba(37,99,235,0.1)]'}`}>
+                                <p className="text-[7px] font-black uppercase tracking-widest mb-1 flex items-center gap-1" style={{ color: `${neonColor}99` }}>
                                     <MapPin size={8} className="text-cyan-400" /> Dirección
                                 </p>
                                 <p className="text-[10px] font-bold text-white/80 truncate">{selectedShop.address}</p>
@@ -366,7 +375,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </div>
 
                         {/* QR Code */}
-                        <div className="w-full bg-black/75 rounded-[2.2rem] p-6 flex flex-col items-center border-2 border-indigo-500/40 mb-6 relative group/qr shadow-[0_0_30px_rgba(99,102,241,0.2),inset_0_0_20px_rgba(99,102,241,0.15)] overflow-hidden">
+                        <div className={`w-full bg-black/75 rounded-[2.2rem] p-6 flex flex-col items-center border-2 mb-6 relative group/qr overflow-hidden transition-all ${isEnterprise ? 'border-purple-500/40 shadow-[0_0_30px_rgba(139,92,246,0.2),inset_0_0_20px_rgba(139,92,246,0.15)]' : 'border-blue-500/40 shadow-[0_0_30px_rgba(37,99,235,0.2),inset_0_0_20px_rgba(37,99,235,0.15)]'}`}>
                             {/* Scanning Laser Line */}
                             <div className="absolute left-0 right-0 h-[2px] bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-[scan-laser_3s_infinite_linear] pointer-events-none z-20" />
                             
@@ -376,7 +385,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                             <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-cyan-400 pointer-events-none" />
                             <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-cyan-400 pointer-events-none" />
 
-                            <div className="bg-white p-4.5 rounded-2xl mb-4 shadow-[0_0_35px_rgba(255,255,255,0.1)] relative z-10 border-2 border-cyan-400/30">
+                            <div className="bg-white p-4.5 rounded-2xl mb-4 shadow-[0_0_35px_rgba(255,255,255,0.1)] relative z-10 border-2" style={{ borderColor: isEnterprise ? '#c084fc4D' : '#3b82f64D' }}>
                                 <QRCodeCanvas
                                     value={validationUrl}
                                     size={140}
@@ -393,7 +402,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </div>
 
                         {/* Status */}
-                        <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t border-indigo-500/20 pt-4">
+                        <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t pt-4" style={{ borderColor: `${neonColor}33` }}>
                             <span className="text-white/40">Membresía Activa</span>
                             <span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] font-black">
                                 {selectedShop.isActive ? '⚡ ACTIVA' : '⏳ PENDIENTE'}
@@ -596,6 +605,22 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                     0% { transform: translateY(-50%); }
                     100% { transform: translateY(50%); }
                 }
+                /* Enforce bright colors inside the neon credential card (day-mode bypass) */
+                .neon-credential-card .text-white, .day-mode .neon-credential-card .text-white { color: #ffffff !important; }
+                .neon-credential-card .text-cyan-400, .day-mode .neon-credential-card .text-cyan-400 { color: #22d3ee !important; }
+                .neon-credential-card .text-cyan-300, .day-mode .neon-credential-card .text-cyan-300 { color: #67e8f9 !important; }
+                .neon-credential-card .text-indigo-400, .day-mode .neon-credential-card .text-indigo-400 { color: #818cf8 !important; }
+                .neon-credential-card .text-indigo-300, .day-mode .neon-credential-card .text-indigo-300 { color: #a5b4fc !important; }
+                .neon-credential-card .text-indigo-200, .day-mode .neon-credential-card .text-indigo-200 { color: #c7d2fe !important; }
+                .neon-credential-card .text-white\/80, .day-mode .neon-credential-card .text-white\/80 { color: rgba(255, 255, 255, 0.8) !important; }
+                .neon-credential-card .text-white\/60, .day-mode .neon-credential-card .text-white\/60 { color: rgba(255, 255, 255, 0.6) !important; }
+                .neon-credential-card .text-white\/40, .day-mode .neon-credential-card .text-white\/40 { color: rgba(255, 255, 255, 0.4) !important; }
+                .neon-credential-card .text-white\/30, .day-mode .neon-credential-card .text-white\/30 { color: rgba(255, 255, 255, 0.3) !important; }
+                .neon-credential-card .text-white\/20, .day-mode .neon-credential-card .text-white\/20 { color: rgba(255, 255, 255, 0.2) !important; }
+                .neon-credential-card .text-cyan-400\/60, .day-mode .neon-credential-card .text-cyan-400\/60 { color: rgba(34, 211, 238, 0.6) !important; }
+                .neon-credential-card .text-cyan-400\/80, .day-mode .neon-credential-card .text-cyan-400\/80 { color: rgba(34, 211, 238, 0.8) !important; }
+                .neon-credential-card .text-indigo-400\/50, .day-mode .neon-credential-card .text-indigo-400\/50 { color: rgba(129, 140, 248, 0.5) !important; }
+                .neon-credential-card .text-indigo-400\/60, .day-mode .neon-credential-card .text-indigo-400\/60 { color: rgba(129, 140, 248, 0.6) !important; }
             `}} />
         </div>
     );

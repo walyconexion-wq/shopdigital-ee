@@ -1,5 +1,6 @@
 import { db } from './firebase';
 import { doc, getDoc, updateDoc, collection, addDoc } from "firebase/firestore";
+import { Client } from './types';
 
 /**
  * Transacciona créditos (moneda VIP) en la billetera del cliente y deja trazo de auditoría.
@@ -60,6 +61,23 @@ export const actualizarFotoCliente = async (clientId: string, photoData: string)
         return true;
     } catch (error) {
         console.error("Error actualizando foto de cliente:", error);
+        throw error;
+    }
+};
+
+/**
+ * Actualiza los datos generales de perfil del socio (Nombre, DNI, Teléfono, Correo, etc.)
+ */
+export const actualizarDatosCliente = async (clientId: string, data: Partial<Client>) => {
+    try {
+        const docRef = doc(db, "clientes", clientId);
+        await updateDoc(docRef, {
+            ...data,
+            updatedAt: new Date().toISOString()
+        });
+        return true;
+    } catch (error) {
+        console.error("Error al actualizar datos del cliente en Firestore:", error);
         throw error;
     }
 };

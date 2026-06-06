@@ -394,15 +394,15 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
         <div className="min-h-screen bg-[#020208] text-white pb-24 relative overflow-hidden selection:bg-cyan-500/30">
             {/* Tech backgrounds & Glowing Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[160px] animate-pulse" style={{ animationDuration: '10s' }} />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-violet-600/18 rounded-full blur-[160px] animate-pulse" style={{ animationDuration: '10s' }} />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/18 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: '8s' }} />
                 <div className="absolute top-1/2 left-1/3 w-[350px] h-[350px] bg-indigo-500/5 rounded-full blur-[130px]" />
                 {/* Tech Grid Mesh */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:35px_35px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.18)_1px,transparent_1px)] bg-[size:35px_35px]" />
                 {/* Tech Dots Mesh */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(139,92,246,0.06)_1px,transparent_1.5px)] bg-[size:18px_18px]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(139,92,246,0.18)_1px,transparent_1.5px)] bg-[size:18px_18px]" />
                 {/* Scanline Sweep */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.015] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_10s_linear_infinite]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.02] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_10s_linear_infinite]" />
             </div>
 
             {/* Header */}
@@ -410,7 +410,7 @@ const AdminPanelPage: React.FC<AdminPanelPageProps> = ({ allShops, allClients = 
                 <div className="w-full flex justify-between items-center mb-2">
                     <button onClick={() => {
                         playNeonClick();
-                        navigate(`/${townId}/home`);
+                        navigate(`/${townId}/${editableShop.category}/${shopSlug}/credencial`);
                     }} className="w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-400/60 transition-all shadow-[0_0_10px_rgba(6,182,212,0.1)]"><ChevronLeft size={20} /></button>
                     
                     <div className="text-right">

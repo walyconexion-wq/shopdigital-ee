@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where, increment, addDoc, orderBy, limit } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where, increment, addDoc, orderBy, limit, runTransaction } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
@@ -467,6 +467,55 @@ export const guardarCliente = async (clienteData: any, townId: string = 'esteban
         return id;
     } catch (error) {
         console.error("Error saving client:", error);
+        throw error;
+    }
+};
+
+export const verificarClienteExistente = async (email: string, phone: string, townId: string = 'esteban-echeverria') => {
+    try {
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanPhone = phone.replace(/\D/g, '');
+        const colRef = collection(db, "clientes");
+        
+        const qEmail = query(colRef, where("townId", "==", townId), where("email", "==", cleanEmail));
+        const qPhone = query(colRef, where("townId", "==", townId), where("phone", "==", cleanPhone));
+        
+        const [snapEmail, snapPhone] = await Promise.all([
+            getDocs(qEmail),
+            getDocs(qPhone)
+        ]);
+        
+        return !snapEmail.empty || !snapPhone.empty;
+    } catch (error) {
+        console.error("Error al verificar cliente existente:", error);
+        return false;
+    }
+};
+
+export const activarClienteYIncrementarSuscriptores = async (clientId: string, shopId: string, townId: string = 'esteban-echeverria') => {
+    try {
+        const clientRef = doc(db, "clientes", clientId);
+        const shopRef = doc(db, "comercios", shopId);
+        
+        await runTransaction(db, async (transaction) => {
+            const clientSnap = await transaction.get(clientRef);
+            if (!clientSnap.exists()) {
+                throw new Error("Cliente no existe.");
+            }
+            
+            transaction.update(clientRef, {
+                status: 'active',
+                updatedAt: new Date().toISOString()
+            });
+            
+            transaction.update(shopRef, {
+                subscribers: increment(1)
+            });
+        });
+        
+        console.log(`Cliente ${clientId} activado e incremento de suscriptores para el comercio ${shopId} ejecutado con éxito.`);
+    } catch (error) {
+        console.error("Error en activarClienteYIncrementarSuscriptores:", error);
         throw error;
     }
 };
