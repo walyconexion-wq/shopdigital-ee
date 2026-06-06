@@ -164,7 +164,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     useMemo(() => {
         if (selectedShop) {
             const catSlug = CATEGORIES.find(c => c.id === selectedShop.category)?.slug || 'comercio';
-            setCustomMessage(`¡Hola! 👋 Bienvenido al grupo VIP de *${selectedShop.name}*. Descargá acá tu Credencial VIP personalizada: https://shopdigital.tech/${townId}/${catSlug}/${selectedShop.slug}/credencial-vip`);
+            setCustomMessage(`¡Hola! 👋 Bienvenido al grupo VIP de *${selectedShop.name}*. Descargá acá tu Credencial VIP personalizada: https://shopdigital.tech/${townId}/${catSlug}/${selectedShop.slug || selectedShop.id}/credencial-vip`);
         }
     }, [selectedShop, townId]);
 
@@ -176,7 +176,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         const formattedPhone = client.phone.replace(/\D/g, '');
         const shop = allShops.find(s => s.id === client.sourceShopId);
         const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
-        const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`;
+        const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || shop?.id || 'club'}/credencial-vip/${client.id}`;
         const fullMessage = baseMessage + credentialLink;
         const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
         window.open(url, '_blank');
@@ -190,7 +190,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
             const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
             filteredShopClients.forEach(client => {
                 const formattedPhone = client.phone.replace(/\D/g, '');
-                const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`;
+                const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || shop?.id || 'club'}/credencial-vip/${client.id}`;
                 const fullMessage = customMessage + credentialLink;
                 const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
                 window.open(url, '_blank');
