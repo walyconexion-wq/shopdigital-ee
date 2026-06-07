@@ -133,7 +133,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     }
 
     return (
-        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-transparent pb-10">
+        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-[#020208] pb-10">
             <style>
                 {`
                 @keyframes bounceSlow {
@@ -143,12 +143,26 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 .animate-bounce-slow {
                     animation: bounceSlow 3s ease-in-out infinite;
                 }
+                @keyframes scanner-line {
+                    0% { transform: translateY(-50%); }
+                    100% { transform: translateY(0%); }
+                }
                 `}
             </style>
-            <div className="absolute top-40 right-[-10%] w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
-            <div className="absolute bottom-40 left-[-10%] w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
+            {/* HUD Background - Tech Mesh Encendida */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-indigo-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-cyan-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
+                <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px]" />
+                {/* Tech Grid Mesh */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.12)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                {/* Tech Dots Mesh */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(99,102,241,0.18)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
+                {/* Scanline */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.04] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
+            </div>
 
-            <header className="bg-transparent pt-4 flex-shrink-0 flex flex-col items-center relative z-10">
+            <header className="bg-black/50 backdrop-blur-xl pt-4 flex-shrink-0 flex flex-col items-center relative z-10 border-b border-cyan-500/15 shadow-[0_4px_30px_rgba(34,211,238,0.06)]">
                 <div className="w-full px-6 flex flex-col pb-4">
                     <button
                         onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
@@ -320,7 +334,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 </div>
             </div>
 
-            <footer className="w-full flex flex-col items-center gap-2 pt-6 pb-6 mt-auto border-t border-white/10 relative z-10">
+            <footer className="w-full flex flex-col items-center gap-2 pt-6 pb-6 mt-auto border-t border-cyan-500/20 relative z-10 bg-black/30 backdrop-blur-sm">
                 <p className="text-[9px] font-black text-white uppercase tracking-[0.35em] text-center select-none">© 2026 · ShopDigital</p>
                 <div className="flex items-center gap-4 mt-1">
                     <p onClick={handleWalyClick} className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform"
