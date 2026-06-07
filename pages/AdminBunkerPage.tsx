@@ -389,7 +389,7 @@ KPIs ADMINISTRATIVOS ACTUALES:
     }
 
     return (
-        <div className="min-h-screen bg-[#030200] text-white font-sans overflow-x-hidden flex flex-col selection:bg-amber-500/30">
+        <div className="h-screen overflow-y-auto overflow-x-hidden relative z-10 w-full bg-[#030200] text-white font-sans flex flex-col selection:bg-amber-500/30">
             {/* Background Malla de Circuitos Ámbar */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-amber-950/5 rounded-full blur-[140px]" />

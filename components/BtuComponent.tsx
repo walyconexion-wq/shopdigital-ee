@@ -316,7 +316,7 @@ Contenido: ${note.contenido}${note.adjuntoUrl ? `\nAdjunto del Módulo: ${note.a
     };
 
     return (
-        <div className="w-full relative z-10 max-w-[1600px] mx-auto px-4 md:px-6 mt-8 mb-20 selection:bg-amber-500/20 btu-container">
+        <div className="w-full relative z-10 max-w-[1600px] mx-auto px-4 md:px-6 mt-8 pb-24 selection:bg-amber-500/20 btu-container">
             <style>{`
                 @keyframes alertGlow {
                     0%, 100% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }

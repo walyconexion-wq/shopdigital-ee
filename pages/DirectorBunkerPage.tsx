@@ -418,7 +418,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
     };
 
     return (
-        <div className="min-h-screen bg-[#050A15] text-white font-sans overflow-x-hidden flex flex-col selection:bg-violet-500/30">
+        <div className="h-screen overflow-y-auto overflow-x-hidden relative z-10 w-full bg-[#050A15] text-white font-sans flex flex-col selection:bg-violet-500/30">
             {isConsolidating && (
                 <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
                     <div className="w-16 h-16 border-2 border-violet-500/20 border-t-violet-500 rounded-full animate-spin mb-6 shadow-[0_0_30px_rgba(139,92,246,0.3)]"></div>

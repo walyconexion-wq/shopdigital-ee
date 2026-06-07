@@ -276,7 +276,7 @@ KPIs DE CIBERSEGURIDAD Y SECOPS:
     }
 
     return (
-        <div className="min-h-screen bg-[#020406] text-white font-sans overflow-x-hidden flex flex-col selection:bg-emerald-500/30">
+        <div className="h-screen overflow-y-auto overflow-x-hidden relative z-10 w-full bg-[#020406] text-white font-sans flex flex-col selection:bg-emerald-500/30">
             {/* Background Malla Tecnológica Verde */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-emerald-950/10 rounded-full blur-[140px]" />

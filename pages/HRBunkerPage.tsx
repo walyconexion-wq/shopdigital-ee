@@ -163,7 +163,7 @@ KPIs DE RECURSOS HUMANOS:
     }
 
     return (
-        <div className="min-h-screen bg-[#050A0A] text-white font-sans overflow-x-hidden flex flex-col selection:bg-cyan-500/30">
+        <div className="h-screen overflow-y-auto overflow-x-hidden relative z-10 w-full bg-[#050A0A] text-white font-sans flex flex-col selection:bg-cyan-500/30">
             {/* Background Camaleón */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-cyan-600/10 rounded-full blur-[120px]" />

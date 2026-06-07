@@ -221,7 +221,7 @@ KPIs CONTABLES Y LEGALES:
     }
 
     return (
-        <div className="min-h-screen bg-[#0A0505] text-white font-sans overflow-x-hidden flex flex-col selection:bg-red-500/30">
+        <div className="h-screen overflow-y-auto overflow-x-hidden relative z-10 w-full bg-[#0A0505] text-white font-sans flex flex-col selection:bg-red-500/30">
             {/* Background Camaleón */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-red-600/10 rounded-full blur-[120px]" />
