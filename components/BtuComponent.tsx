@@ -443,8 +443,8 @@ Contenido: ${note.contenido}${note.adjuntoUrl ? `\nAdjunto del Módulo: ${note.a
                                 onChange={e => setContent(e.target.value)}
                                 placeholder="Escribe los detalles tácticos de esta operación..."
                                 required
-                                rows={4}
-                                className={`w-full bg-[#050508] border rounded-xl px-4 py-3 text-xs text-white outline-none placeholder:text-white/20 transition-all resize-none ${theme.border} ${theme.shadow}`}
+                                rows={8}
+                                className={`w-full bg-[#050508] border rounded-xl px-4 py-3 text-xs text-white outline-none placeholder:text-white/20 transition-all resize-y ${theme.border} ${theme.shadow}`}
                             />
                         </div>
 

@@ -1415,10 +1415,69 @@ export const actualizarEntradaCliente = async (clientId: string, ticketData: any
     }
 };
 
+const compressBunkerImage = (file: File, maxDim: number = 800): Promise<Blob | File> => {
+    return new Promise((resolve) => {
+        if (!file.type.startsWith('image/')) {
+            resolve(file);
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > maxDim) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    }
+                } else {
+                    if (height > maxDim) {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+                        } else {
+                            resolve(file);
+                        }
+                    }, 'image/jpeg', 0.75);
+                } else {
+                    resolve(file);
+                }
+            };
+            img.onerror = () => resolve(file);
+            img.src = e.target?.result as string;
+        };
+        reader.onerror = () => resolve(file);
+        reader.readAsDataURL(file);
+    });
+};
+
 export const subirArchivoBunker = async (file: File, path: string): Promise<string> => {
+    let fileToUpload: Blob | File = file;
+    if (file.type.startsWith('image/')) {
+        try {
+            fileToUpload = await compressBunkerImage(file);
+        } catch (e) {
+            console.warn("Image compression failed, using original file:", e);
+        }
+    }
+
     try {
         const storageRef = ref(storage, path);
-        const snapshot = await uploadBytes(storageRef, file);
+        const snapshot = await uploadBytes(storageRef, fileToUpload);
         const downloadUrl = await getDownloadURL(snapshot.ref);
         return downloadUrl;
     } catch (error) {
@@ -1427,7 +1486,7 @@ export const subirArchivoBunker = async (file: File, path: string): Promise<stri
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result as string);
             reader.onerror = reject;
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(fileToUpload as Blob);
         });
     }
 };
