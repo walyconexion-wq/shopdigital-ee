@@ -554,6 +554,15 @@ const MasterPanelPage: React.FC = () => {
 
                         <div 
                             role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/secops`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-emerald-500/40 hover:border-emerald-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:bg-emerald-900/10"
+                        >
+                            <span className="text-[11px] text-emerald-300">🛡️ BÚNKER CIBERSEGURIDAD Y SECOPS</span>
+                            <span className="text-[9px] text-emerald-400 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/20">SEGURIDAD / IT</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
                             onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/planificacion-desarrollo`); }}
                             className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-blue-500/40 hover:border-blue-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.1)] hover:bg-blue-900/10"
                         >

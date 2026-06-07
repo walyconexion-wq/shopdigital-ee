@@ -29,6 +29,7 @@ import { SystemsBunkerPage } from './pages/SystemsBunkerPage';
 import { PlanningBunkerPage } from './pages/PlanningBunkerPage';
 import { InvestmentBunkerPage } from './pages/InvestmentBunkerPage';
 import { MaintenanceBunkerPage } from './pages/MaintenanceBunkerPage';
+import { SecOpsBunkerPage } from './pages/SecOpsBunkerPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
@@ -364,6 +365,8 @@ const App: React.FC = () => {
                     <Route path="/:townId/bunker/planificacion-desarrollo" element={<PlanningBunkerPage />} />
                     <Route path="/:townId/bunker/inversion-exponencial" element={<InvestmentBunkerPage />} />
                     <Route path="/:townId/bunker/mantenimiento" element={<MaintenanceBunkerPage />} />
+                    <Route path="/:townId/bunker/secops" element={<SecOpsBunkerPage />} />
+                    <Route path="/:townId/bunker-secops" element={<Navigate to={`/${window.location.pathname.split('/')[1] || 'esteban-echeverria'}/bunker/secops`} replace />} />
 
                     {/* Alias sin townId */}
                     <Route path="/bunker/administracion" element={<Navigate to="/esteban-echeverria/bunker/administracion" replace />} />
@@ -374,6 +377,8 @@ const App: React.FC = () => {
                     <Route path="/bunker/planificacion-desarrollo" element={<Navigate to="/esteban-echeverria/bunker/planificacion-desarrollo" replace />} />
                     <Route path="/bunker/inversion-exponencial" element={<Navigate to="/esteban-echeverria/bunker/inversion-exponencial" replace />} />
                     <Route path="/bunker/mantenimiento" element={<Navigate to="/esteban-echeverria/bunker/mantenimiento" replace />} />
+                    <Route path="/bunker/secops" element={<Navigate to="/esteban-echeverria/bunker/secops" replace />} />
+                    <Route path="/bunker-secops" element={<Navigate to="/esteban-echeverria/bunker/secops" replace />} />
 
                     {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}
                     <Route path="/:townId/tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
