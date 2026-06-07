@@ -5,7 +5,7 @@ import {
     MessageSquare, ExternalLink, Activity, ArrowUpRight, Copy, Check, 
     Store, Users, FileText, Database, AlertCircle, CheckCircle, 
     XCircle, Play, UserCheck, ShieldPlus, Landmark, Factory, FileDown,
-    FolderOpen, Zap, AlertTriangle, Eye, Edit
+    FolderOpen, Zap, AlertTriangle, Eye, Edit, Paperclip
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
@@ -15,8 +15,9 @@ import {
     registrarIntrusionBunker, db,
     suscribirseAComercios, actualizarComercio, 
     suscribirseAClientes, guardarCliente,
-    suscribirseAFacturasPorZona
+    suscribirseAFacturasPorZona, subirArchivoBunker
 } from '../firebase';
+import { BtuComponent } from '../components/BtuComponent';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -207,6 +208,27 @@ export const AdminBunkerPage: React.FC = () => {
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [ariMsgs, isThinking]);
+
+    const [isUploadingFile, setIsUploadingFile] = useState(false);
+    const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        playNeonClick();
+        setIsUploadingFile(true);
+        try {
+            const path = `bunker_chat/administracion/${Date.now()}_${file.name}`;
+            const downloadUrl = await subirArchivoBunker(file, path);
+            const fileLink = file.type.startsWith('image/') 
+                ? `\n![Imagen: ${file.name}](${downloadUrl})` 
+                : `\n[Archivo Adjunto: ${file.name}](${downloadUrl})`;
+            setMsgInput(prev => prev + fileLink);
+        } catch (error) {
+            console.error(error);
+            alert("Error al subir archivo.");
+        } finally {
+            setIsUploadingFile(false);
+        }
+    };
 
     const handleSend = async () => {
         if (!msgInput.trim() || isThinking) return;
@@ -751,6 +773,20 @@ KPIs ADMINISTRATIVOS ACTUALES:
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
                         <div className="bg-black border border-amber-500/40 rounded-2xl flex items-center p-2 focus-within:border-amber-400 focus-within:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all">
                             <input 
+                                type="file" 
+                                id="chat-file-admin"
+                                onChange={handleChatFileChange}
+                                className="hidden"
+                                accept="image/*,application/pdf"
+                            />
+                            <label 
+                                htmlFor="chat-file-admin" 
+                                className="p-2 text-white/40 hover:text-amber-400 hover:bg-amber-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-90"
+                                title="Adjuntar foto o PDF"
+                            >
+                                <Paperclip size={16} className={isUploadingFile ? "animate-spin" : ""} />
+                            </label>
+                            <input 
                                 type="text"
                                 value={msgInput}
                                 onChange={e => setMsgInput(e.target.value)}
@@ -766,6 +802,14 @@ KPIs ADMINISTRATIVOS ACTUALES:
                 </div>
 
             </main>
+
+            <BtuComponent 
+                bunkerId="administracion"
+                townId={townId}
+                onInjectToAri={(text) => {
+                    setMsgInput(text);
+                }}
+            />
 
             {/* MODAL: Cliente VIP Celeste Neón Credencial */}
             {selectedClient && (

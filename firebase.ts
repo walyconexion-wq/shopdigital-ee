@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc, updateDoc, query, where, increment, addDoc, orderBy, limit, runTransaction } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
@@ -18,6 +19,7 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+export const storage = getStorage(app);
 
 // --- MASTER CONSTANTS (Moved to top to avoid TDZ errors) ---
 // Master list of all available categories (with lucide icon key for rendering)
@@ -1410,6 +1412,23 @@ export const actualizarEntradaCliente = async (clientId: string, ticketData: any
     } catch (error) {
         console.error("Error al asignar entrada en Firestore:", error);
         throw error;
+    }
+};
+
+export const subirArchivoBunker = async (file: File, path: string): Promise<string> => {
+    try {
+        const storageRef = ref(storage, path);
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadUrl = await getDownloadURL(snapshot.ref);
+        return downloadUrl;
+    } catch (error) {
+        console.warn("Storage upload failed, falling back to local base64:", error);
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     }
 };
 

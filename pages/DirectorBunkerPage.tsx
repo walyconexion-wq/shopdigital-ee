@@ -9,10 +9,11 @@ import {
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
-import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas } from '../firebase';
+import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas, subirArchivoBunker } from '../firebase';
 import { RadarScanner } from '../components/RadarScanner';
 import { SaturationPredictor } from '../components/SaturationPredictor';
-import { LayoutGrid, Target, TrendingUp, Radio, CheckCircle2 } from 'lucide-react';
+import { LayoutGrid, Target, TrendingUp, Radio, CheckCircle2, Paperclip } from 'lucide-react';
+import { BtuComponent } from '../components/BtuComponent';
 
 // Mock data para el Radar
 const zonesData = [
@@ -305,6 +306,27 @@ export const DirectorBunkerPage: React.FC = () => {
             peakDay: getMaxKey(counts.dayOfWeek)
         };
     }, [telemetryLogs]);
+
+    const [isUploadingFile, setIsUploadingFile] = useState(false);
+    const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        playNeonClick();
+        setIsUploadingFile(true);
+        try {
+            const path = `bunker_chat/director/${Date.now()}_${file.name}`;
+            const downloadUrl = await subirArchivoBunker(file, path);
+            const fileLink = file.type.startsWith('image/') 
+                ? `\n![Imagen: ${file.name}](${downloadUrl})` 
+                : `\n[Archivo Adjunto: ${file.name}](${downloadUrl})`;
+            setMsgInput(prev => prev + fileLink);
+        } catch (error) {
+            console.error(error);
+            alert("Error al subir archivo.");
+        } finally {
+            setIsUploadingFile(false);
+        }
+    };
 
     const handleSend = async () => {
         if (!msgInput.trim() || isThinking) return;
@@ -970,6 +992,20 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
                         <div className="bg-black border border-violet-500/40 rounded-2xl flex items-center p-2 focus-within:border-violet-400 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all">
                             <input 
+                                type="file" 
+                                id="chat-file-director"
+                                onChange={handleChatFileChange}
+                                className="hidden"
+                                accept="image/*,application/pdf"
+                            />
+                            <label 
+                                htmlFor="chat-file-director" 
+                                className="p-2 text-white/40 hover:text-violet-400 hover:bg-violet-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-90"
+                                title="Adjuntar foto o PDF"
+                            >
+                                <Paperclip size={16} className={isUploadingFile ? "animate-spin" : ""} />
+                            </label>
+                            <input 
                                 type="text"
                                 value={msgInput}
                                 onChange={e => setMsgInput(e.target.value)}
@@ -985,6 +1021,14 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                 </div>
                 </div>
             </main>
+
+            <BtuComponent 
+                bunkerId="director"
+                townId={townId}
+                onInjectToAri={(text) => {
+                    setMsgInput(text);
+                }}
+            />
         </div>
     );
 };

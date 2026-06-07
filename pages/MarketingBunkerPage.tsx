@@ -3,12 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Clock, MapPin, ChevronLeft, Anchor, ShieldCheck, Dog, 
     ShieldAlert, Cpu, MessageSquare, ExternalLink, Activity, 
-    ArrowUpRight
+    ArrowUpRight, Paperclip
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
-import { registrarIntrusionBunker } from '../firebase';
+import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
+import { BtuComponent } from '../components/BtuComponent';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -42,6 +43,27 @@ export const MarketingBunkerPage: React.FC = () => {
     const [temp, setTemp] = useState<number | null>(null);
     const [weatherCode, setWeatherCode] = useState<number | null>(null);
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
+
+    const [isUploadingFile, setIsUploadingFile] = useState(false);
+    const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        playNeonClick();
+        setIsUploadingFile(true);
+        try {
+            const path = `bunker_chat/marketing/${Date.now()}_${file.name}`;
+            const downloadUrl = await subirArchivoBunker(file, path);
+            const fileLink = file.type.startsWith('image/') 
+                ? `\n![Imagen: ${file.name}](${downloadUrl})` 
+                : `\n[Archivo Adjunto: ${file.name}](${downloadUrl})`;
+            setMsgInput(prev => prev + fileLink);
+        } catch (error) {
+            console.error(error);
+            alert("Error al subir archivo.");
+        } finally {
+            setIsUploadingFile(false);
+        }
+    };
 
     // Reloj Atómico
     useEffect(() => {
@@ -307,6 +329,20 @@ KPIs DE MARKETING Y EXPANSIÓN:
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
                         <div className="bg-black border border-emerald-500/40 rounded-2xl flex items-center p-2 focus-within:border-emerald-400 focus-within:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all">
                             <input 
+                                type="file" 
+                                id="chat-file-marketing"
+                                onChange={handleChatFileChange}
+                                className="hidden"
+                                accept="image/*,application/pdf"
+                            />
+                            <label 
+                                htmlFor="chat-file-marketing" 
+                                className="p-2 text-white/40 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-90"
+                                title="Adjuntar foto o PDF"
+                            >
+                                <Paperclip size={16} className={isUploadingFile ? "animate-spin" : ""} />
+                            </label>
+                            <input 
                                 type="text"
                                 value={msgInput}
                                 onChange={e => setMsgInput(e.target.value)}
@@ -321,6 +357,14 @@ KPIs DE MARKETING Y EXPANSIÓN:
                     </div>
                 </div>
             </main>
+
+            <BtuComponent 
+                bunkerId="marketing"
+                townId={townId}
+                onInjectToAri={(text) => {
+                    setMsgInput(text);
+                }}
+            />
         </div>
     );
 };
