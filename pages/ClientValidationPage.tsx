@@ -116,27 +116,34 @@ const ClientValidationPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 relative overflow-x-hidden">
-            {/* HUD Layers */}
+        <div className="min-h-screen bg-[#020208] text-white pb-24 relative overflow-x-hidden selection:bg-cyan-500/30">
+            {/* HUD Background - Tech Mesh Encendida */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-500/5 rounded-full blur-[100px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-indigo-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-cyan-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
+                <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px]" />
+                {/* Tech Grid Mesh */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.12)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                {/* Tech Dots Mesh */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(99,102,241,0.18)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
+                {/* Scanline */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.04] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
             </div>
 
             {/* HEADER */}
-            <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-white/5 py-6 px-8 flex items-center justify-between sticky top-0 z-50">
-                <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 border border-white/10"><ChevronLeft size={20} /></button>
+            <div className="bg-black/70 backdrop-blur-xl border-b border-cyan-500/20 py-6 px-8 flex items-center justify-between sticky top-0 z-50 shadow-[0_4px_30px_rgba(34,211,238,0.08)]">
+                <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all active:scale-95"><ChevronLeft size={20} /></button>
                 <div className="text-right">
-                    <p className="text-[10px] font-black uppercase text-cyan-400 tracking-[0.25em]">Terminal de Comerciante</p>
-                    <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest">{townId.toUpperCase()}</p>
+                    <p className="text-[10px] font-black uppercase text-cyan-400 tracking-[0.25em] drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">Terminal de Comerciante</p>
+                    <p className="text-[8px] font-bold text-cyan-300/60 uppercase tracking-widest">{townId.toUpperCase()}</p>
                 </div>
             </div>
 
             <div className="max-w-md mx-auto p-8 relative z-10 space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
                 
                 {/* CLIENT PROFILE CARD */}
-                <div className="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl" />
+                <div className="bg-black/60 border border-cyan-500/20 rounded-[2.5rem] p-8 shadow-[0_0_40px_rgba(34,211,238,0.08),inset_0_0_20px_rgba(99,102,241,0.1)] relative overflow-hidden group backdrop-blur-sm">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/15 rounded-full blur-2xl" />
                     
                     <div className="flex items-center gap-6 mb-8">
                         <div className="w-20 h-20 rounded-full border-2 border-cyan-500/30 p-1 relative overflow-hidden bg-white/5 shadow-inner">
@@ -157,13 +164,13 @@ const ClientValidationPage: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                            <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">Membresía</p>
-                            <p className="text-[13px] font-black text-white/70 tracking-tighter">{client.dni || "PENDIENTE"}</p>
+                        <div className="bg-white/8 rounded-2xl p-4 border border-white/15 shadow-[inset_0_0_10px_rgba(255,255,255,0.03)]">
+                            <p className="text-[8px] font-black text-cyan-300/70 uppercase tracking-widest mb-1">Membresía</p>
+                            <p className="text-[13px] font-black text-white tracking-tighter drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">{client.dni || "PENDIENTE"}</p>
                         </div>
-                        <div className="bg-cyan-500/5 rounded-2xl p-4 border border-cyan-500/10">
-                            <p className="text-[8px] font-black text-cyan-400/30 uppercase tracking-widest mb-1">Saldo Créditos</p>
-                            <p className="text-[20px] font-[1000] text-cyan-400 tabular-nums">{client.credits || 0}</p>
+                        <div className="bg-cyan-500/10 rounded-2xl p-4 border border-cyan-500/25 shadow-[inset_0_0_10px_rgba(34,211,238,0.08)]">
+                            <p className="text-[8px] font-black text-cyan-400/80 uppercase tracking-widest mb-1">Saldo Créditos</p>
+                            <p className="text-[20px] font-[1000] text-cyan-400 tabular-nums drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]">{client.credits || 0}</p>
                         </div>
                     </div>
                 </div>
@@ -172,14 +179,14 @@ const ClientValidationPage: React.FC = () => {
                 <form onSubmit={handleTransaction} className="space-y-6">
                     <div className="space-y-4">
                         <div className="group">
-                            <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2 ml-1 flex items-center gap-2">
-                                <Store size={12} /> Local / Comercio
+                            <label className="text-[9px] font-black text-cyan-300/80 uppercase tracking-[0.3em] mb-2 ml-1 flex items-center gap-2">
+                                <Store size={12} className="text-cyan-400" /> Local / Comercio
                             </label>
                             <select 
                                 required
                                 value={selectedShopId}
                                 onChange={(e) => setSelectedShopId(e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-2xl p-4 text-sm font-black text-white focus:border-cyan-500/50 outline-none appearance-none cursor-pointer"
+                                className="w-full bg-black/60 border border-cyan-500/20 rounded-2xl p-4 text-sm font-black text-white focus:border-cyan-400/60 outline-none appearance-none cursor-pointer shadow-[inset_0_0_10px_rgba(34,211,238,0.05)] backdrop-blur-sm"
                             >
                                 <option value="" disabled>Seleccione Su Comercio</option>
                                 {shopsInTown.map(shop => (
@@ -189,8 +196,8 @@ const ClientValidationPage: React.FC = () => {
                         </div>
 
                         <div className="group">
-                            <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2 ml-1 flex items-center gap-2">
-                                <Wallet size={12} /> Monto a Descontar
+                            <label className="text-[9px] font-black text-cyan-300/80 uppercase tracking-[0.3em] mb-2 ml-1 flex items-center gap-2">
+                                <Wallet size={12} className="text-cyan-400" /> Monto a Descontar
                             </label>
                             <div className="relative">
                                 <input 
@@ -199,9 +206,9 @@ const ClientValidationPage: React.FC = () => {
                                     placeholder="0"
                                     value={amount}
                                     onChange={(e) => setAmount(e.target.value)}
-                                    className="w-full bg-zinc-900 border border-white/10 rounded-2xl p-4 text-[24px] font-[1000] text-cyan-400 placeholder:text-white/5 focus:border-cyan-500/50 outline-none tabular-nums"
+                                    className="w-full bg-black/60 border border-cyan-500/20 rounded-2xl p-4 text-[24px] font-[1000] text-cyan-400 placeholder:text-white/15 focus:border-cyan-400/60 outline-none tabular-nums shadow-[inset_0_0_10px_rgba(34,211,238,0.05)] backdrop-blur-sm drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
                                 />
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/20 uppercase tracking-widest">CRÉDITOS</div>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-cyan-400/60 uppercase tracking-widest">CRÉDITOS</div>
                             </div>
                         </div>
                     </div>
@@ -234,14 +241,15 @@ const ClientValidationPage: React.FC = () => {
                     <button 
                         type="submit"
                         disabled={isProcessing || !amount || !selectedShopId || status === 'success'}
-                        className="w-full h-20 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-30 disabled:grayscale rounded-3xl flex flex-col items-center justify-center gap-1 font-black uppercase tracking-[0.2em] text-[12px] shadow-[0_10px_30px_rgba(34,211,238,0.3)] active:scale-95 transition-all text-white border border-white/20"
+                        className="w-full h-20 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 disabled:opacity-30 disabled:grayscale rounded-3xl flex flex-col items-center justify-center gap-1 font-black uppercase tracking-[0.2em] text-[12px] shadow-[0_10px_40px_rgba(34,211,238,0.35),0_0_20px_rgba(99,102,241,0.2)] active:scale-95 transition-all text-white border border-cyan-400/30 relative overflow-hidden group"
                     >
                         {isProcessing ? (
                             <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
                             <>
-                                <ArrowDownRight size={22} className="opacity-70" />
-                                <span>Confirmar Descuento</span>
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                                <ArrowDownRight size={22} className="opacity-90 drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" />
+                                <span className="drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Confirmar Descuento</span>
                             </>
                         )}
                     </button>
@@ -250,14 +258,14 @@ const ClientValidationPage: React.FC = () => {
                         <button 
                             type="button"
                             onClick={() => setStatus('idle')}
-                            className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 text-white/40 font-black uppercase tracking-widest text-[9px] transition-all active:scale-95"
+                            className="w-full h-14 rounded-2xl bg-cyan-500/8 border border-cyan-500/20 text-cyan-300/70 font-black uppercase tracking-widest text-[9px] transition-all active:scale-95 hover:bg-cyan-500/15"
                         >
                             Nueva Transacción
                         </button>
                     )}
                 </form>
 
-                <p className="text-[7.5px] text-center text-white/20 uppercase tracking-[0.4em] font-black leading-relaxed px-8">
+                <p className="text-[7.5px] text-center text-cyan-300/50 uppercase tracking-[0.4em] font-black leading-relaxed px-8">
                     Esta terminal es para uso exclusivo de comercios autorizados. <br/>
                     Todas las transacciones son registradas bajo seguridad Blockchain.
                 </p>
@@ -270,6 +278,10 @@ const ClientValidationPage: React.FC = () => {
                     75% { transform: translateX(8px); }
                 }
                 .shake { animation: shake 0.3s ease-in-out; }
+                @keyframes scanner-line {
+                    0% { transform: translateY(-50%); }
+                    100% { transform: translateY(0%); }
+                }
             `}} />
         </div>
     );
