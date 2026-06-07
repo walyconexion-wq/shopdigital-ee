@@ -405,38 +405,38 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </div>
 
                         {/* 🛰️ SINTONIZADOR DE ACCESO / EVENTOS LIVE */}
-                        <div className="w-full bg-black/60 rounded-[1.5rem] p-4.5 border border-white/10 space-y-3 relative overflow-hidden mb-6 z-10">
+                        <div className="w-full bg-black/80 rounded-[2rem] p-6 border border-white/15 space-y-4 relative overflow-hidden mb-6 z-10 shadow-[inset_0_0_20px_rgba(99,102,241,0.15)]">
                             <div className="flex justify-between items-center relative z-10">
-                                <label className="text-[8px] font-black text-cyan-300 uppercase tracking-[0.2em] flex items-center gap-1.5">
-                                    <Radio size={10} className="text-cyan-400 animate-pulse" /> Sintonizador de Acceso
+                                <label className="text-[9px] font-black text-cyan-300 uppercase tracking-[0.25em] flex items-center gap-2">
+                                    <Radio size={12} className="text-cyan-400 animate-pulse" /> Sintonizador de Acceso
                                 </label>
-                                <span className="text-[7.5px] font-[900] bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">LIVE SINFONÍA</span>
+                                <span className="text-[8px] font-[900] bg-cyan-500/20 border border-cyan-400/40 text-cyan-400 px-3 py-1.5 rounded-full uppercase tracking-wider animate-pulse">LIVE SINFONÍA</span>
                             </div>
                             
                             {activeEvent ? (
-                                <div className="space-y-2 relative z-10">
-                                    <p className="text-[11px] font-[1000] text-white uppercase tracking-tight leading-tight">
+                                <div className="space-y-3.5 relative z-10">
+                                    <p className="text-[13px] font-[1000] text-white uppercase tracking-tight leading-snug drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]">
                                         {activeEvent.name}
                                     </p>
-                                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest leading-none">
+                                    <p className="text-[9px] font-black text-cyan-300 uppercase tracking-widest leading-relaxed">
                                         ARTISTA: {activeEvent.artist || 'Red ShopDigital'} · LOCALIDAD: {activeEvent.targetLocalities.join(', ').toUpperCase()}
                                     </p>
-                                    <div className="flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-xl w-fit">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                                        <span className="text-[8.5px] font-[1000] text-emerald-400 uppercase tracking-widest">
+                                    <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 px-3 py-1.5 rounded-xl w-fit">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                        <span className="text-[9px] font-[1000] text-emerald-400 uppercase tracking-widest">
                                             {isEnterprise ? 'ACCESO INDUSTRIAL VERIFICADO' : 'ACCESO COMERCIO VERIFICADO'}
                                         </span>
                                     </div>
-                                    <p className="text-[7px] font-bold text-white/45 uppercase tracking-wider leading-relaxed">
+                                    <p className="text-[7.5px] font-bold text-white/50 uppercase tracking-widest leading-relaxed">
                                         Seguridad: Permitir el ingreso al personal asociado acreditado.
                                     </p>
                                 </div>
                             ) : (
-                                <div className="space-y-1 relative z-10">
-                                    <p className="text-[9px] font-black text-white/45 uppercase tracking-widest italic">
+                                <div className="space-y-2 relative z-10">
+                                    <p className="text-[10px] font-black text-white/50 uppercase tracking-widest italic">
                                         Buscando transmisiones...
                                     </p>
-                                    <p className="text-[7.5px] font-bold text-white/30 uppercase tracking-wider leading-relaxed">
+                                    <p className="text-[8px] font-bold text-white/40 uppercase tracking-wider leading-relaxed">
                                         Sin eventos live activos para este nodo en este radar.
                                     </p>
                                 </div>
@@ -623,13 +623,13 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
 
             {/* Footer */}
             <div className="mt-10 flex flex-col items-center gap-2 relative z-10">
-                <p className="text-[8px] font-black text-indigo-400/60 uppercase tracking-[0.4em] text-center px-12 leading-loose">
+                <p className="text-[8px] font-black text-indigo-400/90 uppercase tracking-[0.4em] text-center px-12 leading-loose">
                     Security ID: SHOP-{selectedShop.id.slice(0, 8).toUpperCase()}
                 </p>
                 <div className="flex items-center gap-4">
-                    <div className="h-[1px] w-8 bg-indigo-500/40" />
-                    <span className="text-[7px] font-bold text-white/40 uppercase tracking-[0.8em]">ShopDigital.tech</span>
-                    <div className="h-[1px] w-8 bg-indigo-500/40" />
+                    <div className="h-[1px] w-8 bg-indigo-500/60" />
+                    <span className="text-[7px] font-bold text-white/70 uppercase tracking-[0.8em]">ShopDigital.tech</span>
+                    <div className="h-[1px] w-8 bg-indigo-500/60" />
                 </div>
             </div>
             

@@ -340,12 +340,24 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                     color: #ffffff !important;
                     background-color: #0b1329 !important;
                 }
+
+                @keyframes scanner-line {
+                    0% { transform: translateY(-50%); }
+                    100% { transform: translateY(50%); }
+                }
             `}</style>
 
             {/* HUD Background Layers */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[150px] opacity-20" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                {/* Neon glows */}
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-500/15 rounded-full blur-[150px] opacity-35" />
+                <div className="absolute bottom-0 left-0 w-[450px] h-[450px] bg-blue-500/10 rounded-full blur-[150px] opacity-25 animate-pulse" style={{ animationDuration: '10s' }} />
+                {/* Tech Grid Mesh */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,245,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(0,245,255,0.12)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                {/* Tech Dots Mesh */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,245,255,0.18)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
+                {/* Scanline Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.04] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
             </div>
 
             {/* HEADER */}
@@ -581,38 +593,38 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                             </div>
 
                             {/* 🛰️ SINTONIZADOR DE ACCESO / EVENTOS LIVE */}
-                            <div className="bg-black/60 rounded-[1.5rem] p-4.5 border border-white/10 space-y-3 relative overflow-hidden">
+                            <div className="bg-black/80 rounded-[2rem] p-6 border border-white/15 space-y-4 relative overflow-hidden shadow-[inset_0_0_20px_rgba(0,245,255,0.15)]">
                                 <div className="flex justify-between items-center relative z-10">
-                                    <label className="text-[8px] font-black text-cyan-300 uppercase tracking-[0.2em] flex items-center gap-1.5">
-                                        <Radio size={10} className="text-cyan-400 animate-pulse" /> Sintonizador de Acceso
+                                    <label className="text-[9px] font-black text-cyan-300 uppercase tracking-[0.25em] flex items-center gap-2">
+                                        <Radio size={12} className="text-cyan-400 animate-pulse" /> Sintonizador de Acceso
                                     </label>
-                                    <span className="text-[7.5px] font-[900] bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">LIVE SINFONÍA</span>
+                                    <span className="text-[8px] font-[900] bg-cyan-500/20 border border-cyan-400/40 text-cyan-400 px-3 py-1.5 rounded-full uppercase tracking-wider animate-pulse">LIVE SINFONÍA</span>
                                 </div>
                                 
                                 {client.eventPassEnabled !== false && sintonizadorEventData ? (
-                                    <div className="space-y-2 relative z-10">
-                                        <p className="text-[11px] font-[1000] text-white uppercase tracking-tight leading-tight">
+                                    <div className="space-y-3.5 relative z-10">
+                                        <p className="text-[13px] font-[1000] text-white uppercase tracking-tight leading-snug drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]">
                                             {sintonizadorEventData.name}
                                         </p>
-                                        <p className="text-[8px] font-black text-white/60 uppercase tracking-widest leading-none">
+                                        <p className="text-[9px] font-black text-cyan-300 uppercase tracking-widest leading-relaxed">
                                             {sintonizadorEventData.details}
                                         </p>
-                                        <div className="flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-xl w-fit">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                                            <span className="text-[8.5px] font-[1000] text-emerald-400 uppercase tracking-widest">
+                                        <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 px-3 py-1.5 rounded-xl w-fit">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                            <span className="text-[9px] font-[1000] text-emerald-400 uppercase tracking-widest">
                                                 {sintonizadorEventData.access}
                                             </span>
                                         </div>
-                                        <p className="text-[7px] font-bold text-white/45 uppercase tracking-wider leading-relaxed">
+                                        <p className="text-[7.5px] font-bold text-white/50 uppercase tracking-widest leading-relaxed">
                                             Control de Puerta: Permitir acceso y verificar DNI/Membresía.
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-1 relative z-10">
-                                        <p className="text-[9px] font-black text-white/45 uppercase tracking-widest italic">
+                                    <div className="space-y-2 relative z-10">
+                                        <p className="text-[10px] font-black text-white/50 uppercase tracking-widest italic">
                                             {client.eventPassEnabled === false ? 'Sintonizador inactivo (OFF)' : 'Buscando transmisiones...'}
                                         </p>
-                                        <p className="text-[7.5px] font-bold text-white/30 uppercase tracking-wider leading-relaxed">
+                                        <p className="text-[8px] font-bold text-white/40 uppercase tracking-wider leading-relaxed">
                                             {client.eventPassEnabled === false 
                                                 ? 'Active el sintonizador arriba para recibir pases de eventos live.' 
                                                 : 'Sin eventos live activos en este radar. Acceso comercial estándar.'}
@@ -655,7 +667,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                 </button>
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                    className="w-full h-14 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 font-black uppercase tracking-[0.2em] text-[10px] transition-all active:scale-95 border border-white/5 cursor-pointer"
+                    className="w-full h-14 rounded-2xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white/95 font-black uppercase tracking-[0.2em] text-[10px] transition-all active:scale-95 border border-white/5 cursor-pointer"
                 >
                     Volver a Inicio
                 </button>
@@ -771,7 +783,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
             )}
 
             {/* FOOTER INFO */}
-            <p className="text-[8.5px] text-white/10 uppercase tracking-[0.4em] font-black text-center leading-[1.8] mt-12 px-8">
+            <p className="text-[8.5px] text-white/50 uppercase tracking-[0.4em] font-black text-center leading-[1.8] mt-12 px-8">
                 Secured VIP Network · {formatClock(client.updatedAt ? new Date(client.updatedAt) : currentTime)} <br/>
                 ID: {client.id}
             </p>
