@@ -10,6 +10,7 @@ import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
+import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -44,6 +45,7 @@ export const AccountingBunkerPage: React.FC = () => {
     const [temp, setTemp] = useState<number | null>(null);
     const [weatherCode, setWeatherCode] = useState<number | null>(null);
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
+    const [activeDirectivesText, setActiveDirectivesText] = useState("");
 
     const [isUploadingFile, setIsUploadingFile] = useState(false);
     const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,7 +163,7 @@ KPIs CONTABLES Y LEGALES:
 - Estado de Auditoría: 100% Correcto
         `;
 
-        const fullContext = `${ARI_ACCOUNTING_PROMPT}\n\n${currentAccountingSummary}`;
+        const fullContext = `${ARI_ACCOUNTING_PROMPT}\n\n${currentAccountingSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
@@ -415,6 +417,12 @@ KPIs CONTABLES Y LEGALES:
                     </div>
                 </div>
             </main>
+
+            <DirectiveNotifier 
+                bunkerId="contabilidad"
+                townId={townId}
+                onDirectivesUpdate={setActiveDirectivesText}
+            />
 
             <BtuComponent 
                 bunkerId="contabilidad"

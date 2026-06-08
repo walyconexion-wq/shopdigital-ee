@@ -10,6 +10,7 @@ import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
+import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -43,6 +44,7 @@ export const HRBunkerPage: React.FC = () => {
     const [temp, setTemp] = useState<number | null>(null);
     const [weatherCode, setWeatherCode] = useState<number | null>(null);
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
+    const [activeDirectivesText, setActiveDirectivesText] = useState("");
 
     const [isUploadingFile, setIsUploadingFile] = useState(false);
     const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +126,7 @@ KPIs DE RECURSOS HUMANOS:
 - Academia Módulos Completados: 15 capacitaciones activas
         `;
 
-        const fullContext = `${ARI_HR_PROMPT}\n\n${currentHRSummary}`;
+        const fullContext = `${ARI_HR_PROMPT}\n\n${currentHRSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
@@ -357,6 +359,12 @@ KPIs DE RECURSOS HUMANOS:
                     </div>
                 </div>
             </main>
+
+            <DirectiveNotifier 
+                bunkerId="recursos-humanos"
+                townId={townId}
+                onDirectivesUpdate={setActiveDirectivesText}
+            />
 
             <BtuComponent 
                 bunkerId="recursos-humanos"

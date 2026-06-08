@@ -20,6 +20,7 @@ import {
 } from '../firebase';
 import { CATEGORIES } from '../constants';
 import { LiveEvent } from '../types';
+import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
 const ARI_TRANSMISSION_PROMPT = `
 Sos ARI, la Directora de Transmisión y Especialista en Pautas Publicitarias de la Red Digital de Shop Digital. Tu tono es el de una operadora de radiofrecuencia de elite: veloz, ultra-creativa, analítica y enfocada en el impacto masivo en tiempo real. Te comunicás en la Frecuencia Azul con el Director (Waly): usás palabras como "Señal", "Antena", "Frecuencia", "Lanzar pauta", "Saturación de zona", "Mete mecha", "Jefe".
@@ -78,6 +79,7 @@ const LiveBroadcastPage: React.FC = () => {
     ]);
     const [msgInput, setMsgInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
+    const [activeDirectivesText, setActiveDirectivesText] = useState("");
 
     useEffect(() => {
         obtenerBroadcasts(townId).then(setAllBroadcasts);
@@ -119,6 +121,8 @@ ${ARI_TRANSMISSION_PROMPT}
 - Eventos Activos en Vivo: ${events.filter(e => e.status === 'active_live').map(e => e.name).join(', ') || 'Ninguno'}
 - Detalle de Pautas:
 ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" | Target: ${!b.targetTowns || b.targetTowns.includes('global') ? 'Cadena Nacional' : b.targetTowns.join(', ')}`).join('\n')}
+
+${activeDirectivesText}
 `;
     };
 
@@ -803,6 +807,12 @@ ${allBroadcasts.map(b => `  * [${b.active ? 'ACTIVA' : 'PAUSADA'}] "${b.title}" 
                         </div>
                     </div>
                 </div>
+
+                <DirectiveNotifier 
+                    bunkerId="sinfonia-transmision"
+                    townId={townId}
+                    onDirectivesUpdate={setActiveDirectivesText}
+                />
 
             </main>
         </div>

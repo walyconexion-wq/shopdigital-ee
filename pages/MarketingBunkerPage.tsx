@@ -10,6 +10,7 @@ import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
+import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -43,6 +44,7 @@ export const MarketingBunkerPage: React.FC = () => {
     const [temp, setTemp] = useState<number | null>(null);
     const [weatherCode, setWeatherCode] = useState<number | null>(null);
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
+    const [activeDirectivesText, setActiveDirectivesText] = useState("");
 
     const [isUploadingFile, setIsUploadingFile] = useState(false);
     const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +126,7 @@ KPIs DE MARKETING Y EXPANSIÓN:
 - Conversión de Embudo: 8.5%
         `;
 
-        const fullContext = `${ARI_MARKETING_PROMPT}\n\n${currentMktSummary}`;
+        const fullContext = `${ARI_MARKETING_PROMPT}\n\n${currentMktSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
@@ -357,6 +359,12 @@ KPIs DE MARKETING Y EXPANSIÓN:
                     </div>
                 </div>
             </main>
+
+            <DirectiveNotifier 
+                bunkerId="marketing"
+                townId={townId}
+                onDirectivesUpdate={setActiveDirectivesText}
+            />
 
             <BtuComponent 
                 bunkerId="marketing"

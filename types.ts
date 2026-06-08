@@ -234,3 +234,24 @@ export interface LiveEvent {
   targetRoles: Array<'cliente_calle' | 'comerciante' | 'empresario'>;
   ticketPageUrl?: string;
 }
+
+export interface BunkerDirective {
+  id?: string;
+  title: string;
+  content: string;
+  priority: 'alta' | 'media' | 'baja';
+  type: 'mision' | 'alerta' | 'notificacion' | 'directiva';
+  targetBunkers: string[]; // e.g. ['all'] o ['contabilidad', 'sistemas']
+  sender: 'director';
+  fechaCreacion: string; // ISO String
+  estado: 'active' | 'archived';
+  respuestas?: BunkerReply[];
+}
+
+export interface BunkerReply {
+  bunkerId: string;
+  responder: string;
+  text: string;
+  fechaRespuesta: string; // ISO String
+  confirmed: boolean; // Confirmación formal de la misión
+}

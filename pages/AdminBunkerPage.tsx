@@ -18,6 +18,7 @@ import {
     suscribirseAFacturasPorZona, subirArchivoBunker
 } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
+import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -63,6 +64,7 @@ export const AdminBunkerPage: React.FC = () => {
     const [temp, setTemp] = useState<number | null>(null);
     const [weatherCode, setWeatherCode] = useState<number | null>(null);
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
+    const [activeDirectivesText, setActiveDirectivesText] = useState("");
     const [isDataLeakedBlock, setIsDataLeakedBlock] = useState(false);
 
     // Firestore lists
@@ -256,7 +258,7 @@ KPIs ADMINISTRATIVOS ACTUALES:
 - Facturación Semáforo: Al Día (${paidCount}), Pendientes (${pendingCount}), Deudores (${overdueCount})
         `;
 
-        const fullContext = `${ARI_ADMIN_PROMPT}\n\n${currentBudgetSummary}`;
+        const fullContext = `${ARI_ADMIN_PROMPT}\n\n${currentBudgetSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
@@ -802,6 +804,12 @@ KPIs ADMINISTRATIVOS ACTUALES:
                 </div>
 
             </main>
+
+            <DirectiveNotifier 
+                bunkerId="administracion"
+                townId={townId}
+                onDirectivesUpdate={setActiveDirectivesText}
+            />
 
             <BtuComponent 
                 bunkerId="administracion"

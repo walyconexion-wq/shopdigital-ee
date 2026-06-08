@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
     FileText, Lightbulb, Landmark, AlertTriangle, Megaphone, 
     Paperclip, Trash2, Edit3, Eye, Zap, CheckCircle2, Clock, 
-    Folder, Plus, Check
+    Folder, Plus, Check, XCircle
 } from 'lucide-react';
 import { db, subirArchivoBunker } from '../firebase';
 import { collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
@@ -153,6 +153,18 @@ export const BtuComponent: React.FC<BtuComponentProps> = ({ bunkerId, townId, on
     const [isUploading, setIsUploading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
+    // Inline toast for errors (replaces blocking alert())
+    const [toastMsg, setToastMsg] = useState<string | null>(null);
+    const [toastType, setToastType] = useState<'error' | 'success'>('error');
+    const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const showToast = (msg: string, type: 'error' | 'success' = 'error') => {
+        setToastMsg(msg);
+        setToastType(type);
+        if (toastTimer.current) clearTimeout(toastTimer.current);
+        toastTimer.current = setTimeout(() => setToastMsg(null), 6000);
+    };
+
     // Live clock for comparing alarms
     const [now, setNow] = useState(new Date());
 
@@ -163,24 +175,56 @@ export const BtuComponent: React.FC<BtuComponentProps> = ({ bunkerId, townId, on
 
     // Subscribe to Firestore notes
     useEffect(() => {
-        const q = query(
-            collection(db, 'bunker_notes'),
-            where('bunkerId', '==', bunkerId),
-            where('townId', '==', townId),
-            orderBy('fechaCreacion', 'desc')
-        );
+        // First try with orderBy (requires composite index)
+        // If it fails, fallback to a simpler query without orderBy
+        let unsub: (() => void) | null = null;
+        let fallbackUsed = false;
 
-        const unsub = onSnapshot(q, (snap) => {
-            const list = snap.docs.map(docSnap => ({
-                id: docSnap.id,
-                ...docSnap.data()
-            })) as BunkerNote[];
-            setNotes(list);
-        }, (err) => {
-            console.error("Firestore BTU subscription error:", err);
-        });
+        const startSubscription = () => {
+            try {
+                const q = query(
+                    collection(db, 'bunker_notes'),
+                    where('bunkerId', '==', bunkerId),
+                    where('townId', '==', townId),
+                    orderBy('fechaCreacion', 'desc')
+                );
 
-        return () => unsub();
+                unsub = onSnapshot(q, (snap) => {
+                    const list = snap.docs.map(docSnap => ({
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    })) as BunkerNote[];
+                    setNotes(list);
+                }, (err) => {
+                    console.error("Firestore BTU subscription error:", err);
+                    // If index error, try without orderBy
+                    if (!fallbackUsed && (err?.message?.includes('index') || err?.code === 'failed-precondition')) {
+                        fallbackUsed = true;
+                        console.warn("BTU: Falling back to unordered query (create the composite index in Firebase Console)");
+                        const fallbackQ = query(
+                            collection(db, 'bunker_notes'),
+                            where('bunkerId', '==', bunkerId),
+                            where('townId', '==', townId)
+                        );
+                        unsub = onSnapshot(fallbackQ, (snap2) => {
+                            const list = snap2.docs.map(docSnap => ({
+                                id: docSnap.id,
+                                ...docSnap.data()
+                            })) as BunkerNote[];
+                            // Sort client-side
+                            list.sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime());
+                            setNotes(list);
+                        });
+                    }
+                });
+            } catch (err) {
+                console.error("BTU query setup error:", err);
+            }
+        };
+
+        startSubscription();
+
+        return () => { if (unsub) unsub(); };
     }, [bunkerId, townId]);
 
     // Handle File Attachment
@@ -194,9 +238,10 @@ export const BtuComponent: React.FC<BtuComponentProps> = ({ bunkerId, townId, on
             const downloadUrl = await subirArchivoBunker(file, path);
             setAttachmentUrl(downloadUrl);
             setAttachmentName(file.name);
-        } catch (error) {
+            showToast('Archivo adjuntado correctamente', 'success');
+        } catch (error: any) {
             console.error("Error uploading file:", error);
-            alert("No se pudo subir el archivo.");
+            showToast('Error al subir archivo: ' + (error?.message || 'intente nuevamente'));
         } finally {
             setIsUploading(false);
         }
@@ -205,7 +250,13 @@ export const BtuComponent: React.FC<BtuComponentProps> = ({ bunkerId, townId, on
     // Save Note
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title.trim() || !content.trim()) return;
+        if (!title.trim() || !content.trim()) {
+            showToast('Complete el título y el contenido de la nota');
+            return;
+        }
+
+        // Note: auth is already verified by the parent BunkerPage
+
         playNeonClick();
         setIsSaving(true);
 
@@ -241,9 +292,17 @@ export const BtuComponent: React.FC<BtuComponentProps> = ({ bunkerId, townId, on
 
             // Clear Form
             clearForm();
+            showToast('✅ Nota guardada exitosamente en la bitácora', 'success');
         } catch (error: any) {
             console.error("Error saving BTU note:", error);
-            alert("Error al guardar la nota: " + (error?.message || error));
+            const msg = error?.message || String(error);
+            if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
+                showToast('Error de permisos: su sesión pudo haber expirado. Recargue la página.');
+            } else if (msg.includes('index') || msg.includes('failed-precondition')) {
+                showToast('Error de configuración: se requiere un índice en Firebase. Contacte al administrador del sistema.');
+            } else {
+                showToast('Error al guardar: ' + msg);
+            }
         } finally {
             setIsSaving(false);
         }
@@ -286,8 +345,9 @@ export const BtuComponent: React.FC<BtuComponentProps> = ({ bunkerId, townId, on
         try {
             await deleteDoc(doc(db, 'bunker_notes', id));
             if (noteId === id) clearForm();
-        } catch (e) {
-            alert("Error al eliminar nota.");
+            showToast('Nota eliminada correctamente', 'success');
+        } catch (e: any) {
+            showToast('Error al eliminar nota: ' + (e?.message || 'intente nuevamente'));
         }
     };
 
@@ -443,8 +503,8 @@ Contenido: ${note.contenido}${note.adjuntoUrl ? `\nAdjunto del Módulo: ${note.a
                                 onChange={e => setContent(e.target.value)}
                                 placeholder="Escribe los detalles tácticos de esta operación..."
                                 required
-                                rows={8}
-                                className={`w-full bg-[#050508] border rounded-xl px-4 py-3 text-xs text-white outline-none placeholder:text-white/20 transition-all resize-y ${theme.border} ${theme.shadow}`}
+                                rows={12}
+                                className={`w-full bg-[#050508] border rounded-xl px-4 py-3 text-xs text-white outline-none placeholder:text-white/20 transition-all resize-y min-h-[180px] ${theme.border} ${theme.shadow}`}
                             />
                         </div>
 
@@ -460,6 +520,20 @@ Contenido: ${note.contenido}${note.adjuntoUrl ? `\nAdjunto del Módulo: ${note.a
                         >
                             {isSaving ? 'Guardando entrada...' : noteId ? 'Actualizar Nota en Bitácora' : 'Fijar Nota en Bitácora'}
                         </button>
+
+                        {/* Toast de retroalimentación inline */}
+                        {toastMsg && (
+                            <div className={`mt-3 px-4 py-2.5 rounded-xl border text-[11px] font-bold flex items-center justify-between gap-2 animate-pulse ${
+                                toastType === 'success' 
+                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+                                    : 'bg-red-500/10 border-red-500/30 text-red-400'
+                            }`}>
+                                <span>{toastMsg}</span>
+                                <button onClick={() => setToastMsg(null)} className="shrink-0 hover:opacity-70">
+                                    <XCircle size={14} />
+                                </button>
+                            </div>
+                        )}
                     </form>
 
                     {/* Lado Derecho: El Archivero Scrolled */}

@@ -10,6 +10,7 @@ import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { registrarIntrusionBunker, obtenerIntrusiones, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
+import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -46,6 +47,7 @@ export const SecOpsBunkerPage: React.FC = () => {
     const [temp, setTemp] = useState<number | null>(null);
     const [weatherCode, setWeatherCode] = useState<number | null>(null);
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
+    const [activeDirectivesText, setActiveDirectivesText] = useState("");
 
     const [isUploadingFile, setIsUploadingFile] = useState(false);
     const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,7 +195,7 @@ KPIs DE CIBERSEGURIDAD Y SECOPS:
 - Alertas de Picos de Tráfico: ${trafficPeakMode ? "ACTIVADA - PICO DE TRÁFICO SIMULADO" : "Normal"}
         `;
 
-        const fullContext = `${ARI_SECOPS_PROMPT}\n\n${currentSecOpsSummary}`;
+        const fullContext = `${ARI_SECOPS_PROMPT}\n\n${currentSecOpsSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
@@ -676,6 +678,12 @@ KPIs DE CIBERSEGURIDAD Y SECOPS:
                     </div>
                 </div>
             </main>
+
+            <DirectiveNotifier 
+                bunkerId="secops"
+                townId={townId}
+                onDirectivesUpdate={setActiveDirectivesText}
+            />
 
             <BtuComponent 
                 bunkerId="secops"

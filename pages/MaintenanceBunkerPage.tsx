@@ -10,6 +10,7 @@ import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
+import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -43,6 +44,7 @@ export const MaintenanceBunkerPage: React.FC = () => {
     const [temp, setTemp] = useState<number | null>(null);
     const [weatherCode, setWeatherCode] = useState<number | null>(null);
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
+    const [activeDirectivesText, setActiveDirectivesText] = useState("");
 
     const [isUploadingFile, setIsUploadingFile] = useState(false);
     const handleChatFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +126,7 @@ KPIs DE MANTENIMIENTO GENERAL:
 - Reserva de Insumos: 85% disponible
         `;
 
-        const fullContext = `${ARI_MAINTENANCE_PROMPT}\n\n${currentMaintSummary}`;
+        const fullContext = `${ARI_MAINTENANCE_PROMPT}\n\n${currentMaintSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
@@ -357,6 +359,12 @@ KPIs DE MANTENIMIENTO GENERAL:
                     </div>
                 </div>
             </main>
+
+            <DirectiveNotifier 
+                bunkerId="mantenimiento"
+                townId={townId}
+                onDirectivesUpdate={setActiveDirectivesText}
+            />
 
             <BtuComponent 
                 bunkerId="mantenimiento"

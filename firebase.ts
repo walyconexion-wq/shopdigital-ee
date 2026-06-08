@@ -1491,4 +1491,89 @@ export const subirArchivoBunker = async (file: File, path: string): Promise<stri
     }
 };
 
+// ==============================
+// 🧠 SISTEMA NERVIOSO CENTRAL (SNC) - DIRECTIVAS DE BÚNKER
+// ==============================
+import { BunkerDirective, BunkerReply } from './types';
+
+export const enviarDirectivaBunker = async (directive: Omit<BunkerDirective, 'id' | 'fechaCreacion' | 'estado'>) => {
+    try {
+        const docRef = await addDoc(collection(db, 'bunker_directives'), {
+            ...directive,
+            fechaCreacion: new Date().toISOString(),
+            estado: 'active',
+            respuestas: []
+        });
+        console.log(`[SNC] Directiva creada: ${directive.title}. ID: ${docRef.id}`);
+        return docRef.id;
+    } catch (error) {
+        console.error("[SNC] Error enviando directiva:", error);
+        throw error;
+    }
+};
+
+export const suscribirseADirectivasBunker = (bunkerId: string, callback: (directives: BunkerDirective[]) => void) => {
+    const colRef = collection(db, 'bunker_directives');
+    const q = query(
+        colRef,
+        where("estado", "==", "active"),
+        orderBy("fechaCreacion", "desc")
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+        const allDirectives = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as BunkerDirective[];
+        const filtered = allDirectives.filter(d => 
+            d.targetBunkers.includes('all') || d.targetBunkers.includes(bunkerId)
+        );
+        callback(filtered);
+    }, (error) => {
+        console.error(`[SNC] Error suscribiéndose a directivas del búnker ${bunkerId}:`, error);
+    });
+};
+
+export const suscribirseATodasDirectivas = (callback: (directives: BunkerDirective[]) => void) => {
+    const q = query(
+        collection(db, 'bunker_directives'),
+        where("estado", "==", "active"),
+        orderBy("fechaCreacion", "desc")
+    );
+    return onSnapshot(q, (snapshot) => {
+        const directives = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as BunkerDirective[];
+        callback(directives);
+    }, (error) => {
+        console.error("[SNC] Error en suscripción maestra de directivas:", error);
+    });
+};
+
+export const responderDirectivaBunker = async (directiveId: string, reply: BunkerReply) => {
+    try {
+        const docRef = doc(db, 'bunker_directives', directiveId);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+            const data = snap.data() as BunkerDirective;
+            const respuestas = data.respuestas || [];
+            
+            const filtered = respuestas.filter(r => r.bunkerId !== reply.bunkerId);
+            filtered.push(reply);
+
+            await updateDoc(docRef, { respuestas: filtered });
+            console.log(`[SNC] Respuesta del búnker ${reply.bunkerId} registrada.`);
+        }
+    } catch (error) {
+        console.error("[SNC] Error respondiendo directiva:", error);
+        throw error;
+    }
+};
+
+export const archivarDirectiva = async (directiveId: string) => {
+    try {
+        const docRef = doc(db, 'bunker_directives', directiveId);
+        await updateDoc(docRef, { estado: 'archived' });
+        console.log(`[SNC] Directiva ${directiveId} archivada.`);
+    } catch (error) {
+        console.error("[SNC] Error archivando directiva:", error);
+        throw error;
+    }
+};
+
 export default app;
