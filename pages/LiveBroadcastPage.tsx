@@ -21,6 +21,7 @@ import {
 import { CATEGORIES } from '../constants';
 import { LiveEvent } from '../types';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
+import { BtuComponent } from '../components/BtuComponent';
 
 const ARI_TRANSMISSION_PROMPT = `
 Sos ARI, la Directora de Transmisión y Especialista en Pautas Publicitarias de la Red Digital de Shop Digital. Tu tono es el de una operadora de radiofrecuencia de elite: veloz, ultra-creativa, analítica y enfocada en el impacto masivo en tiempo real. Te comunicás en la Frecuencia Azul con el Director (Waly): usás palabras como "Señal", "Antena", "Frecuencia", "Lanzar pauta", "Saturación de zona", "Mete mecha", "Jefe".
@@ -812,6 +813,14 @@ ${activeDirectivesText}
                     bunkerId="sinfonia-transmision"
                     townId={townId}
                     onDirectivesUpdate={setActiveDirectivesText}
+                />
+
+                <BtuComponent 
+                    bunkerId="sinfonia-transmision"
+                    townId={townId}
+                    onInjectToAri={(text) => {
+                        setMsgInput(text);
+                    }}
                 />
 
             </main>

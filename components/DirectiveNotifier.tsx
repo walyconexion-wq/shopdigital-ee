@@ -319,7 +319,7 @@ export const DirectiveNotifier: React.FC<DirectiveNotifierProps> = ({ bunkerId, 
                     </div>
                     <div>
                         <h3 className="text-xs font-[1000] uppercase tracking-[0.25em] text-white flex items-center gap-2">
-                            Sistema Nervioso Central <span className="text-[7px] px-2 py-0.5 rounded border border-white/10 bg-white/5 font-black uppercase text-white/50 tracking-widest">SNC v1.0</span>
+                            Intercomunicador de Frecuencia <span className="text-[7px] px-2 py-0.5 rounded border border-white/10 bg-white/5 font-black uppercase text-white/50 tracking-widest">SNC v1.0</span>
                         </h3>
                         <p className="text-[8px] text-white/40 tracking-[0.3em] font-bold uppercase mt-1">Canal de Directivas y Misiones del Director</p>
                     </div>

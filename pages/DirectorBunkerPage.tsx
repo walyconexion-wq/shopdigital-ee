@@ -960,8 +960,10 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                     </div>
                 </div>
                 </div>
+            </main>
 
-                {/* ─── FRECUENCIA DIRECTIVA (COMUNICACIONES INTERNAS) ─── */}
+            {/* ─── INTERCOMUNICADOR DE FRECUENCIA (COMUNICACIONES INTERNAS) ─── */}
+            <div className="w-full max-w-[1600px] mx-auto px-4 md:px-6 mt-6">
                 <div className="bg-[#050505]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-[0_0_50px_rgba(0,0,0,0.6)] mb-10 w-full relative overflow-hidden">
                     {/* Brillo de fondo sutil */}
                     <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none"></div>
@@ -975,7 +977,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                 <div className="absolute inset-0 bg-emerald-500 blur-xl opacity-30 animate-pulse"></div>
                             </div>
                             <div>
-                                <h2 className="text-[16px] font-[1000] uppercase tracking-[0.25em] text-white">Frecuencia Directiva</h2>
+                                <h2 className="text-[16px] font-[1000] uppercase tracking-[0.25em] text-white">Intercomunicador de Frecuencia</h2>
                                 <p className="text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-1">Centro de Despacho de Misiones y Mensajería</p>
                             </div>
                         </div>
@@ -1342,7 +1344,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                         )}
                     </div>
                 </div>
-            </main>
+            </div>
 
             <BtuComponent 
                 bunkerId="director"
