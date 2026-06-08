@@ -241,9 +241,9 @@ export const BtuComponent: React.FC<BtuComponentProps> = ({ bunkerId, townId, on
 
             // Clear Form
             clearForm();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving BTU note:", error);
-            alert("Error al guardar la nota.");
+            alert("Error al guardar la nota: " + (error?.message || error));
         } finally {
             setIsSaving(false);
         }
