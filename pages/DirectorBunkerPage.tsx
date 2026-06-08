@@ -92,7 +92,7 @@ export const DirectorBunkerPage: React.FC = () => {
     const [securityStatus, setSecurityStatus] = useState<'green' | 'red'>('green');
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'radar' | 'predictor' | 'comunicaciones' | 'telemetria'>('radar');
+    const [activeTab, setActiveTab] = useState<'radar' | 'predictor' | 'telemetria'>('radar');
     const [activeCategory, setActiveCategory] = useState('pizzerias');
     const [telemetryLogs, setTelemetryLogs] = useState<any[]>([]);
     
@@ -659,16 +659,6 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                 >
                                     <Activity size={14} /> Telemetría
                                 </button>
-                                <button 
-                                    onClick={() => { playNeonClick(); setActiveTab('comunicaciones'); }}
-                                    className={`flex-1 py-4 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
-                                        activeTab === 'comunicaciones' 
-                                        ? 'text-emerald-400 bg-emerald-500/5 border-b-2 border-emerald-500' 
-                                        : 'text-white/30 hover:text-white/60 hover:bg-white/5'
-                                    }`}
-                                >
-                                    <Radio size={14} /> Comunicaciones
-                                </button>
                             </div>
 
                             <div className="p-6">
@@ -696,7 +686,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                         </div>
                                         <SaturationPredictor townId={townId} category={activeCategory} />
                                     </div>
-                                ) : activeTab === 'telemetria' ? (
+                                ) : (
                                     <div className="animate-in fade-in duration-500 flex flex-col gap-6">
                                         <div className="flex items-center justify-between mb-2">
                                             <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
@@ -759,368 +749,6 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <div className="animate-in fade-in duration-500 flex flex-col gap-6">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-                                            <div className="flex items-center gap-4">
-                                                <Radio size={18} className="text-emerald-500 animate-pulse" />
-                                                <div>
-                                                    <h2 className="text-[14px] font-black uppercase tracking-[0.25em] text-white/80">Frecuencia Directiva</h2>
-                                                    <p className="text-[8px] text-white/40 tracking-widest uppercase mt-0.5">Centro de Despacho de Misiones y Mensajería</p>
-                                                </div>
-                                            </div>
-                                            
-                                            {/* Sub-Tabs */}
-                                            <div className="flex gap-2 p-1 bg-black/40 border border-white/5 rounded-xl self-start sm:self-center">
-                                                <button
-                                                    onClick={() => { playNeonClick(); setCommsSubTab('snc'); }}
-                                                    className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
-                                                        commsSubTab === 'snc'
-                                                            ? 'bg-emerald-500 text-black shadow-[0_0_10px_rgba(16,185,129,0.3)]'
-                                                            : 'text-white/40 hover:text-white hover:bg-white/5'
-                                                    }`}
-                                                >
-                                                    SNC (Búnkeres)
-                                                </button>
-                                                <button
-                                                    onClick={() => { playNeonClick(); setCommsSubTab('ambassadors'); }}
-                                                    className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
-                                                        commsSubTab === 'ambassadors'
-                                                            ? 'bg-emerald-500 text-black shadow-[0_0_10px_rgba(16,185,129,0.3)]'
-                                                            : 'text-white/40 hover:text-white hover:bg-white/5'
-                                                    }`}
-                                                >
-                                                    Embajadores (Terreno)
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {commsSubTab === 'snc' ? (
-                                            <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-                                                {/* Panel de Redacción de Directiva */}
-                                                <div className="xl:col-span-2 bg-[#050A15]/80 border border-white/10 rounded-2xl p-5 flex flex-col gap-4 backdrop-blur-md">
-                                                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-400">Despacho de Misiones Directivas (SNC)</h3>
-                                                    
-                                                    {/* Título */}
-                                                    <div className="space-y-1">
-                                                        <label className="text-[8px] font-black uppercase tracking-widest text-white/40 block">Título de la Misión / Orden</label>
-                                                        <input 
-                                                            type="text"
-                                                            value={dirTitle}
-                                                            onChange={e => setDirTitle(e.target.value)}
-                                                            placeholder="Ej: Reunión Directiva General"
-                                                            className="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white outline-none focus:border-emerald-500/50"
-                                                        />
-                                                    </div>
-
-                                                    {/* Contenido / Directiva */}
-                                                    <div className="space-y-1">
-                                                        <label className="text-[8px] font-black uppercase tracking-widest text-white/40 block">Instrucciones / Contenido</label>
-                                                        <textarea 
-                                                            value={dirContent}
-                                                            onChange={e => setDirContent(e.target.value)}
-                                                            placeholder="Ej: Hoy a las 8hs reunión obligatoria en el Búnker Central..."
-                                                            className="w-full bg-black/60 border border-white/10 rounded-xl p-3 text-[11px] text-white placeholder:text-white/20 outline-none focus:border-emerald-500/50 min-h-[90px] resize-none"
-                                                        />
-                                                    </div>
-
-                                                    {/* Prioridad y Tipo */}
-                                                    <div className="grid grid-cols-2 gap-3">
-                                                        <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-white/40 block">Prioridad</label>
-                                                            <select
-                                                                value={dirPriority}
-                                                                onChange={e => setDirPriority(e.target.value as any)}
-                                                                className="w-full bg-black/60 border border-white/10 rounded-xl px-2 py-2 text-[11px] text-white outline-none focus:border-emerald-500/50"
-                                                            >
-                                                                <option value="baja">Baja</option>
-                                                                <option value="media">Media</option>
-                                                                <option value="alta">Alta</option>
-                                                            </select>
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-white/40 block">Tipo</label>
-                                                            <select
-                                                                value={dirType}
-                                                                onChange={e => setDirType(e.target.value as any)}
-                                                                className="w-full bg-black/60 border border-white/10 rounded-xl px-2 py-2 text-[11px] text-white outline-none focus:border-emerald-500/50"
-                                                            >
-                                                                <option value="directiva">Directiva</option>
-                                                                <option value="mision">Misión</option>
-                                                                <option value="alerta">Alerta</option>
-                                                                <option value="notificacion">Notificación</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Destinos */}
-                                                    <div className="space-y-2">
-                                                        <div className="flex items-center justify-between">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-white/40">Búnkeres Destinatarios</label>
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    playNeonClick();
-                                                                    if (dirTargets.length === BUNKER_LIST.length) {
-                                                                        setDirTargets([]);
-                                                                    } else {
-                                                                        setDirTargets(BUNKER_LIST.map(b => b.id));
-                                                                    }
-                                                                }}
-                                                                className="text-[8.5px] font-black text-emerald-400 hover:underline uppercase tracking-widest"
-                                                            >
-                                                                {dirTargets.length === BUNKER_LIST.length ? 'Deseleccionar Todos' : 'Seleccionar Todos'}
-                                                            </button>
-                                                        </div>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[140px] overflow-y-auto pr-1 border border-white/5 bg-black/30 rounded-xl p-2.5">
-                                                            {BUNKER_LIST.map((bunk) => {
-                                                                const isChecked = dirTargets.includes(bunk.id);
-                                                                return (
-                                                                    <label 
-                                                                        key={bunk.id} 
-                                                                        className={`flex items-center gap-2 px-2 py-1 rounded border text-[10px] font-bold cursor-pointer transition-all ${
-                                                                            isChecked 
-                                                                                ? 'bg-emerald-500/10 border-emerald-500/35 text-white' 
-                                                                                : 'bg-white/[0.01] border-white/5 text-white/50 hover:text-white hover:border-white/10'
-                                                                        }`}
-                                                                    >
-                                                                        <input 
-                                                                            type="checkbox" 
-                                                                            checked={isChecked}
-                                                                            onChange={(e) => {
-                                                                                if (e.target.checked) {
-                                                                                    setDirTargets([...dirTargets, bunk.id]);
-                                                                                } else {
-                                                                                    setDirTargets(dirTargets.filter(id => id !== bunk.id));
-                                                                                }
-                                                                            }}
-                                                                            className="accent-emerald-500 w-3 h-3"
-                                                                        />
-                                                                        {bunk.label}
-                                                                    </label>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Enviar */}
-                                                    <button 
-                                                        onClick={handleSendDirective}
-                                                        disabled={isSendingDirective || !dirTitle.trim() || !dirContent.trim() || dirTargets.length === 0}
-                                                        className="w-full py-3 mt-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-black font-[1000] uppercase tracking-[0.2em] text-[10px] rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(16,185,129,0.15)]"
-                                                    >
-                                                        {isSendingDirective ? <RefreshCw size={14} className="animate-spin" /> : <Radio size={14} />}
-                                                        TRANSMITIR A BÚNKERES
-                                                    </button>
-                                                </div>
-
-                                                {/* Monitor de Directivas en Tiempo Real */}
-                                                <div className="xl:col-span-3 bg-[#050A15]/80 border border-white/10 rounded-2xl p-5 flex flex-col gap-4 backdrop-blur-md max-h-[600px] overflow-hidden">
-                                                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/80 border-b border-white/5 pb-2">Panel de Monitoreo y Cumplimiento</h3>
-                                                    <div className="flex-1 overflow-y-auto pr-1 space-y-4 no-scrollbar">
-                                                        {allDirectives.filter(d => d.estado !== 'archived').length === 0 ? (
-                                                            <p className="text-[10px] text-white/30 italic text-center py-8">No hay directivas activas en el sistema.</p>
-                                                        ) : (
-                                                            allDirectives.filter(d => d.estado !== 'archived').map((dir) => {
-                                                                let priorityBadge = "text-white/40 border-white/10 bg-white/5";
-                                                                if (dir.priority === 'alta') {
-                                                                    priorityBadge = "text-red-400 border-red-500/20 bg-red-500/5";
-                                                                } else if (dir.priority === 'media') {
-                                                                    priorityBadge = "text-amber-400 border-amber-500/20 bg-amber-500/5";
-                                                                } else if (dir.priority === 'baja') {
-                                                                    priorityBadge = "text-blue-400 border-blue-500/20 bg-blue-500/5";
-                                                                }
-
-                                                                return (
-                                                                    <div key={dir.id} className="bg-black/50 border border-white/5 hover:border-white/10 rounded-xl p-4 space-y-3.5 transition-all">
-                                                                        <div className="flex justify-between items-start gap-4">
-                                                                            <div>
-                                                                                <h4 className="text-[12px] font-bold text-white uppercase tracking-wide">{dir.title}</h4>
-                                                                                <span className="text-[8px] text-white/30 uppercase tracking-widest font-mono block mt-1">
-                                                                                    Creado: {new Date(dir.fechaCreacion).toLocaleString('es-AR')}
-                                                                                </span>
-                                                                            </div>
-                                                                            <div className="flex gap-1.5 shrink-0">
-                                                                                <span className={`text-[7px] font-black uppercase px-2 py-0.5 rounded border tracking-widest ${priorityBadge}`}>
-                                                                                    {dir.priority}
-                                                                                </span>
-                                                                                <span className="text-[7px] font-black text-white/60 bg-white/5 border border-white/10 uppercase px-2 py-0.5 rounded tracking-widest">
-                                                                                    {dir.type}
-                                                                                </span>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <p className="text-[11px] text-white/80 leading-relaxed font-bold break-words bg-black/40 p-2.5 rounded-lg border border-white/5">{dir.content}</p>
-
-                                                                        {/* Estado de Búnkeres */}
-                                                                        <div className="space-y-2">
-                                                                            <span className="text-[8px] font-black uppercase tracking-widest text-white/40 block">Estado de Búnkeres:</span>
-                                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                                {dir.targetBunkers.map(bId => {
-                                                                                    const bInfo = BUNKER_LIST.find(b => b.id === bId) || { label: bId };
-                                                                                    const reply = dir.respuestas?.find(r => r.bunkerId === bId);
-                                                                                    const isConfirmed = reply?.confirmed || false;
-
-                                                                                    return (
-                                                                                        <div 
-                                                                                            key={bId}
-                                                                                            className={`p-2.5 rounded-lg border text-[10px] flex flex-col gap-1 transition-all ${
-                                                                                                isConfirmed 
-                                                                                                    ? 'bg-emerald-500/5 border-emerald-500/20 text-white'
-                                                                                                    : reply 
-                                                                                                        ? 'bg-amber-500/5 border-amber-500/20 text-white'
-                                                                                                        : 'bg-red-500/5 border-red-500/10 text-white/50'
-                                                                                            }`}
-                                                                                        >
-                                                                                            <div className="flex items-center justify-between">
-                                                                                                <span className="font-black uppercase tracking-wide">{bInfo.label}</span>
-                                                                                                <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${
-                                                                                                    isConfirmed 
-                                                                                                        ? 'text-emerald-400 border-emerald-500/25 bg-emerald-500/10'
-                                                                                                        : reply 
-                                                                                                            ? 'text-amber-400 border-amber-500/25 bg-amber-500/10'
-                                                                                                            : 'text-red-400 border-red-500/25 bg-red-500/10'
-                                                                                                }`}>
-                                                                                                    {isConfirmed ? 'Confirmado' : reply ? 'Respondido' : 'Pendiente'}
-                                                                                                </span>
-                                                                                            </div>
-                                                                                            {reply ? (
-                                                                                                <p className="text-[9.5px] italic text-white/80 break-words mt-1">"{reply.text}"</p>
-                                                                                            ) : (
-                                                                                                <span className="text-[8px] text-white/30 italic mt-0.5">Esperando reporte...</span>
-                                                                                            )}
-                                                                                        </div>
-                                                                                    );
-                                                                                })}
-                                                                            </div>
-                                                                        </div>
-
-                                                                        {/* Acciones */}
-                                                                        <div className="flex justify-end pt-2 border-t border-white/5">
-                                                                            <button 
-                                                                                onClick={() => handleArchiveDirective(dir.id!)}
-                                                                                className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-white/60 hover:text-red-400 text-[8.5px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"
-                                                                            >
-                                                                                Archivar Misión
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                );
-                                                            })
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {/* Panel de Redacción */}
-                                                <div className="bg-[#050A15] border border-white/10 rounded-xl p-4 flex flex-col gap-4">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Redactar Orden</h3>
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input 
-                                                                type="checkbox" 
-                                                                className="accent-emerald-500 w-3 h-3 cursor-pointer"
-                                                                checked={selectedAmbassadors.includes('all')}
-                                                                onChange={(e) => {
-                                                                    if (e.target.checked) setSelectedAmbassadors(['all']);
-                                                                    else setSelectedAmbassadors([]);
-                                                                }}
-                                                            />
-                                                            <span className="text-[10px] font-black text-emerald-400/70 group-hover:text-emerald-400 uppercase tracking-widest transition-colors">SELECCIONAR TODOS</span>
-                                                        </label>
-                                                    </div>
-
-                                                    <div className="flex flex-col gap-2 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
-                                                        {ambassadorsList.map((amb) => (
-                                                            <label key={amb.id} className={`flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer ${
-                                                                selectedAmbassadors.includes(amb.id) || selectedAmbassadors.includes('all')
-                                                                ? 'bg-emerald-500/10 border-emerald-500/30'
-                                                                : 'bg-white/5 border-white/5 hover:border-white/10'
-                                                            }`}>
-                                                                <input 
-                                                                    type="checkbox" 
-                                                                    className="accent-emerald-500 w-3 h-3"
-                                                                    checked={selectedAmbassadors.includes(amb.id) || selectedAmbassadors.includes('all')}
-                                                                    onChange={(e) => {
-                                                                        if (selectedAmbassadors.includes('all')) return;
-                                                                        if (e.target.checked) {
-                                                                            setSelectedAmbassadors([...selectedAmbassadors, amb.id]);
-                                                                        } else {
-                                                                            setSelectedAmbassadors(selectedAmbassadors.filter(id => id !== amb.id));
-                                                                        }
-                                                                    }}
-                                                                    disabled={selectedAmbassadors.includes('all')}
-                                                                />
-                                                                <div className="flex-1 flex justify-between items-center">
-                                                                    <span className="text-[11px] font-bold text-white">{amb.name || amb.email}</span>
-                                                                    {amb.phone && (
-                                                                        <a 
-                                                                            href={`https://wa.me/${amb.phone.replace(/[^0-9]/g, '')}`} 
-                                                                            target="_blank" 
-                                                                            rel="noopener noreferrer"
-                                                                            className="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-black rounded-lg transition-colors"
-                                                                            onClick={e => e.stopPropagation()}
-                                                                            title="WhatsApp Directo"
-                                                                        >
-                                                                            <MessageSquare size={12} />
-                                                                        </a>
-                                                                    )}
-                                                                </div>
-                                                            </label>
-                                                        ))}
-                                                        {ambassadorsList.length === 0 && (
-                                                            <p className="text-[10px] text-white/30 italic text-center py-4">No hay embajadores activos disponibles.</p>
-                                                        )}
-                                                    </div>
-
-                                                    <textarea 
-                                                        value={msgText}
-                                                        onChange={e => setMsgText(e.target.value)}
-                                                        placeholder="Escriba la directiva aquí..."
-                                                        className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-[12px] text-white/90 placeholder:text-white/20 outline-none focus:border-emerald-500/50 min-h-[100px] resize-none"
-                                                    />
-
-                                                    <button 
-                                                        onClick={handleSendMessage}
-                                                        disabled={isSendingMsg || !msgText.trim() || selectedAmbassadors.length === 0}
-                                                        className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                                    >
-                                                        {isSendingMsg ? <RefreshCw size={14} className="animate-spin" /> : <Radio size={14} />}
-                                                        TRANSMITIR ORDEN
-                                                    </button>
-                                                </div>
-
-                                                {/* Historial de Envíos */}
-                                                <div className="bg-[#050A15] border border-white/10 rounded-xl p-4 flex flex-col gap-4">
-                                                    <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-2">Registros de Transmisión</h3>
-                                                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-3 min-h-[200px]">
-                                                        {sentMessages.length === 0 ? (
-                                                            <p className="text-[10px] text-white/30 italic text-center py-4">Aún no se han enviado directivas.</p>
-                                                        ) : (
-                                                            sentMessages.map(msg => (
-                                                                <div key={msg.id} className="bg-white/5 border border-white/10 rounded-lg p-3 flex flex-col gap-2 relative">
-                                                                    <div className="flex justify-between items-start">
-                                                                        <span className="text-[9px] text-white/40 uppercase tracking-widest">{new Date(msg.createdAt).toLocaleString('es-AR')}</span>
-                                                                        <div className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest flex items-center gap-1 ${
-                                                                            msg.isRead ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                                                                        }`}>
-                                                                            {msg.isRead ? <CheckCircle2 size={10} /> : <Clock size={10} />}
-                                                                            {msg.isRead ? 'Confirmado' : 'Pendiente'}
-                                                                        </div>
-                                                                    </div>
-                                                                    <p className="text-[11px] text-white/80 break-words">{msg.text}</p>
-                                                                    <div className="text-[9px] text-emerald-400/50 uppercase tracking-widest border-t border-white/5 pt-2 mt-1">
-                                                                        Destino: {msg.recipientName}
-                                                                    </div>
-                                                                </div>
-                                                            ))
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 )}
                             </div>
@@ -1331,6 +959,388 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                         </div>
                     </div>
                 </div>
+                </div>
+
+                {/* ─── FRECUENCIA DIRECTIVA (COMUNICACIONES INTERNAS) ─── */}
+                <div className="bg-[#050505]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-[0_0_50px_rgba(0,0,0,0.6)] mb-10 w-full relative overflow-hidden">
+                    {/* Brillo de fondo sutil */}
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6 relative z-10">
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <div className="w-12 h-12 rounded-2xl bg-black border border-emerald-500/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                                    <Radio size={24} className="text-emerald-400 animate-pulse" />
+                                </div>
+                                <div className="absolute inset-0 bg-emerald-500 blur-xl opacity-30 animate-pulse"></div>
+                            </div>
+                            <div>
+                                <h2 className="text-[16px] font-[1000] uppercase tracking-[0.25em] text-white">Frecuencia Directiva</h2>
+                                <p className="text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-1">Centro de Despacho de Misiones y Mensajería</p>
+                            </div>
+                        </div>
+                        
+                        {/* Sub-Tabs */}
+                        <div className="flex gap-2 p-1 bg-black/50 border border-white/10 rounded-2xl self-start md:self-center">
+                            <button
+                                onClick={() => { playNeonClick(); setCommsSubTab('snc'); }}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                    commsSubTab === 'snc'
+                                        ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                                        : 'text-white/40 hover:text-white hover:bg-white/5'
+                                }`}
+                            >
+                                SNC (Búnkeres)
+                            </button>
+                            <button
+                                onClick={() => { playNeonClick(); setCommsSubTab('ambassadors'); }}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                    commsSubTab === 'ambassadors'
+                                        ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                                        : 'text-white/40 hover:text-white hover:bg-white/5'
+                                }`}
+                            >
+                                Embajadores (Terreno)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="relative z-10">
+                        {commsSubTab === 'snc' ? (
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                {/* Panel de Redacción de Directiva */}
+                                <div className="lg:col-span-5 bg-[#050A15]/60 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 backdrop-blur-md">
+                                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-emerald-400">Despacho de Misiones Directivas (SNC)</h3>
+                                    
+                                    {/* Título */}
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-white/45 block">Título de la Misión / Orden</label>
+                                        <input 
+                                            type="text"
+                                            value={dirTitle}
+                                            onChange={e => setDirTitle(e.target.value)}
+                                            placeholder="Ej: Reunión Directiva General"
+                                            className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] text-white outline-none focus:border-emerald-500/50 transition-colors"
+                                        />
+                                    </div>
+
+                                    {/* Prioridad y Tipo */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-white/45 block">Prioridad</label>
+                                            <select
+                                                value={dirPriority}
+                                                onChange={e => setDirPriority(e.target.value as any)}
+                                                className="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2.5 text-[12px] text-white outline-none focus:border-emerald-500/50 transition-colors"
+                                            >
+                                                <option value="baja">Baja</option>
+                                                <option value="media">Media</option>
+                                                <option value="alta">Alta</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-white/45 block">Tipo</label>
+                                            <select
+                                                value={dirType}
+                                                onChange={e => setDirType(e.target.value as any)}
+                                                className="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2.5 text-[12px] text-white outline-none focus:border-emerald-500/50 transition-colors"
+                                            >
+                                                <option value="directiva">Directiva</option>
+                                                <option value="mision">Misión</option>
+                                                <option value="alerta">Alerta</option>
+                                                <option value="notificacion">Notificación</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* Contenido / Directiva */}
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-white/45 block">Instrucciones / Contenido</label>
+                                        <textarea 
+                                            value={dirContent}
+                                            onChange={e => setDirContent(e.target.value)}
+                                            placeholder="Ej: Hoy a las 8hs reunión obligatoria en el Búnker Central..."
+                                            className="w-full bg-black/60 border border-white/10 rounded-xl p-4 text-[12px] text-white placeholder:text-white/20 outline-none focus:border-emerald-500/50 min-h-[110px] resize-none transition-colors"
+                                        />
+                                    </div>
+
+                                    {/* Destinos */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-white/45">Búnkeres Destinatarios</label>
+                                            <button 
+                                                type="button"
+                                                onClick={() => {
+                                                    playNeonClick();
+                                                    if (dirTargets.length === BUNKER_LIST.length) {
+                                                        setDirTargets([]);
+                                                    } else {
+                                                        setDirTargets(BUNKER_LIST.map(b => b.id));
+                                                    }
+                                                }}
+                                                className="text-[9px] font-black text-emerald-400 hover:underline uppercase tracking-widest transition-all"
+                                            >
+                                                {dirTargets.length === BUNKER_LIST.length ? 'Deseleccionar Todos' : 'Seleccionar Todos'}
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-2 border border-white/5 bg-black/30 rounded-xl p-3">
+                                            {BUNKER_LIST.map((bunk) => {
+                                                const isChecked = dirTargets.includes(bunk.id);
+                                                return (
+                                                    <label 
+                                                        key={bunk.id} 
+                                                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-[10.5px] font-bold cursor-pointer transition-all ${
+                                                            isChecked 
+                                                                ? 'bg-emerald-500/10 border-emerald-500/40 text-white shadow-[0_2px_8px_rgba(16,185,129,0.05)]' 
+                                                                : 'bg-white/[0.01] border-white/5 text-white/50 hover:text-white hover:border-white/10'
+                                                        }`}
+                                                    >
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={isChecked}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    setDirTargets([...dirTargets, bunk.id]);
+                                                                } else {
+                                                                    setDirTargets(dirTargets.filter(id => id !== bunk.id));
+                                                                }
+                                                            }}
+                                                            className="accent-emerald-500 w-3.5 h-3.5 rounded"
+                                                        />
+                                                        <span className="truncate">{bunk.label}</span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Enviar */}
+                                    <button 
+                                        onClick={handleSendDirective}
+                                        disabled={isSendingDirective || !dirTitle.trim() || !dirContent.trim() || dirTargets.length === 0}
+                                        className="w-full py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-black font-[1000] uppercase tracking-[0.2em] text-[11px] rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(16,185,129,0.15)] active:scale-[0.99]"
+                                    >
+                                        {isSendingDirective ? <RefreshCw size={14} className="animate-spin" /> : <Radio size={14} />}
+                                        TRANSMITIR A BÚNKERES
+                                    </button>
+                                </div>
+
+                                {/* Monitor de Directivas en Tiempo Real */}
+                                <div className="lg:col-span-7 bg-[#050A15]/60 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 backdrop-blur-md h-[680px] overflow-hidden">
+                                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/80 border-b border-white/5 pb-3">Panel de Monitoreo y Cumplimiento</h3>
+                                    <div className="flex-1 overflow-y-auto pr-1 space-y-4 no-scrollbar custom-scrollbar">
+                                        {allDirectives.filter(d => d.estado !== 'archived').length === 0 ? (
+                                            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+                                                <Radio size={32} className="text-white/10" />
+                                                <p className="text-[10px] text-white/30 italic uppercase tracking-widest">No hay directivas activas en el sistema.</p>
+                                            </div>
+                                        ) : (
+                                            allDirectives.filter(d => d.estado !== 'archived').map((dir) => {
+                                                let priorityBadge = "text-white/40 border-white/10 bg-white/5";
+                                                if (dir.priority === 'alta') {
+                                                    priorityBadge = "text-red-400 border-red-500/20 bg-red-500/5";
+                                                } else if (dir.priority === 'media') {
+                                                    priorityBadge = "text-amber-400 border-amber-500/20 bg-amber-500/5";
+                                                } else if (dir.priority === 'baja') {
+                                                    priorityBadge = "text-blue-400 border-blue-500/20 bg-blue-500/5";
+                                                }
+
+                                                return (
+                                                    <div key={dir.id} className="bg-black/50 border border-white/5 hover:border-white/10 rounded-xl p-4 space-y-4 transition-all">
+                                                        <div className="flex justify-between items-start gap-4">
+                                                            <div>
+                                                                <h4 className="text-[13px] font-bold text-white uppercase tracking-wide">{dir.title}</h4>
+                                                                <span className="text-[8px] text-white/30 uppercase tracking-widest font-mono block mt-1">
+                                                                    Creado: {new Date(dir.fechaCreacion).toLocaleString('es-AR')}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex gap-1.5 shrink-0">
+                                                                <span className={`text-[7px] font-black uppercase px-2 py-0.5 rounded border tracking-widest ${priorityBadge}`}>
+                                                                    {dir.priority}
+                                                                </span>
+                                                                <span className="text-[7px] font-black text-white/60 bg-white/5 border border-white/10 uppercase px-2 py-0.5 rounded tracking-widest">
+                                                                    {dir.type}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <p className="text-[12px] text-white/95 leading-relaxed font-bold break-words bg-black/40 p-3 rounded-lg border border-white/5">{dir.content}</p>
+
+                                                        {/* Estado de Búnkeres */}
+                                                        <div className="space-y-2.5">
+                                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/45 block">Confirmación por Búnker:</span>
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                                                {dir.targetBunkers.map(bId => {
+                                                                    const bInfo = BUNKER_LIST.find(b => b.id === bId) || { label: bId };
+                                                                    const reply = dir.respuestas?.find(r => r.bunkerId === bId);
+                                                                    const isConfirmed = reply?.confirmed || false;
+
+                                                                    return (
+                                                                        <div 
+                                                                            key={bId}
+                                                                            className={`p-3 rounded-xl border text-[11px] flex flex-col gap-1.5 transition-all ${
+                                                                                isConfirmed 
+                                                                                    ? 'bg-emerald-500/5 border-emerald-500/20 text-white shadow-[0_2px_8px_rgba(16,185,129,0.02)]'
+                                                                                    : reply 
+                                                                                        ? 'bg-amber-500/5 border-amber-500/20 text-white'
+                                                                                        : 'bg-red-500/5 border-red-500/10 text-white/50'
+                                                                            }`}
+                                                                        >
+                                                                            <div className="flex items-center justify-between">
+                                                                                <span className="font-bold uppercase tracking-wide truncate pr-2">{bInfo.label}</span>
+                                                                                <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border shrink-0 ${
+                                                                                    isConfirmed 
+                                                                                        ? 'text-emerald-400 border-emerald-500/25 bg-emerald-500/10'
+                                                                                        : reply 
+                                                                                            ? 'text-amber-400 border-amber-500/25 bg-amber-500/10'
+                                                                                            : 'text-red-400 border-red-500/25 bg-red-500/10'
+                                                                                }`}>
+                                                                                    {isConfirmed ? 'Confirmado' : reply ? 'Respondido' : 'Pendiente'}
+                                                                                </span>
+                                                                            </div>
+                                                                            {reply ? (
+                                                                                <p className="text-[10px] italic text-white/80 break-words mt-1 border-t border-white/5 pt-1.5">"{reply.text}"</p>
+                                                                            ) : (
+                                                                                <span className="text-[8.5px] text-white/30 italic mt-0.5">Esperando reporte...</span>
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Acciones */}
+                                                        <div className="flex justify-end pt-2 border-t border-white/5">
+                                                            <button 
+                                                                onClick={() => handleArchiveDirective(dir.id!)}
+                                                                className="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-white/60 hover:text-red-400 text-[8.5px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"
+                                                            >
+                                                                Archivar Misión
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                {/* Panel de Redacción */}
+                                <div className="lg:col-span-5 bg-[#050A15]/80 border border-white/10 rounded-2xl p-6 flex flex-col gap-5">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-emerald-400">Redactar Orden a Embajadores</h3>
+                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                            <input 
+                                                type="checkbox" 
+                                                className="accent-emerald-500 w-3.5 h-3.5 cursor-pointer rounded"
+                                                checked={selectedAmbassadors.includes('all')}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) setSelectedAmbassadors(['all']);
+                                                    else setSelectedAmbassadors([]);
+                                                }}
+                                            />
+                                            <span className="text-[9px] font-black text-emerald-400/70 group-hover:text-emerald-400 uppercase tracking-widest transition-colors">SELECCIONAR TODOS</span>
+                                        </label>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1 border border-white/5 bg-black/30 rounded-xl p-3 custom-scrollbar">
+                                        {ambassadorsList.map((amb) => (
+                                            <label key={amb.id} className={`flex items-center gap-3 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                                                selectedAmbassadors.includes(amb.id) || selectedAmbassadors.includes('all')
+                                                ? 'bg-emerald-500/10 border-emerald-500/30'
+                                                : 'bg-white/5 border-white/5 hover:border-white/10'
+                                            }`}>
+                                                <input 
+                                                    type="checkbox" 
+                                                    className="accent-emerald-500 w-3.5 h-3.5 rounded"
+                                                    checked={selectedAmbassadors.includes(amb.id) || selectedAmbassadors.includes('all')}
+                                                    onChange={(e) => {
+                                                        if (selectedAmbassadors.includes('all')) return;
+                                                        if (e.target.checked) {
+                                                            setSelectedAmbassadors([...selectedAmbassadors, amb.id]);
+                                                        } else {
+                                                            setSelectedAmbassadors(selectedAmbassadors.filter(id => id !== amb.id));
+                                                        }
+                                                    }}
+                                                    disabled={selectedAmbassadors.includes('all')}
+                                                />
+                                                <div className="flex-1 flex justify-between items-center min-w-0 gap-2">
+                                                    <span className="text-[11px] font-bold text-white truncate">{amb.name || amb.email}</span>
+                                                    {amb.phone && (
+                                                        <a 
+                                                            href={`https://wa.me/${amb.phone.replace(/[^0-9]/g, '')}`} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="p-2 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-black rounded-lg transition-all shrink-0 active:scale-95"
+                                                            onClick={e => e.stopPropagation()}
+                                                            title="WhatsApp Directo"
+                                                        >
+                                                            <MessageSquare size={12} />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            </label>
+                                        ))}
+                                        {ambassadorsList.length === 0 && (
+                                            <p className="text-[10px] text-white/30 italic text-center py-8 col-span-2">No hay embajadores activos disponibles.</p>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-white/45 block">Mensaje / Directiva</label>
+                                        <textarea 
+                                            value={msgText}
+                                            onChange={e => setMsgText(e.target.value)}
+                                            placeholder="Escriba la directiva aquí..."
+                                            className="w-full bg-black/60 border border-white/10 rounded-xl p-4 text-[12px] text-white placeholder:text-white/20 outline-none focus:border-emerald-500/50 min-h-[120px] resize-none transition-colors"
+                                        />
+                                    </div>
+
+                                    <button 
+                                        onClick={handleSendMessage}
+                                        disabled={isSendingMsg || !msgText.trim() || selectedAmbassadors.length === 0}
+                                        className="w-full py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-black font-black uppercase tracking-[0.2em] text-[11px] rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99]"
+                                    >
+                                        {isSendingMsg ? <RefreshCw size={14} className="animate-spin" /> : <Radio size={14} />}
+                                        TRANSMITIR ORDEN
+                                    </button>
+                                </div>
+
+                                {/* Historial de Envíos */}
+                                <div className="lg:col-span-7 bg-[#050A15]/80 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 h-[550px] overflow-hidden">
+                                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/80 border-b border-white/5 pb-3">Registros de Transmisión</h3>
+                                    <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar no-scrollbar">
+                                        {sentMessages.length === 0 ? (
+                                            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+                                                <Radio size={32} className="text-white/10" />
+                                                <p className="text-[10px] text-white/30 italic uppercase tracking-widest">Aún no se han enviado directivas.</p>
+                                            </div>
+                                        ) : (
+                                            sentMessages.map(msg => (
+                                                <div key={msg.id} className="bg-white/5 border border-white/5 hover:border-white/10 rounded-xl p-4 flex flex-col gap-2 transition-all">
+                                                    <div className="flex justify-between items-start gap-4">
+                                                        <span className="text-[9px] text-white/40 uppercase tracking-widest font-mono">{new Date(msg.createdAt).toLocaleString('es-AR')}</span>
+                                                        <div className={`px-2.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest flex items-center gap-1 ${
+                                                            msg.isRead ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                                        }`}>
+                                                            {msg.isRead ? <CheckCircle2 size={10} /> : <Clock size={10} />}
+                                                            {msg.isRead ? 'Confirmado' : 'Pendiente'}
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-[12px] text-white/90 font-bold break-words bg-black/30 p-2.5 rounded-lg border border-white/5">{msg.text}</p>
+                                                    <div className="text-[9px] text-emerald-400/50 uppercase tracking-widest border-t border-white/5 pt-2 mt-1 font-mono">
+                                                        Destino: {msg.recipientName}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </main>
 

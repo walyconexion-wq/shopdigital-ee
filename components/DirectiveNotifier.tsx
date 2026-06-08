@@ -299,7 +299,8 @@ export const DirectiveNotifier: React.FC<DirectiveNotifierProps> = ({ bunkerId, 
     ).length;
 
     return (
-        <div className="w-full max-w-4xl mx-auto mt-6 bg-black/40 border border-white/10 rounded-[2rem] p-6 backdrop-blur-md relative overflow-hidden shadow-[0_10px_35px_rgba(0,0,0,0.5)]">
+        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-6 mt-6">
+            <div className="w-full bg-black/40 border border-white/10 rounded-[2rem] p-6 backdrop-blur-md relative overflow-hidden shadow-[0_10px_35px_rgba(0,0,0,0.5)]">
             {/* Brillo neon temático */}
             <div 
                 className="absolute -top-10 -left-10 w-24 h-24 rounded-full blur-[40px] opacity-20 pointer-events-none" 
@@ -447,5 +448,6 @@ export const DirectiveNotifier: React.FC<DirectiveNotifierProps> = ({ bunkerId, 
                 })}
             </div>
         </div>
+    </div>
     );
 };
