@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
     Radio, AlertTriangle, ShieldCheck, Clock, Send, CheckCircle2, 
     ChevronDown, ChevronUp, Bell, BellOff, User, Mail, Plus, Check,
-    Anchor, TrendingUp, Activity, Zap, Target, Shield, Database, Users, LayoutGrid, BookOpen, Cpu
+    Anchor, TrendingUp, Activity, Zap, Target, Shield, Database, Users, LayoutGrid, BookOpen, Cpu, MessageSquare
 } from 'lucide-react';
 import { db, suscribirseADirectivasBunker, responderDirectivaBunker, enviarDirectivaBunker } from '../firebase';
 import { BunkerDirective, BunkerReply } from '../types';
