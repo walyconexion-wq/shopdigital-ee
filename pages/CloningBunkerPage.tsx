@@ -66,8 +66,8 @@ export const CloningBunkerPage: React.FC = () => {
             const path = `bunker_chat/clonacion/${Date.now()}_${file.name}`;
             const downloadUrl = await subirArchivoBunker(file, path);
             const fileLink = file.type.startsWith('image/') 
-                ? \`\n![Imagen: \${file.name}](\${downloadUrl})\` 
-                : \`\n[Archivo Adjunto: \${file.name}](\${downloadUrl})\`;
+                ? `\n![Imagen: ${file.name}](${downloadUrl})` 
+                : `\n[Archivo Adjunto: ${file.name}](${downloadUrl})`;
             setMsgInput(prev => prev + fileLink);
         } catch (error) {
             console.error(error);
@@ -88,7 +88,7 @@ export const CloningBunkerPage: React.FC = () => {
         const fetchWeather = async () => {
             try {
                 const coords = townId === 'ezeiza' ? { lat: -34.85, lon: -58.52 } : townId === 'traslasierra' ? { lat: -31.72, lon: -65.01 } : { lat: -34.82, lon: -58.47 };
-                const res = await fetch(\`https://api.open-meteo.com/v1/forecast?latitude=\${coords.lat}&longitude=\${coords.lon}&current=temperature_2m,weather_code\`);
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code`);
                 if (res.ok) {
                     const data = await res.json();
                     setTemp(Math.round(data.current?.temperature_2m || 0));
@@ -128,14 +128,14 @@ export const CloningBunkerPage: React.FC = () => {
         setIsThinking(false);
         setIsThinking(true);
 
-        const currentCloningSummary = \`
+        const currentCloningSummary = `
 KPIs DE CLONACIÓN:
 - Plantilla Base (Echeverría): Estable
 - Fases Activas: 0
 - Estado de API Maps: OK
-        \`;
+        `;
 
-        const fullContext = \`\${ARI_CLONING_PROMPT}\n\n\${currentCloningSummary}\n\n\${activeDirectivesText}\`;
+        const fullContext = `${ARI_CLONING_PROMPT}\n\n${currentCloningSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
