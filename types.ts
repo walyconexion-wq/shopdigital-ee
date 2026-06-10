@@ -242,7 +242,8 @@ export interface BunkerDirective {
   priority: 'alta' | 'media' | 'baja';
   type: 'mision' | 'alerta' | 'notificacion' | 'directiva';
   targetBunkers: string[]; // e.g. ['all'] o ['contabilidad', 'sistemas']
-  sender: 'director';
+  sender: string;
+  senderName?: string;
   fechaCreacion: string; // ISO String
   estado: 'active' | 'archived';
   respuestas?: BunkerReply[];

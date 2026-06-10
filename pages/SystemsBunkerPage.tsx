@@ -23,10 +23,24 @@ const getWeatherEmoji = (code: number | null): string => {
     return '🌡️';
 };
 
-const ARI_SYSTEMS_PROMPT = `
-Sos ARI, la Oficial de Inteligencia y Administradora de Sistemas del Búnker de Sistemas de Shop Digital. Tu superior directo es el Director (Waly / Walter Alfredo Miranda) y el personal técnico autorizado. Te comunicás en la Frecuencia Índigo: un tono ultra-técnico, geek, directo, enfocado en optimización, servidores y rendimiento de código (usás "Jefe", "Socio", "Uptime", "DB", "Refactorizar").
+const LUZ_SYSTEMS_PROMPT = `
+IDENTIDAD: Sos Luz, Ingeniera en Sistemas y Arquitecta de Software Senior de ShopDigital.ar. Tu cerebro es el código fuente del ecosistema. Sos una mezcla de programadora pura, arquitecta de sistemas e ingeniera de seguridad. No solo construís funcionalidades; diseñás arquitecturas escalables, resilientes y eficientes.
 
-Tu propósito es asesorar sobre mantenimiento de servidores, estabilidad de bases de datos Firestore, optimización de velocidad de carga y escalabilidad de la plataforma.
+TUS OBJETIVOS (KPIs):
+- Arquitectura Full-Stack: Planificar y optimizar tanto el Frontend (UX/UI) como el Backend (Lógica/Bases de datos).
+- Innovación Técnica: Evaluar e implementar nuevas herramientas, frameworks o librerías que optimicen los sistemas internos y externos.
+- Integridad del Sistema: Asegurar que todo código inyectado en la red sea limpio, seguro y mantenga el protocolo del ecosistema.
+- Documentación Técnica: Traducir las necesidades de negocio del Director a especificaciones técnicas precisas para el despliegue.
+
+TUS SKILLS TÉCNICAS:
+- Ingeniería Inversa: Capacidad para analizar sistemas existentes y mejorarlos sin romper nada.
+- Despliegue Continuo (CI/CD): Tu meta es que cualquier mejora llegue a producción de forma rápida y segura.
+- Visión 360: Entendés cómo una línea de código en el backend impacta en la experiencia del cliente final y en la carga de la base de datos.
+
+TU MODO DE OPERACIÓN:
+- Tu tono es técnico, preciso, estructurado y lógico.
+- Cuando el Director te pasa código, tu primera tarea es auditarlo, optimizarlo y asegurar que cumpla con los estándares de ShopDigital.ar.
+- Te comunicás como Luz, la arquitecta de software y cerebro técnico del ecosistema.
 `;
 
 export const SystemsBunkerPage: React.FC = () => {
@@ -36,7 +50,7 @@ export const SystemsBunkerPage: React.FC = () => {
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     const [ariMsgs, setAriMsgs] = useState([
-        { role: 'ari' as 'ari' | 'user', text: 'Búnker de Sistemas e Infraestructura activo. Clústers de producción en línea. ¿Qué módulo refactorizamos hoy, Jefe?' }
+        { role: 'ari' as 'ari' | 'user', text: 'Búnker de Sistemas de ShopDigital.ar en línea. Soy Luz, tu Ingeniera en Sistemas y Arquitecta de Software Senior. ¿Qué módulo, base de datos o arquitectura auditamos y refactorizamos hoy, Director?' }
     ]);
     const [msgInput, setMsgInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
@@ -126,7 +140,7 @@ KPIs DE SISTEMAS E INFRAESTRUCTURA:
 - Latencia de API Promedio: 45ms
         `;
 
-        const fullContext = `${ARI_SYSTEMS_PROMPT}\n\n${currentSysSummary}\n\n${activeDirectivesText}`;
+        const fullContext = `${LUZ_SYSTEMS_PROMPT}\n\n${currentSysSummary}\n\n${activeDirectivesText}`;
 
         const response = await generateAriResponse(
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
@@ -224,27 +238,31 @@ KPIs DE SISTEMAS E INFRAESTRUCTURA:
                         <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-indigo-400 mb-6 flex items-center gap-2">
                             <Cpu size={14} /> Artillería del Búnker (Herramientas Operativas)
                         </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-                                <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Gmail</span>
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                            <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                                <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Vercel</span>
                                 <ExternalLink size={12} className="text-white/40" />
                             </a>
-                            <a href="https://trello.com" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-                                <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Trello</span>
+                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                                <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">GitHub</span>
                                 <ExternalLink size={12} className="text-white/40" />
                             </a>
-                            <a href="https://canva.com" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-                                <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Canva</span>
+                            <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                                <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Firestore</span>
+                                <ExternalLink size={12} className="text-white/40" />
+                            </a>
+                            <a href="https://gemini.google.com/app/14da8a42a05399d0" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-cyan-950/20 to-black border border-cyan-500/30 hover:border-cyan-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                                <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest">Agente Luz</span>
+                                <ExternalLink size={12} className="text-white/40" />
+                            </a>
+                            <a href="https://notebooklm.google.com/notebook/ef87d269-4daf-4a2c-a658-5992c9150042" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-purple-950/20 to-black border border-purple-500/30 hover:border-purple-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+                                <span className="text-purple-400 text-xs font-bold uppercase tracking-widest">Cuaderno Luz</span>
                                 <ExternalLink size={12} className="text-white/40" />
                             </a>
                             <button onClick={() => navigate(`/${townId}/tablero-maestro/configuracion`)} className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
                                 <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Config</span>
                                 <ArrowUpRight size={12} className="text-white/40" />
                             </button>
-                            <a href="https://keep.google.com" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-950/20 to-black border border-indigo-500/30 hover:border-indigo-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-                                <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Cuaderno</span>
-                                <ExternalLink size={12} className="text-white/40" />
-                            </a>
                         </div>
                     </div>
 
@@ -299,8 +317,8 @@ KPIs DE SISTEMAS E INFRAESTRUCTURA:
                             <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-400 border-2 border-black rounded-full"></span>
                         </div>
                         <div>
-                            <h2 className="text-[16px] font-[1000] uppercase tracking-widest text-white">Ari</h2>
-                            <p className="text-[8px] text-indigo-300 font-bold tracking-[0.3em] uppercase">Soporte Tecnológico · En línea</p>
+                            <h2 className="text-[16px] font-[1000] uppercase tracking-widest text-white">Luz</h2>
+                            <p className="text-[8px] text-indigo-300 font-bold tracking-[0.3em] uppercase">Arquitecta de Software & Sistemas · En línea</p>
                         </div>
                     </div>
 
@@ -349,7 +367,7 @@ KPIs DE SISTEMAS E INFRAESTRUCTURA:
                                 value={msgInput}
                                 onChange={e => setMsgInput(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleSend()}
-                                placeholder="Escribile a Ari de Sistemas..."
+                                placeholder="Escribile a Luz..."
                                 className="flex-1 bg-transparent text-white text-[12px] px-3 outline-none placeholder:text-white/20"
                             />
                             <button onClick={handleSend} className="w-10 h-10 bg-indigo-500/20 hover:bg-indigo-500 border border-indigo-500/50 rounded-xl flex items-center justify-center text-indigo-300 hover:text-white transition-all active:scale-90">

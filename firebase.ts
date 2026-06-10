@@ -1523,7 +1523,7 @@ export const suscribirseADirectivasBunker = (bunkerId: string, callback: (direct
     return onSnapshot(q, (snapshot) => {
         const allDirectives = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as BunkerDirective[];
         const filtered = allDirectives.filter(d => 
-            d.targetBunkers.includes('all') || d.targetBunkers.includes(bunkerId)
+            (Array.isArray(d.targetBunkers) && (d.targetBunkers.includes('all') || d.targetBunkers.includes(bunkerId))) || d.sender === bunkerId
         );
         callback(filtered);
     }, (error) => {

@@ -4,7 +4,7 @@ import {
     Activity, Anchor, Globe, Users, Database, 
     MessageSquare, Zap, ShieldAlert, Cpu, ChevronLeft, Hexagon,
     Shield, ShieldCheck, Dog, Trash2, RefreshCw, Clock, MapPin,
-    Store, Phone, Star
+    Store, Phone, Star, BookOpen
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
@@ -39,6 +39,86 @@ const BUNKER_LIST = [
     { id: 'inversion-exponencial', label: 'Inversión Exponencial' },
     { id: 'mantenimiento', label: 'Mantenimiento General' },
     { id: 'sinfonia-transmision', label: 'Sinfonía de Transmisión' }
+];
+
+const MATRIZ_ACCESO = [
+    {
+        name: 'Dirección General (Waly)',
+        color: '#8b5cf6',
+        icon: Anchor,
+        notebook: 'https://notebooklm.google.com/notebook/0a83b1d9-e35e-4473-8033-648f89f81339',
+        agent: 'https://gemini.google.com/app/70ea5a1cc7718225'
+    },
+    {
+        name: 'Marketing y Expansión',
+        color: '#10b981',
+        icon: TrendingUp,
+        notebook: 'https://notebooklm.google.com/notebook/cb9442de-e444-4ca0-98a4-914ca6e3980a',
+        agent: 'https://gemini.google.com/app/23701fdc9c2e35d5'
+    },
+    {
+        name: 'Transmisiones y Eventos',
+        color: '#10b981',
+        icon: Radio,
+        notebook: 'https://notebooklm.google.com/notebook/82a1b7bf-3899-49f5-8b4c-3d082fcad671',
+        agent: 'https://gemini.google.com/app/039e3724bd5f1b99'
+    },
+    {
+        name: 'Mantenimiento General',
+        color: '#64748b',
+        icon: Activity,
+        notebook: 'https://notebooklm.google.com/notebook/9a90488c-7519-441c-b845-d7b1c3bd5321',
+        agent: 'https://gemini.google.com/app/da2400cab1da285b'
+    },
+    {
+        name: 'Inversión Exponencial',
+        color: '#eab308',
+        icon: Zap,
+        notebook: 'https://notebooklm.google.com/notebook/71668861-44e3-40fe-8cde-74cf99b11623',
+        agent: 'https://gemini.google.com/app/7c5f4735c91da2a4'
+    },
+    {
+        name: 'Planificación y Desarrollo',
+        color: '#3b82f6',
+        icon: Target,
+        notebook: 'https://notebooklm.google.com/notebook/88340a8c-838a-4835-99d9-6b77e911307b',
+        agent: 'https://gemini.google.com/app/0ca3b8338a07652e'
+    },
+    {
+        name: 'Ciberseguridad y SecOps',
+        color: '#10b981',
+        icon: Shield,
+        notebook: 'https://notebooklm.google.com/notebook/e0e4f151-7847-4631-8769-282ead74c670',
+        agent: 'https://gemini.google.com/app/5766939f30ed677a'
+    },
+    {
+        name: 'Desarrollo de Sistemas',
+        color: '#6366f1',
+        icon: Database,
+        notebook: 'https://notebooklm.google.com/notebook/ef87d269-4daf-4a2c-a658-5992c9150042',
+        agent: 'https://gemini.google.com/app/14da8a42a05399d0'
+    },
+    {
+        name: 'Recursos Humanos',
+        color: '#06b6d4',
+        icon: Users,
+        notebook: 'https://notebooklm.google.com/notebook/d302846c-db1d-4c88-9f1d-b6e07a456d29',
+        agent: 'https://gemini.google.com/app/c4dab0c7f917c036'
+    },
+    {
+        name: 'Contable y Legales',
+        color: '#ef4444',
+        icon: Activity,
+        notebook: 'https://notebooklm.google.com/notebook/509fde7f-4b31-4beb-abab-420a30a0973e',
+        agent: 'https://gemini.google.com/app/3089ba20d1274aed'
+    },
+    {
+        name: 'Administración y Gestión',
+        color: '#f59e0b',
+        icon: LayoutGrid,
+        notebook: 'https://notebooklm.google.com/notebook/7fa97dfa-6643-4dc9-8690-6c02e8338280',
+        agent: 'https://gemini.google.com/notebook/7fa97dfa-6643-4dc9-8690-6c02e8338280'
+    }
 ];
 
 const getWeatherEmoji = (code: number | null): string => {
@@ -754,8 +834,10 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                             </div>
                         </div>
 
-                        {/* Embajadores */}
-                        <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 flex flex-col h-fit">
+                        {/* Columna Derecha: Fuerza de Elite + Bitácora Doberman */}
+                        <div className="flex flex-col gap-6 h-fit">
+                            {/* Embajadores */}
+                            <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 flex flex-col h-fit">
                             <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80 mb-6">
                                 <Users size={14} className="text-violet-500" /> Fuerza de Elite
                             </h2>
@@ -887,6 +969,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                             </div>
                         )}
                     </div>
+                    </div> {/* Closes Columna Derecha flex container */}
                 </div>
 
                 {/* ─── CHAT ARI ─── */}
@@ -1009,7 +1092,75 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
 
                     <div className="relative z-10">
                         {commsSubTab === 'snc' ? (
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+                                {/* RACK DE ACCESO RÁPIDO (MATRIZ DE CONOCIMIENTO Y AGENTES) */}
+                                <div className="w-full bg-[#050A15]/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md flex flex-col gap-4 shadow-inner">
+                                    <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                                        <div className="flex items-center gap-2">
+                                            <Cpu size={16} className="text-emerald-400" />
+                                            <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white">
+                                                Rack de Acceso Rápido: Matriz de Conocimiento y Agentes
+                                            </h3>
+                                        </div>
+                                        <span className="text-[8px] px-2 py-0.5 rounded border border-white/10 bg-white/5 font-black uppercase text-white/40 tracking-widest">
+                                            11 Puntos de Conexión
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                                        {MATRIZ_ACCESO.map((item, idx) => {
+                                            const IconComp = item.icon;
+                                            return (
+                                                <div 
+                                                    key={idx} 
+                                                    className="bg-black/50 border border-white/5 hover:border-white/15 rounded-xl p-4 flex flex-col gap-3.5 transition-all group relative overflow-hidden"
+                                                >
+                                                    {/* Indicador Neon Lateral */}
+                                                    <div 
+                                                        className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl transition-all duration-300"
+                                                        style={{ backgroundColor: item.color }}
+                                                    />
+                                                    
+                                                    <div className="flex items-center gap-3">
+                                                        <div 
+                                                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all group-hover:scale-105 animate-pulse"
+                                                            style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                                                        >
+                                                            <IconComp size={16} />
+                                                        </div>
+                                                        <span className="text-[11px] font-black text-white uppercase tracking-wider truncate">
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <div className="grid grid-cols-2 gap-2 text-[9px] font-black uppercase tracking-wider">
+                                                        <a 
+                                                            href={item.notebook} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            onClick={() => playNeonClick()}
+                                                            className="py-2 px-2.5 rounded-lg border border-white/5 hover:border-white/20 bg-white/[0.01] hover:bg-white/[0.04] text-white/60 hover:text-white transition-all text-center flex items-center justify-center gap-1.5 active:scale-95"
+                                                        >
+                                                            <BookOpen size={10} className="shrink-0" /> Cuaderno
+                                                        </a>
+                                                        <a 
+                                                            href={item.agent} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            onClick={() => playNeonClick()}
+                                                            className="py-2 px-2.5 rounded-lg text-black transition-all text-center flex items-center justify-center gap-1.5 active:scale-95 hover:opacity-90 shadow-sm"
+                                                            style={{ backgroundColor: item.color }}
+                                                        >
+                                                            <MessageSquare size={10} className="shrink-0" /> Agente
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                 {/* Panel de Redacción de Directiva */}
                                 <div className="lg:col-span-5 bg-[#050A15]/60 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 backdrop-blur-md">
                                     <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-emerald-400">Despacho de Misiones Directivas (SNC)</h3>
@@ -1226,6 +1377,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                         )}
                                     </div>
                                 </div>
+                            </div>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
