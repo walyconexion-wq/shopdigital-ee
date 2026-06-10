@@ -1576,4 +1576,61 @@ export const archivarDirectiva = async (directiveId: string) => {
     }
 };
 
+// ==============================
+// 🌐 SNC NIVEL 3: MATRIZ DE SINCRONÍA (INTERCOMUNICADOR AGENTES)
+// ==============================
+export interface SncMessage {
+    id?: string;
+    role: 'user' | 'model' | 'system';
+    agent: 'gemy' | 'luz' | 'ari' | 'director' | 'system';
+    text: string;
+    timestamp: string;
+    contextTags?: string[];
+}
+
+export const enviarMensajeMatriz = async (mensaje: Omit<SncMessage, 'id' | 'timestamp'>) => {
+    try {
+        const docRef = await addDoc(collection(db, 'matriz_sincronia'), {
+            ...mensaje,
+            timestamp: new Date().toISOString()
+        });
+        console.log(`[SNC Nivel 3] Mensaje guardado en Matriz. ID: ${docRef.id}`);
+        return docRef.id;
+    } catch (error) {
+        console.error("[SNC Nivel 3] Error guardando mensaje:", error);
+        throw error;
+    }
+};
+
+export const suscribirseAMatriz = (callback: (mensajes: SncMessage[]) => void, limitCount: number = 20) => {
+    const qDesc = query(
+        collection(db, 'matriz_sincronia'),
+        orderBy("timestamp", "desc"),
+        limit(limitCount)
+    );
+    
+    return onSnapshot(qDesc, (snapshot) => {
+        const mensajes = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as SncMessage[];
+        callback(mensajes.reverse()); // Devolver en orden cronológico normal (antiguo a nuevo)
+    }, (error) => {
+        console.error("[SNC Nivel 3] Error en suscripción de Matriz:", error);
+    });
+};
+
+export const obtenerHistorialMatriz = async (limitCount: number = 20): Promise<SncMessage[]> => {
+    try {
+        const q = query(
+            collection(db, 'matriz_sincronia'),
+            orderBy('timestamp', 'desc'),
+            limit(limitCount)
+        );
+        const snap = await getDocs(q);
+        const mensajes = snap.docs.map(d => ({ id: d.id, ...d.data() })) as SncMessage[];
+        return mensajes.reverse(); // Devolver en orden cronológico normal
+    } catch (error) {
+        console.error("[SNC Nivel 3] Error leyendo historial Matriz:", error);
+        return [];
+    }
+};
+
 export default app;

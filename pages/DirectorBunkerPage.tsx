@@ -8,8 +8,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
-import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas, subirArchivoBunker, suscribirseATodasDirectivas, enviarDirectivaBunker, archivarDirectiva } from '../firebase';
+import { generateAriResponse, generateMatrixResponse } from '../services/gemini';
+import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas, subirArchivoBunker, suscribirseATodasDirectivas, enviarDirectivaBunker, archivarDirectiva, suscribirseAMatriz, enviarMensajeMatriz, SncMessage } from '../firebase';
 import { BunkerDirective, BunkerReply } from '../types';
 import { RadarScanner } from '../components/RadarScanner';
 import { SaturationPredictor } from '../components/SaturationPredictor';
@@ -172,9 +172,13 @@ export const DirectorBunkerPage: React.FC = () => {
     const [securityStatus, setSecurityStatus] = useState<'green' | 'red'>('green');
     const [intrusionRegistered, setIntrusionRegistered] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'radar' | 'predictor' | 'telemetria'>('radar');
+    const [activeTab, setActiveTab] = useState<'radar' | 'predictor' | 'telemetria' | 'sala-comando'>('radar');
     const [activeCategory, setActiveCategory] = useState('pizzerias');
     const [telemetryLogs, setTelemetryLogs] = useState<any[]>([]);
+    const [matrixMsgs, setMatrixMsgs] = useState<SncMessage[]>([]);
+    const [matrixInput, setMatrixInput] = useState('');
+    const [isMatrixThinking, setIsMatrixThinking] = useState(false);
+    const [targetMatrixAgent, setTargetMatrixAgent] = useState<'gemy' | 'luz' | 'ari'>('gemy');
     
     const [isConsolidating, setIsConsolidating] = useState(false);
     const [consolidationStep, setConsolidationStep] = useState('');
@@ -266,11 +270,17 @@ export const DirectorBunkerPage: React.FC = () => {
                 setAllDirectives(directives);
             });
 
+            // Suscribirse a la Matriz de Sincronía
+            const unsubMatrix = suscribirseAMatriz((mensajes) => {
+                setMatrixMsgs(mensajes);
+            }, 20);
+
             return () => {
                 unsubAmbassadors();
                 unsubMessages();
                 unsubTelemetry();
                 unsubDirectives();
+                unsubMatrix();
             };
         }
     }, [isAuthorized]);
@@ -739,6 +749,16 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                 >
                                     <Activity size={14} /> Telemetría
                                 </button>
+                                <button 
+                                    onClick={() => { playNeonClick(); setActiveTab('sala-comando'); }}
+                                    className={`flex-1 py-4 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                                        activeTab === 'sala-comando' 
+                                        ? 'text-yellow-400 bg-yellow-500/5 border-b-2 border-yellow-500' 
+                                        : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                                    }`}
+                                >
+                                    <Cpu size={14} /> Sala de Comando
+                                </button>
                             </div>
 
                             <div className="p-6">
@@ -766,7 +786,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                         </div>
                                         <SaturationPredictor townId={townId} category={activeCategory} />
                                     </div>
-                                ) : (
+                                ) : activeTab === 'telemetria' ? (
                                     <div className="animate-in fade-in duration-500 flex flex-col gap-6">
                                         <div className="flex items-center justify-between mb-2">
                                             <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
@@ -830,7 +850,83 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                             </div>
                                         </div>
                                     </div>
-                                )}
+                                ) : activeTab === 'sala-comando' ? (
+                                    <div className="animate-in fade-in duration-500 flex flex-col gap-6 h-[600px]">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-white/80">
+                                                <Cpu size={18} className="text-yellow-500 animate-pulse" /> Sala de Comando (SNC Nivel 3)
+                                            </h2>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => setTargetMatrixAgent('gemy')} className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all ${targetMatrixAgent === 'gemy' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-transparent text-white/40 border-white/10'}`}>Gemy</button>
+                                                <button onClick={() => setTargetMatrixAgent('luz')} className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all ${targetMatrixAgent === 'luz' ? 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/50' : 'bg-transparent text-white/40 border-white/10'}`}>Luz</button>
+                                                <button onClick={() => setTargetMatrixAgent('ari')} className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all ${targetMatrixAgent === 'ari' ? 'bg-violet-500/20 text-violet-400 border-violet-500/50' : 'bg-transparent text-white/40 border-white/10'}`}>ARI</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex-1 overflow-y-auto p-4 bg-black/40 border border-white/5 rounded-2xl flex flex-col gap-4 no-scrollbar">
+                                            {matrixMsgs.map((msg, idx) => (
+                                                <div key={msg.id || idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                    <div className={`max-w-[85%] rounded-2xl p-4 text-[13px] leading-relaxed ${
+                                                        msg.agent === 'director' ? 'bg-white/10 border border-white/20 text-white rounded-tr-sm' : 
+                                                        msg.agent === 'gemy' ? 'bg-cyan-900/30 border border-cyan-500/30 text-cyan-100 rounded-tl-sm shadow-[0_0_15px_rgba(6,182,212,0.1)]' :
+                                                        msg.agent === 'luz' ? 'bg-fuchsia-900/30 border border-fuchsia-500/30 text-fuchsia-100 rounded-tl-sm shadow-[0_0_15px_rgba(217,70,239,0.1)]' :
+                                                        'bg-violet-900/30 border border-violet-500/30 text-violet-100 rounded-tl-sm shadow-[0_0_15px_rgba(139,92,246,0.1)]'
+                                                    }`}>
+                                                        <p className="text-[9px] font-black uppercase tracking-widest opacity-50 mb-1">{msg.agent}</p>
+                                                        {msg.text}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {isMatrixThinking && (
+                                                <div className="flex justify-start">
+                                                    <div className="max-w-[85%] rounded-2xl p-4 bg-yellow-900/20 border border-yellow-500/30 text-yellow-100 rounded-tl-sm flex items-center gap-2">
+                                                        <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                                        <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                                        <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-bounce"></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <input 
+                                                type="text"
+                                                value={matrixInput}
+                                                onChange={e => setMatrixInput(e.target.value)}
+                                                onKeyDown={e => {
+                                                    if (e.key === 'Enter') {
+                                                        const handleMatrixSend = async () => {
+                                                            if (!matrixInput.trim() || isMatrixThinking) return;
+                                                            playNeonClick();
+                                                            const textToSend = matrixInput;
+                                                            setMatrixInput('');
+                                                            setIsMatrixThinking(true);
+                                                            
+                                                            await enviarMensajeMatriz({
+                                                                role: 'user',
+                                                                agent: 'director',
+                                                                text: textToSend
+                                                            });
+                                                            
+                                                            const response = await generateMatrixResponse(targetMatrixAgent, matrixMsgs.concat([{ id: 'temp', role: 'user', agent: 'director', text: textToSend, timestamp: new Date().toISOString() }]));
+                                                            
+                                                            await enviarMensajeMatriz({
+                                                                role: 'model',
+                                                                agent: targetMatrixAgent,
+                                                                text: response
+                                                            });
+                                                            
+                                                            setIsMatrixThinking(false);
+                                                        };
+                                                        handleMatrixSend();
+                                                    }
+                                                }}
+                                                placeholder={`Enviar directiva a ${targetMatrixAgent.toUpperCase()}... (Presioná Enter)`}
+                                                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-white outline-none focus:border-yellow-500/50"
+                                            />
+                                        </div>
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
 

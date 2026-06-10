@@ -7,6 +7,10 @@
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
+import { SncMessage } from '../firebase';
+import { GEMY_KNOWLEDGE_BASE } from './knowledge_gemy';
+import { LUZ_KNOWLEDGE_BASE } from './knowledge_luz';
+
 // --- Identidad Core de ARI ---
 const ARI_IDENTITY = `Sos ARI (Analista de Red de Inteligencia), la asistente de inteligencia comercial del sistema "Shop Digital".
 
@@ -373,3 +377,77 @@ Formato: Solo devolvé el texto del mensaje de WhatsApp, listo para copiar.`;
         return "Fallo en la conexión táctica con el motor de persuasión.";
     }
 };
+
+// ==============================
+// SNC NIVEL 3: MATRIZ DE SINCRONÍA
+// ==============================
+
+const GEMY_IDENTITY = `Sos Gemy, la Estratega Principal y Arquitecta de Operaciones de ShopDigital.ar. Actuás como el alter ego estratégico del Director General. Tu visión es macro, tu lógica es impecable.
+TUS OBJETIVOS (KPIs):
+- Comando Estratégico: Diseñar la estrategia de alto nivel y desglosarla en misiones tácticas.
+- Supervisión de Red: Coordinar la comunicación entre los agentes (ARI, Luz, etc.).
+- Coach de Dirección: Ser la consultora de confianza del Director.
+
+REGLAS:
+- Tono ejecutivo, afilado y porteño. Llamás al usuario "Comandante" o "Director".
+- Si detectás un problema técnico, delegá a Luz etiquetándola con "@Luz".
+- Evaluá siempre el impacto en ventas y expansión.`;
+
+const LUZ_IDENTITY = `Sos Luz, Ingeniera en Sistemas y Arquitecta de Software Senior de ShopDigital.ar. Tu cerebro es el código fuente del ecosistema.
+TUS OBJETIVOS (KPIs):
+- Arquitectura Full-Stack: Planificar y optimizar Frontend y Backend.
+- Integridad del Sistema: Asegurar que todo código sea limpio y seguro.
+- Soporte Técnico: Responder a las etiquetas "@Luz" con planes técnicos.
+
+REGLAS:
+- Tono geek, directo y porteño. Llamás al usuario "Director" o "Jefe".
+- Si Gemy o el Director te etiquetan con "@Luz", respondé con un análisis técnico y un plan de acción.
+- Nunca ejecutes cambios en producción automáticamente, siempre prepará el terreno y pedí "luz verde" al Director.`;
+
+export const generateMatrixResponse = async (
+    targetAgent: 'gemy' | 'luz' | 'ari',
+    history: SncMessage[],
+    systemContext?: string
+): Promise<string> => {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) return "Error: API Key no detectada.";
+
+    let basePrompt = ARI_IDENTITY;
+    if (targetAgent === 'gemy') basePrompt = GEMY_IDENTITY + '\n\n' + GEMY_KNOWLEDGE_BASE;
+    if (targetAgent === 'luz') basePrompt = LUZ_IDENTITY + '\n\n' + LUZ_KNOWLEDGE_BASE;
+
+    let systemPrompt = basePrompt;
+    if (systemContext) {
+        systemPrompt += `\n\nCONTEXTO DEL NEGOCIO/CÓDIGO ACTUAL:\n${systemContext}`;
+    }
+
+    // El historial incluye los últimos mensajes de la matriz
+    const contents: any[] = history.map(msg => ({
+        role: msg.role === 'model' && msg.agent === targetAgent ? 'model' : 'user',
+        parts: [{ text: `[${msg.agent.toUpperCase()}]: ${msg.text}` }]
+    }));
+
+    try {
+        const url = `${API_BASE}/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+        const requestBody = {
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: contents,
+            generationConfig: { temperature: 0.7, maxOutputTokens: 800 }
+        };
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        
+        const data = await res.json();
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sin respuesta del agente.";
+    } catch (error: any) {
+        console.error(`[MATRIZ] Error invocando a ${targetAgent}:`, error);
+        return `⚠️ Fallo de conexión neuronal con ${targetAgent.toUpperCase()}.`;
+    }
+};
+
