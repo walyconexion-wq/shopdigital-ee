@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Clock, MapPin, ChevronLeft, Anchor, ShieldCheck, Dog, 
-    Cpu, MessageSquare, Activity, Paperclip, Copy, Network, Layers, Database
+    Cpu, MessageSquare, Activity, Paperclip, Copy, Network, Layers, Database, Terminal
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
