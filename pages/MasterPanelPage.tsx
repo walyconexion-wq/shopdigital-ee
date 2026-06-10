@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database, Megaphone, MapPin
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database, Megaphone, MapPin, Network
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { 
@@ -587,6 +587,24 @@ const MasterPanelPage: React.FC = () => {
                             <span className="text-[11px] text-slate-300">🔧 BÚNKER MANTENIMIENTO GENERAL</span>
                             <span className="text-[9px] text-slate-400 px-2 py-0.5 bg-slate-500/10 rounded-md border border-slate-500/20">Soporte</span>
                         </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker/clonacion`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-teal-500/40 hover:border-teal-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(20,184,166,0.1)] hover:bg-teal-900/10"
+                        >
+                            <span className="text-[11px] text-teal-300">🧬 BÚNKER DE CLONACIÓN</span>
+                            <span className="text-[9px] text-teal-400 px-2 py-0.5 bg-teal-500/10 rounded-md border border-teal-500/20">Expansión</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/director/transmision-en-vivo`); }}
+                            className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-rose-500/40 hover:border-rose-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(244,63,94,0.1)] hover:bg-rose-900/10"
+                        >
+                            <span className="text-[11px] text-rose-300">📡 BÚNKER DE TRANSMISIÓN</span>
+                            <span className="text-[9px] text-rose-400 px-2 py-0.5 bg-rose-500/10 rounded-md border border-rose-500/20">Red</span>
+                        </div>
                     </div>
                 </div>
 
@@ -802,30 +820,7 @@ const MasterPanelPage: React.FC = () => {
 
                 </section>
 
-                {/* ═══════════════════════════════════════════ */}
-                {/* 📡 ACCESO AL CENTRO DE TRANSMISIÓN */}
-                {/* ═══════════════════════════════════════════ */}
-                <button 
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/director/transmision-en-vivo`); }}
-                    className="w-full mt-8 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[13px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all glass-card-neon border-2 hover:bg-zinc-800/80"
-                    style={{
-                        borderColor: '#ef4444',
-                        boxShadow: '0 0 25px rgba(239, 68, 68, 0.4), inset 0 0 12px rgba(239, 68, 68, 0.2)',
-                        background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.05), rgba(0, 0, 0, 0.75))'
-                    }}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                    
-                    <div className="relative flex items-center justify-center w-3 h-3 mr-1">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-                    </div>
-                    
-                    <Megaphone size={20} className="text-red-500" style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }} />
-                    <span className="font-[1000]" style={{ color: '#ffffff', textShadow: '0 0 12px rgba(239, 68, 68, 0.8)' }}>
-                        Entrar al Centro de Transmisión en Vivo
-                    </span>
-                </button>
+
             </div>
         </div>
     );

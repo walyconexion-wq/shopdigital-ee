@@ -30,6 +30,7 @@ import { PlanningBunkerPage } from './pages/PlanningBunkerPage';
 import { InvestmentBunkerPage } from './pages/InvestmentBunkerPage';
 import { MaintenanceBunkerPage } from './pages/MaintenanceBunkerPage';
 import { SecOpsBunkerPage } from './pages/SecOpsBunkerPage';
+import { CloningBunkerPage } from './pages/CloningBunkerPage';
 import ValidationPage from './pages/ValidationPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
@@ -366,6 +367,7 @@ const App: React.FC = () => {
                     <Route path="/:townId/bunker/inversion-exponencial" element={<InvestmentBunkerPage />} />
                     <Route path="/:townId/bunker/mantenimiento" element={<MaintenanceBunkerPage />} />
                     <Route path="/:townId/bunker/secops" element={<SecOpsBunkerPage />} />
+                    <Route path="/:townId/bunker/clonacion" element={<CloningBunkerPage />} />
                     <Route path="/:townId/bunker-secops" element={<Navigate to={`/${window.location.pathname.split('/')[1] || 'esteban-echeverria'}/bunker/secops`} replace />} />
 
                     {/* Alias sin townId */}
@@ -378,6 +380,7 @@ const App: React.FC = () => {
                     <Route path="/bunker/inversion-exponencial" element={<Navigate to="/esteban-echeverria/bunker/inversion-exponencial" replace />} />
                     <Route path="/bunker/mantenimiento" element={<Navigate to="/esteban-echeverria/bunker/mantenimiento" replace />} />
                     <Route path="/bunker/secops" element={<Navigate to="/esteban-echeverria/bunker/secops" replace />} />
+                    <Route path="/bunker/clonacion" element={<Navigate to="/esteban-echeverria/bunker/clonacion" replace />} />
                     <Route path="/bunker-secops" element={<Navigate to="/esteban-echeverria/bunker/secops" replace />} />
 
                     {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}

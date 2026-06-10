@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Lock, ChevronLeft, Factory, Zap, Globe, ExternalLink,
     Check, Copy, Megaphone, MapPin, Palette, Terminal, ShieldAlert,
-    Store, Users, ShoppingBag
+    Store, Users, ShoppingBag, Network
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
@@ -727,9 +727,26 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                         {/* 📡 ACCESO AL CENTRO DE TRANSMISIÓN         */}
                         {/* ADN Fractal: idéntico al molde B2C         */}
                         {/* ═══════════════════════════════════════════ */}
+                        <div 
+                            role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/bunker/clonacion`); }}
+                            className="w-full mt-6 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[13px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all glass-card-neon border-2 hover:bg-zinc-800/80"
+                            style={{
+                                borderColor: '#14b8a6',
+                                boxShadow: '0 0 25px rgba(20, 184, 166, 0.4), inset 0 0 12px rgba(20, 184, 166, 0.2)',
+                                background: 'linear-gradient(145deg, rgba(20, 184, 166, 0.05), rgba(0, 0, 0, 0.75))'
+                            }}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                            <Network size={20} className="text-teal-400" style={{ filter: 'drop-shadow(0 0 8px #2dd4bf)' }} />
+                            <span className="font-[1000]" style={{ color: '#ffffff', textShadow: '0 0 12px rgba(20, 184, 166, 0.8)' }}>
+                                BÚNKER DE CLONACIÓN
+                            </span>
+                        </div>
+
                         <button 
                             onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/director/transmision-en-vivo`); }}
-                            className="w-full mt-6 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[13px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all glass-card-neon border-2 hover:bg-zinc-800/80"
+                            className="w-full mt-4 py-5 rounded-3xl text-white font-[1000] uppercase tracking-[0.2em] text-[13px] flex items-center justify-center gap-3 relative overflow-hidden group cursor-pointer active:scale-95 transition-all glass-card-neon border-2 hover:bg-zinc-800/80"
                             style={{
                                 borderColor: '#ef4444',
                                 boxShadow: '0 0 25px rgba(239, 68, 68, 0.4), inset 0 0 12px rgba(239, 68, 68, 0.2)',
@@ -745,7 +762,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             
                             <Megaphone size={20} className="text-red-500" style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }} />
                             <span className="font-[1000]" style={{ color: '#ffffff', textShadow: '0 0 12px rgba(239, 68, 68, 0.8)' }}>
-                                Entrar al Centro de Transmisión en Vivo
+                                BÚNKER DE TRANSMISIÓN
                             </span>
                         </button>
                     </div>
