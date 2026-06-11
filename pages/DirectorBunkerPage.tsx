@@ -989,82 +989,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                         </div>
                     </div>
 
-                    {/* ═══════════════════════════════════════════ */}
-                    {/* 🐕 BITÁCORA DOBERMAN — Panel de Intrusos   */}
-                    {/* ═══════════════════════════════════════════ */}
-                    <div className="bg-[#050505] border border-red-500/20 rounded-2xl p-5">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-red-400">
-                                <Dog size={16} className="drop-shadow-[0_0_6px_rgba(239,68,68,0.6)]" /> Bitacora Doberman
-                            </h2>
-                            <div className="flex items-center gap-2">
-                                <button 
-                                    onClick={() => loadIntrusiones()}
-                                    className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 text-white/40 hover:text-white transition-all"
-                                    title="Refrescar"
-                                >
-                                    <RefreshCw size={12} />
-                                </button>
-                                {intrusiones.length > 0 && (
-                                    <button 
-                                        onClick={handleLimpiarTodo}
-                                        className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 text-[8px] font-black text-red-400 uppercase tracking-widest transition-all"
-                                    >
-                                        Limpiar Todo
-                                    </button>
-                                )}
-                            </div>
-                        </div>
 
-                        {intrusiones.length === 0 ? (
-                            <div className="flex flex-col items-center gap-3 py-8 text-center">
-                                <ShieldCheck size={32} className="text-green-500/30" />
-                                <p className="text-[10px] text-white/30 uppercase tracking-widest">Perimetro limpio. Sin intrusiones registradas.</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-2 max-h-[300px] overflow-y-auto no-scrollbar">
-                                {intrusiones.map((log) => (
-                                    <div key={log.id} className={`flex items-center gap-3 p-3 border rounded-xl transition-all ${
-                                        deletingId === log.id 
-                                        ? 'bg-red-500/30 border-red-500/50 scale-95 opacity-50' 
-                                        : 'bg-red-900/10 border-red-500/10 hover:border-red-500/30'
-                                    }`}>
-                                        {/* Bandera */}
-                                        <div className="text-xl w-8 text-center flex-shrink-0">
-                                            {getFlag(log.countryCode)}
-                                        </div>
-                                        
-                                        {/* Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[11px] font-bold text-white/90 truncate">
-                                                {log.email === 'anonimo' ? '👤 Usuario Anonimo' : `📧 ${log.email}`}
-                                            </p>
-                                            <div className="flex items-center gap-3 mt-0.5">
-                                                <span className="text-[8px] text-white/40">IP: {log.ip}</span>
-                                                <span className="text-[8px] text-white/40">{log.country || 'Desconocido'}</span>
-                                            </div>
-                                        </div>
-
-                                        {/* Fecha */}
-                                        <div className="text-right flex-shrink-0">
-                                            <p className="text-[9px] text-red-400 font-bold">{log.date}</p>
-                                            <p className="text-[7px] text-white/30">{log.time}</p>
-                                        </div>
-
-                                        {/* Botón Eliminar */}
-                                        <button
-                                            onClick={() => handleEliminarIntruso(log.id)}
-                                            disabled={deletingId === log.id}
-                                            className="flex-shrink-0 p-2 bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 hover:border-red-500/50 rounded-lg text-red-400 hover:text-red-300 transition-all active:scale-90 disabled:opacity-30"
-                                            title="Eliminar registro"
-                                        >
-                                            <Trash2 size={14} />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
                     </div> {/* Closes Columna Derecha flex container */}
                 </div>
 
@@ -1588,6 +1513,88 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                         )}
                                     </div>
                                 </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* 🐕 BITÁCORA DOBERMAN — Panel de Intrusos   */}
+            <div className="w-full max-w-[1600px] mx-auto px-4 md:px-6 mt-6 mb-10 animate-in fade-in duration-500">
+                <div className="bg-[#050505]/60 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-6 md:p-8 flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
+                    {/* Brillo de fondo rojo sutil */}
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+                    <div className="flex items-center justify-between mb-6 relative z-10 border-b border-white/10 pb-4">
+                        <h2 className="text-[14px] font-black uppercase tracking-[0.25em] flex items-center gap-2 text-red-400">
+                            <Dog size={20} className="drop-shadow-[0_0_6px_rgba(239,68,68,0.6)]" /> Bitacora Doberman
+                        </h2>
+                        <div className="flex items-center gap-2">
+                            <button 
+                                onClick={() => loadIntrusiones()}
+                                className="p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 text-white/40 hover:text-white transition-all"
+                                title="Refrescar"
+                            >
+                                <RefreshCw size={14} />
+                            </button>
+                            {intrusiones.length > 0 && (
+                                <button 
+                                    onClick={handleLimpiarTodo}
+                                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 text-[10px] font-black text-red-400 uppercase tracking-widest transition-all"
+                                >
+                                    Limpiar Todo
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="relative z-10">
+                        {intrusiones.length === 0 ? (
+                            <div className="flex flex-col items-center gap-3 py-12 text-center">
+                                <ShieldCheck size={48} className="text-green-500/30 animate-pulse" />
+                                <p className="text-[11px] text-white/30 uppercase tracking-widest font-black">Perimetro limpio. Sin intrusiones registradas.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                                {intrusiones.map((log) => (
+                                    <div key={log.id} className={`flex items-center gap-4 p-4 border rounded-2xl transition-all ${
+                                        deletingId === log.id 
+                                        ? 'bg-red-500/30 border-red-500/50 scale-95 opacity-50' 
+                                        : 'bg-red-950/20 border-red-500/10 hover:border-red-500/30'
+                                    }`}>
+                                        {/* Bandera */}
+                                        <div className="text-2xl w-10 text-center flex-shrink-0">
+                                            {getFlag(log.countryCode)}
+                                        </div>
+                                        
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[12px] font-black text-white/90 truncate">
+                                                {log.email === 'anonimo' ? '👤 Usuario Anonimo' : `📧 ${log.email}`}
+                                            </p>
+                                            <div className="flex items-center gap-3 mt-1">
+                                                <span className="text-[9px] text-white/40 font-mono">IP: {log.ip}</span>
+                                                <span className="text-[9px] text-white/40 uppercase tracking-wider">{log.country || 'Desconocido'}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Fecha */}
+                                        <div className="text-right flex-shrink-0">
+                                            <p className="text-[10px] text-red-400 font-[1000]">{log.date}</p>
+                                            <p className="text-[8px] text-white/30 uppercase tracking-widest mt-0.5">{log.time}</p>
+                                        </div>
+
+                                        {/* Botón Eliminar */}
+                                        <button
+                                            onClick={() => handleEliminarIntruso(log.id)}
+                                            disabled={deletingId === log.id}
+                                            className="flex-shrink-0 p-2.5 bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 hover:border-red-500/50 rounded-xl text-red-400 hover:text-red-300 transition-all active:scale-90 disabled:opacity-30"
+                                            title="Eliminar registro"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
