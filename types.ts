@@ -245,7 +245,7 @@ export interface BunkerDirective {
   sender: string;
   senderName?: string;
   fechaCreacion: string; // ISO String
-  estado: 'active' | 'archived';
+  estado: 'active' | 'archived' | 'pending_approval';
   respuestas?: BunkerReply[];
 }
 

@@ -1496,12 +1496,12 @@ export const subirArchivoBunker = async (file: File, path: string): Promise<stri
 // ==============================
 import { BunkerDirective, BunkerReply } from './types';
 
-export const enviarDirectivaBunker = async (directive: Omit<BunkerDirective, 'id' | 'fechaCreacion' | 'estado'>) => {
+export const enviarDirectivaBunker = async (directive: Omit<BunkerDirective, 'id' | 'fechaCreacion' | 'estado'> & { estado?: 'active' | 'archived' | 'pending_approval' }) => {
     try {
         const docRef = await addDoc(collection(db, 'bunker_directives'), {
             ...directive,
             fechaCreacion: new Date().toISOString(),
-            estado: 'active',
+            estado: directive.estado || 'active',
             respuestas: []
         });
         console.log(`[SNC] Directiva creada: ${directive.title}. ID: ${docRef.id}`);
@@ -1516,7 +1516,7 @@ export const suscribirseADirectivasBunker = (bunkerId: string, callback: (direct
     const colRef = collection(db, 'bunker_directives');
     const q = query(
         colRef,
-        where("estado", "==", "active"),
+        where("estado", "in", ["active", "pending_approval"]),
         orderBy("fechaCreacion", "desc")
     );
     
@@ -1534,7 +1534,7 @@ export const suscribirseADirectivasBunker = (bunkerId: string, callback: (direct
 export const suscribirseATodasDirectivas = (callback: (directives: BunkerDirective[]) => void) => {
     const q = query(
         collection(db, 'bunker_directives'),
-        where("estado", "==", "active"),
+        where("estado", "in", ["active", "pending_approval"]),
         orderBy("fechaCreacion", "desc")
     );
     return onSnapshot(q, (snapshot) => {
@@ -1572,6 +1572,17 @@ export const archivarDirectiva = async (directiveId: string) => {
         console.log(`[SNC] Directiva ${directiveId} archivada.`);
     } catch (error) {
         console.error("[SNC] Error archivando directiva:", error);
+        throw error;
+    }
+};
+
+export const activarDirectiva = async (directiveId: string) => {
+    try {
+        const docRef = doc(db, 'bunker_directives', directiveId);
+        await updateDoc(docRef, { estado: 'active' });
+        console.log(`[SNC] Directiva ${directiveId} activada.`);
+    } catch (error) {
+        console.error("[SNC] Error activando directiva:", error);
         throw error;
     }
 };

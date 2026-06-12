@@ -9,7 +9,7 @@ import {
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse, generateMatrixResponse } from '../services/gemini';
-import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas, subirArchivoBunker, suscribirseATodasDirectivas, enviarDirectivaBunker, archivarDirectiva, suscribirseAMatriz, enviarMensajeMatriz, SncMessage } from '../firebase';
+import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas, subirArchivoBunker, suscribirseATodasDirectivas, enviarDirectivaBunker, archivarDirectiva, activarDirectiva, suscribirseAMatriz, enviarMensajeMatriz, SncMessage } from '../firebase';
 import { BunkerDirective, BunkerReply } from '../types';
 import { RadarScanner } from '../components/RadarScanner';
 import { SaturationPredictor } from '../components/SaturationPredictor';
@@ -387,6 +387,16 @@ export const DirectorBunkerPage: React.FC = () => {
         } catch (e) {
             console.error("Error al archivar directiva", e);
             alert("Error al archivar directiva.");
+        }
+    };
+
+    const handleAprobarDirectiva = async (directiveId: string) => {
+        playNeonClick();
+        try {
+            await activarDirectiva(directiveId);
+        } catch (e) {
+            console.error("Error al aprobar directiva", e);
+            alert("Error al aprobar directiva.");
         }
     };
 
@@ -1310,6 +1320,7 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                             </div>
                                         ) : (
                                             allDirectives.filter(d => d.estado !== 'archived').map((dir) => {
+                                                const isPending = dir.estado === 'pending_approval';
                                                 let priorityBadge = "text-white/40 border-white/10 bg-white/5";
                                                 if (dir.priority === 'alta') {
                                                     priorityBadge = "text-red-400 border-red-500/20 bg-red-500/5";
@@ -1320,7 +1331,12 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                                 }
 
                                                 return (
-                                                    <div key={dir.id} className="bg-black/50 border border-white/5 hover:border-white/10 rounded-xl p-4 space-y-4 transition-all">
+                                                    <div key={dir.id} className={`bg-black/50 border rounded-xl p-4 space-y-4 transition-all ${isPending ? 'border-yellow-500/35 bg-yellow-500/[0.02]' : 'border-white/5 hover:border-white/10'}`}>
+                                                        {isPending && (
+                                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-500 text-[8.5px] font-black uppercase tracking-widest w-fit mb-2 animate-pulse">
+                                                                <Cpu size={12} /> Propuesta de IA - Pendiente de Aprobación
+                                                            </div>
+                                                        )}
                                                         <div className="flex justify-between items-start gap-4">
                                                             <div>
                                                                 <h4 className="text-[13px] font-bold text-white uppercase tracking-wide">{dir.title}</h4>
@@ -1384,13 +1400,30 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                                                         </div>
 
                                                         {/* Acciones */}
-                                                        <div className="flex justify-end pt-2 border-t border-white/5">
-                                                            <button 
-                                                                onClick={() => handleArchiveDirective(dir.id!)}
-                                                                className="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-white/60 hover:text-red-400 text-[8.5px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"
-                                                            >
-                                                                Archivar Misión
-                                                            </button>
+                                                        <div className="flex justify-end gap-2 pt-2 border-t border-white/5">
+                                                            {isPending ? (
+                                                                <>
+                                                                    <button 
+                                                                        onClick={() => handleArchiveDirective(dir.id!)}
+                                                                        className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 text-[8.5px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"
+                                                                    >
+                                                                        Rechazar
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => handleAprobarDirectiva(dir.id!)}
+                                                                        className="px-3 py-2 bg-emerald-500 hover:bg-emerald-400 border border-emerald-500/30 rounded-lg text-black text-[8.5px] font-[1000] uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                                                                    >
+                                                                        Aprobar y Transmitir
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button 
+                                                                    onClick={() => handleArchiveDirective(dir.id!)}
+                                                                    className="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-white/60 hover:text-red-400 text-[8.5px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"
+                                                                >
+                                                                    Archivar Misión
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 );
