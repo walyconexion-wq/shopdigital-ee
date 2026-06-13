@@ -27,8 +27,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
             if (currentUser && currentUser.email) {
-                let authData = await checkUserAuthorization(currentUser.email);
-                
                 const userEmail = currentUser.email.trim().toLowerCase();
                 
                 // Root Admin Auto-Setup (Stateless Bypass for owner to avoid Firestore rules issues)
@@ -41,6 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     registrarAccesoExitoso(userEmail, window.location.pathname, 'admin').catch(() => {});
                     return;
                 }
+
+                let authData = await checkUserAuthorization(currentUser.email);
 
                 if (authData) {
                     setRole(authData.role as 'admin' | 'ambassador');
