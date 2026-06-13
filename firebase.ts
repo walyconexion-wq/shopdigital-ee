@@ -1514,14 +1514,16 @@ export const enviarDirectivaBunker = async (directive: Omit<BunkerDirective, 'id
 
 export const suscribirseADirectivasBunker = (bunkerId: string, callback: (directives: BunkerDirective[]) => void) => {
     const colRef = collection(db, 'bunker_directives');
+    // Sin orderBy para evitar necesitar índice compuesto — se ordena en cliente
     const q = query(
         colRef,
-        where("estado", "in", ["active", "pending_approval"]),
-        orderBy("fechaCreacion", "desc")
+        where("estado", "in", ["active", "pending_approval"])
     );
     
     return onSnapshot(q, (snapshot) => {
         const allDirectives = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as BunkerDirective[];
+        // Ordenar por fecha descendente en cliente
+        allDirectives.sort((a, b) => (b.fechaCreacion || '').localeCompare(a.fechaCreacion || ''));
         const filtered = allDirectives.filter(d => 
             (Array.isArray(d.targetBunkers) && (d.targetBunkers.includes('all') || d.targetBunkers.includes(bunkerId))) || d.sender === bunkerId
         );
@@ -1532,13 +1534,15 @@ export const suscribirseADirectivasBunker = (bunkerId: string, callback: (direct
 };
 
 export const suscribirseATodasDirectivas = (callback: (directives: BunkerDirective[]) => void) => {
+    // Sin orderBy para evitar necesitar índice compuesto — se ordena en cliente
     const q = query(
         collection(db, 'bunker_directives'),
-        where("estado", "in", ["active", "pending_approval"]),
-        orderBy("fechaCreacion", "desc")
+        where("estado", "in", ["active", "pending_approval"])
     );
     return onSnapshot(q, (snapshot) => {
         const directives = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as BunkerDirective[];
+        // Ordenar por fecha descendente en cliente
+        directives.sort((a, b) => (b.fechaCreacion || '').localeCompare(a.fechaCreacion || ''));
         callback(directives);
     }, (error) => {
         console.error("[SNC] Error en suscripción maestra de directivas:", error);
