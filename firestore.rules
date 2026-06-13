@@ -107,10 +107,10 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
-    // Bunker Directives (SNC): lectura pública, creación pública (restringida a pending_approval), edición/borrado solo autenticados
+    // Bunker Directives (SNC): lectura pública, creación por autenticados o API (solo pending_approval), edición/borrado solo autenticados
     match /bunker_directives/{directiveId} {
       allow read: if true;
-      allow create: if request.resource.data.estado == "pending_approval";
+      allow create: if request.auth != null || request.resource.data.estado == "pending_approval";
       allow update, delete: if request.auth != null;
     }
 

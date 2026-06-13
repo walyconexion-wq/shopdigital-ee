@@ -35,6 +35,7 @@ const BUNKER_LIST = [
     { id: 'recursos-humanos', label: 'Recursos Humanos' },
     { id: 'sistemas', label: 'Sistemas e Infraestructura' },
     { id: 'secops', label: 'Ciberseguridad y SecOps' },
+    { id: 'clonacion', label: 'Clonación' },
     { id: 'planificacion-desarrollo', label: 'Planificación y Desarrollo' },
     { id: 'inversion-exponencial', label: 'Inversión Exponencial' },
     { id: 'mantenimiento', label: 'Mantenimiento General' },
