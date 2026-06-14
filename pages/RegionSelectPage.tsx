@@ -27,6 +27,17 @@ const STATIC_REGIONS: Record<string, Region> = {
         icon: 'building',
         isActive: true,
         createdAt: new Date().toISOString()
+    },
+    'patagonia-7-lagos': {
+        id: 'patagonia-7-lagos',
+        name: 'Región Patagónica - 7 Lagos',
+        provinceId: 'neuquen-rio-negro',
+        type: 'region',
+        towns: ['bariloche', 'san-martin-de-los-andes', 'villa-la-angostura'],
+        color: '#0284c7', // Azul Lago Patagónico
+        icon: 'mountain',
+        isActive: true,
+        createdAt: new Date().toISOString()
     }
 };
 

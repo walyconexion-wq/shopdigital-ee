@@ -1648,4 +1648,34 @@ export const obtenerHistorialMatriz = async (limitCount: number = 20): Promise<S
     }
 };
 
+export const guardarComerciosMasivos = async (comercios: any[], townId: string = 'esteban-echeverria') => {
+    try {
+        const promises = comercios.map(async (c) => {
+            let slug = c.slug;
+            if (!slug && c.name) {
+                slug = c.name.toString().toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w\-]+/g, '')
+                    .replace(/\-\-+/g, '-')
+                    .replace(/^-+/, '')
+                    .replace(/-+$/, '');
+            }
+            const finalData = { 
+                ...c, 
+                slug, 
+                townId: c.townId || townId,
+                isActive: c.isActive !== undefined ? c.isActive : true,
+                createdAt: c.createdAt || new Date().toISOString()
+            };
+            return setDoc(doc(db, "comercios", c.id), finalData);
+        });
+        await Promise.all(promises);
+        console.log(`[Siembra] Guardados ${comercios.length} comercios masivamente.`);
+        return true;
+    } catch (e) {
+        console.error("Error al guardar comercios masivos:", e);
+        throw e;
+    }
+};
+
 export default app;

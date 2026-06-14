@@ -78,6 +78,7 @@ import RegionSeedPage from './pages/RegionSeedPage';
 import ShopOnboardingPage from './pages/ShopOnboardingPage';
 import EventLandingPage from './pages/EventLandingPage';
 import { TRASLASIERRA_REGION } from './data/regionalTemplates/traslasierraConfig';
+import { PATAGONIA_7_LAGOS_REGION } from './data/regionalTemplates/patagonia7LagosConfig';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -196,12 +197,15 @@ const TownController: React.FC = () => {
         };
     }, [townId]);
 
-    // Verificar si la zona actual pertenece a la región de Traslasierra
+    // Verificar si la zona actual pertenece a la región de Traslasierra o Patagonia 7 Lagos
     const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
+    const isInPatagonia = PATAGONIA_7_LAGOS_REGION.towns.some(t => t.id === townId);
 
     // Inyectar configuración regional si aplica
     const effectiveGlobalConfig = isInTraslasierra 
         ? { ...globalConfig, categories: TRASLASIERRA_REGION.categories }
+        : isInPatagonia
+        ? { ...globalConfig, categories: PATAGONIA_7_LAGOS_REGION.categories }
         : globalConfig;
 
     return (

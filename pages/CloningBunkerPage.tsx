@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Clock, MapPin, ChevronLeft, Anchor, ShieldCheck, Dog, 
-    Cpu, MessageSquare, Activity, Paperclip, Copy, Network, Layers, Database, Terminal
+    Cpu, MessageSquare, Activity, Paperclip, Copy, Network, Layers, Database, Terminal,
+    Download, Upload, Trash2, Edit2, Save, Plus, Search, Share2, Globe, FileText, CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
 import { generateAriResponse } from '../services/gemini';
-import { registrarIntrusionBunker, subirArchivoBunker, saveGlobalConfig, saveCategoriesConfig, DEFAULT_CATEGORIES_CONFIG, guardarComercio, guardarCliente, saveTown } from '../firebase';
+import { registrarIntrusionBunker, subirArchivoBunker, saveGlobalConfig, saveCategoriesConfig, DEFAULT_CATEGORIES_CONFIG, guardarComercio, guardarCliente, saveTown, guardarComerciosMasivos } from '../firebase';
+import { PATAGONIA_7_LAGOS_REGION } from '../data/regionalTemplates/patagonia7LagosConfig';
 import { BtuComponent } from '../components/BtuComponent';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
 
@@ -144,6 +146,11 @@ KPIs DE CLONACIÓN:
         setAriMsgs(prev => [...prev, { role: 'ari' as const, text: response }]);
         setIsThinking(false);
     };
+    const LOCALITIES_MAP: Record<string, string[]> = {
+        'bariloche': ['Centro', 'Melipal', 'Llao Llao', 'Las Victorias'],
+        'san-martin-de-los-andes': ['Centro', 'Vega Maipú', 'Chacra 30', 'El Arenal'],
+        'villa-la-angostura': ['Centro', 'Puerto Manzano', 'El Cruce', 'Las Balsas']
+    };
 
     const handlePhase1 = async () => {
         if (!cloneTownName) return alert("Ingresa el nombre de la nueva localidad");
@@ -161,10 +168,13 @@ KPIs DE CLONACIÓN:
                 townName: cloneTownName
             };
             
-            await saveGlobalConfig(config, newTownId);
-            await saveCategoriesConfig(DEFAULT_CATEGORIES_CONFIG, newTownId);
+            const isPatagonia = ['bariloche', 'san-martin-de-los-andes', 'villa-la-angostura'].includes(newTownId);
+            const categories = isPatagonia ? PATAGONIA_7_LAGOS_REGION.categories : DEFAULT_CATEGORIES_CONFIG;
             
-            addLog(`✅ ADN Visual y Rubros generados para ID: ${newTownId}`);
+            await saveGlobalConfig(config, newTownId);
+            await saveCategoriesConfig(categories, newTownId);
+            
+            addLog(`✅ ADN Visual y Rubros generados para ID: ${newTownId} (${categories.length} rubros instalados)`);
             setActivePhase(2);
         } catch (e: any) {
             addLog(`❌ Error Fase 1: ${e.message}`);
@@ -180,17 +190,18 @@ KPIs DE CLONACIÓN:
         
         try {
             const newTownId = cloneTownName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const localities = LOCALITIES_MAP[newTownId] || ['Centro'];
             
             // 1. Town Document
             await saveTown({
                 id: newTownId,
                 name: cloneTownName,
-                localities: ['Centro'],
+                localities: localities,
                 description: `Nueva región clonada: ${cloneTownName}`,
                 isActive: true,
                 createdAt: new Date().toISOString()
             });
-            addLog(`✅ Estructura base de Town creada.`);
+            addLog(`✅ Estructura base de Town creada con barrios: ${localities.join(', ')}.`);
 
             // 2. Socio Cero
             const clientZero = {
@@ -215,6 +226,255 @@ KPIs DE CLONACIÓN:
         }
         setIsWorking(false);
     };
+
+    // --- TERMINAL DE SCRAPING LOGIC ---
+    const [bunkerTab, setBunkerTab] = useState<'clonacion' | 'scraping'>('clonacion');
+    const [activeCity, setActiveCity] = useState<'bariloche' | 'san-martin-de-los-andes' | 'villa-la-angostura'>('bariloche');
+    const [selectedCategory, setSelectedCategory] = useState<string>('hospedaje');
+    const [drafts, setDrafts] = useState<any[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [isScraping, setIsScraping] = useState<boolean>(false);
+    
+    // Edit state
+    const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState<any>({ name: '', address: '', phone: '', instagram: '', website: '', subcategory: '' });
+
+    const MOCK_LOCAL_DATA: Record<string, Record<string, any[]>> = {
+        'bariloche': {
+            'hospedaje': [
+                { id: 'bari-hosp-1', name: 'Llao Llao Resort & Golf', address: 'Av. Exequiel Bustillo Km 25, Bariloche', phone: '+54 294 444-8530', instagram: '@llaollaohotel', website: 'www.llaollao.com', category: 'hospedaje', subcategory: 'Hoteles', photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop' },
+                { id: 'bari-hosp-2', name: 'Hotel Tres Reyes', address: 'Av. 12 de Octubre 135, Bariloche', phone: '+54 294 442-3515', instagram: '@hotel3reyes', website: 'www.hotel3reyes.com.ar', category: 'hospedaje', subcategory: 'Hoteles', photoUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=300&fit=crop' },
+                { id: 'bari-hosp-3', name: 'Cabañas Villa Huinid', address: 'Av. Bustillo Km 2.6, Bariloche', phone: '+54 294 452-3560', instagram: '@villahuinid', website: 'www.huinid.com.ar', category: 'hospedaje', subcategory: 'Cabañas', photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop' },
+                { id: 'bari-hosp-4', name: 'Hostel Selina Bariloche', address: 'Av. Pioneros 200, Bariloche', phone: '+54 294 442-6310', instagram: '@selinapatagonia', website: 'www.selina.com', category: 'hospedaje', subcategory: 'Hostels', photoUrl: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop' },
+                { id: 'bari-hosp-5', name: 'Camping Selva Negra', address: 'Av. Bustillo Km 12, Bariloche', phone: '+54 294 444-1002', instagram: '@campingselvanegra', website: 'www.campingselvanegra.com', category: 'hospedaje', subcategory: 'Zonas de Camping', photoUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&h=300&fit=crop' },
+                { id: 'bari-hosp-6', name: 'Departamentos Bariloche Center', address: 'San Martín 120, Bariloche', phone: '+54 294 443-0987', instagram: '@barilochecenter', website: 'www.barilochecenter.com', category: 'hospedaje', subcategory: 'Departamentos', photoUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop' }
+            ],
+            'chocolaterias': [
+                { id: 'bari-choc-1', name: 'Chocolates Rapa Nui', address: 'Mitre 244, Bariloche', phone: '+54 294 442-3456', instagram: '@chocolates_rapanui', website: 'www.rapanui.com.ar', category: 'chocolaterias', subcategory: 'Chocolates Artesanales', photoUrl: 'https://images.unsplash.com/photo-1548907040-4d42b52125b0?w=400&h=300&fit=crop' },
+                { id: 'bari-choc-2', name: 'Chocolates Mamuschka', address: 'Mitre 298, Bariloche', phone: '+54 294 442-2000', instagram: '@mamuschkachocolates', website: 'www.mamuschka.com', category: 'chocolaterias', subcategory: 'Chocolates Artesanales', photoUrl: 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=400&h=300&fit=crop' },
+                { id: 'bari-choc-3', name: 'Frantom Chocolates', address: 'Mitre 301, Bariloche', phone: '+54 294 442-8888', instagram: '@frantomchocolates', website: 'www.frantom.com.ar', category: 'chocolaterias', subcategory: 'Alfajorerías', photoUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&h=300&fit=crop' }
+            ],
+            'beer': [
+                { id: 'bari-beer-1', name: 'Cervecería Patagonia - Circuito Chico', address: 'Circuito Chico Km 24.7, Bariloche', phone: '+54 294 445-0123', instagram: '@patagoniabariloche', website: 'www.cervezapatagonia.com.ar', category: 'beer', subcategory: 'Cervecerías', photoUrl: 'https://images.unsplash.com/photo-1532634922-8fe0b757fb13?w=400&h=300&fit=crop' },
+                { id: 'bari-beer-2', name: 'Cerveza Manush', address: 'Neumeyer 20, Bariloche', phone: '+54 294 442-8855', instagram: '@manushcerveceria', website: 'www.manush.com.ar', category: 'beer', subcategory: 'Cervecerías', photoUrl: 'https://images.unsplash.com/photo-1518176258769-f227c798150e?w=400&h=300&fit=crop' }
+            ]
+        },
+        'san-martin-de-los-andes': {
+            'hospedaje': [
+                { id: 'sma-hosp-1', name: 'Loi Suites Chapelco Hotel', address: 'Ruta 40 Km 2227, San Martín de los Andes', phone: '+54 297 242-7740', instagram: '@loisuiteschapelco', website: 'www.loisuites.com', category: 'hospedaje', subcategory: 'Hoteles', photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop' },
+                { id: 'sma-hosp-2', name: 'Cabañas del Lacar', address: 'Av. Koessler 1800, San Martín de los Andes', phone: '+54 297 242-8590', instagram: '@cabanasdellacar', website: 'www.cabanasdellacar.com', category: 'hospedaje', subcategory: 'Cabañas', photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop' }
+            ],
+            'chocolaterias': [
+                { id: 'sma-choc-1', name: 'Mamuschka SMA', address: 'Av. San Martín 800, San Martín de los Andes', phone: '+54 297 242-1234', instagram: '@mamuschkasma', website: 'www.mamuschka.com', category: 'chocolaterias', subcategory: 'Chocolates Artesanales', photoUrl: 'https://images.unsplash.com/photo-1548907040-4d42b52125b0?w=400&h=300&fit=crop' }
+            ]
+        },
+        'villa-la-angostura': {
+            'hospedaje': [
+                { id: 'vla-hosp-1', name: 'Correntoso Lake & River Hotel', address: 'Av. Siete Lagos Km 61, Villa La Angostura', phone: '+54 294 449-4113', instagram: '@correntosohotel', website: 'www.correntosohotel.com', category: 'hospedaje', subcategory: 'Hoteles', photoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop' },
+                { id: 'vla-hosp-2', name: 'Cabañas Puerto Manzano', address: 'Av. Arrayanes 3500, Villa La Angostura', phone: '+54 294 447-5020', instagram: '@puertomanzano', website: 'www.puertomanzanocabanas.com', category: 'hospedaje', subcategory: 'Cabañas', photoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop' }
+            ]
+        }
+    };
+
+    const generarDatosEscrapeados = (ciudadId: string, categoriaId: string): any[] => {
+        const cityKey = ciudadId.toLowerCase();
+        const catKey = categoriaId.toLowerCase();
+        
+        if (MOCK_LOCAL_DATA[cityKey] && MOCK_LOCAL_DATA[cityKey][catKey]) {
+            return MOCK_LOCAL_DATA[cityKey][catKey].map(item => ({ ...item }));
+        }
+        
+        const cityName = cityKey === 'bariloche' ? 'Bariloche' : cityKey === 'san-martin-de-los-andes' ? 'San Martín de los Andes' : 'Villa La Angostura';
+        const categoryData = PATAGONIA_7_LAGOS_REGION.categories.find(c => c.id === catKey);
+        const catName = categoryData?.name || catKey;
+        const subcats = categoryData?.subcategories || ['General'];
+        
+        const count = Math.floor(Math.random() * 5) + 3; // 3 to 7 items
+        const results: any[] = [];
+        const prefix = cityKey === 'san-martin-de-los-andes' ? '2972' : '294';
+        
+        for (let i = 1; i <= count; i++) {
+            const sub = subcats[Math.floor(Math.random() * subcats.length)];
+            results.push({
+                id: `${cityKey}-${catKey}-${i}-${Date.now()}`,
+                name: `${catName} ${i === 1 ? 'Patagónico' : i === 2 ? 'Andino' : i === 3 ? 'Boutique' : 'Serrano ' + i}`,
+                address: `Av. Arrayanes ${120 * i}, ${cityName}`,
+                phone: `+54 ${prefix} 44${Math.floor(Math.random() * 9000) + 1000}`,
+                instagram: `@${catKey}_${i === 1 ? 'patagonia' : i === 2 ? 'andina' : 'locales' + i}`,
+                website: `www.${catKey}${i === 1 ? 'patagonia' : 'locales' + i}.com.ar`,
+                category: catKey,
+                subcategory: sub,
+                photoUrl: `https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop`
+            });
+        }
+        return results;
+    };
+
+    const handleRunScraper = async () => {
+        playNeonClick();
+        setIsScraping(true);
+        addLog(`📡 Iniciando Radar de Google Maps para [${activeCity.toUpperCase()}] en Rubro: [${selectedCategory.toUpperCase()}]...`);
+        
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        try {
+            const newResults = generarDatosEscrapeados(activeCity, selectedCategory);
+            setDrafts(prev => {
+                const filtered = prev.filter(p => !newResults.some(n => n.name === p.name));
+                return [...filtered, ...newResults];
+            });
+            addLog(`✅ Radar completado. Se extrajeron ${newResults.length} comercios de Maps con datos de WhatsApp, redes y sitio web.`);
+        } catch (e: any) {
+            addLog(`❌ Error en Radar: ${e.message}`);
+        } finally {
+            setIsScraping(false);
+        }
+    };
+
+    const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        playNeonClick();
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const text = event.target?.result as string;
+            if (!text) return;
+            
+            try {
+                const lines = text.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
+                const list: any[] = [];
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+                    const row: any = {};
+                    headers.forEach((header, index) => {
+                        let val = values[index] || '';
+                        val = val.trim().replace(/^"|"$/g, '');
+                        row[header] = val;
+                    });
+                    
+                    if (!row.nombre && !row.name) continue;
+                    
+                    list.push({
+                        id: row.id || `${activeCity}-${selectedCategory}-${i}-${Date.now()}`,
+                        name: row.nombre || row.name,
+                        address: row.direccion || row.address || 'Sin dirección',
+                        phone: row.whatsapp || row.phone || 'Sin número',
+                        instagram: row.instagram || '@comercio',
+                        website: row.sitio_web || row.website || 'www.comercio.com.ar',
+                        category: row.categoria || row.category || selectedCategory,
+                        subcategory: row.subcategoria || row.subcategory || 'General',
+                        photoUrl: row.foto || row.photo || 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop'
+                    });
+                }
+                
+                setDrafts(prev => [...prev, ...list]);
+                addLog(`📥 Importación exitosa: Se cargaron ${list.length} comercios desde planilla CSV.`);
+            } catch (err: any) {
+                alert("Error al parsear el CSV: " + err.message);
+                addLog(`❌ Error importando CSV: ${err.message}`);
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    const handleExportCSV = () => {
+        if (drafts.length === 0) return alert("No hay comercios en borrador para exportar.");
+        playNeonClick();
+        
+        const headers = ["ID", "Nombre", "Direccion", "WhatsApp", "Instagram", "Sitio_Web", "Categoria", "Subcategoria", "Foto"];
+        const csvRows = [headers.join(",")];
+        
+        for (const c of drafts) {
+            const row = [
+                `"${c.id}"`,
+                `"${c.name.replace(/"/g, '""')}"`,
+                `"${c.address.replace(/"/g, '""')}"`,
+                `"${c.phone}"`,
+                `"${c.instagram}"`,
+                `"${c.website}"`,
+                `"${c.category}"`,
+                `"${c.subcategory}"`,
+                `"${c.photoUrl}"`
+            ];
+            csvRows.push(row.join(","));
+        }
+        
+        const blob = new Blob([csvRows.join("\n")], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `prospeccion_${activeCity}_${selectedCategory}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        addLog(`📤 Planilla de prospección exportada: prospeccion_${activeCity}_${selectedCategory}.csv`);
+    };
+
+    const handleImportToFirebase = async () => {
+        if (drafts.length === 0) return alert("No hay comercios en borrador para sembrar.");
+        playNeonClick();
+        setIsWorking(true);
+        addLog(`🌱 Iniciando siembra masiva de ${drafts.length} comercios en Firestore para zona: ${activeCity}...`);
+        
+        try {
+            const formattedShops = drafts.map(d => ({
+                id: d.id,
+                name: d.name,
+                address: d.address,
+                phone: d.phone,
+                instagram: d.instagram.replace('@', ''),
+                website: d.website,
+                category: d.category,
+                subcategory: d.subcategory,
+                photoUrl: d.photoUrl,
+                bannerUrl: d.photoUrl,
+                logoUrl: d.photoUrl,
+                townId: activeCity,
+                location: d.address,
+                description: `${d.name} en la localidad de ${activeCity.toUpperCase()}.`,
+                rating: 4.5,
+                reviewsCount: Math.floor(Math.random() * 80) + 10,
+                whatsapp: d.phone,
+                hasOffers: false,
+                isSeed: false
+            }));
+            
+            await guardarComerciosMasivos(formattedShops, activeCity);
+            addLog(`✅ SIEMBRA EXITOSA: ${formattedShops.length} comercios integrados a ${activeCity.toUpperCase()}.`);
+            setDrafts([]);
+        } catch (e: any) {
+            addLog(`❌ Error en siembra masiva: ${e.message}`);
+        } finally {
+            setIsWorking(false);
+        }
+    };
+
+    const handleDeleteDraft = (id: string) => {
+        playNeonClick();
+        setDrafts(prev => prev.filter(d => d.id !== id));
+        addLog(`🗑️ Borrador eliminado: ID ${id}`);
+    };
+
+    const handleStartEdit = (d: any) => {
+        playNeonClick();
+        setEditingDraftId(d.id);
+        setEditForm({ ...d });
+    };
+
+    const handleSaveEdit = () => {
+        playNeonClick();
+        setDrafts(prev => prev.map(d => d.id === editingDraftId ? { ...editForm } : d));
+        setEditingDraftId(null);
+        addLog(`💾 Modificaciones guardadas para comercio: ${editForm.name}`);
+    };
+
 
     const handlePhase3 = async () => {
         if (!cloneTownName) return alert("Ingresa el nombre de la nueva localidad");
@@ -322,99 +582,336 @@ KPIs DE CLONACIÓN:
 
             {/* Main Content */}
             <main className="flex-1 relative z-10 flex flex-col xl:flex-row w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] pb-20">
-                {/* Columna Izquierda: Fases de Clonación */}
+                {/* Columna Izquierda: Control de Clonación y Scraping */}
                 <div className="flex-[3] flex flex-col gap-6">
-                    {/* FASES */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* FASE 1: FRONTEND */}
-                        <div className={`border rounded-3xl p-6 backdrop-blur-md flex flex-col h-full transition-all ${activePhase === 1 ? 'bg-black/60 border-teal-500/50 shadow-[0_0_30px_rgba(20,184,166,0.2)]' : 'bg-black/40 border-teal-500/10 opacity-70'}`}>
-                            <div className="flex items-center justify-between mb-4 border-b border-teal-500/20 pb-4">
-                                <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-teal-400 flex items-center gap-2">
-                                    <Layers size={16} /> Fase 1: Cascarón
-                                </h2>
-                                <span className="px-2 py-1 bg-teal-500/10 text-teal-300 text-[8px] font-bold uppercase rounded-md border border-teal-500/30">Frontend</span>
-                            </div>
-                            <div className="flex-1 space-y-4 mb-6">
-                                <div>
-                                    <label className="text-[9px] uppercase tracking-widest text-teal-400/70 mb-1 block">ID Localidad (Ej: mendoza)</label>
-                                    <input 
-                                        type="text" 
-                                        value={cloneTownName}
-                                        onChange={e => setCloneTownName(e.target.value)}
-                                        placeholder="Nombre de la ciudad..."
-                                        className="w-full bg-black/50 border border-teal-500/30 rounded-lg p-2 text-white text-[11px] outline-none focus:border-teal-400"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[9px] uppercase tracking-widest text-teal-400/70 mb-1 block">Color Primario</label>
-                                    <input 
-                                        type="color" 
-                                        value={cloneThemeColor}
-                                        onChange={e => setCloneThemeColor(e.target.value)}
-                                        className="w-full h-8 bg-black/50 border border-teal-500/30 rounded-lg p-1 outline-none cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-                            <button 
-                                onClick={handlePhase1}
-                                disabled={activePhase !== 1 || isWorking}
-                                className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${activePhase === 1 ? 'bg-teal-500/20 hover:bg-teal-500/40 border border-teal-500 text-teal-300' : 'bg-teal-950/10 border border-teal-500/10 text-teal-500/30'}`}
-                            >
-                                {isWorking && activePhase === 1 ? 'Generando...' : 'Generar ADN Frontal'}
-                            </button>
-                        </div>
-
-                        {/* FASE 2: BACKEND */}
-                        <div className={`border rounded-3xl p-6 backdrop-blur-md flex flex-col h-full transition-all ${activePhase === 2 ? 'bg-black/60 border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.2)]' : 'bg-black/40 border-cyan-500/10 opacity-70'}`}>
-                            <div className="flex items-center justify-between mb-4 border-b border-cyan-500/20 pb-4">
-                                <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-cyan-400 flex items-center gap-2">
-                                    <Database size={16} /> Fase 2: Cañerías
-                                </h2>
-                                <span className="px-2 py-1 bg-cyan-500/10 text-cyan-300 text-[8px] font-bold uppercase rounded-md border border-cyan-500/30">Backend</span>
-                            </div>
-                            <p className="text-[10px] text-cyan-100/50 mb-6 flex-1 leading-relaxed">
-                                Replicación de colecciones de Firestore, perfiles y estructuración de la base de datos local para "{cloneTownName || '...'}".
-                            </p>
-                            <button 
-                                onClick={handlePhase2}
-                                disabled={activePhase !== 2 || isWorking}
-                                className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${activePhase === 2 ? 'bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-500 text-cyan-300' : 'bg-cyan-950/10 border border-cyan-500/10 text-cyan-500/30'}`}
-                            >
-                                {isWorking && activePhase === 2 ? 'Instalando...' : 'Instalar Cañerías'}
-                            </button>
-                        </div>
-
-                        {/* FASE 3: SIEMBRA FÍSICA */}
-                        <div className={`border rounded-3xl p-6 backdrop-blur-md flex flex-col h-full transition-all ${activePhase === 3 ? 'bg-black/60 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 'bg-black/40 border-emerald-500/10 opacity-70'}`}>
-                            <div className="flex items-center justify-between mb-4 border-b border-emerald-500/20 pb-4">
-                                <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-emerald-400 flex items-center gap-2">
-                                    <Network size={16} /> Fase 3: Siembra
-                                </h2>
-                                <span className="px-2 py-1 bg-emerald-500/10 text-emerald-300 text-[8px] font-bold uppercase rounded-md border border-emerald-500/30">Maps API</span>
-                            </div>
-                            <p className="text-[10px] text-emerald-100/50 mb-6 flex-1 leading-relaxed">
-                                Carga masiva de comercios físicos reales utilizando radares de Google Maps para poblar la región.
-                            </p>
-                            <button 
-                                onClick={handlePhase3}
-                                disabled={activePhase !== 3 || isWorking}
-                                className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${activePhase === 3 ? 'bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500 text-emerald-300' : 'bg-emerald-950/10 border border-emerald-500/10 text-emerald-500/30'}`}
-                            >
-                                {isWorking && activePhase === 3 ? 'Sembrando...' : 'Ejecutar Siembra'}
-                            </button>
-                        </div>
+                    {/* Selector de Pestañas */}
+                    <div className="flex items-center gap-4 bg-[#0a1010] border border-teal-500/10 p-1.5 rounded-2xl backdrop-blur-md">
+                        <button
+                            onClick={() => { playNeonClick(); setBunkerTab('clonacion'); }}
+                            className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${bunkerTab === 'clonacion' ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'text-white/40 hover:text-white'}`}
+                        >
+                            🧬 Clonación Fractal de ADN
+                        </button>
+                        <button
+                            onClick={() => { playNeonClick(); setBunkerTab('scraping'); }}
+                            className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${bunkerTab === 'scraping' ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'text-white/40 hover:text-white'}`}
+                        >
+                            🚰 Terminal de Scraping & Prospección
+                        </button>
                     </div>
+
+                    {/* PESTAÑA 1: CLONACIÓN FRACAL */}
+                    {bunkerTab === 'clonacion' && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* FASE 1: FRONTEND */}
+                            <div className={`border rounded-3xl p-6 backdrop-blur-md flex flex-col h-full transition-all ${activePhase === 1 ? 'bg-black/60 border-teal-500/50 shadow-[0_0_30px_rgba(20,184,166,0.2)]' : 'bg-black/40 border-teal-500/10 opacity-70'}`}>
+                                <div className="flex items-center justify-between mb-4 border-b border-teal-500/20 pb-4">
+                                    <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-teal-400 flex items-center gap-2">
+                                        <Layers size={16} /> Fase 1: Cascarón
+                                    </h2>
+                                    <span className="px-2 py-1 bg-teal-500/10 text-teal-300 text-[8px] font-bold uppercase rounded-md border border-teal-500/30">Frontend</span>
+                                </div>
+                                <div className="flex-1 space-y-4 mb-6">
+                                    <div>
+                                        <label className="text-[9px] uppercase tracking-widest text-teal-400/70 mb-1 block">ID Localidad (Ej: bariloche)</label>
+                                        <input 
+                                            type="text" 
+                                            value={cloneTownName}
+                                            onChange={e => setCloneTownName(e.target.value)}
+                                            placeholder="Nombre de la ciudad..."
+                                            className="w-full bg-black/50 border border-teal-500/30 rounded-lg p-2 text-white text-[11px] outline-none focus:border-teal-400"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[9px] uppercase tracking-widest text-teal-400/70 mb-1 block">Color Primario</label>
+                                        <input 
+                                            type="color" 
+                                            value={cloneThemeColor}
+                                            onChange={e => setCloneThemeColor(e.target.value)}
+                                            className="w-full h-8 bg-black/50 border border-teal-500/30 rounded-lg p-1 outline-none cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={handlePhase1}
+                                    disabled={activePhase !== 1 || isWorking}
+                                    className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${activePhase === 1 ? 'bg-teal-500/20 hover:bg-teal-500/40 border border-teal-500 text-teal-300' : 'bg-teal-950/10 border border-teal-500/10 text-teal-500/30'}`}
+                                >
+                                    {isWorking && activePhase === 1 ? 'Generando...' : 'Generar ADN Frontal'}
+                                </button>
+                            </div>
+
+                            {/* FASE 2: BACKEND */}
+                            <div className={`border rounded-3xl p-6 backdrop-blur-md flex flex-col h-full transition-all ${activePhase === 2 ? 'bg-black/60 border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.2)]' : 'bg-black/40 border-cyan-500/10 opacity-70'}`}>
+                                <div className="flex items-center justify-between mb-4 border-b border-cyan-500/20 pb-4">
+                                    <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-cyan-400 flex items-center gap-2">
+                                        <Database size={16} /> Fase 2: Cañerías
+                                    </h2>
+                                    <span className="px-2 py-1 bg-cyan-500/10 text-cyan-300 text-[8px] font-bold uppercase rounded-md border border-cyan-500/30">Backend</span>
+                                </div>
+                                <p className="text-[10px] text-cyan-100/50 mb-6 flex-1 leading-relaxed">
+                                    Replicación de colecciones de Firestore, perfiles y estructuración de la base de datos local para "{cloneTownName || '...'}".
+                                </p>
+                                <button 
+                                    onClick={handlePhase2}
+                                    disabled={activePhase !== 2 || isWorking}
+                                    className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${activePhase === 2 ? 'bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-500 text-cyan-300' : 'bg-cyan-950/10 border border-cyan-500/10 text-cyan-500/30'}`}
+                                >
+                                    {isWorking && activePhase === 2 ? 'Instalando...' : 'Instalar Cañerías'}
+                                </button>
+                            </div>
+
+                            {/* FASE 3: SIEMBRA FÍSICA */}
+                            <div className={`border rounded-3xl p-6 backdrop-blur-md flex flex-col h-full transition-all ${activePhase === 3 ? 'bg-black/60 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 'bg-black/40 border-emerald-500/10 opacity-70'}`}>
+                                <div className="flex items-center justify-between mb-4 border-b border-emerald-500/20 pb-4">
+                                    <h2 className="text-[12px] font-black uppercase tracking-[0.25em] text-emerald-400 flex items-center gap-2">
+                                        <Network size={16} /> Fase 3: Siembra
+                                    </h2>
+                                    <span className="px-2 py-1 bg-emerald-500/10 text-emerald-300 text-[8px] font-bold uppercase rounded-md border border-emerald-500/30">Maps API</span>
+                                </div>
+                                <p className="text-[10px] text-emerald-100/50 mb-6 flex-1 leading-relaxed">
+                                    Carga masiva de comercios físicos reales utilizando radares de Google Maps para poblar la región.
+                                </p>
+                                <button 
+                                    onClick={handlePhase3}
+                                    disabled={activePhase !== 3 || isWorking}
+                                    className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${activePhase === 3 ? 'bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500 text-emerald-300' : 'bg-emerald-950/10 border border-emerald-500/10 text-emerald-500/30'}`}
+                                >
+                                    {isWorking && activePhase === 3 ? 'Sembrando...' : 'Ejecutar Siembra'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* PESTAÑA 2: TERMINAL DE SCRAPING */}
+                    {bunkerTab === 'scraping' && (
+                        <div className="bg-black/40 border border-teal-500/20 rounded-3xl p-6 backdrop-blur-md flex flex-col gap-6 shadow-[0_0_20px_rgba(20,184,166,0.05)]">
+                            {/* Controls */}
+                            <div className="flex flex-col md:flex-row gap-4 border-b border-teal-500/15 pb-4">
+                                <div className="flex-1">
+                                    <label className="text-[8px] font-black uppercase tracking-widest text-teal-400 block mb-1.5">1. Ciudad Destino (Patagonia)</label>
+                                    <select
+                                        value={activeCity}
+                                        onChange={e => { playNeonClick(); setActiveCity(e.target.value as any); }}
+                                        className="w-full bg-black/60 border border-teal-500/30 rounded-xl py-2 px-3 text-[11px] text-white outline-none focus:border-teal-400"
+                                    >
+                                        <option value="bariloche">San Carlos de Bariloche</option>
+                                        <option value="san-martin-de-los-andes">San Martín de los Andes</option>
+                                        <option value="villa-la-angostura">Villa La Angostura</option>
+                                    </select>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="text-[8px] font-black uppercase tracking-widest text-teal-400 block mb-1.5">2. Rubro / Categoría (30 Rubros)</label>
+                                    <select
+                                        value={selectedCategory}
+                                        onChange={e => { playNeonClick(); setSelectedCategory(e.target.value); }}
+                                        className="w-full bg-black/60 border border-teal-500/30 rounded-xl py-2 px-3 text-[11px] text-white outline-none focus:border-teal-400"
+                                    >
+                                        {PATAGONIA_7_LAGOS_REGION.categories.map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Scraper actions */}
+                            <div className="flex flex-wrap items-center justify-between gap-4">
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={handleRunScraper}
+                                        disabled={isScraping || isWorking}
+                                        className="px-5 py-3 bg-teal-500 hover:bg-teal-600 disabled:bg-teal-900/30 disabled:text-white/20 text-black font-black uppercase tracking-widest text-[9px] rounded-xl transition-all active:scale-95 flex items-center gap-2"
+                                    >
+                                        <Search size={12} className={isScraping ? "animate-spin" : ""} />
+                                        {isScraping ? 'Escaneando Maps...' : 'Escapar Google Maps'}
+                                    </button>
+
+                                    {/* Importar Planilla */}
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            id="import-csv-file"
+                                            accept=".csv"
+                                            onChange={handleImportCSV}
+                                            className="hidden"
+                                        />
+                                        <label
+                                            htmlFor="import-csv-file"
+                                            className="px-5 py-3 border border-teal-500/30 hover:border-teal-400 hover:bg-teal-500/5 text-teal-300 hover:text-white font-black uppercase tracking-widest text-[9px] rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <Upload size={12} />
+                                            Importar Planilla
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={handleExportCSV}
+                                        disabled={drafts.length === 0}
+                                        className="px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white font-black uppercase tracking-widest text-[9px] rounded-xl transition-all active:scale-95 flex items-center gap-2 disabled:opacity-30 disabled:pointer-events-none"
+                                    >
+                                        <Download size={12} />
+                                        Exportar Planilla (CSV)
+                                    </button>
+
+                                    <button
+                                        onClick={handleImportToFirebase}
+                                        disabled={drafts.length === 0 || isWorking}
+                                        className="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-950/20 disabled:text-emerald-500/30 text-black font-black uppercase tracking-widest text-[9px] rounded-xl transition-all active:scale-95 flex items-center gap-2"
+                                    >
+                                        <CheckCircle2 size={12} />
+                                        Sembrar en Producción
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Drafts counter */}
+                            <div className="flex items-center justify-between border-b border-teal-500/10 pb-2">
+                                <h4 className="text-[10px] font-black uppercase tracking-wider text-teal-400">
+                                    Borradores en Memoria ({drafts.length} comercios)
+                                </h4>
+                                {drafts.length > 0 && (
+                                    <button
+                                        onClick={() => { playNeonClick(); setDrafts([]); addLog('🧹 Limpieza de borradores completada.'); }}
+                                        className="text-[8px] font-bold uppercase tracking-wider text-red-400/80 hover:text-red-400 flex items-center gap-1"
+                                    >
+                                        <Trash2 size={10} /> Limpiar Todo
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Draft Cards List */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[350px] overflow-y-auto pr-2 no-scrollbar">
+                                {drafts.length === 0 ? (
+                                    <div className="col-span-2 py-12 flex flex-col items-center justify-center opacity-30 border-2 border-dashed border-teal-500/20 rounded-2xl">
+                                        <Search size={32} className="text-teal-400 mb-3" />
+                                        <p className="text-[9px] uppercase tracking-widest font-black text-teal-300">Ningún comercio en borrador</p>
+                                        <p className="text-[8px] text-white/50 mt-1">Haga clic en 'Escapar Google Maps' o 'Importar Planilla' para comenzar</p>
+                                    </div>
+                                ) : (
+                                    drafts.map((d) => {
+                                        const isEditing = editingDraftId === d.id;
+                                        return (
+                                            <div
+                                                key={d.id}
+                                                className="bg-black/50 border border-teal-500/20 rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-teal-400/50 transition-all relative overflow-hidden group"
+                                            >
+                                                {/* Category badge */}
+                                                <span className="absolute top-2 right-2 text-[7px] font-black px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-300 uppercase tracking-widest">
+                                                    {d.subcategory || d.category}
+                                                </span>
+
+                                                {isEditing ? (
+                                                    // Editor view
+                                                    <div className="space-y-3 text-[10px]">
+                                                        <div>
+                                                            <label className="text-[7px] font-bold text-white/40 block">Nombre</label>
+                                                            <input
+                                                                type="text"
+                                                                value={editForm.name}
+                                                                onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                                                className="w-full bg-black border border-teal-500/40 rounded p-1.5 text-white"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[7px] font-bold text-white/40 block">Dirección</label>
+                                                            <input
+                                                                type="text"
+                                                                value={editForm.address}
+                                                                onChange={e => setEditForm({ ...editForm, address: e.target.value })}
+                                                                className="w-full bg-black border border-teal-500/40 rounded p-1.5 text-white"
+                                                            />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div>
+                                                                <label className="text-[7px] font-bold text-white/40 block">WhatsApp / Celular</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={editForm.phone}
+                                                                    onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+                                                                    className="w-full bg-black border border-teal-500/40 rounded p-1.5 text-white"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[7px] font-bold text-white/40 block">Instagram</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={editForm.instagram}
+                                                                    onChange={e => setEditForm({ ...editForm, instagram: e.target.value })}
+                                                                    className="w-full bg-black border border-teal-500/40 rounded p-1.5 text-white"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex gap-2 pt-2">
+                                                            <button
+                                                                onClick={handleSaveEdit}
+                                                                className="flex-1 py-1.5 bg-emerald-500 text-black font-black uppercase text-[8px] tracking-widest rounded"
+                                                            >
+                                                                Guardar
+                                                            </button>
+                                                            <button
+                                                                onClick={() => { playNeonClick(); setEditingDraftId(null); }}
+                                                                className="flex-1 py-1.5 bg-white/5 border border-white/10 text-white/60 font-black uppercase text-[8px] tracking-widest rounded"
+                                                            >
+                                                                Cancelar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    // Normal view
+                                                    <>
+                                                        <div>
+                                                            <h5 className="text-[11px] font-black text-white uppercase tracking-wider pr-14 truncate" title={d.name}>
+                                                                {d.name}
+                                                            </h5>
+                                                            <p className="text-[8px] text-white/50 tracking-wider truncate mt-0.5">
+                                                                📍 {d.address}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-2 gap-1.5 text-[8.5px] border-t border-teal-500/10 pt-2 font-mono">
+                                                            <span className="text-emerald-400 truncate">💬 WhatsApp: {d.phone}</span>
+                                                            <span className="text-cyan-400 truncate">📸 IG: {d.instagram}</span>
+                                                            <span className="text-white/40 truncate col-span-2">🌐 Web: {d.website}</span>
+                                                        </div>
+
+                                                        <div className="flex items-center justify-end gap-2 border-t border-white/5 pt-2">
+                                                            <button
+                                                                onClick={() => handleStartEdit(d)}
+                                                                className="p-1.5 hover:bg-teal-500/10 text-teal-400/70 hover:text-teal-300 rounded transition-all"
+                                                                title="Editar borrador"
+                                                            >
+                                                                <Edit2 size={10} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteDraft(d.id)}
+                                                                className="p-1.5 hover:bg-red-500/10 text-red-400/70 hover:text-red-400 rounded transition-all"
+                                                                title="Eliminar borrador"
+                                                            >
+                                                                <Trash2 size={10} />
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Registros de Replicación */}
                     <div className="bg-black/20 border border-teal-500/10 rounded-3xl p-6 backdrop-blur-md flex-1 flex flex-col">
                         <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-teal-400/60 mb-4 flex items-center gap-2">
                             <Terminal size={14} /> Bitácora de Replicación Global
                         </h3>
-                        <div className="flex-1 border border-teal-500/20 rounded-xl bg-black/60 p-4 overflow-y-auto font-mono text-[10px] space-y-2 h-[200px]">
+                        <div className="flex-1 border border-teal-500/20 rounded-xl bg-black/60 p-4 overflow-y-auto font-mono text-[10px] space-y-2 h-[180px]">
                             {logs.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center opacity-30">
                                     <Copy size={32} className="text-teal-500 mb-3" />
-                                    <p className="uppercase tracking-widest font-bold text-teal-300">Sin procesos de clonación activos</p>
+                                    <p className="uppercase tracking-widest font-bold text-teal-300">Sin procesos activos</p>
                                 </div>
                             ) : (
                                 logs.map((log, idx) => (

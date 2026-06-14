@@ -27,6 +27,17 @@ const SEED_REGIONS = [
         color: '#a855f7', // violeta
         isActive: true,
         createdAt: new Date().toISOString()
+    },
+    {
+        id: 'patagonia-7-lagos',
+        name: 'Región Patagónica - 7 Lagos',
+        provinceId: 'neuquen-rio-negro',
+        type: 'region' as const,
+        towns: ['bariloche', 'san-martin-de-los-andes', 'villa-la-angostura'],
+        icon: 'mountain',
+        color: '#0284c7', // Azul Lago Patagónico
+        isActive: true,
+        createdAt: new Date().toISOString()
     }
 ];
 
@@ -42,6 +53,9 @@ const SEED_TOWNS = [
     { id: 'san-javier', name: 'San Javier', localities: ['San Javier'], description: 'Traslasierra — Sierra y tradición', isActive: true, createdAt: new Date().toISOString() },
     { id: 'villa-dolores', name: 'Villa Dolores', localities: ['Villa Dolores'], description: 'Traslasierra — Capital del Valle', isActive: true, createdAt: new Date().toISOString() },
     { id: 'las-rabonas', name: 'Las Rabonas', localities: ['Las Rabonas'], description: 'Traslasierra — Cabañas y tranquilidad', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'bariloche', name: 'San Carlos de Bariloche', localities: ['Centro', 'Melipal', 'Llao Llao', 'Las Victorias'], description: 'Patagonia — Hub comercial y turístico internacional', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'san-martin-de-los-andes', name: 'San Martín de los Andes', localities: ['Centro', 'Vega Maipú', 'Chacra 30', 'El Arenal'], description: 'Patagonia — Turismo de montaña y naturaleza', isActive: true, createdAt: new Date().toISOString() },
+    { id: 'villa-la-angostura', name: 'Villa La Angostura', localities: ['Centro', 'Puerto Manzano', 'El Cruce', 'Las Balsas'], description: 'Patagonia — Aldea de montaña boutique', isActive: true, createdAt: new Date().toISOString() },
 ];
 
 const RegionSeedPage: React.FC = () => {
