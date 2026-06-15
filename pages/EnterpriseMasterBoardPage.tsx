@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Lock, ChevronLeft, Factory, Zap, Globe, ExternalLink,
     Check, Copy, Megaphone, MapPin, Palette, Terminal, ShieldAlert,
-    Store, Users, ShoppingBag, Network
+    Store, Users, ShoppingBag, Network, Mountain
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
@@ -21,9 +21,10 @@ const PROVINCES = [
 ];
 
 const STATIC_TOWNS = [
-    { id: 'ezeiza', name: 'Ezeiza', label: 'Ezeiza', icon: Globe, color: '#06b6d4', activeBg: 'bg-cyan-500/20 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.3)]', iconClass: 'text-cyan-400' },
-    { id: 'esteban-echeverria', name: 'Esteban Echeverría', label: 'E. Echeverría', icon: Lock, color: '#3b82f6', activeBg: 'bg-blue-500/20 border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.3)]', iconClass: 'text-blue-400' },
-    { id: 'mina-clavero', name: 'Traslasierra', label: 'Traslasierra', icon: MapPin, color: '#10b981', activeBg: 'bg-emerald-500/20 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)]', iconClass: 'text-emerald-400' }
+    { id: 'ezeiza', name: 'Ezeiza', label: 'Ezeiza', icon: Globe, color: '#06b6d4', activeBg: 'bg-cyan-500/20 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.4)]', iconClass: 'text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]' },
+    { id: 'esteban-echeverria', name: 'Esteban Echeverría', label: 'E. Echeverría', icon: Lock, color: '#3b82f6', activeBg: 'bg-blue-500/20 border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.4)]', iconClass: 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]' },
+    { id: 'mina-clavero', name: 'Traslasierra', label: 'Traslasierra', icon: MapPin, color: '#10b981', activeBg: 'bg-emerald-500/20 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)]', iconClass: 'text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]' },
+    { id: 'bariloche', name: 'Patagonia 7 Lagos', label: 'Patagonia 7L', icon: Mountain, color: '#0ea5e9', activeBg: 'bg-sky-500/20 border-sky-400 shadow-[0_0_30px_rgba(14,165,233,0.4)]', iconClass: 'text-sky-400 drop-shadow-[0_0_8px_rgba(14,165,233,0.6)]' }
 ];
 
 const EnterpriseMasterBoardPage: React.FC = () => {
@@ -497,7 +498,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
                         {filteredStaticTowns.map((town) => {
                             const isSelected = town.id === selectedTownId;
                             const Icon = town.icon;
@@ -508,9 +509,10 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                         playNeonClick();
                                         if (town.id === 'ezeiza') navigate('/ezeiza/home');
                                         else if (town.id === 'esteban-echeverria') navigate('/esteban-echeverria/home');
+                                        else if (town.id === 'bariloche') navigate('/region/patagonia-7-lagos');
                                         else navigate('/region/traslasierra');
                                     }}
-                                    className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-zinc-900/50 border-white/10 opacity-75 hover:opacity-100 hover:border-cyan-500/35'}`}
+                                    className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isSelected ? town.activeBg : 'bg-zinc-950/80 border-white/10 opacity-70 hover:opacity-100 hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)]'}`}
                                 >
                                     <Icon size={24} className={isSelected ? town.iconClass : 'text-white/60 group-hover:text-white transition-colors'} />
                                     <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isSelected ? 'text-white' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>

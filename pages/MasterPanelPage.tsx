@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database, Megaphone, MapPin, Network
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database, Megaphone, MapPin, Network, Mountain
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { 
@@ -642,27 +642,34 @@ const MasterPanelPage: React.FC = () => {
                 {/* Botón de Reset Maestro eliminado por directiva de Operaciones 2.0 (Prevención de reseteos en producción) */}
 
                 {/* SELECTORES DE ADN ZONAL 🧬 */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2 animate-in fade-in slide-in-from-top-4 duration-1000">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 animate-in fade-in slide-in-from-top-4 duration-1000">
                     <button 
                         onClick={() => { playNeonClick(); navigate('/ezeiza/home'); }}
-                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${townId === 'ezeiza' ? 'bg-cyan-500/20 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.2)]' : 'bg-zinc-900/50 border-white/10 opacity-75 hover:opacity-100 hover:border-white/25'}`}
+                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${townId === 'ezeiza' ? 'bg-cyan-500/20 border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.4)]' : 'bg-zinc-950/80 border-white/10 opacity-70 hover:opacity-100 hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)]'}`}
                     >
-                        <Globe size={24} className={townId === 'ezeiza' ? 'text-cyan-400' : 'text-white/60 group-hover:text-white transition-colors'} />
-                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'ezeiza' ? 'text-white' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>Zona Ezeiza</span>
+                        <Globe size={24} className={townId === 'ezeiza' ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]' : 'text-white/60 group-hover:text-cyan-300 transition-colors'} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'ezeiza' ? 'text-cyan-200' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>Zona Ezeiza</span>
                     </button>
                     <button 
                         onClick={() => { playNeonClick(); navigate('/esteban-echeverria/home'); }}
-                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${townId === 'esteban-echeverria' ? 'bg-violet-500/20 border-violet-500 shadow-[0_0_30px_rgba(139,92,246,0.2)]' : 'bg-zinc-900/50 border-white/10 opacity-75 hover:opacity-100 hover:border-white/25'}`}
+                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${townId === 'esteban-echeverria' ? 'bg-violet-500/20 border-violet-500 shadow-[0_0_30px_rgba(139,92,246,0.4)]' : 'bg-zinc-950/80 border-white/10 opacity-70 hover:opacity-100 hover:border-violet-500/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.15)]'}`}
                     >
-                        <Lock size={24} className={townId === 'esteban-echeverria' ? 'text-violet-400' : 'text-white/60 group-hover:text-white transition-colors'} />
-                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'esteban-echeverria' ? 'text-white' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>Zona E. Echeverría</span>
+                        <Lock size={24} className={townId === 'esteban-echeverria' ? 'text-violet-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]' : 'text-white/60 group-hover:text-violet-300 transition-colors'} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'esteban-echeverria' ? 'text-violet-200' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>Zona E. Echeverría</span>
                     </button>
                     <button 
                         onClick={() => { playNeonClick(); navigate('/region/traslasierra'); }}
-                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group ${isTraslasierra ? 'bg-emerald-500/20 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 'bg-zinc-900/50 border-white/10 opacity-75 hover:opacity-100 hover:border-white/25'}`}
+                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${isTraslasierra ? 'bg-emerald-500/20 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)]' : 'bg-zinc-950/80 border-white/10 opacity-70 hover:opacity-100 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]'}`}
                     >
-                        <MapPin size={24} className={isTraslasierra ? 'text-emerald-400' : 'text-white/60 group-hover:text-white transition-colors'} />
-                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isTraslasierra ? 'text-white' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>Traslasierra</span>
+                        <MapPin size={24} className={isTraslasierra ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'text-white/60 group-hover:text-emerald-300 transition-colors'} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isTraslasierra ? 'text-emerald-200' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>Traslasierra</span>
+                    </button>
+                    <button 
+                        onClick={() => { playNeonClick(); navigate('/region/patagonia-7-lagos'); }}
+                        className={`py-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer ${townId === 'bariloche' || townId === 'san-martin-de-los-andes' || townId === 'villa-la-angostura' || townId === 'patagonia-7-lagos' ? 'bg-sky-500/20 border-sky-500 shadow-[0_0_30px_rgba(14,165,233,0.4)]' : 'bg-zinc-950/80 border-white/10 opacity-70 hover:opacity-100 hover:border-sky-500/50 hover:shadow-[0_0_15px_rgba(14,165,233,0.15)]'}`}
+                    >
+                        <Mountain size={24} className={townId === 'bariloche' || townId === 'san-martin-de-los-andes' || townId === 'villa-la-angostura' || townId === 'patagonia-7-lagos' ? 'text-sky-400 drop-shadow-[0_0_8px_rgba(14,165,233,0.6)]' : 'text-white/60 group-hover:text-sky-300 transition-colors'} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${townId === 'bariloche' || townId === 'san-martin-de-los-andes' || townId === 'villa-la-angostura' || townId === 'patagonia-7-lagos' ? 'text-sky-200' : 'text-white/45 group-hover:text-white/85 transition-colors'}`}>Patagonia 7L</span>
                     </button>
                 </div>
 
