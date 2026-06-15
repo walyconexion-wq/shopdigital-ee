@@ -1,7 +1,7 @@
 import React from 'react';
 import { CATEGORIES } from '../constants';
 import Logo from '../components/Logo';
-import { Share2, Store } from 'lucide-react';
+import { Share2, Store, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 import { resolveIcon } from '../utils/iconResolver';
@@ -252,10 +252,24 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             <div className="absolute top-20 left-[-10%] w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
             <div className="absolute bottom-20 right-[-10%] w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
             
-            <header className="flex-shrink-0 flex flex-col items-center relative z-10 transition-all duration-700 bg-transparent pt-0">
+            <header className="flex-shrink-0 flex items-center justify-between w-full max-w-[340px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-0 px-4 mb-2.5">
+                <button
+                    onClick={() => {
+                        playNeonClick();
+                        navigate('/');
+                    }}
+                    className="p-3.5 rounded-2xl bg-black/45 border backdrop-blur-md text-white/70 hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] active:scale-90 transition-all cursor-pointer flex items-center justify-center"
+                    style={{
+                        borderColor: hexToRgba(themeColor, 0.35),
+                        boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(themeColor, 0.05)}`
+                    }}
+                >
+                    <ArrowLeft size={16} style={{ color: themeColor, filter: `drop-shadow(0 0 6px ${themeColor})` }} />
+                </button>
+                
                 <div 
                     onClick={handleLogoClick}
-                    className="glass-header rounded-3xl p-5 mb-2.5 border backdrop-blur-md animate-in fade-in zoom-in duration-1000 cursor-pointer active:scale-95 transition-all"
+                    className="glass-header rounded-3xl p-5 border backdrop-blur-md cursor-pointer active:scale-95 transition-all flex-1 ml-4"
                     style={{ 
                         borderColor: hexToRgba(themeColor, 0.5),
                         boxShadow: `0 15px 40px ${hexToRgba(themeColor, 0.4)}`,
