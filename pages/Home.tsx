@@ -70,6 +70,12 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const activeTheme = globalConfig?.isChristmasMode ? 'christmas' : (globalConfig?.theme || 'default');
     const mainSubtitle = globalConfig?.mainSubtitle || `${t('Tu guía de ofertas locales')} - ${townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`;
     const townName = globalConfig?.townName || 'Esteban Echeverría';
+    const themeMode = globalConfig?.themeMode || 'auto';
+    const isDayMode = themeMode === 'light' 
+        ? true 
+        : themeMode === 'dark' 
+            ? false 
+            : new Date().getHours() >= 8 && new Date().getHours() < 20;
 
     const [logoClicks, setLogoClicks] = React.useState(0);
     const [walyClicks, setWalyClicks] = React.useState(0);
@@ -252,24 +258,46 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             <div className="absolute top-20 left-[-10%] w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
             <div className="absolute bottom-20 right-[-10%] w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
             
-            <header className="flex-shrink-0 flex items-center justify-between w-full max-w-[340px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-0 px-4 mb-2.5">
-                <button
-                    onClick={() => {
-                        playNeonClick();
-                        navigate('/');
-                    }}
-                    className="p-3.5 rounded-2xl bg-black/45 border backdrop-blur-md text-white/70 hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] active:scale-90 transition-all cursor-pointer flex items-center justify-center"
-                    style={{
-                        borderColor: hexToRgba(themeColor, 0.35),
-                        boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(themeColor, 0.05)}`
-                    }}
-                >
-                    <ArrowLeft size={16} style={{ color: themeColor, filter: `drop-shadow(0 0 6px ${themeColor})` }} />
-                </button>
-                
+            {/* Botón de retroceso premium con estilo 3D (adaptado a modo día/noche) */}
+            <button
+                onClick={() => {
+                    playNeonClick();
+                    navigate('/');
+                }}
+                className={`absolute left-4 top-6 z-30 p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-center glass-button-3d ${
+                    isDayMode 
+                        ? 'bg-white border-slate-200 text-slate-800' 
+                        : 'text-white/70 hover:text-white'
+                }`}
+                style={
+                    isDayMode
+                        ? {
+                            borderWidth: '1px',
+                            borderBottomWidth: '4px',
+                            borderBottomColor: '#cbd5e1',
+                            boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
+                          }
+                        : {
+                            backgroundColor: hexToRgba(themeColor, 0.15),
+                            borderColor: hexToRgba(themeColor, 0.35),
+                            boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(themeColor, 0.05)}`
+                          }
+                }
+            >
+                <ArrowLeft 
+                    size={16} 
+                    style={
+                        isDayMode 
+                            ? { color: '#2d1e15' } 
+                            : { color: themeColor, filter: `drop-shadow(0 0 6px ${themeColor})` }
+                    } 
+                />
+            </button>
+
+            <header className="flex-shrink-0 w-full max-w-[340px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-0 px-4 mb-2.5">
                 <div 
                     onClick={handleLogoClick}
-                    className="glass-header rounded-3xl p-5 border backdrop-blur-md cursor-pointer active:scale-95 transition-all flex-1 ml-4"
+                    className="glass-header rounded-3xl p-5 border backdrop-blur-md cursor-pointer active:scale-95 transition-all w-full"
                     style={{ 
                         borderColor: hexToRgba(themeColor, 0.5),
                         boxShadow: `0 15px 40px ${hexToRgba(themeColor, 0.4)}`,
