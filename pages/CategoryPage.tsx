@@ -65,6 +65,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
         }
     }, [localities]);
 
+    // Sincronizar activeSubcategory con la primera disponible
+    useEffect(() => {
+        if (selectedCategory.subcategories && selectedCategory.subcategories.length > 0 && !activeSubcategory) {
+            setActiveSubcategory(selectedCategory.subcategories[0]);
+        }
+    }, [selectedCategory, activeSubcategory]);
+
     React.useEffect(() => {
         if (titleClicks === 0) return;
         const timer = setTimeout(() => setTitleClicks(0), 1500);
@@ -142,7 +149,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     }
 
     return (
-        <div className={`flex flex-col animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen pb-10 bg-transparent ${isDayMode ? 'text-slate-800' : 'text-white'}`}>
+        <div className={`flex flex-col pt-8 pb-10 animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-transparent ${isDayMode ? 'text-slate-800' : 'text-white'}`}>
             <style>
                 {`
                 @keyframes bounceSlow {
@@ -171,84 +178,80 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.04] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
             </div>
 
-            <header className={`pt-4 flex-shrink-0 flex flex-col items-center relative z-10 border-b border-cyan-500/15 shadow-[0_4px_30px_rgba(34,211,238,0.06)] bg-transparent`}>
-                <div className="w-full px-6 flex flex-col pb-4">
-                    <button
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                        className={`back-button absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-2xl border active:scale-90 transition-all shadow-lg cursor-pointer ${
-                            isDayMode 
-                                ? 'bg-white border-slate-200 text-slate-800' 
-                                : 'text-white/70 hover:text-white'
-                        }`}
-                        style={
-                            isDayMode
-                                ? {
-                                    borderWidth: '1px',
-                                    borderBottomWidth: '4px',
-                                    borderBottomColor: '#cbd5e1',
-                                    boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
-                                  }
-                                : {
-                                    backgroundColor: hexToRgba(themeColor, 0.15),
-                                    borderColor: hexToRgba(themeColor, 0.35),
-                                    boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(themeColor, 0.05)}`
-                                  }
-                        }
-                    >
-                        <ArrowLeft 
-                            size={18} 
-                            style={
-                                isDayMode 
-                                    ? { color: '#2d1e15' } 
-                                    : { color: themeColor, filter: `drop-shadow(0 0 6px ${themeColor})` }
-                            } 
-                        />
-                    </button>
+            {/* Botón de retroceso premium con estilo 3D (adaptado a modo día/noche) */}
+            <button
+                onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
+                className={`absolute left-4 top-6 z-30 p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-center glass-button-3d ${
+                    isDayMode 
+                        ? 'bg-white border-slate-200 text-slate-800' 
+                        : 'text-white/70 hover:text-white'
+                }`}
+                style={
+                    isDayMode
+                        ? {
+                            borderWidth: '1px',
+                            borderBottomWidth: '4px',
+                            borderBottomColor: '#cbd5e1',
+                            boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
+                          }
+                        : {
+                            backgroundColor: hexToRgba(themeColor, 0.15),
+                            borderColor: hexToRgba(themeColor, 0.35),
+                            boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(themeColor, 0.05)}`
+                          }
+                }
+            >
+                <ArrowLeft 
+                    size={16} 
+                    style={
+                        isDayMode 
+                            ? { color: '#2d1e15' } 
+                            : { color: themeColor, filter: `drop-shadow(0 0 6px ${themeColor})` }
+                    } 
+                />
+            </button>
 
-                    <div className="flex justify-center w-full px-2">
-                        <div
-                            onClick={handleTitleClick}
-                            className="glass-header rounded-3xl w-full py-3 px-5 flex flex-col items-center border backdrop-blur-md cursor-pointer select-none active:scale-95 transition-all"
-                            style={{
-                                borderColor: hexToRgba(themeColor, 0.5),
-                                boxShadow: `0 15px 40px ${hexToRgba(themeColor, 0.4)}`,
-                                background: isDayMode 
-                                    ? `linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(248,250,252,0.9) 100%)`
-                                    : `linear-gradient(135deg, ${hexToRgba(themeColor, 0.15)} 0%, rgba(15,23,42,0.6) 100%)`
-                            }}
-                        >
-                            <h2 className={`text-[20px] font-[900] uppercase tracking-[0.25em] leading-none text-center mb-2 ${isDayMode ? 'text-slate-800 drop-shadow-sm' : 'text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]'}`}>
-                                {selectedCategory.name}
-                            </h2>
-                            <div className="h-[1px] w-16 mb-2" style={{ backgroundColor: hexToRgba(themeColor, 0.6), boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.8)}` }}></div>
-                            <p className={`text-[8.5px] font-bold uppercase tracking-[0.15em] leading-tight text-center px-6 ${isDayMode ? 'text-slate-600' : 'text-white/90'}`}>
-                                Seleccioná tu comercio y descubrí ofertas magníficas
-                            </p>
-                        </div>
-                    </div>
-
-                    {globalConfig?.isChristmasMode && (
-                        <div 
-                            className="mt-4 w-[calc(100%-1rem)] max-w-[340px] mx-auto px-4 py-2.5 rounded-2xl border text-center relative overflow-hidden backdrop-blur-md animate-bounce-slow"
-                            style={{
-                                background: `linear-gradient(135deg, rgba(220, 38, 38, 0.3) 0%, rgba(20, 83, 45, 0.3) 100%)`,
-                                borderColor: '#ef4444',
-                                boxShadow: '0 0 15px rgba(239, 68, 68, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.3)',
-                            }}
-                        >
-                            {/* Christmas Lights decoration */}
-                            <div className="absolute top-0 left-0 right-0 flex justify-around opacity-80 select-none text-[8px] tracking-[0.1em] pointer-events-none">
-                                <span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span><span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span>
-                            </div>
-                            <h3 className="text-[12px] font-black text-white tracking-[0.12em] uppercase text-shadow-premium flex items-center justify-center gap-1.5 pt-1">
-                                🎄 ¡Feliz Navidad en {townName}! 🎅
-                            </h3>
-                        </div>
-                    )}
+            <header className="flex-shrink-0 w-full max-w-[340px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-0 px-4 mb-2.5">
+                <div
+                    onClick={handleTitleClick}
+                    className="glass-header rounded-3xl p-5 border backdrop-blur-md cursor-pointer select-none active:scale-95 transition-all w-full text-center"
+                    style={{
+                        borderColor: hexToRgba(themeColor, 0.5),
+                        boxShadow: `0 15px 40px ${hexToRgba(themeColor, 0.4)}`,
+                        background: isDayMode 
+                            ? `linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(248,250,252,0.9) 100%)`
+                            : `linear-gradient(135deg, ${hexToRgba(themeColor, 0.15)} 0%, rgba(15,23,42,0.6) 100%)`
+                    }}
+                >
+                    <h2 className={`text-[20px] font-[900] uppercase tracking-[0.25em] leading-none text-center mb-2 ${isDayMode ? 'text-slate-800 drop-shadow-sm' : 'text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]'}`}>
+                        {selectedCategory.name}
+                    </h2>
+                    <div className="h-[1px] w-16 mb-2 mx-auto" style={{ backgroundColor: hexToRgba(themeColor, 0.6), boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.8)}` }}></div>
+                    <p className={`text-[8.5px] font-bold uppercase tracking-[0.15em] leading-tight text-center px-6 ${isDayMode ? 'text-slate-600' : 'text-white/90'}`}>
+                        Seleccioná tu comercio y descubrí ofertas magníficas
+                    </p>
                 </div>
             </header>
 
             <div className="flex flex-col gap-8 px-2 pt-4 relative z-10">
+                {globalConfig?.isChristmasMode && (
+                    <div 
+                        className="mt-4 w-[calc(100%-1rem)] max-w-[340px] mx-auto px-4 py-2.5 rounded-2xl border text-center relative overflow-hidden backdrop-blur-md animate-bounce-slow"
+                        style={{
+                            background: `linear-gradient(135deg, rgba(220, 38, 38, 0.3) 0%, rgba(20, 83, 45, 0.3) 100%)`,
+                            borderColor: '#ef4444',
+                            boxShadow: '0 0 15px rgba(239, 68, 68, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.3)',
+                        }}
+                    >
+                        {/* Christmas Lights decoration */}
+                        <div className="absolute top-0 left-0 right-0 flex justify-around opacity-80 select-none text-[8px] tracking-[0.1em] pointer-events-none">
+                            <span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span><span>🔴</span><span>🟢</span><span>🔵</span><span>🟡</span>
+                        </div>
+                        <h3 className="text-[12px] font-black text-white tracking-[0.12em] uppercase text-shadow-premium flex items-center justify-center gap-1.5 pt-1">
+                            🎄 ¡Feliz Navidad en {townName}! 🎅
+                        </h3>
+                    </div>
+                )}
                 {/* Pestañas de Localidades — cargadas dinámicamente desde Firebase */}
                 {localities.length > 1 && (!isInTraslasierra) && (!isInPatagonia) && (
                     <div className="flex gap-2 w-full justify-center px-2 mb-2 overflow-x-auto no-scrollbar">
@@ -276,63 +279,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 {/* Pestañas de Subcategorías */}
                 {selectedCategory.subcategories && selectedCategory.subcategories.length > 0 && (
                     <div className="flex flex-wrap justify-center gap-2.5 px-2 pb-2 max-w-[95%] mx-auto mb-2">
-                        {(() => {
-                            const isAllActive = !activeSubcategory;
-                            const allBtnClass = isDayMode
-                                ? `px-4 py-2.5 rounded-full text-[8.5px] font-[1000] uppercase tracking-widest transition-all duration-150 active:translate-y-[2px] ${
-                                    isAllActive 
-                                        ? 'border-sky-400 bg-sky-500/20 text-sky-950 scale-105 shadow-[0_0_12px_rgba(14,165,233,0.3)]' 
-                                        : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 hover:-translate-y-[1.5px]'
-                                  }`
-                                : `px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
-                                    isAllActive
-                                        ? 'active-sub backdrop-blur-md text-white scale-105 animate-pulse'
-                                        : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
-                                  }`;
-
-                            const allBtnStyle = isDayMode
-                                ? (isAllActive 
-                                    ? {
-                                        borderWidth: '1.5px',
-                                        borderBottomWidth: '1.5px',
-                                        borderBottomColor: themeColor,
-                                        boxShadow: `0 0 12px ${hexToRgba(themeColor, 0.4)}, inset 0 1px 0 rgba(255,255,255,0.4)`,
-                                        transform: 'translateY(2px)',
-                                        color: themeColor,
-                                        fontWeight: '1000'
-                                      }
-                                    : {
-                                        borderWidth: '1px',
-                                        borderBottomWidth: '4px',
-                                        borderBottomColor: '#cda488',
-                                        boxShadow: '0 4px 8px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
-                                      }
-                                  )
-                                : (isAllActive 
-                                    ? {
-                                        backgroundColor: hexToRgba(themeColor, 0.35),
-                                        borderColor: '#ffffff',
-                                        boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.8)}, inset 0 0 8px ${hexToRgba(themeColor, 0.5)}`,
-                                        textShadow: `0 0 6px ${hexToRgba(themeColor, 0.9)}`
-                                      } 
-                                    : {
-                                        backgroundColor: hexToRgba(themeColor, 0.1),
-                                        borderColor: hexToRgba(themeColor, 0.3),
-                                        boxShadow: `0 0 8px ${hexToRgba(themeColor, 0.1)}`
-                                      }
-                                  );
-
-                            return (
-                                <button
-                                    onClick={() => { playNeonClick(); setActiveSubcategory(''); }}
-                                    className={allBtnClass}
-                                    style={allBtnStyle}
-                                >
-                                    Ver Todo
-                                </button>
-                            );
-                        })()}
-
                         {selectedCategory.subcategories.map((sub: string) => {
                             const isActive = activeSubcategory === sub;
                             const btnClass = isDayMode
@@ -372,26 +318,26 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                         boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.8)}, inset 0 0 8px ${hexToRgba(themeColor, 0.5)}`,
                                         textShadow: `0 0 6px ${hexToRgba(themeColor, 0.9)}`
                                       } 
-                                    : {
-                                        backgroundColor: hexToRgba(themeColor, 0.1),
-                                        borderColor: hexToRgba(themeColor, 0.3),
-                                        boxShadow: `0 0 8px ${hexToRgba(themeColor, 0.1)}`
-                                      }
-                                  );
+                                        : {
+                                            backgroundColor: hexToRgba(themeColor, 0.1),
+                                            borderColor: hexToRgba(themeColor, 0.3),
+                                            boxShadow: `0 0 8px ${hexToRgba(themeColor, 0.1)}`
+                                          }
+                                      );
 
-                            return (
-                                <button
-                                    key={sub}
-                                    onClick={() => { playNeonClick(); setActiveSubcategory(sub); }}
-                                    className={btnClass}
-                                    style={btnStyle}
-                                >
-                                    {sub}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
+                                return (
+                                    <button
+                                        key={sub}
+                                        onClick={() => { playNeonClick(); setActiveSubcategory(sub); }}
+                                        className={btnClass}
+                                        style={btnStyle}
+                                    >
+                                        {sub}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
 
                 <div className="flex flex-col gap-6" key={activeLocation + activeSubcategory}>
                     {/* Título de Sección con ícono */}
@@ -463,7 +409,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 <div className="flex items-center gap-4 mt-1">
                     <p onClick={handleWalyClick} className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform"
                         style={{ color: themeColor, textShadow: `0 0 10px ${hexToRgba(themeColor, 0.8)}, 0 0 20px ${hexToRgba(themeColor, 0.4)}` }}>
-                        {isInPatagonia ? 'Patagonia' : townName}
+                        {activeSubcategory || selectedCategory.name}
                     </p>
                     <span className="text-white/20 text-[8px]">|</span>
                     <button onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }} className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-white hover:text-cyan-300 transition-colors">Términos y Condiciones</button>
