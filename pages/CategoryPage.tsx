@@ -67,7 +67,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
 
     // Sincronizar activeSubcategory con la primera disponible
     useEffect(() => {
-        if (selectedCategory.subcategories && selectedCategory.subcategories.length > 0 && !activeSubcategory) {
+        if (selectedCategory?.subcategories && selectedCategory.subcategories.length > 0 && !activeSubcategory) {
             setActiveSubcategory(selectedCategory.subcategories[0]);
         }
     }, [selectedCategory, activeSubcategory]);
