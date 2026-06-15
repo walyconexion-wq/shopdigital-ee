@@ -310,22 +310,10 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
 
             <div className="flex flex-col items-center mb-10 mt-3 fade-up-item relative z-10 px-6">
                 <div className="h-[1px] w-20 mb-5" style={{ background: `linear-gradient(90deg, transparent, ${hexToRgba(themeColor, 0.5)}, transparent)` }}></div>
-                <h2 className="text-[12px] font-[1000] text-white/90 text-shadow-premium uppercase tracking-[0.35em] text-center leading-none">
-                    {mainSubtitle}
-                </h2>
-                <div className="flex items-center gap-3 mt-4">
-                    <div className="h-[1px] w-6" style={{ background: `linear-gradient(90deg, transparent, ${hexToRgba(themeColor, 0.3)})` }}></div>
-                    <div className="flex gap-1.5">
-                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: hexToRgba(themeColor, 0.2) }}></div>
-                        <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: themeColor, boxShadow: `0 0 8px ${hexToRgba(themeColor, 0.6)}` }}></div>
-                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: hexToRgba(themeColor, 0.2) }}></div>
-                    </div>
-                    <div className="h-[1px] w-6" style={{ background: `linear-gradient(90deg, ${hexToRgba(themeColor, 0.3)}, transparent)` }}></div>
-                </div>
-
-                {/* Panel de Telemetría */}
+                
+                {/* Panel de Telemetría (Subido arriba del título de la guía) */}
                 <div 
-                    className="telemetry-widget mt-6 flex items-center justify-between w-full max-w-[340px] px-4 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-widest relative overflow-hidden backdrop-blur-md shadow-lg"
+                    className="telemetry-widget mb-6 flex items-center justify-between w-full max-w-[340px] px-4 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-widest relative overflow-hidden backdrop-blur-md shadow-lg"
                 >
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('HORA')}</span>
@@ -356,7 +344,90 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     </div>
                 </div>
 
-                {globalConfig?.isChristmasMode && (
+                <h2 className="text-[12px] font-[1000] text-white/90 text-shadow-premium uppercase tracking-[0.35em] text-center leading-none">
+                    {mainSubtitle}
+                </h2>
+                <div className="flex items-center gap-3 mt-4">
+                    <div className="h-[1px] w-6" style={{ background: `linear-gradient(90deg, transparent, ${hexToRgba(themeColor, 0.3)})` }}></div>
+                    <div className="flex gap-1.5">
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: hexToRgba(themeColor, 0.2) }}></div>
+                        <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: themeColor, boxShadow: `0 0 8px ${hexToRgba(themeColor, 0.6)}` }}></div>
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: hexToRgba(themeColor, 0.2) }}></div>
+                    </div>
+                    <div className="h-[1px] w-6" style={{ background: `linear-gradient(90deg, ${hexToRgba(themeColor, 0.3)}, transparent)` }}></div>
+                </div>
+
+                {/* Botones de Navegación Patagonia (Ubicados donde estaba la telemetría originalmente) */}
+                {isInPatagonia && (
+                    <div className="w-full mt-6 mb-2">
+                        <div className="flex flex-wrap justify-center gap-2.5 px-2 pb-2 max-w-[95%] mx-auto">
+                            {PATAGONIA_7_LAGOS_REGION.towns.map((town) => {
+                                const isActive = townId === town.id;
+
+                                // Clases para Modo Día vs Modo Noche
+                                const btnClass = isDayMode
+                                    ? `px-4 py-2.5 rounded-full text-[8.5px] font-[1000] uppercase tracking-widest transition-all duration-150 active:translate-y-[2px] ${
+                                        isActive 
+                                            ? 'border-sky-400 bg-sky-500/20 text-sky-950 scale-105 shadow-[0_0_15px_rgba(14,165,233,0.3)]' 
+                                            : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 hover:-translate-y-[1.5px]'
+                                      }`
+                                    : `px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
+                                        isActive
+                                            ? 'backdrop-blur-md text-white scale-105 animate-pulse'
+                                            : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
+                                      }`;
+
+                                // Estilos en línea específicos para relieve y glow
+                                const btnStyle = isDayMode
+                                    ? (isActive 
+                                        ? {
+                                            borderWidth: '1.5px',
+                                            borderBottomWidth: '1.5px',
+                                            borderBottomColor: themeColor,
+                                            boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.4)}, inset 0 1px 0 rgba(255,255,255,0.4)`,
+                                            transform: 'translateY(2px)',
+                                            color: themeColor,
+                                            fontWeight: '1000'
+                                          }
+                                        : {
+                                            borderWidth: '1px',
+                                            borderBottomWidth: '4px',
+                                            borderBottomColor: '#cda488', // Relieve color arcilla/champagne
+                                            boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
+                                          }
+                                      )
+                                    : (isActive 
+                                        ? {
+                                            backgroundColor: hexToRgba(themeColor, 0.35),
+                                            borderColor: '#ffffff',
+                                            boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
+                                            textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
+                                          } 
+                                        : {
+                                            backgroundColor: hexToRgba(themeColor, 0.1),
+                                            borderColor: hexToRgba(themeColor, 0.3),
+                                            boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
+                                          }
+                                      );
+
+                                return (
+                                    <button
+                                        key={town.id}
+                                        onClick={() => {
+                                            playNeonClick();
+                                            if (!isActive) navigate(`/${town.id}/home`);
+                                        }}
+                                        className={btnClass}
+                                        style={btnStyle}
+                                    >
+                                        {town.id === 'san-martin-de-los-andes' ? 'San Martín' : town.id === 'villa-la-angostura' ? 'Villa La Angostura' : 'Bariloche'}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+                                {globalConfig?.isChristmasMode && (
                     <div 
                         className="mt-6 w-full max-w-[340px] px-4 py-3 rounded-2xl border text-center relative overflow-hidden backdrop-blur-md animate-bounce-slow"
                         style={{
