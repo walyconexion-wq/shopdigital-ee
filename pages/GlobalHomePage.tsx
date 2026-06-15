@@ -41,6 +41,17 @@ const STATIC_REGIONS: Region[] = [
         isActive: true,
         provinceId: 'cordoba',
         createdAt: '2026-01-01T00:00:00.000Z'
+    },
+    { 
+        id: 'patagonia-7-lagos', 
+        name: 'Región Patagónica - 7 Lagos', 
+        type: 'region', 
+        towns: ['bariloche', 'san-martin-de-los-andes', 'villa-la-angostura'], 
+        color: '#0284c7', 
+        icon: 'mountain', 
+        isActive: true,
+        provinceId: 'neuquen-rio-negro',
+        createdAt: '2026-01-01T00:00:00.000Z'
     }
 ];
 
@@ -182,7 +193,9 @@ const GlobalHomePage: React.FC = () => {
             { name: 'Traslasierra', path: '/region/traslasierra' }
           ]
         : [
-            { name: 'San Martín de los Andes', path: '#', isMock: true }
+            { name: 'San Carlos de Bariloche', path: '/bariloche/home' },
+            { name: 'Villa La Angostura', path: '/villa-la-angostura/home' },
+            { name: 'San Martín de los Andes', path: '/san-martin-de-los-andes/home' }
           ];
 
     return (
@@ -478,14 +491,17 @@ const GlobalHomePage: React.FC = () => {
                                     {[
                                         { id: 'esteban-echeverria', name: 'Esteban Echeverría', type: 'zona', towns: ['esteban-echeverria'], color: '#22d3ee', icon: 'building' },
                                         { id: 'ezeiza', name: 'Ezeiza', type: 'zona', towns: ['ezeiza'], color: '#22d3ee', icon: 'building' },
-                                        { id: 'traslasierra', name: 'Traslasierra', type: 'region', towns: ['mina-clavero', 'nono', 'cura-brochero', 'panaholma', 'villa-dolores', 'villa-las-rosas', 'san-javier', 'las-rabonas'], color: '#0ea5e9', icon: 'mountain' }
+                                        { id: 'traslasierra', name: 'Traslasierra', type: 'region', towns: ['mina-clavero', 'nono', 'cura-brochero', 'panaholma', 'villa-dolores', 'villa-las-rosas', 'san-javier', 'las-rabonas'], color: '#0ea5e9', icon: 'mountain' },
+                                        { id: 'patagonia-7-lagos', name: 'Región Patagónica - 7 Lagos', type: 'region', towns: ['bariloche', 'san-martin-de-los-andes', 'villa-la-angostura'], color: '#0284c7', icon: 'mountain' }
                                     ].map((region, idx) => (
                                         <button
                                             key={region.id}
                                             onClick={() => {
                                                 playNeonClick();
                                                 if (region.id === 'traslasierra') {
-                                                    navigate('/mina-clavero/home');
+                                                    navigate('/region/traslasierra');
+                                                } else if (region.id === 'patagonia-7-lagos') {
+                                                    navigate('/region/patagonia-7-lagos');
                                                 } else if (region.towns.length === 1) {
                                                     navigate(`/${region.towns[0]}/home`);
                                                 } else {
@@ -520,7 +536,7 @@ const GlobalHomePage: React.FC = () => {
                                                             {region.name}
                                                         </h3>
                                                         <p className="text-[8px] uppercase tracking-widest mt-0.5" style={{ color: hexToRgba(region.color, 0.6) }}>
-                                                            📍 Zona Local · {region.towns.length} localidad
+                                                            📍 {region.type === 'region' ? 'Región Turística' : 'Zona Local'} · {region.towns.length} localidades
                                                         </p>
                                                     </div>
                                                 </div>

@@ -35,12 +35,18 @@ const TOWN_COORDINATES: Record<string, Coordinates> = {
     'la-poblacion': { lat: -32.10, lon: -65.01 },
     'luyaba': { lat: -32.17, lon: -65.07 },
     'la-paz': { lat: -32.22, lon: -65.05 },
+    'bariloche': { lat: -41.134, lon: -71.308 },
+    'san-martin-de-los-andes': { lat: -40.155, lon: -71.353 },
+    'villa-la-angostura': { lat: -40.763, lon: -71.643 }
 };
 
 const getCoordinates = (id: string): Coordinates => {
     if (TOWN_COORDINATES[id]) return TOWN_COORDINATES[id];
     if (id.includes('ezeiza')) return TOWN_COORDINATES['ezeiza'];
     if (id.includes('traslasierra')) return TOWN_COORDINATES['traslasierra'];
+    if (id.includes('bariloche') || id.includes('san-martin') || id.includes('villa-la-angostura')) {
+        return TOWN_COORDINATES[id.includes('bariloche') ? 'bariloche' : id.includes('san-martin') ? 'san-martin-de-los-andes' : 'villa-la-angostura'];
+    }
     return TOWN_COORDINATES['esteban-echeverria'];
 };
 
