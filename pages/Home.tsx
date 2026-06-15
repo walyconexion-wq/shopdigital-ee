@@ -362,18 +362,18 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                 {/* Botones de Navegación Patagonia (Ubicados donde estaba la telemetría originalmente) */}
                 {isInPatagonia && (
                     <div className="w-full mt-6 mb-2">
-                        <div className="flex flex-wrap justify-center gap-2.5 px-2 pb-2 max-w-[95%] mx-auto">
+                        <div className="grid grid-cols-3 gap-2.5 px-4 max-w-[340px] mx-auto">
                             {PATAGONIA_7_LAGOS_REGION.towns.map((town) => {
                                 const isActive = townId === town.id;
 
-                                // Clases para Modo Día vs Modo Noche
+                                // Clases para Modo Día vs Modo Noche (con paddings compactos y texto en 1 línea)
                                 const btnClass = isDayMode
-                                    ? `px-4 py-2.5 rounded-full text-[8.5px] font-[1000] uppercase tracking-widest transition-all duration-150 active:translate-y-[2px] ${
+                                    ? `px-1 py-2.5 rounded-xl text-[7.5px] font-[1000] uppercase tracking-wider transition-all duration-150 active:translate-y-[2px] text-center whitespace-nowrap overflow-hidden ${
                                         isActive 
-                                            ? 'border-sky-400 bg-sky-500/20 text-sky-950 scale-105 shadow-[0_0_15px_rgba(14,165,233,0.3)]' 
+                                            ? 'border-sky-400 bg-sky-500/20 text-sky-950 scale-105 shadow-[0_0_12px_rgba(14,165,233,0.3)]' 
                                             : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 hover:-translate-y-[1.5px]'
                                       }`
-                                    : `px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
+                                    : `px-1 py-2 rounded-xl border transition-all duration-300 text-[7.5px] font-black uppercase tracking-wider text-center whitespace-nowrap overflow-hidden ${
                                         isActive
                                             ? 'backdrop-blur-md text-white scale-105 animate-pulse'
                                             : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
@@ -386,7 +386,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                             borderWidth: '1.5px',
                                             borderBottomWidth: '1.5px',
                                             borderBottomColor: themeColor,
-                                            boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.4)}, inset 0 1px 0 rgba(255,255,255,0.4)`,
+                                            boxShadow: `0 0 12px ${hexToRgba(themeColor, 0.4)}, inset 0 1px 0 rgba(255,255,255,0.4)`,
                                             transform: 'translateY(2px)',
                                             color: themeColor,
                                             fontWeight: '1000'
@@ -394,21 +394,21 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                         : {
                                             borderWidth: '1px',
                                             borderBottomWidth: '4px',
-                                            borderBottomColor: '#cda488', // Relieve color arcilla/champagne
-                                            boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
+                                            borderBottomColor: '#cda488',
+                                            boxShadow: '0 4px 8px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
                                           }
                                       )
                                     : (isActive 
                                         ? {
                                             backgroundColor: hexToRgba(themeColor, 0.35),
                                             borderColor: '#ffffff',
-                                            boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.8)}, inset 0 0 10px ${hexToRgba(themeColor, 0.5)}`,
-                                            textShadow: `0 0 8px ${hexToRgba(themeColor, 0.9)}`
+                                            boxShadow: `0 0 15px ${hexToRgba(themeColor, 0.8)}, inset 0 0 8px ${hexToRgba(themeColor, 0.5)}`,
+                                            textShadow: `0 0 6px ${hexToRgba(themeColor, 0.9)}`
                                           } 
                                         : {
                                             backgroundColor: hexToRgba(themeColor, 0.1),
                                             borderColor: hexToRgba(themeColor, 0.3),
-                                            boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.1)}`
+                                            boxShadow: `0 0 8px ${hexToRgba(themeColor, 0.1)}`
                                           }
                                       );
 
@@ -422,7 +422,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                         className={btnClass}
                                         style={btnStyle}
                                     >
-                                        {town.id === 'san-martin-de-los-andes' ? 'San Martín' : town.id === 'villa-la-angostura' ? 'Villa La Angostura' : 'Bariloche'}
+                                        {town.id === 'san-martin-de-los-andes' ? 'San Martín' : town.id === 'villa-la-angostura' ? 'La Angostura' : 'Bariloche'}
                                     </button>
                                 );
                             })}
@@ -588,7 +588,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                         className="text-[8px] font-bold uppercase tracking-[0.25em] text-center select-none cursor-pointer active:scale-95 transition-transform" 
                         style={{ color: themeColor, textShadow: `0 0 10px ${hexToRgba(themeColor, 0.8)}, 0 0 20px ${hexToRgba(themeColor, 0.4)}` }}
                     >
-                        {townName}
+                        {isInPatagonia ? 'Patagonia' : townName}
                     </p>
                     <span className="text-white/20 text-[8px]">|</span>
                     <button 
