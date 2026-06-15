@@ -7,6 +7,7 @@ import { playNeonClick } from '../utils/audio';
 import { resolveIcon } from '../utils/iconResolver';
 import { useAuth } from '../components/AuthContext';
 import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
+import { PATAGONIA_7_LAGOS_REGION } from '../data/regionalTemplates/patagonia7LagosConfig';
 import { useLanguage } from '../components/LanguageContext';
 
 interface HomeProps {
@@ -67,6 +68,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const { t, language } = useLanguage();
     const themeColor = globalConfig?.themeColor || '#22d3ee';
     const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
+    const isInPatagonia = PATAGONIA_7_LAGOS_REGION.towns.some(t => t.id === townId);
     const activeTheme = globalConfig?.isChristmasMode ? 'christmas' : (globalConfig?.theme || 'default');
     const mainSubtitle = globalConfig?.mainSubtitle || `${t('Tu guía de ofertas locales')} - ${townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`;
     const townName = globalConfig?.townName || 'Esteban Echeverría';
