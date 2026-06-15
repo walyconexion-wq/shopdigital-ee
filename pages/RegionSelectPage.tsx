@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, MapPin, ChevronRight, Globe, Zap, Lock, Mountain, Building2, Palmtree } from 'lucide-react';
+import { ArrowLeft, MapPin, ChevronRight, Globe, Zap, Lock, Mountain, Building2, Palmtree } from 'lucide-react';
 import { obtenerRegionPorId, subscribeToTowns } from '../firebase';
 import { Region } from '../types';
 import { playNeonClick } from '../utils/audio';
@@ -138,10 +138,17 @@ const RegionSelectPage: React.FC = () => {
                 <header className="pt-8 pb-6 animate-in fade-in duration-700">
                     <div className="flex items-center justify-between mb-6">
                         <button
-                            onClick={() => { playNeonClick(); navigate('/'); }}
-                            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-all"
+                            onClick={() => {
+                                playNeonClick();
+                                navigate('/');
+                            }}
+                            className="p-3.5 rounded-2xl bg-black/45 border backdrop-blur-md text-white/70 hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] active:scale-90 transition-all cursor-pointer flex items-center justify-center"
+                            style={{
+                                borderColor: hexToRgba(regionColor, 0.35),
+                                boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(regionColor, 0.05)}`
+                            }}
                         >
-                            <ChevronLeft size={20} className="text-white/60" />
+                            <ArrowLeft size={16} style={{ color: regionColor, filter: `drop-shadow(0 0 6px ${regionColor})` }} />
                         </button>
                         <div className="text-center flex-1 px-4">
                             <p className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20">
