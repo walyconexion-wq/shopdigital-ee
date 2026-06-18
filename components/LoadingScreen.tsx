@@ -107,7 +107,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
                 />
                 
                 <img
-                    src="/ari-fullbody.png"
+                    src="/ari-fullbody.png?v=2"
                     alt="Ari Asistente IA"
                     style={{
                         width: '100%',
