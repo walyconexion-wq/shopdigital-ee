@@ -43,7 +43,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: '#B58E73', // Fondo marrón cálido premium de la marca
+                background: '#CCA387', // Fondo uniforme que se mimetiza con el avatar
                 transition: 'opacity 260ms ease-out',
                 opacity: visible ? 1 : 0,
                 pointerEvents: visible ? 'all' : 'none',
@@ -107,7 +107,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
                 />
                 
                 <img
-                    src="/ari-fullbody.png?v=2"
+                    src="/ari-fullbody.png?v=3"
                     alt="Ari Asistente IA"
                     style={{
                         width: '100%',
