@@ -12,6 +12,7 @@ interface LoadingScreenProps {
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
     const [visible, setVisible] = useState(true);
+    const [progressSegments, setProgressSegments] = useState(1);
     const onDoneRef = useRef(onDone);
     onDoneRef.current = onDone;
 
@@ -24,170 +25,147 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ ready, onDone }) => {
         return () => clearTimeout(timer);
     }, [ready]);
 
+    // Animate the segmented progress bar (cycles from 1 to 5 segments)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setProgressSegments((prev) => (prev >= 5 ? 1 : prev + 1));
+        }, 400);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <>
-            <style>{`
-        @keyframes sd-breathe {
-          0%, 100% { transform: scale(1); }
-          50%       { transform: scale(1.022); }
-        }
-
-        @keyframes sd-shimmer {
-          0%   { left: -65%; }
-          100% { left: 115%; }
-        }
-
-        @keyframes sd-dots {
-          0%        { content: 'Conectando comercios.'; }
-          33.33%    { content: 'Conectando comercios..'; }
-          66.66%    { content: 'Conectando comercios...'; }
-        }
-
-        .sd-loader-logo {
-          animation: sd-breathe 2s ease-in-out infinite;
-          text-align: center;
-          margin-bottom: 2.5rem;
-        }
-
-        .sd-loader-bar-track {
-          width: 65%;
-          max-width: 240px;
-          height: 2px;
-          background: rgba(34, 211, 238, 0.1);
-          border-radius: 999px;
-          overflow: hidden;
-          position: relative;
-          margin: 0 auto 1.1rem;
-        }
-
-        .sd-loader-bar-fill {
-          position: absolute;
-          top: 0;
-          left: -65%;
-          width: 65%;
-          height: 100%;
-          border-radius: 999px;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(34, 211, 238, 0.5),
-            rgba(34, 211, 238, 1),
-            rgba(34, 211, 238, 0.5),
-            transparent
-          );
-          animation: sd-shimmer 1.1s ease-in-out infinite;
-          box-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
-        }
-
-        .sd-loader-text::after {
-          content: 'Conectando comercios.';
-          animation: sd-dots 1.5s steps(1, end) infinite;
-        }
-
-        .sd-loader-text {
-          font-family: 'Inter', sans-serif;
-          font-size: 0.6rem;
-          font-weight: 400;
-          color: rgba(255, 255, 255, 0.55);
-          letter-spacing: 0.14em;
-          margin: 0;
-          text-align: center;
-          padding: 0;
-          background: none;
-          border: none;
-        }
-      `}</style>
-
+        <div
+            style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#B58E73', // Fondo marrón cálido premium de la marca
+                transition: 'opacity 260ms ease-out',
+                opacity: visible ? 1 : 0,
+                pointerEvents: visible ? 'all' : 'none',
+                overflow: 'hidden',
+                fontFamily: "Georgia, serif" // Tipografía elegante serif para estética y simetría
+            }}
+        >
+            {/* 1. Botón/Cápsula Superior "ShopDigital" */}
             <div
                 style={{
-                    position: 'fixed',
-                    inset: 0,
-                    zIndex: 9999,
+                    background: '#756053',
+                    border: '1.5px solid #4D3F36',
+                    borderBottomWidth: '4.5px',
+                    borderRadius: '2rem',
+                    padding: '0.8rem 2.8rem',
+                    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                    marginBottom: '2.5rem',
+                    transform: 'translateY(0)',
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    background: '#000000',
-                    transition: 'opacity 260ms ease-out',
-                    opacity: visible ? 1 : 0,
-                    pointerEvents: visible ? 'all' : 'none',
-                    overflow: 'hidden'
+                    justifyContent: 'center'
                 }}
             >
-                {/* HUD Decorative Elements */}
-                <div className="absolute top-20 left-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" style={{ position: 'absolute' }} />
-                <div className="absolute bottom-20 right-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" style={{ position: 'absolute' }} />
-                
-                {/* Ambient cyan glow blob */}
+                <span
+                    style={{
+                        color: '#E8F5EA', // Color crema premium
+                        fontSize: '2rem',
+                        fontWeight: 'normal',
+                        letterSpacing: '0.02em',
+                        textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                    }}
+                >
+                    ShopDigital
+                </span>
+            </div>
+
+            {/* 2. Personaje 3D de Ari Cuerpo Completo (Centrado y con profundidad de sombra) */}
+            <div
+                style={{
+                    position: 'relative',
+                    width: '210px',
+                    height: '310px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '2.2rem'
+                }}
+            >
+                {/* Sombra de pie para dar profundidad 3D */}
                 <div
                     style={{
                         position: 'absolute',
-                        top: '18%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '300px',
-                        height: '300px',
+                        bottom: '-5px',
+                        width: '120px',
+                        height: '14px',
                         borderRadius: '50%',
-                        background:
-                            'radial-gradient(circle, rgba(34,211,238,0.1) 0%, transparent 68%)',
-                        pointerEvents: 'none',
+                        background: 'rgba(0, 0, 0, 0.25)',
+                        filter: 'blur(6px)',
+                        pointerEvents: 'none'
                     }}
                 />
+                
+                <img
+                    src="/ari-fullbody.png"
+                    alt="Ari Asistente IA"
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.18))',
+                        position: 'relative',
+                        zIndex: 1
+                    }}
+                />
+            </div>
 
-                {/* Logo with breathing animation */}
-                <div className="sd-loader-logo">
-                    <h1
-                        style={{
-                            margin: 0,
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: 'clamp(2.2rem, 9vw, 2.8rem)',
-                            fontWeight: 900,
-                            letterSpacing: '-0.02em',
-                            lineHeight: 1,
-                            filter: 'drop-shadow(0 0 20px rgba(34,211,238,0.6))',
-                        }}
-                    >
-                        <span style={{ color: '#ffffff' }}>ShopDigital</span>
-                        <span style={{ color: '#22d3ee' }}>.tech</span>
-                    </h1>
+            {/* 3. Texto descriptivo "cargando sistema" */}
+            <p
+                style={{
+                    color: '#E8F5EA',
+                    fontSize: '1.25rem',
+                    margin: '0 0 0.8rem 0',
+                    fontWeight: 'normal',
+                    textAlign: 'center',
+                    letterSpacing: '0.04em'
+                }}
+            >
+                cargando sistema
+            </p>
 
-                    {/* Glow underline */}
+            {/* 4. Barra de Progreso Segmentada (Contenedor blanco con bloques internos animados) */}
+            <div
+                style={{
+                    background: '#FFFFFF',
+                    width: '235px',
+                    height: '42px',
+                    borderRadius: '0.8rem',
+                    padding: '5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)'
+                }}
+            >
+                {Array.from({ length: 5 }).map((_, idx) => (
                     <div
+                        key={idx}
                         style={{
-                            height: '1px',
-                            background:
-                                'linear-gradient(90deg, transparent, rgba(34,211,238,0.6), transparent)',
-                            marginTop: '7px',
-                            boxShadow: '0 0 10px rgba(34,211,238,0.4)',
+                            width: '39px',
+                            height: '100%',
+                            background: idx < progressSegments ? '#756053' : 'transparent',
+                            borderRadius: '0.45rem',
+                            marginRight: idx < 4 ? '5px' : '0px',
+                            transition: 'background-color 150ms ease-in-out',
+                            boxShadow: idx < progressSegments ? 'inset 0 1px 0 rgba(255,255,255,0.1)' : 'none'
                         }}
                     />
-
-                    {/* Subtitle */}
-                    <p
-                        style={{
-                            margin: '10px 0 0 0',
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: '0.57rem',
-                            fontWeight: 700,
-                            color: 'rgba(255,255,255,0.38)',
-                            letterSpacing: '0.38em',
-                            textTransform: 'uppercase',
-                        }}
-                    >
-                        ESTEBAN ECHEVERRÍA
-                    </p>
-                </div>
-
-                {/* Shimmer progress bar */}
-                <div className="sd-loader-bar-track">
-                    <div className="sd-loader-bar-fill" />
-                </div>
-
-                {/* Animated loading text via CSS ::after */}
-                <p className="sd-loader-text" />
+                ))}
             </div>
-        </>
+        </div>
     );
 };
 
 export default LoadingScreen;
+
