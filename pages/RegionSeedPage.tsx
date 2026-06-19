@@ -33,7 +33,7 @@ const SEED_REGIONS = [
         name: 'Región Patagónica - 7 Lagos',
         provinceId: 'neuquen-rio-negro',
         type: 'region' as const,
-        towns: ['bariloche', 'san-martin-de-los-andes', 'villa-la-angostura'],
+        towns: ['bariloche', 'villa-la-angostura', 'san-martin-de-los-andes'],
         icon: 'mountain',
         color: '#0284c7', // Azul Lago Patagónico
         isActive: true,

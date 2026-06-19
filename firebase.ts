@@ -702,6 +702,18 @@ export const actualizarFactura = async (id: string, updateData: any) => {
     }
 };
 
+export const eliminarFactura = async (id: string) => {
+    try {
+        const docRef = doc(db, "facturas", id);
+        await deleteDoc(docRef);
+        console.log(`Factura ${id} eliminada con éxito.`);
+        return true;
+    } catch (error) {
+        console.error(`Error al eliminar factura ${id}:`, error);
+        throw error;
+    }
+};
+
 // --- MÓDULO DE RELEVAMIENTO TÁCTICO (Prospectos/Leads) ---
 
 export const suscribirseARelevamientos = (callback: (leads: any[]) => void, townId?: string) => {

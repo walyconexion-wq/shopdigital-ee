@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { guardarRelevamiento } from '../firebase';
 import { playNeonClick } from '../utils/audio';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
@@ -15,11 +15,12 @@ const SurveyFormPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const { localities, loading: loadingLocs } = useTownLocalities(townId);
+    const categories = useTownCategories(townId);
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
-        category: CATEGORIES[0].id,
+        category: categories[0]?.id || '',
         address: '',
         zone: '',
         contactName: '',
@@ -215,7 +216,7 @@ const SurveyFormPage: React.FC = () => {
                                     onChange={handleChange}
                                     className="w-full bg-black/50 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:outline-none focus:border-yellow-400 appearance-none text-center"
                                 >
-                                    {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                 </select>
                             </div>
                         </div>

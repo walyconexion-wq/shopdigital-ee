@@ -36,6 +36,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
         'entre-rios': '🌊 Entre Ríos',
         'misiones': '🌴 Misiones',
         'neuquen': '⛽ Neuquén',
+        'patagonia': '🏔️ Patagonia',
     };
 
     const selectedCategory = useMemo(() =>

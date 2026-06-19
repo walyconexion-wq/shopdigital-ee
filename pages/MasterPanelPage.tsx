@@ -2,32 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Lock, ChevronLeft, Share2, ExternalLink, 
-    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database, Megaphone, MapPin, Network, Mountain
+    Globe, Users, Store, Tag, ShoppingBag, Terminal, Copy, Check, Palette, Factory, RefreshCw, Zap, Database, Megaphone, MapPin, Network, Mountain, Trash2
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { 
     guardarComercio, guardarOferta, saveGlobalConfig, DEFAULT_CATEGORIES_CONFIG, 
     saveCategoriesConfig, migrarDatosLegados, subscribeToGlobalConfig,
     guardarBroadcast, obtenerBroadcasts, eliminarBroadcast, toggleBroadcast, Broadcast,
-    guardarCliente, saveTown
+    guardarCliente, saveTown, db, eliminarComercio, eliminarCliente, crearFactura, eliminarFactura
 } from '../firebase';
+import { collection, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
 import { Offer } from '../types';
 import { DobermanBadge } from '../components/DobermanBadge';
 import { CATEGORIES } from '../constants';
 import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
+import { PATAGONIA_7_LAGOS_REGION } from '../data/regionalTemplates/patagonia7LagosConfig';
 
 const MasterPanelPage: React.FC = () => {
     const { townId: paramTownId } = useParams<{ townId: string }>();
     const townId = paramTownId || window.location.pathname.split('/')[1] || 'esteban-echeverria';
     
-    // Determinar si es parte de Traslasierra
+    // Determinar si es parte de Traslasierra o Patagonia
     const isTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
+    const isPatagonia = PATAGONIA_7_LAGOS_REGION.towns.some(t => t.id === townId);
+    const isTouristRegion = isTraslasierra || isPatagonia;
     const navigate = useNavigate();
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const [isMigrating, setIsMigrating] = useState(false);
     const [migrationResult, setMigrationResult] = useState<any>(null);
-    const [isSeeding, setIsSeeding] = useState(false);
-    const [hasSeeded, setHasSeeded] = useState(false);
+    const [isSeedingComercios, setIsSeedingComercios] = useState(false);
+    const [hasSeededComercios, setHasSeededComercios] = useState(false);
+    const [isSeedingClientes, setIsSeedingClientes] = useState(false);
+    const [hasSeededClientes, setHasSeededClientes] = useState(false);
+    const [isClearingSeed, setIsClearingSeed] = useState(false);
     // Modo Camaleón: leer config de zona para identidad visual del panel
     const [zoneConfig, setZoneConfig] = useState<any>({ primaryColor: '#22d3ee', townName: '' });
 
@@ -105,13 +112,13 @@ const MasterPanelPage: React.FC = () => {
         }
     };
 
-    const seedMuestrasHiperrealistas = async () => {
+    const seedMuestrasComercios = async () => {
         const confirmed = window.confirm(
-            `🌱 SIEMBRA HIPERREALISTA DE MUESTRAS (V2)\n\n¿Estás seguro de sembrar comercios, clientes e industrias de muestra en la zona:\n\n"${zoneName}"?\n\nEsto creará un comercio por cada rubro activo en cada localidad de la zona. Se inyectará con la marca "isSeed: true" y el estado de incubación.`
+            `🌱 SIEMBRA HIPERREALISTA DE COMERCIOS (V2)\n\n¿Estás seguro de sembrar comercios de muestra en la zona:\n\n"${zoneName}"?\n\nEsto creará un comercio por cada rubro activo en cada localidad de la zona. Se inyectará con la marca "isSeed: true" y el estado de incubación.`
         );
         if (!confirmed) return;
 
-        setIsSeeding(true);
+        setIsSeedingComercios(true);
         try {
             playNeonClick();
             
@@ -139,7 +146,11 @@ const MasterPanelPage: React.FC = () => {
                 'villa-las-rosas': { name: 'Villa Las Rosas', localities: ['Villa Las Rosas'], description: 'Traslasierra — Eco-gastronomía' },
                 'san-javier': { name: 'San Javier', localities: ['San Javier'], description: 'Traslasierra — Sierra y tradición' },
                 'villa-dolores': { name: 'Villa Dolores', localities: ['Villa Dolores'], description: 'Traslasierra — Capital del Valle' },
-                'las-rabonas': { name: 'Las Rabonas', localities: ['Las Rabonas'], description: 'Traslasierra — Cabañas y tranquilidad' }
+                'las-rabonas': { name: 'Las Rabonas', localities: ['Las Rabonas'], description: 'Traslasierra — Cabañas y tranquilidad' },
+                // 🏔️ PATAGONIA 7 LAGOS
+                'bariloche': { name: 'San Carlos de Bariloche', localities: ['Centro', 'Km 5-8', 'Km 12-18'], description: 'Patagonia — Hub turístico comercial' },
+                'san-martin-de-los-andes': { name: 'San Martín de los Andes', localities: ['Centro', 'Chapelco', 'Vega Maipú'], description: 'Patagonia — Turismo de montaña' },
+                'villa-la-angostura': { name: 'Villa La Angostura', localities: ['Centro', 'Puerto Manzano', 'Las Balsas'], description: 'Patagonia — Boutique del lago' }
             };
 
             const townMeta = defaultTownMetadata[townId] || {
@@ -198,9 +209,19 @@ const MasterPanelPage: React.FC = () => {
                 taxis_transporte: { name: "Traslados", names: ["Altas Cumbres", "Remís del Valle", "Servicio Express"], img: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=500", offerName: "Viaje Programado Interurbano", price: 9500 }
             };
 
+            // ─── Definir rubros específicos de Patagonia (Ruta de los 7 Lagos) ───
+            const patagoniaCategoriesData: Record<string, { name: string; names: string[]; img: string; offerName: string; price: number }> = {
+                hospedaje: { name: "Cabañas", names: ["Nahuel Huapi", "Senda Sur", "Cabañas del Bosque"], img: "https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=500", offerName: "Estadía Mínima 3 Noches", price: 35000 },
+                entretenimiento: { name: "Entretenimiento", names: ["Casino Bariloche", "Pub de la Montaña", "Cervecería de la Sierra"], img: "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=500", offerName: "Entrada + Trago de Bienvenida", price: 4000 },
+                excursiones: { name: "Excursiones", names: ["Circuito Chico Aventura", "Trekking Tronador", "Navegación Puerto Blest"], img: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=500", offerName: "Excursión Guiada de Medio Día", price: 15000 },
+                vinos_regionales: { name: "Bodega", names: ["Bodega Fin del Mundo", "Sabores Patagónicos", "Vinoteca del Lago"], img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500", offerName: "Caja de Vinos Pinot Noir Patagónico", price: 22000 },
+                chocolaterias: { name: "Chocolatería", names: ["Mamuschka", "Rapanui", "Del Turista", "Fenoglio"], img: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=500", offerName: "Caja de Chocolates Artesanales x240g", price: 8500 },
+                taxis_transporte: { name: "Traslados", names: ["Taxis Bariloche", "Remís del Lago", "Traslados Chapelco"], img: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=500", offerName: "Traslado al Aeropuerto Privado", price: 12000 }
+            };
+
             const activeCategoriesData = {
                 ...seedCategoriesData,
-                ...(isTraslasierra ? traslasierraCategoriesData : {})
+                ...(isPatagonia ? patagoniaCategoriesData : isTraslasierra ? traslasierraCategoriesData : {})
             };
 
             // Mapas específicos de Esteban Echeverría para conservar fidelidad original
@@ -274,6 +295,25 @@ const MasterPanelPage: React.FC = () => {
                     };
 
                     await guardarComercio(shopData, townId);
+
+                    // Inyectar factura de muestra B2C
+                    const invoiceId = `inv-sample-${catKey}-${locSlug}-${townId}`;
+                    const newInvoice = {
+                        id: invoiceId,
+                        shopId: id,
+                        shopName: businessName,
+                        townId: townId,
+                        locality: locName,
+                        period: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`,
+                        amount: catVal.price > 0 ? Math.round(catVal.price * 1.2) : 5000,
+                        issueDate: new Date().toISOString(),
+                        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        status: 'pending',
+                        concept: 'Suscripción Mensual de Demostración',
+                        isSeed: true
+                    };
+                    await crearFactura(newInvoice);
+
                     totalComercios++;
                 }
             }
@@ -342,16 +382,188 @@ const MasterPanelPage: React.FC = () => {
             ];
 
             for (const ind of B2B_INDUSTRIES) {
-                await guardarComercio(ind, townId);
+                const indWithProvince = {
+                    ...ind,
+                    province: isPatagonia ? 'patagonia' : isTraslasierra ? 'cordoba' : 'buenos-aires'
+                };
+                await guardarComercio(indWithProvince, townId);
+
+                // Inyectar factura de muestra B2B
+                const invoiceId = `inv-sample-${ind.id}`;
+                const newInvoice = {
+                    id: invoiceId,
+                    shopId: ind.id,
+                    shopName: ind.name,
+                    townId: townId,
+                    locality: ind.zone,
+                    period: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`,
+                    amount: 15000,
+                    issueDate: new Date().toISOString(),
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    status: 'pending',
+                    concept: 'Abono Corporativo B2B de Demostración',
+                    isSeed: true
+                };
+                await crearFactura(newInvoice);
             }
 
-            setHasSeeded(true);
-            alert(`🌱 ¡Muestras sembradas con éxito en ${zoneName}!\n\nSe crearon ${totalComercios} comercios (uno por rubro por localidad), 1 Socio VIP y 2 industrias B2B de muestra.`);
+            setHasSeededComercios(true);
+            alert(`🌱 ¡Muestras de comercios sembradas con éxito en ${zoneName}!\n\nSe crearon ${totalComercios} comercios (uno por rubro por localidad) y 2 industrias B2B de muestra.`);
         } catch (error: any) {
-            console.error("Error en la siembra:", error);
-            alert(`❌ Error al sembrar muestras: ${error.message || error}`);
+            console.error("Error en la siembra de comercios:", error);
+            alert(`❌ Error al sembrar comercios: ${error.message || error}`);
         } finally {
-            setIsSeeding(false);
+            setIsSeedingComercios(false);
+        }
+    };
+
+    const seedMuestrasClientes = async () => {
+        const confirmed = window.confirm(
+            `👥 SIEMBRA DE CLIENTES Y SOCIOS VIP (V2)\n\n¿Estás seguro de sembrar clientes de muestra y suscribirlos a los comercios de la zona:\n\n"${zoneName}"?\n\nEsto leerá los comercios de prueba activos en la zona y registrará un Socio VIP de muestra en cada uno para verificar las cañerías del gestor de clientes.`
+        );
+        if (!confirmed) return;
+
+        setIsSeedingClientes(true);
+        try {
+            playNeonClick();
+
+            // 1. Obtener comercios de esta zona desde Firestore
+            const colRef = collection(db, "comercios");
+            const q = query(colRef, where("townId", "==", townId));
+            const snap = await getDocs(q);
+
+            if (snap.empty) {
+                alert(`⚠️ No se encontraron comercios en la zona "${zoneName}". Primero debés sembrar los comercios.`);
+                setIsSeedingClientes(false);
+                return;
+            }
+
+            const shops = snap.docs.map(docSnap => ({
+                id: docSnap.id,
+                name: docSnap.data().name || 'Comercio Muestra'
+            }));
+
+            // 2. Sembrar un cliente muestra e incrementar subscriptores por cada comercio
+            let totalClientes = 0;
+            const clientNames = ["Juan Pérez", "María Gómez", "Lucas Díaz", "Sofía Rodríguez", "Carlos Sánchez", "Ana Martínez", "Diego Fernández", "Clara Benítez"];
+
+            for (let i = 0; i < shops.length; i++) {
+                const shop = shops[i];
+                const clientName = clientNames[i % clientNames.length];
+                const clientId = `cli-sample-${shop.id}`;
+                const clientSample = {
+                    id: clientId,
+                    name: `${clientName} (Muestra)`,
+                    email: `cliente.muestra.${i + 1}@${townId}.com`,
+                    vipCode: `100${10 + i}`,
+                    townId: townId,
+                    status: "active",
+                    createdAt: new Date().toISOString(),
+                    vipStatus: "active",
+                    role: "client-vip",
+                    balance: 1000 + (i * 100) % 1500,
+                    isSeed: true,
+                    sourceShopId: shop.id,
+                    sourceShopName: shop.name
+                };
+
+                await guardarCliente(clientSample, townId);
+                
+                // Incrementar contador de suscriptores del comercio de manera segura en Firestore
+                await updateDoc(doc(db, "comercios", shop.id), {
+                    subscribers: increment(1)
+                });
+                
+                totalClientes++;
+            }
+
+            // También sembrar el Cliente VIP Cero principal
+            const clientZero = {
+                id: `cli-socio-cero-${townId}`,
+                name: "Juan Pérez",
+                email: `juan.perez.${townId}@test.com`,
+                vipCode: "0001",
+                townId: townId,
+                status: "active",
+                createdAt: new Date().toISOString(),
+                vipStatus: "active",
+                role: "client-vip",
+                balance: 1000,
+                isSeed: true
+            };
+            await guardarCliente(clientZero, townId);
+
+            setHasSeededClientes(true);
+            alert(`👥 ¡Clientes y suscriptores de muestra sembrados con éxito en ${zoneName}!\n\nSe crearon ${totalClientes + 1} clientes VIP asociados a sus respectivos catálogos de comercios.`);
+        } catch (error: any) {
+            console.error("Error en la siembra de clientes:", error);
+            alert(`❌ Error al sembrar clientes: ${error.message || error}`);
+        } finally {
+            setIsSeedingClientes(false);
+        }
+    };
+
+    const limpiarMuestras = async () => {
+        const confirmed = window.confirm(
+            `⚠️ LIMPIEZA DE DATOS DE MUESTRA\n\n¿Estás seguro de eliminar todos los comercios, clientes e industrias de muestra (marcados con isSeed: true) en la zona "${zoneName}"?\n\nEsta acción es irreversible.`
+        );
+        if (!confirmed) return;
+
+        setIsClearingSeed(true);
+        try {
+            playNeonClick();
+            // 1. Obtener y borrar comercios/industrias de muestra de la zona
+            const shopsCol = collection(db, "comercios");
+            const qShops = query(shopsCol, where("townId", "==", townId));
+            const snapShops = await getDocs(qShops);
+            let deletedShops = 0;
+            for (const docSnap of snapShops.docs) {
+                const data = docSnap.data();
+                if (data.isSeed === true || docSnap.id.startsWith("shop-sample-") || docSnap.id.startsWith("ent-sample-") || docSnap.id.endsWith("-sample")) {
+                    await eliminarComercio(docSnap.id);
+                    deletedShops++;
+                }
+            }
+
+            // 2. Obtener y borrar clientes de muestra de la zona
+            const clientsCol = collection(db, "clientes");
+            const qClients = query(clientsCol, where("townId", "==", townId));
+            const snapClients = await getDocs(qClients);
+            let deletedClients = 0;
+            for (const docSnap of snapClients.docs) {
+                const data = docSnap.data();
+                if (data.isSeed === true || docSnap.id.startsWith("cli-sample-") || docSnap.id.startsWith("cli-socio-cero-")) {
+                    await eliminarCliente(docSnap.id);
+                    deletedClients++;
+                }
+            }
+
+            // 3. Obtener y borrar facturas de muestra de la zona
+            const invoicesCol = collection(db, "facturas");
+            const qInvoices = query(invoicesCol, where("townId", "==", townId));
+            const snapInvoices = await getDocs(qInvoices);
+            let deletedInvoices = 0;
+            for (const docSnap of snapInvoices.docs) {
+                const data = docSnap.data();
+                const isSampleInvoice = 
+                    data.isSeed === true || 
+                    docSnap.id.startsWith("inv-sample-") || 
+                    (data.shopId && (data.shopId.startsWith("shop-sample-") || data.shopId.startsWith("ent-sample-") || data.shopId.endsWith("-sample")));
+                
+                if (isSampleInvoice) {
+                    await eliminarFactura(docSnap.id);
+                    deletedInvoices++;
+                }
+            }
+
+            setHasSeededComercios(false);
+            setHasSeededClientes(false);
+            alert(`🧹 ¡Limpieza completada en ${zoneName}!\n\nSe eliminaron ${deletedShops} comercios/industrias de muestra, ${deletedClients} clientes de muestra y ${deletedInvoices} facturas de muestra.`);
+        } catch (error: any) {
+            console.error("Error en la limpieza de muestras:", error);
+            alert(`❌ Error al limpiar muestras: ${error.message || error}`);
+        } finally {
+            setIsClearingSeed(false);
         }
     };
 
@@ -614,7 +826,7 @@ const MasterPanelPage: React.FC = () => {
                     role="button" tabIndex={0}
                     onClick={() => { 
                         playNeonClick(); 
-                        const prov = townId === 'traslasierra' || (typeof isTraslasierra !== 'undefined' && isTraslasierra) ? 'cordoba' : 'buenos-aires';
+                        const prov = isTraslasierra ? 'cordoba' : isPatagonia ? 'patagonia' : 'buenos-aires';
                         navigate(`/empresas/tablero-maestro?provincia=${prov}`); 
                     }}
                     className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border border-cyan-500/40 hover:border-cyan-400 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(6,182,212,0.2)] relative overflow-hidden group"
@@ -623,21 +835,52 @@ const MasterPanelPage: React.FC = () => {
                     <Terminal size={18} className="text-cyan-400" />
                     <span className="text-[13px] text-cyan-300">PANEL MAESTRO INDUSTRIAL (B2B)</span>
                 </div>
-                <button
-                    disabled={isSeeding || hasSeeded}
-                    onClick={seedMuestrasHiperrealistas}
-                    className={`w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed
-                        ${hasSeeded 
-                            ? 'border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.2)] bg-emerald-500/10' 
-                            : 'border-green-500/40 hover:border-green-400 shadow-[0_0_30px_rgba(34,197,94,0.2)]'
-                        }`}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-white/5 to-green-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    <Database size={18} className={hasSeeded ? 'text-emerald-400' : 'text-green-400 animate-pulse'} />
-                    <span className={hasSeeded ? 'text-[13px] text-emerald-300' : 'text-[13px] text-green-300'}>
-                        {isSeeding ? '⏳ Sembrando Ecosistema...' : hasSeeded ? '✅ Ecosistema Poblado' : '🌱 Sembrar Muestras Hiperrealistas'}
-                    </span>
-                </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                        disabled={isSeedingComercios || hasSeededComercios}
+                        onClick={seedMuestrasComercios}
+                        className={`w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed
+                            ${hasSeededComercios 
+                                ? 'border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.2)] bg-emerald-500/10' 
+                                : 'border-green-500/40 hover:border-green-400 shadow-[0_0_30px_rgba(34,197,94,0.2)]'
+                            }`}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-white/5 to-green-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <Database size={18} className={hasSeededComercios ? 'text-emerald-400' : 'text-green-400 animate-pulse'} />
+                        <span className={hasSeededComercios ? 'text-[11px] text-emerald-300' : 'text-[11px] text-green-300'}>
+                            {isSeedingComercios ? '⏳ Sembrando Comercios...' : hasSeededComercios ? '✅ Comercios Sembrados' : '🌱 Sembrar Muestras Comercios'}
+                        </span>
+                    </button>
+
+                    <button
+                        disabled={isSeedingClientes || hasSeededClientes}
+                        onClick={seedMuestrasClientes}
+                        className={`w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest border transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed
+                            ${hasSeededClientes 
+                                ? 'border-cyan-500/40 shadow-[0_0_30px_rgba(6,182,212,0.2)] bg-cyan-500/10' 
+                                : 'border-blue-500/40 hover:border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.2)]'
+                            }`}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-white/5 to-blue-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <Users size={18} className={hasSeededClientes ? 'text-cyan-400' : 'text-blue-400 animate-pulse'} />
+                        <span className={hasSeededClientes ? 'text-[11px] text-cyan-300' : 'text-[11px] text-blue-300'}>
+                            {isSeedingClientes ? '⏳ Sembrando Clientes...' : hasSeededClientes ? '✅ Clientes Sembrados' : '👥 Sembrar Muestras Clientes'}
+                        </span>
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 mt-2">
+                    <button
+                        disabled={isClearingSeed}
+                        onClick={limpiarMuestras}
+                        className="w-full glass-card-neon text-white p-4 rounded-xl font-[1000] uppercase tracking-widest border border-red-500/40 hover:border-red-400 hover:bg-red-500/10 shadow-[0_0_20px_rgba(239,68,68,0.15)] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                        <Trash2 size={16} className={isClearingSeed ? 'animate-spin' : 'text-red-400'} />
+                        <span className="text-[10px] text-red-300">
+                            {isClearingSeed ? '⏳ Limpiando Muestras...' : '🧹 Limpiar Muestras de Prueba (Reset)'}
+                        </span>
+                    </button>
+                </div>
 
                 {/* Botón de Reset Maestro eliminado por directiva de Operaciones 2.0 (Prevención de reseteos en producción) */}
 

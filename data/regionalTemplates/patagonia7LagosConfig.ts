@@ -7,8 +7,8 @@ export const PATAGONIA_7_LAGOS_REGION = {
   themeColor: '#0284c7', // Azul Lago Patagónico
   towns: [
     { id: 'bariloche', name: 'San Carlos de Bariloche', type: 'hub_turistico_comercial', lat: -41.134, lng: -71.308 },
-    { id: 'san-martin-de-los-andes', name: 'San Martín de los Andes', type: 'turismo_montana', lat: -40.155, lng: -71.353 },
-    { id: 'villa-la-angostura', name: 'Villa La Angostura', type: 'boutique_lago', lat: -40.763, lng: -71.643 }
+    { id: 'villa-la-angostura', name: 'Villa La Angostura', type: 'boutique_lago', lat: -40.763, lng: -71.643 },
+    { id: 'san-martin-de-los-andes', name: 'San Martín de los Andes', type: 'turismo_montana', lat: -40.155, lng: -71.353 }
   ],
   // 🏨 MATRIZ TURÍSTICA TOP 6 (2x3 GRID)
   categories: [

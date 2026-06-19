@@ -10,6 +10,7 @@
     "migrate": "node scripts/migrar.js"
   },
   "dependencies": {
+    "eve": "^0.11.6",
     "firebase": "^11.10.0",
     "lucide-react": "^0.460.0",
     "qrcode.react": "^4.2.0",

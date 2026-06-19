@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Shop, Client } from '../types';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
+import { resolveIcon } from '../utils/iconResolver';
 import {
     ChevronLeft,
     ShieldCheck,
@@ -38,6 +39,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const { localities } = useTownLocalities(townId);
+    const categories = useTownCategories(townId);
     
     // Filtro regional estricto (ADN ShopDigital) 🛡️
     const clientsInZone = useMemo(() => 
@@ -63,7 +65,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         }
     }, [localities, activeLocation]);
 
-    const selectedCategory = CATEGORIES.find(c => c.id === selectedCategoryId);
+    const selectedCategory = categories.find(c => c.id === selectedCategoryId);
     const selectedShop = allShops.find(s => s.id === selectedShopId);
 
     // =========================================================
@@ -105,13 +107,13 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
     // Conteo regionalizado
     const clientCountByCategory = useMemo(() => {
         const counts: Record<string, number> = {};
-        CATEGORIES.forEach(cat => counts[cat.id] = 0);
+        categories.forEach(cat => counts[cat.id] = 0);
         clientsInZone.forEach(client => {
             const catId = shopToCategoryMap[client.sourceShopId];
             if (catId) counts[catId]++;
         });
         return counts;
-    }, [clientsInZone, shopToCategoryMap]);
+    }, [clientsInZone, shopToCategoryMap, categories]);
 
     const clientStats = useMemo(() => {
         const total = clientsInZone.length;
@@ -163,10 +165,10 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
 
     useMemo(() => {
         if (selectedShop) {
-            const catSlug = CATEGORIES.find(c => c.id === selectedShop.category)?.slug || 'comercio';
+            const catSlug = categories.find(c => c.id === selectedShop.category)?.slug || 'comercio';
             setCustomMessage(`¡Hola! 👋 Bienvenido al grupo VIP de *${selectedShop.name}*. Descargá acá tu Credencial VIP personalizada: https://shopdigital.tech/${townId}/${catSlug}/${selectedShop.slug || selectedShop.id}/credencial-vip`);
         }
-    }, [selectedShop, townId]);
+    }, [selectedShop, townId, categories]);
 
     // =========================================================
     // ACTIONS
@@ -175,7 +177,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         playNeonClick();
         const formattedPhone = client.phone.replace(/\D/g, '');
         const shop = allShops.find(s => s.id === client.sourceShopId);
-        const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+        const catSlug = categories.find(c => c.id === shop?.category)?.slug || 'comercio';
         const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || shop?.id || 'club'}/credencial-vip/${client.id}`;
         const fullMessage = baseMessage + credentialLink;
         const url = `https://wa.me/549${formattedPhone}?text=${encodeURIComponent(fullMessage)}`;
@@ -187,7 +189,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
         if (filteredShopClients.length === 0) return;
         if (window.confirm(`Se intentarán abrir ${filteredShopClients.length} pestañas de WhatsApp. ¿Continuar?`)) {
             const shop = allShops.find(s => s.id === selectedShopId);
-            const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+            const catSlug = categories.find(c => c.id === shop?.category)?.slug || 'comercio';
             filteredShopClients.forEach(client => {
                 const formattedPhone = client.phone.replace(/\D/g, '');
                 const credentialLink = `\n\nTu Credencial VIP: https://shopdigital.tech/${townId}/${catSlug}/${shop?.slug || shop?.id || 'club'}/credencial-vip/${client.id}`;
@@ -279,7 +281,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
 
                     <h2 className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-2 mb-3 mt-8">Navegación por Rubro</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 animate-in fade-in duration-700">
-                        {CATEGORIES.map(cat => {
+                        {categories.map(cat => {
                             const count = clientCountByCategory[cat.id] || 0;
                             return (
                                 <div
@@ -291,7 +293,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                                 >
                                     <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/5 rounded-full blur-[20px] pointer-events-none" />
                                     <div className="text-cyan-400 group-hover:scale-110 transition-transform">
-                                        {cat.icon}
+                                        {cat.iconKey ? resolveIcon(cat.iconKey) : cat.icon}
                                     </div>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
                                         {cat.name}
@@ -401,7 +403,7 @@ const ClientManagementPage: React.FC<ClientManagementPageProps> = ({ allShops, a
                                         onClick={() => { 
                                             playNeonClick(); 
                                             const shop = allShops.find(s => s.id === client.sourceShopId);
-                                            const catSlug = CATEGORIES.find(c => c.id === shop?.category)?.slug || 'comercio';
+                                            const catSlug = categories.find(c => c.id === shop?.category)?.slug || 'comercio';
                                             window.open(`/${townId}/${catSlug}/${shop?.slug || 'club'}/credencial-vip/${client.id}`, '_blank'); 
                                         }}
                                         className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-cyan-400"

@@ -20,6 +20,7 @@ const PROVINCES = [
     { id: 'entre-rios',   name: 'ENTRE RÍOS',   emoji: '🌊' },
     { id: 'misiones',     name: 'MISIONES',      emoji: '🌴' },
     { id: 'neuquen',      name: 'NEUQUÉN',       emoji: '⛽' },
+    { id: 'patagonia',    name: 'PATAGONIA',     emoji: '🏔️' },
 ];
 
 interface Coordinates {
@@ -36,6 +37,7 @@ const PROVINCE_COORDINATES: Record<string, Coordinates> = {
     'entre-rios': { lat: -31.73, lon: -60.53 },
     'misiones': { lat: -27.37, lon: -55.90 },
     'neuquen': { lat: -38.95, lon: -68.06 },
+    'patagonia': { lat: -41.13, lon: -71.30 },
 };
 
 const getWeatherEmoji = (code: number | null): string => {

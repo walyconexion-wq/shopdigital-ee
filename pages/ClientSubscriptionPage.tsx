@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop, Client } from '../types';
 import { guardarCliente, verificarClienteExistente, activarClienteYIncrementarSuscriptores } from '../firebase';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
 import {
     ChevronLeft,
     Gift,
@@ -31,6 +31,7 @@ interface ClientSubscriptionPageProps {
 const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShops }) => {
     const { townId = 'esteban-echeverria', categorySlug, shopSlug } = useParams<{ townId: string; categorySlug: string; shopSlug: string }>();
     const navigate = useNavigate();
+    const categories = useTownCategories(townId);
     
     // States
     const [step, setStep] = useState<'form' | 'verify' | 'welcome'>('form');
@@ -55,10 +56,10 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
     const activeCatSlug = useMemo(() => {
         if (categorySlug) return categorySlug;
         if (selectedShop) {
-            return CATEGORIES.find(c => c.id === selectedShop.category)?.slug || 'comercio';
+            return categories.find(c => c.id === selectedShop.category)?.slug || 'comercio';
         }
         return 'comercio';
-    }, [categorySlug, selectedShop]);
+    }, [categorySlug, selectedShop, categories]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

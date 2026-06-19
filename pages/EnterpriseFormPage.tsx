@@ -238,6 +238,7 @@ const EnterpriseFormPage: React.FC<EnterpriseFormPageProps> = ({ allShops = [] }
                         <option value="entre-rios">Entre Ríos</option>
                         <option value="misiones">Misiones</option>
                         <option value="neuquen">Neuquén</option>
+                        <option value="patagonia">Región Patagónica</option>
                     </select>
                 </div>
 

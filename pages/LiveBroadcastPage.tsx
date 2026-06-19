@@ -18,7 +18,7 @@ import {
     suscribirseAEventos,
     eliminarEvento
 } from '../firebase';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
 import { LiveEvent } from '../types';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
 import { BtuComponent } from '../components/BtuComponent';
@@ -43,6 +43,7 @@ Reglas de Oro:
 
 const LiveBroadcastPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
+    const categories = useTownCategories(townId);
     const navigate = useNavigate();
     const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -428,7 +429,7 @@ ${activeDirectivesText}
                                                 onClick={() => toggleCat('all')}
                                                 className={`col-span-3 px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all duration-300 ${targetCats.includes('all') ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/[0.02] border-white/10 text-white/30 hover:border-white/20'}`}
                                             >🌐 Todos los Sectores</button>
-                                            {CATEGORIES.map(cat => (
+                                            {categories.map(cat => (
                                                 <button
                                                     key={cat.id}
                                                     onClick={() => toggleCat(cat.id)}

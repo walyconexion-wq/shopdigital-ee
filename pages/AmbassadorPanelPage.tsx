@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
 import { 
     guardarComercio, 
     eliminarComercio, 
@@ -62,6 +62,7 @@ const extractSrcFromIframe = (input: string) => {
 const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const categories = useTownCategories(townId);
     const { user } = useAuth();
     const [activeRoom, setActiveRoom] = useState<RoomType>('hall');
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -544,7 +545,7 @@ const AmbassadorPanelPage: React.FC<AmbassadorPanelPageProps> = ({ allShops }) =
                                                     </h3>
                                                     <div className="flex items-center gap-2 mt-1">
                                                         <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-400/20">
-                                                            {CATEGORIES.find(c => c.id === shop.category)?.name || shop.category}
+                                                            {categories.find(c => c.id === shop.category)?.name || shop.category}
                                                         </span>
                                                         <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-1">
                                                             <MapPin size={10} /> {shop.zone}

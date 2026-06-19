@@ -422,7 +422,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                         className={btnClass}
                                         style={btnStyle}
                                     >
-                                        {town.id === 'san-martin-de-los-andes' ? 'San Martín' : town.id === 'villa-la-angostura' ? 'La Angostura' : 'Bariloche'}
+                                        {town.id === 'san-martin-de-los-andes' ? 'San Martín' : town.id === 'villa-la-angostura' ? 'V. La Angostura' : 'Bariloche'}
                                     </button>
                                 );
                             })}

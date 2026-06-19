@@ -36,10 +36,10 @@ const Logo: React.FC = () => {
 
     const getTownTitle = (id: string): string => {
         if (!id) return 'ShopDigital';
-        if (id === 'san-martin-de-los-andes') return 'San Martín';
-        if (id === 'villa-la-angostura') return 'La Angostura';
+        if (id === 'san-martin-de-los-andes') return 'San Martín de los Andes';
+        if (id === 'villa-la-angostura') return 'Villa La Angostura';
         if (id === 'bariloche') return 'Bariloche';
-        if (id === 'esteban-echeverria') return 'Echeverría';
+        if (id === 'esteban-echeverria') return 'Esteban Echeverría';
         return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     };
 

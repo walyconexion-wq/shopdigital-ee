@@ -12,7 +12,9 @@ export interface Category {
   id: string;
   slug: string;
   name: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
+  iconKey?: string;
+  subcategories?: string[];
 }
 
 export interface Invoice {

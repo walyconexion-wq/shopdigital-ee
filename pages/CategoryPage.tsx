@@ -35,6 +35,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     // Obtener townName amigable
     const townName = isInTraslasierra 
         ? TRASLASIERRA_REGION.towns.find(t => t.id === townId)?.name || townId.replace(/-/g, ' ')
+        : isInPatagonia
+        ? PATAGONIA_7_LAGOS_REGION.towns.find(t => t.id === townId)?.name || townId.replace(/-/g, ' ')
         : (globalConfig?.townName || 'Esteban Echeverría');
 
     const [activeLocation, setActiveLocation] = useState<string>('');
@@ -58,19 +60,27 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
         } catch { return `rgba(34, 211, 238, ${alpha})`; }
     };
 
+    // PRIMERO: Declarar selectedCategory para que los useEffect de abajo puedan referenciarlo
+    const selectedCategory = useMemo(() => {
+        const availableCategories = globalConfig?.categories || CATEGORIES;
+        return availableCategories.find((cat: any) => cat.slug === categorySlug);
+    }, [categorySlug, globalConfig]);
+
+    // Resetear al cambiar de zona o categoría para evitar fantasmas de filtrado
+    useEffect(() => {
+        setActiveLocation('');
+        setActiveSubcategory('');
+    }, [townId, categorySlug]);
+
     // Sincronizar activeLocation con las localidades validadas por el hook
     useEffect(() => {
         if (localities.length > 0 && (!activeLocation || !localities.includes(activeLocation))) {
             setActiveLocation(localities[0]);
         }
-    }, [localities]);
+    }, [localities, activeLocation]);
 
-    // Sincronizar activeSubcategory con la primera disponible
-    useEffect(() => {
-        if (selectedCategory?.subcategories && selectedCategory.subcategories.length > 0 && !activeSubcategory) {
-            setActiveSubcategory(selectedCategory.subcategories[0]);
-        }
-    }, [selectedCategory, activeSubcategory]);
+    // NO auto-seleccionar subcategoría: dejar vacío muestra TODOS los comercios.
+    // El usuario selecciona manualmente si quiere filtrar.
 
     React.useEffect(() => {
         if (titleClicks === 0) return;
@@ -90,15 +100,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
         navigate(`/${townId}/tablero-maestro`);
     };
 
-    const selectedCategory = useMemo(() => {
-        const availableCategories = globalConfig?.categories || CATEGORIES;
-        return availableCategories.find((cat: any) => cat.slug === categorySlug);
-    }, [categorySlug, globalConfig]);
-
     const groupedShops = useMemo(() => {
         if (!selectedCategory || localities.length === 0) return {};
         const grouped: Record<string, Shop[]> = {};
-        const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        const normalize = (str: any) => {
+            if (typeof str !== 'string') return '';
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        };
         
         localities.forEach(loc => {
             const normalizedLoc = normalize(loc);
@@ -109,21 +117,22 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 const isActive = shop.isActive !== false;
 
                 // 2. Coincidencia de Categoría
+                const shopCatStr = typeof shop.category === 'string' ? shop.category : String(shop.category || '');
+                const selCatNameStr = typeof selectedCategory.name === 'string' ? selectedCategory.name : String(selectedCategory.name || '');
+
                 const categoryMatch =
                     shop.category === selectedCategory.id ||
                     shop.category === selectedCategory.slug ||
-                    shop.category?.toLowerCase() === selectedCategory.name.toLowerCase();
+                    shopCatStr.toLowerCase() === selCatNameStr.toLowerCase();
 
                 // 3. Localidad — busca por shop.zone o por dirección
-                // Para zonas nuevas (Ezeiza) se filtra estrictamente.
-                // Para la zona madre y Traslasierra se incluyen los sin zone.
                 const isMotherZone = townId === 'esteban-echeverria' || isInTraslasierra;
                 const isSingleLocalityFallback = localities.length <= 1 || loc === 'Centro' || isInPatagonia;
                 const zoneMatch = (isMotherZone || isSingleLocalityFallback)
                     ? ((shop.zone === loc) || !shop.zone || normalize(shop.address || '').includes(normalizedLoc) || isSingleLocalityFallback)
                     : ((shop.zone === loc) || normalize(shop.address || '').includes(normalizedLoc));
 
-                // 4. Coincidencia de Subcategoría
+                // 4. Coincidencia de Subcategoría (solo si el usuario seleccionó una)
                 const subMatch = !activeSubcategory || 
                     (shop.specialty && normalize(shop.specialty).includes(normalize(activeSubcategory))) ||
                     (shop.description && normalize(shop.description).includes(normalize(activeSubcategory))) ||
@@ -133,7 +142,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
             });
         });
         return grouped;
-    }, [selectedCategory, allShops, localities, townId]);
+    }, [selectedCategory, allShops, localities, townId, activeSubcategory]);
 
     // Obtener el color de la localidad activa según su índice en el array
     const activeIdx = localities.indexOf(activeLocation);
@@ -224,7 +233,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                     }}
                 >
                     <h2 className={`text-[20px] font-[900] uppercase tracking-[0.25em] leading-none text-center mb-2 ${isDayMode ? 'text-slate-800 drop-shadow-sm' : 'text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]'}`}>
-                        {selectedCategory.name}
+                        {activeSubcategory || selectedCategory.name}
                     </h2>
                     <div className="h-[1px] w-16 mb-2 mx-auto" style={{ backgroundColor: hexToRgba(themeColor, 0.6), boxShadow: `0 0 10px ${hexToRgba(themeColor, 0.8)}` }}></div>
                     <p className={`text-[8.5px] font-bold uppercase tracking-[0.15em] leading-tight text-center px-6 ${isDayMode ? 'text-slate-600' : 'text-white/90'}`}>
@@ -328,7 +337,10 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                 return (
                                     <button
                                         key={sub}
-                                        onClick={() => { playNeonClick(); setActiveSubcategory(sub); }}
+                                        onClick={() => { 
+                                            playNeonClick(); 
+                                            setActiveSubcategory(prev => prev === sub ? '' : sub); 
+                                        }}
                                         className={btnClass}
                                         style={btnStyle}
                                     >
@@ -357,20 +369,20 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                 <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-white/20">
                                     <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
                                 </div>
-                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-white/[0.04]">
+                                <div className={`flex-1 flex flex-col justify-between text-left min-w-0 ${isDayMode ? 'bg-slate-50/50' : 'bg-white/[0.04]'}`}>
                                     <div className="space-y-1.5 overflow-hidden p-4 pb-2">
-                                        <h3 className="font-[1000] text-[19px] shop-title-text text-white uppercase tracking-tighter leading-none text-shadow-premium">{shop.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}</h3>
-                                        <div className="flex items-start gap-1 pb-1 text-white/80 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden">
-                                            <MapPin size={12} strokeWidth={3} className={`flex-shrink-0 mt-0.5 ${activeColors.pin}`} />
+                                        <h3 className={`font-[1000] text-[19px] shop-title-text uppercase tracking-tighter leading-none text-shadow-premium ${isDayMode ? 'text-slate-800' : 'text-white'}`}>{String(shop.name || '').replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}</h3>
+                                        <div className={`flex items-start gap-1 pb-1 shop-address-sub uppercase text-[10px] font-bold tracking-tight leading-snug overflow-hidden ${isDayMode ? 'text-slate-600' : 'text-white/80'}`}>
+                                            <MapPin size={12} strokeWidth={3} className={`flex-shrink-0 mt-0.5 ${isDayMode ? 'text-slate-500' : activeColors.pin}`} />
                                             <span className="break-words line-clamp-2">{shop.address}</span>
                                         </div>
                                         <div className="flex justify-between items-end mt-auto pt-1">
                                             <div className="flex flex-col gap-0.5 min-w-0 pr-2">
                                                 <div className="flex items-center gap-1">
-                                                    {[1, 2, 3, 4, 5].map(star => (<Star key={star} size={11} className={`${star <= Math.round(shop.rating) ? 'fill-yellow-400 text-yellow-400' : 'fill-transparent text-white/20'}`} />))}
+                                                    {[1, 2, 3, 4, 5].map(star => (<Star key={star} size={11} className={`${star <= Math.round(shop.rating) ? 'fill-yellow-400 text-yellow-400' : `fill-transparent ${isDayMode ? 'text-slate-300' : 'text-white/20'}`}`} />))}
                                                     <span className="text-[9px] font-bold text-yellow-400/80 ml-1">{shop.rating}</span>
                                                 </div>
-                                                {shop.specialty && <p className="text-[8px] font-bold text-white/50 italic tracking-wide leading-tight line-clamp-1">"{shop.specialty}"</p>}
+                                                {shop.specialty && <p className={`text-[8px] font-bold italic tracking-wide leading-tight line-clamp-1 ${isDayMode ? 'text-slate-500' : 'text-white/50'}`}>"{shop.specialty}"</p>}
                                             </div>
                                             <div className="flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-md border shadow-inner" style={{ backgroundColor: hexToRgba(themeColor, 0.2), borderColor: hexToRgba(themeColor, 0.3) }}>
                                                 <Eye size={12} style={{ color: themeColor }} />
@@ -390,9 +402,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                             </div>
                         ))
                     ) : (
-                        <div className="py-12 px-6 text-center glass-card-3d bg-white/5 border-white/10 rounded-3xl mt-4">
-                            <MapPin size={32} className="mx-auto text-white/20 mb-3" />
-                            <p className="text-[10px] sm:text-[11px] font-black text-white/50 uppercase tracking-widest leading-relaxed">No hay comercios adheridos <br/>en {activeLocation} para {selectedCategory?.name}</p>
+                        <div className={`py-12 px-6 text-center glass-card-3d rounded-3xl mt-4 ${isDayMode ? 'bg-white border-slate-200' : 'bg-white/5 border-white/10'}`}>
+                            <MapPin size={32} className={`mx-auto mb-3 ${isDayMode ? 'text-slate-300' : 'text-white/20'}`} />
+                            <p className={`text-[10px] sm:text-[11px] font-black uppercase tracking-widest leading-relaxed ${isDayMode ? 'text-slate-600' : 'text-white/50'}`}>No hay comercios adheridos <br/>en {activeLocation} para {selectedCategory?.name}</p>
                         </div>
                     )}
                 </div>

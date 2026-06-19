@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Offer } from '../types';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
 import { guardarOferta } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import {
@@ -30,6 +30,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
     const navigate = useNavigate();
     const { townId = 'esteban-echeverria', target, offerId } = useParams<{ townId?: string; target?: string; offerId?: string }>();
     const { localities } = useTownLocalities(townId);
+    const categories = useTownCategories(townId);
 
     const isEditing = !!offerId;
     const offerTarget = (target?.toUpperCase() || 'B2B') as 'B2B' | 'B2C';
@@ -46,7 +47,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
         image: '',
         merchantName: '',
         merchantZone: '', 
-        category: CATEGORIES[0].id,
+        category: categories[0]?.id || '',
         validFrom: new Date().toISOString().split('T')[0],
         validUntil: '',
         stockLimit: '',
@@ -226,7 +227,7 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
                     <div>
                         <label className={LABEL_CLASS}><Type size={10} /> Rubro</label>
                         <select name="category" value={formData.category} onChange={handleChange} className={INPUT_CLASS}>
-                            {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                 </div>

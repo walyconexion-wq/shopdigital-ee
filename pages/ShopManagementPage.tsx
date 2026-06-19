@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
+import { resolveIcon } from '../utils/iconResolver';
 import { guardarComercio, eliminarComercio, aprobarComercioOnboarding } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import {
@@ -33,6 +34,7 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userE
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const { localities } = useTownLocalities(townId);
+    const categories = useTownCategories(townId);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [activeLocation, setActiveLocation] = useState('');
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -44,7 +46,7 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userE
         }
     }, [localities]);
 
-    const selectedCategory = CATEGORIES.find(c => c.id === selectedCategoryId);
+    const selectedCategory = categories.find(c => c.id === selectedCategoryId);
 
     // Filter shops by selected category and location
     const filteredShops = useMemo(() => {
@@ -62,11 +64,11 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userE
     // Count shops per category (all locations)
     const shopCountByCategory = useMemo(() => {
         const counts: Record<string, number> = {};
-        CATEGORIES.forEach(cat => {
+        categories.forEach(cat => {
             counts[cat.id] = allShops.filter(s => s.category === cat.id).length;
         });
         return counts;
-    }, [allShops]);
+    }, [allShops, categories]);
 
     const shopStats = useMemo(() => {
         return {
@@ -206,7 +208,7 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userE
 
                     <h2 className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-2 mb-3 mt-8">Navegación por Rubro</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {CATEGORIES.map(cat => {
+                        {categories.map(cat => {
                             const count = shopCountByCategory[cat.id] || 0;
                             return (
                                 <div
@@ -218,7 +220,7 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userE
                                 >
                                     <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/5 rounded-full blur-[20px] pointer-events-none" />
                                     <div className="text-yellow-400 group-hover:scale-110 transition-transform">
-                                        {cat.icon}
+                                        {cat.iconKey ? resolveIcon(cat.iconKey) : cat.icon}
                                     </div>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
                                         {cat.name}

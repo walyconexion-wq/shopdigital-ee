@@ -6,10 +6,10 @@ service cloud.firestore {
     // 🛡️ PROTOCOLO DOBERMAN 2.0 — FIRESTORE RULES
     // ═══════════════════════════════════════════
     
-    // Comercios: lectura pública (catálogo), creación pública (restringida a inactivos para aprobación), edición solo autenticados
+    // Comercios: lectura pública (catálogo), creación pública (restringida a inactivos para aprobación) o autenticados (siembra/admin), edición solo autenticados
     match /comercios/{comercioId} {
       allow read: if true;
-      allow create: if request.resource.data.isActive == false;
+      allow create: if request.auth != null || request.resource.data.isActive == false;
       allow update, delete: if request.auth != null;
     }
     

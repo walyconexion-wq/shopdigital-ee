@@ -8,7 +8,7 @@ import {
 import { Lead } from '../types';
 import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio, eliminarComercio, actualizarComercio } from '../firebase';
 import { playNeonClick } from '../utils/audio';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 
 const categoryMap: Record<string, string> = {
@@ -21,15 +21,18 @@ const categoryMap: Record<string, string> = {
     "Otro": "servicios"
 };
 
-const getCategoryName = (catIdOrName: string) => {
-    const found = CATEGORIES.find(c => c.id === catIdOrName);
-    return found ? found.name : catIdOrName;
-};
+
 
 const SurveyManagementPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const { localities } = useTownLocalities(townId);
+    const categories = useTownCategories(townId);
+
+    const getCategoryName = (catIdOrName: string) => {
+        const found = categories.find(c => c.id === catIdOrName);
+        return found ? found.name : catIdOrName;
+    };
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -69,7 +72,7 @@ const SurveyManagementPage: React.FC = () => {
             const newShopId = `shop-${Date.now()}`;
             const slugBase = lead.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
             
-            const categoryObj = CATEGORIES.find(c => c.id === lead.category || c.id === categoryMap[lead.category]) || CATEGORIES[0];
+            const categoryObj = categories.find(c => c.id === lead.category || c.id === categoryMap[lead.category]) || categories[0] || { id: lead.category, name: lead.category };
 
             const newShop = {
                 id: newShopId,
@@ -370,7 +373,7 @@ const SurveyManagementPage: React.FC = () => {
                                             className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-yellow-500/50 appearance-none"
                                         >
                                             <optgroup label="Rubros Disponibles">
-                                                {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                             </optgroup>
                                         </select>
                                     </div>

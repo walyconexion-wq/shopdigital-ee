@@ -7,7 +7,8 @@ import {
     ExternalLink, ShieldAlert
 } from 'lucide-react';
 import { Shop, Invoice } from '../types';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
+import { resolveIcon } from '../utils/iconResolver';
 import { suscribirseAFacturasPorZona, crearFactura, actualizarEstadoFactura, actualizarFactura } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import { playNeonClick } from '../utils/audio';
@@ -21,6 +22,7 @@ interface BillingManagementPageProps {
 const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
+    const categories = useTownCategories(townId);
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
@@ -80,7 +82,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
 
     const invoiceCountByCategory = useMemo(() => {
         const counts: Record<string, number> = {};
-        CATEGORIES.forEach(cat => {
+        categories.forEach(cat => {
             counts[cat.id] = invoices.filter(inv => {
                 const shop = allShops.find(s => s.id === inv.shopId);
                 const shopCat = normalize(shop?.category || "");
@@ -88,7 +90,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             }).length;
         });
         return counts;
-    }, [invoices, allShops]);
+    }, [invoices, allShops, categories]);
 
     // View 2 (Detail) computations
     const filteredInvoices = useMemo(() => {
@@ -100,7 +102,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
             // 1. Filtrar por Rubro (Case-Insensitive)
             const shopCat = normalize(shop.category);
             const catId = normalize(selectedCategoryId);
-            const catSlug = normalize(CATEGORIES.find(c => c.id === selectedCategoryId)?.slug || "");
+            const catSlug = normalize(categories.find(c => c.id === selectedCategoryId)?.slug || "");
             const catMatch = shopCat === catId || shopCat === catSlug;
             if (!catMatch) return false;
             
@@ -313,7 +315,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                         <>
                             <h2 className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-2 mb-3 mt-8">Navegación por Rubro</h2>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                {CATEGORIES.map(cat => {
+                                {categories.map(cat => {
                                     const count = invoiceCountByCategory[cat.id] || 0;
                                     return (
                                         <div
@@ -325,7 +327,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                         >
                                             <div className="absolute top-0 right-0 w-16 h-16 bg-violet-500/5 rounded-full blur-[20px] pointer-events-none" />
                                             <div className="text-violet-400 group-hover:scale-110 transition-transform">
-                                                {cat.icon}
+                                                {cat.iconKey ? resolveIcon(cat.iconKey) : cat.icon}
                                             </div>
                                             <span className="text-[8px] font-black uppercase tracking-widest text-white/70 text-center leading-tight">
                                                 {cat.name}
@@ -349,7 +351,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
     // =========================================================
     // VIEW 2: Location Tabs + Mood Filters + Invoice List
     // =========================================================
-    const selectedCategory = CATEGORIES.find(c => c.id === selectedCategoryId);
+    const selectedCategory = categories.find(c => c.id === selectedCategoryId);
     
     return (
         <div className="min-h-screen bg-black text-white pb-24 relative overflow-hidden selection:bg-violet-500/30">
@@ -457,7 +459,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                     <div className="space-y-4">
                         {filteredInvoices.map(inv => {
                             const shop = allShops.find(s => s.id === inv.shopId);
-                            const catSlug = CATEGORIES.find(c => c.id === shop?.category || c.slug === shop?.category)?.slug || 'categoria';
+                            const catSlug = categories.find(c => c.id === shop?.category || c.slug === shop?.category)?.slug || 'categoria';
                             const invoiceUrl = shop ? `${window.location.origin}/${townId}/${catSlug}/${shop.slug}/factura` : '#';
 
                             return (
@@ -575,7 +577,7 @@ const BillingManagementPage: React.FC<BillingManagementPageProps> = ({ allShops 
                                         {allShops
                                             .filter(s => {
                                                 const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                                                const catMatch = s.category === selectedCategoryId || s.category === CATEGORIES.find(c => c.id === selectedCategoryId)?.slug;
+                                                const catMatch = s.category === selectedCategoryId || s.category === categories.find(c => c.id === selectedCategoryId)?.slug;
                                                 const normalizedLoc = normalize(activeLocation);
                                                 const locMatch = s.zone === activeLocation || (s.address && normalize(s.address).includes(normalizedLoc));
                                                 return catMatch && locMatch;

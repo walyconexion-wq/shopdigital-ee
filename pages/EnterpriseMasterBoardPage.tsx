@@ -3,11 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Lock, ChevronLeft, Factory, Zap, Globe, ExternalLink,
     Check, Copy, Megaphone, MapPin, Palette, Terminal, ShieldAlert,
-    Store, Users, ShoppingBag, Network, Mountain
+    Store, Users, ShoppingBag, Network, Mountain, Trash2
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { DobermanBadge } from '../components/DobermanBadge';
-import { subscribeToGlobalConfig, guardarComercio } from '../firebase';
+import { subscribeToGlobalConfig, guardarComercio, crearFactura, eliminarComercio, db, eliminarFactura } from '../firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const PROVINCES = [
     { id: 'buenos-aires', name: 'BUENOS AIRES',  emoji: '🏙️' },
@@ -18,6 +19,7 @@ const PROVINCES = [
     { id: 'entre-rios',   name: 'ENTRE RÍOS',   emoji: '🌊' },
     { id: 'misiones',     name: 'MISIONES',      emoji: '🌴' },
     { id: 'neuquen',      name: 'NEUQUÉN',       emoji: '⛽' },
+    { id: 'patagonia',    name: 'PATAGONIA',     emoji: '🏔️' },
 ];
 
 const STATIC_TOWNS = [
@@ -40,6 +42,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
         const queryParams = new URLSearchParams(window.location.search);
         const prov = queryParams.get('provincia');
         if (prov === 'cordoba') return 'mina-clavero';
+        if (prov === 'neuquen' || prov === 'patagonia') return 'bariloche';
         return 'esteban-echeverria';
     });
 
@@ -50,6 +53,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
     const [zoneConfig, setZoneConfig] = useState<any>({ primaryColor: '#06b6d4', townName: '' });
     const [isSeeding, setIsSeeding] = useState(false);
     const [hasSeeded, setHasSeeded] = useState(false);
+    const [isClearingSeed, setIsClearingSeed] = useState(false);
 
     useEffect(() => {
         const unsub = subscribeToGlobalConfig((cfg) => {
@@ -64,6 +68,8 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             setSelectedTownId('mina-clavero');
         } else if (provinciaParam === 'buenos-aires') {
             setSelectedTownId(prev => (prev === 'ezeiza' || prev === 'esteban-echeverria') ? prev : 'esteban-echeverria');
+        } else if (provinciaParam === 'neuquen' || provinciaParam === 'patagonia') {
+            setSelectedTownId('bariloche');
         }
     }, [provinciaParam]);
 
@@ -282,6 +288,13 @@ const EnterpriseMasterBoardPage: React.FC = () => {
             };
 
             let totalEmpresas = 0;
+            const provId = selectedTownId === 'bariloche' || selectedTownId === 'san-martin-de-los-andes' || selectedTownId === 'villa-la-angostura'
+                ? 'patagonia'
+                : selectedTownId === 'mina-clavero' || selectedTownId === 'traslasierra'
+                ? 'cordoba'
+                : selectedTownId === 'ezeiza' || selectedTownId === 'esteban-echeverria'
+                ? 'buenos-aires'
+                : 'buenos-aires';
 
             for (const [catSlug, catData] of Object.entries(B2B_SEED_DATA)) {
                 const id = `ent-sample-${catSlug}-${selectedTownId}`;
@@ -296,6 +309,7 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                     entityType: 'enterprise',
                     reach: 'regional',
                     zone: zoneName,
+                    province: provId,
                     address: `Parque Industrial ${zoneName}, Lote ${10 + totalEmpresas}, Argentina`,
                     phone: `11${5000 + Math.floor(Math.random() * 5000)}${1000 + Math.floor(Math.random() * 9000)}`,
                     image: catData.img,
@@ -323,16 +337,85 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                 };
 
                 await guardarComercio(enterpriseData, selectedTownId);
+
+                // Inyectar factura de muestra B2B
+                const invoiceId = `inv-sample-${id}`;
+                const newInvoice = {
+                    id: invoiceId,
+                    shopId: id,
+                    shopName: catData.name,
+                    townId: selectedTownId,
+                    locality: zoneName,
+                    period: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`,
+                    amount: catData.price > 0 ? Math.round(catData.price * 0.1) : 10000,
+                    issueDate: new Date().toISOString(),
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    status: 'pending',
+                    concept: 'Abono Corporativo B2B de Demostración',
+                    isSeed: true
+                };
+                await crearFactura(newInvoice);
+
                 totalEmpresas++;
             }
 
             setHasSeeded(true);
-            alert(`🏭🌱 ¡Siembra Industrial B2B completada con éxito en ${zoneName}!\n\nSe crearon ${totalEmpresas} empresas industriales de muestra (una por cada categoría B2B).\n\nTodas marcadas con "isSeed: true" y en estado de incubación.`);
+            alert(`🏭🌱 ¡Siembra Industrial B2B completada con éxito en ${zoneName}!\n\nSe crearon ${totalEmpresas} empresas industriales de muestra y sus facturas asociadas.\n\nTodas marcadas con "isSeed: true" y en estado de incubación.`);
         } catch (error: any) {
             console.error('Error en la siembra industrial B2B:', error);
             alert(`❌ Error al sembrar muestras industriales: ${error.message || error}`);
         } finally {
             setIsSeeding(false);
+        }
+    };
+
+    const limpiarMuestrasB2B = async () => {
+        const confirmed = window.confirm(
+            `⚠️ LIMPIEZA DE DATOS INDUSTRIALES B2B\n\n¿Estás seguro de eliminar todas las empresas e industrias de muestra (marcadas con isSeed: true o que tengan IDs del semillero) en la zona "${zoneName}" y sus facturas?\n\nEsta acción es irreversible.`
+        );
+        if (!confirmed) return;
+
+        setIsClearingSeed(true);
+        try {
+            playNeonClick();
+            // 1. Obtener y borrar comercios/industrias de muestra de la zona
+            const shopsCol = collection(db, "comercios");
+            const qShops = query(shopsCol, where("townId", "==", selectedTownId));
+            const snapShops = await getDocs(qShops);
+            let deletedShops = 0;
+            for (const docSnap of snapShops.docs) {
+                const data = docSnap.data();
+                if (data.isSeed === true || docSnap.id.startsWith("ent-sample-") || docSnap.id.endsWith("-sample")) {
+                    await eliminarComercio(docSnap.id);
+                    deletedShops++;
+                }
+            }
+
+            // 2. Obtener y borrar facturas de muestra de la zona
+            const invoicesCol = collection(db, "facturas");
+            const qInvoices = query(invoicesCol, where("townId", "==", selectedTownId));
+            const snapInvoices = await getDocs(qInvoices);
+            let deletedInvoices = 0;
+            for (const docSnap of snapInvoices.docs) {
+                const data = docSnap.data();
+                const isSampleInvoice = 
+                    data.isSeed === true || 
+                    docSnap.id.startsWith("inv-sample-") || 
+                    (data.shopId && (data.shopId.startsWith("ent-sample-") || data.shopId.endsWith("-sample")));
+                
+                if (isSampleInvoice) {
+                    await eliminarFactura(docSnap.id);
+                    deletedInvoices++;
+                }
+            }
+
+            setHasSeeded(false);
+            alert(`🧹 ¡Limpieza B2B completada en ${zoneName}!\n\nSe eliminaron ${deletedShops} empresas de muestra y ${deletedInvoices} facturas de muestra.`);
+        } catch (error: any) {
+            console.error("Error en la limpieza de muestras B2B:", error);
+            alert(`❌ Error al limpiar muestras B2B: ${error.message || error}`);
+        } finally {
+            setIsClearingSeed(false);
         }
     };
 
@@ -555,6 +638,18 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                             <Factory size={18} className={hasSeeded ? 'text-emerald-400' : 'text-green-400 animate-pulse'} />
                             <span className={hasSeeded ? 'text-[13px] text-emerald-300' : 'text-[13px] text-green-300'}>
                                 {isSeeding ? '⏳ Sembrando Industrias...' : hasSeeded ? '✅ Muestras Industriales Pobladas' : '🌱 Sembrar Muestras Industriales B2B'}
+                            </span>
+                        </button>
+
+                        {/* 🧹 LIMPIAR MUESTRAS DE PRUEBA */}
+                        <button
+                            disabled={isClearingSeed}
+                            onClick={limpiarMuestrasB2B}
+                            className="w-full glass-card-neon text-white p-4 rounded-xl font-[1000] uppercase tracking-widest border border-red-500/40 hover:border-red-400 hover:bg-red-500/10 shadow-[0_0_20px_rgba(239,68,68,0.15)] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            <Trash2 size={16} className={isClearingSeed ? 'animate-spin' : 'text-red-400'} />
+                            <span className="text-[10px] text-red-300">
+                                {isClearingSeed ? '⏳ Limpiando Muestras...' : '🧹 Limpiar Muestras Industriales (Reset)'}
                             </span>
                         </button>
 

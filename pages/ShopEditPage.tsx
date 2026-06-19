@@ -11,7 +11,7 @@ import {
   MessageSquare, Star, Sparkles, CheckCircle
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
-import { CATEGORIES } from '../constants';
+import { useTownCategories } from '../hooks/useTownCategories';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
@@ -64,6 +64,7 @@ const WALLPAPER_PATTERNS = [
 
 const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
   const { townId = 'esteban-echeverria', shopId, shopSlug } = useParams<{ townId?: string; shopId?: string; shopSlug?: string }>();
+  const categories = useTownCategories(townId);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { localities } = useTownLocalities(townId);
@@ -229,7 +230,7 @@ const ShopEditPage: React.FC<ShopEditPageProps> = ({ allShops }) => {
                   onChange={(e) => handleInputChange('category', e.target.value)}
                   className="w-full bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-violet-500/50 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all"
                 >
-                  {CATEGORIES.map(cat => (
+                  {categories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
