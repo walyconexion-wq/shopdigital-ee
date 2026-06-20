@@ -337,6 +337,9 @@ const App: React.FC = () => {
                     {/* 🌐 HOME GLOBAL — Comando Central del Hormiguero */}
                     <Route path="/" element={<GlobalHomePage />} />
 
+                    {/* 🌐 NOSOTROS INSTITUCIONAL — Genérico */}
+                    <Route path="/nosotros" element={<AboutPage />} />
+
                     {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
                     <Route path="/region/:regionId" element={<RegionSelectPage />} />
                     
