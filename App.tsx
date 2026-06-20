@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useParams, Navigate, useLocation } from 'react-router-dom';
 import { LanguageProvider } from './components/LanguageContext';
 import { Shop, Client, Offer } from './types';
@@ -11,75 +11,114 @@ import { populateInvoices, rescueEzeizaData } from './dbFix';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ✅ CRITICAL PATH — Importaciones síncronas (se necesitan en el primer render)
+// ─────────────────────────────────────────────────────────────────────────────
 import Home from './pages/Home';
-import CategoryPage from './pages/CategoryPage';
-import ShopDetailPage from './pages/ShopDetailPage';
-import CredencialPage from './pages/CredencialPage';
-import AdminPanelPage from './pages/AdminPanelPage';
-import DiscountsPage from './pages/DiscountsPage';
-import LandingPage from './pages/LandingPage';
-import AboutPage from './pages/AboutPage';
-import MerchantLandingPage from './pages/MerchantLandingPage';
-import MasterPanelPage from './pages/MasterPanelPage';
-import { DirectorBunkerPage } from './pages/DirectorBunkerPage';
-import { AdminBunkerPage } from './pages/AdminBunkerPage';
-import { AccountingBunkerPage } from './pages/AccountingBunkerPage';
-import { MarketingBunkerPage } from './pages/MarketingBunkerPage';
-import { HRBunkerPage } from './pages/HRBunkerPage';
-import { SystemsBunkerPage } from './pages/SystemsBunkerPage';
-import { PlanningBunkerPage } from './pages/PlanningBunkerPage';
-import { InvestmentBunkerPage } from './pages/InvestmentBunkerPage';
-import { MaintenanceBunkerPage } from './pages/MaintenanceBunkerPage';
-import { SecOpsBunkerPage } from './pages/SecOpsBunkerPage';
-import { CloningBunkerPage } from './pages/CloningBunkerPage';
-import ValidationPage from './pages/ValidationPage';
-import SubscriptionPage from './pages/SubscriptionPage';
-import AmbassadorPanelPage from './pages/AmbassadorPanelPage';
-import AmbassadorAgendaPage from './pages/AmbassadorAgendaPage';
-import AmbassadorRecruitPage1 from './pages/AmbassadorRecruitPage1';
-import AmbassadorRecruitPage2 from './pages/AmbassadorRecruitPage2';
-import AmbassadorRecruitmentAdminPage from './pages/AmbassadorRecruitmentAdminPage';
-import AcademyPage from './pages/AcademyPage';
-import ClientSubscriptionPage from './pages/ClientSubscriptionPage';
-import ClientsDatabasePage from './pages/ClientsDatabasePage';
-import ClientOffersPage from './pages/ClientOffersPage';
-import ClientLandingPage from './pages/ClientLandingPage';
-import BusinessLandingPage from './pages/BusinessLandingPage';
-import ShopManagementPage from './pages/ShopManagementPage';
-import ClientManagementPage from './pages/ClientManagementPage';
-import ClientCredentialPage from './pages/ClientCredentialPage';
-import ClientValidationPage from './pages/ClientValidationPage';
-import OfferManagementPage from './pages/OfferManagementPage';
-import OfferFormPage from './pages/OfferFormPage';
-import BillingManagementPage from './pages/BillingManagementPage';
-import InvoiceViewerPage from './pages/InvoiceViewerPage';
-import TermsPage from './pages/TermsPage';
-import SurveyFormPage from './pages/SurveyFormPage';
-import SurveyManagementPage from './pages/SurveyManagementPage';
-import ShopMenuPage from './pages/ShopMenuPage';
-import ShopEditPage from './pages/ShopEditPage';
-import GlobalConfigPage from './pages/GlobalConfigPage';
-import FactoryPanelPage from './pages/FactoryPanelPage';
-import ClientVipCredentialPage from './pages/ClientVipCredentialPage';
-import EnterpriseHomePage from './pages/EnterpriseHomePage';
-import EnterpriseCategoryPage from './pages/EnterpriseCategoryPage';
-import EnterpriseDetailPage from './pages/EnterpriseDetailPage';
-import EnterpriseManagementPage from './pages/EnterpriseManagementPage';
-import EnterpriseFormPage from './pages/EnterpriseFormPage';
-import EnterpriseGlobalConfigPage from './pages/EnterpriseGlobalConfigPage';
-import EnterpriseMasterBoardPage from './pages/EnterpriseMasterBoardPage';
-import CreditsPosnetPage from './pages/CreditsPosnetPage';
-import EnterpriseSubscriptionPage from './pages/EnterpriseSubscriptionPage';
-import MarketingPanelPage from './pages/MarketingPanelPage';
-import LiveBroadcastPage from './pages/LiveBroadcastPage';
-import ShopMasterPanelPage from './pages/ShopMasterPanelPage';
 import GlobalHomePage from './pages/GlobalHomePage';
-import RegionSelectPage from './pages/RegionSelectPage';
-import RegionSeedPage from './pages/RegionSeedPage';
-import ShopOnboardingPage from './pages/ShopOnboardingPage';
-import EventLandingPage from './pages/EventLandingPage';
+import LandingPage from './pages/LandingPage';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚡ LAZY ROUTES — Cargadas sólo cuando el usuario navega a esa ruta
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Páginas genéricas y públicas
+const AboutPage               = React.lazy(() => import('./pages/AboutPage'));
+const MerchantLandingPage     = React.lazy(() => import('./pages/MerchantLandingPage'));
+const RegionSelectPage        = React.lazy(() => import('./pages/RegionSelectPage'));
+const RegionSeedPage          = React.lazy(() => import('./pages/RegionSeedPage'));
+const CategoryPage            = React.lazy(() => import('./pages/CategoryPage'));
+const ShopDetailPage          = React.lazy(() => import('./pages/ShopDetailPage'));
+const CredencialPage          = React.lazy(() => import('./pages/CredencialPage'));
+const DiscountsPage           = React.lazy(() => import('./pages/DiscountsPage'));
+const TermsPage               = React.lazy(() => import('./pages/TermsPage'));
+const EventLandingPage        = React.lazy(() => import('./pages/EventLandingPage'));
+const ShopMenuPage            = React.lazy(() => import('./pages/ShopMenuPage'));
+const BusinessLandingPage     = React.lazy(() => import('./pages/BusinessLandingPage'));
+
+// Suscripciones y onboarding
+const SubscriptionPage        = React.lazy(() => import('./pages/SubscriptionPage'));
+const ShopOnboardingPage      = React.lazy(() => import('./pages/ShopOnboardingPage'));
+const ValidationPage          = React.lazy(() => import('./pages/ValidationPage'));
+
+// Paneles de administración (admin-panels chunk)
+const AdminPanelPage          = React.lazy(() => import('./pages/AdminPanelPage'));
+const MasterPanelPage         = React.lazy(() => import('./pages/MasterPanelPage'));
+const ShopEditPage            = React.lazy(() => import('./pages/ShopEditPage'));
+const ShopMasterPanelPage     = React.lazy(() => import('./pages/ShopMasterPanelPage'));
+const GlobalConfigPage        = React.lazy(() => import('./pages/GlobalConfigPage'));
+const MarketingPanelPage      = React.lazy(() => import('./pages/MarketingPanelPage'));
+const CreditsPosnetPage       = React.lazy(() => import('./pages/CreditsPosnetPage'));
+
+// Embajadores y academia (admin-panels chunk)
+const AmbassadorPanelPage          = React.lazy(() => import('./pages/AmbassadorPanelPage'));
+const AmbassadorAgendaPage         = React.lazy(() => import('./pages/AmbassadorAgendaPage'));
+const AmbassadorRecruitPage1       = React.lazy(() => import('./pages/AmbassadorRecruitPage1'));
+const AmbassadorRecruitPage2       = React.lazy(() => import('./pages/AmbassadorRecruitPage2'));
+const AmbassadorRecruitmentAdminPage = React.lazy(() => import('./pages/AmbassadorRecruitmentAdminPage'));
+const AcademyPage                  = React.lazy(() => import('./pages/AcademyPage'));
+
+// Gestión de datos (management chunk)
+const ShopManagementPage      = React.lazy(() => import('./pages/ShopManagementPage'));
+const ClientManagementPage    = React.lazy(() => import('./pages/ClientManagementPage'));
+const OfferManagementPage     = React.lazy(() => import('./pages/OfferManagementPage'));
+const OfferFormPage           = React.lazy(() => import('./pages/OfferFormPage'));
+const BillingManagementPage   = React.lazy(() => import('./pages/BillingManagementPage'));
+const InvoiceViewerPage       = React.lazy(() => import('./pages/InvoiceViewerPage'));
+const SurveyFormPage          = React.lazy(() => import('./pages/SurveyFormPage'));
+const SurveyManagementPage    = React.lazy(() => import('./pages/SurveyManagementPage'));
+const FactoryPanelPage        = React.lazy(() => import('./pages/FactoryPanelPage'));
+
+// Flujo cliente / VIP (client-flow chunk)
+const ClientSubscriptionPage  = React.lazy(() => import('./pages/ClientSubscriptionPage'));
+const ClientsDatabasePage     = React.lazy(() => import('./pages/ClientsDatabasePage'));
+const ClientOffersPage        = React.lazy(() => import('./pages/ClientOffersPage'));
+const ClientLandingPage       = React.lazy(() => import('./pages/ClientLandingPage'));
+const ClientManagementPage2   = React.lazy(() => import('./pages/ClientManagementPage'));
+const ClientCredentialPage    = React.lazy(() => import('./pages/ClientCredentialPage'));
+const ClientValidationPage    = React.lazy(() => import('./pages/ClientValidationPage'));
+const ClientVipCredentialPage = React.lazy(() => import('./pages/ClientVipCredentialPage'));
+
+// Enterprise (enterprise chunk)
+const EnterpriseHomePage         = React.lazy(() => import('./pages/EnterpriseHomePage'));
+const EnterpriseCategoryPage     = React.lazy(() => import('./pages/EnterpriseCategoryPage'));
+const EnterpriseDetailPage       = React.lazy(() => import('./pages/EnterpriseDetailPage'));
+const EnterpriseManagementPage   = React.lazy(() => import('./pages/EnterpriseManagementPage'));
+const EnterpriseFormPage         = React.lazy(() => import('./pages/EnterpriseFormPage'));
+const EnterpriseGlobalConfigPage = React.lazy(() => import('./pages/EnterpriseGlobalConfigPage'));
+const EnterpriseMasterBoardPage  = React.lazy(() => import('./pages/EnterpriseMasterBoardPage'));
+const EnterpriseSubscriptionPage = React.lazy(() => import('./pages/EnterpriseSubscriptionPage'));
+
+// Búnkers (bunkers chunk)
+const DirectorBunkerPage      = React.lazy(() => import('./pages/DirectorBunkerPage').then(m => ({ default: m.DirectorBunkerPage })));
+const AdminBunkerPage         = React.lazy(() => import('./pages/AdminBunkerPage').then(m => ({ default: m.AdminBunkerPage })));
+const AccountingBunkerPage    = React.lazy(() => import('./pages/AccountingBunkerPage').then(m => ({ default: m.AccountingBunkerPage })));
+const MarketingBunkerPage     = React.lazy(() => import('./pages/MarketingBunkerPage').then(m => ({ default: m.MarketingBunkerPage })));
+const HRBunkerPage            = React.lazy(() => import('./pages/HRBunkerPage').then(m => ({ default: m.HRBunkerPage })));
+const SystemsBunkerPage       = React.lazy(() => import('./pages/SystemsBunkerPage').then(m => ({ default: m.SystemsBunkerPage })));
+const PlanningBunkerPage      = React.lazy(() => import('./pages/PlanningBunkerPage').then(m => ({ default: m.PlanningBunkerPage })));
+const InvestmentBunkerPage    = React.lazy(() => import('./pages/InvestmentBunkerPage').then(m => ({ default: m.InvestmentBunkerPage })));
+const MaintenanceBunkerPage   = React.lazy(() => import('./pages/MaintenanceBunkerPage').then(m => ({ default: m.MaintenanceBunkerPage })));
+const SecOpsBunkerPage        = React.lazy(() => import('./pages/SecOpsBunkerPage').then(m => ({ default: m.SecOpsBunkerPage })));
+const CloningBunkerPage       = React.lazy(() => import('./pages/CloningBunkerPage').then(m => ({ default: m.CloningBunkerPage })));
+const LiveBroadcastPage       = React.lazy(() => import('./pages/LiveBroadcastPage'));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 💤 Suspense fallback — pantalla mínima mientras se descarga el chunk
+// ─────────────────────────────────────────────────────────────────────────────
+const PageFallback: React.FC = () => (
+  <div className="h-screen w-full flex items-center justify-center bg-black">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400/60">Cargando</span>
+    </div>
+  </div>
+);
+
 import { TRASLASIERRA_REGION } from './data/regionalTemplates/traslasierraConfig';
 import { PATAGONIA_7_LAGOS_REGION } from './data/regionalTemplates/patagonia7LagosConfig';
+
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop";
 
@@ -331,6 +370,7 @@ const App: React.FC = () => {
     return (
         <LanguageProvider>
             <BrowserRouter>
+                <Suspense fallback={<PageFallback />}>
                 <Routes>
                     {/* 🏭 Nodo Empresarial Global */}
                     <Route path="/empresas/*" element={<EnterpriseController />} />
@@ -406,6 +446,7 @@ const App: React.FC = () => {
                     {/* Manejo de rutas huérfanas */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
+                </Suspense>
             </BrowserRouter>
         </LanguageProvider>
     );
