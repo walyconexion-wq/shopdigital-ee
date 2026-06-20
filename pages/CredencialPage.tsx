@@ -33,7 +33,7 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
 
     // Dynamic Neon color scheme based on node type
     const isEnterprise = selectedShop?.entityType === 'enterprise';
-    const neonColor = isEnterprise ? '#8b5cf6' : '#2563eb'; // Violeta vs Azul
+    const neonColor = isEnterprise ? '#8b5cf6' : '#2563eb';
     const borderGradient = isEnterprise
         ? 'from-purple-500 via-fuchsia-500 to-violet-500'
         : 'from-blue-500 via-indigo-500 to-cyan-500';
@@ -72,6 +72,13 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
         const hourStr = d.toLocaleTimeString('es-AR', { hour12: false });
         return `${dateStr} - ${hourStr}`;
     };
+
+    // Theme Mode Resolver (sincronizado con GlobalHomePage, ClientSubscriptionPage, SubscriptionPage y ClientVipCredentialPage)
+    const themeMode = localStorage.getItem('global_home_theme_mode') || 'dark';
+    const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
+        const hour = currentTime.getHours();
+        return hour >= 8 && hour < 20;
+    })());
 
     // --- POSNET State ---
     const [posnetOpen, setPosnetOpen] = useState(false);
@@ -170,10 +177,14 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     // Loading State
     if (authLoading) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8">
+            <div className={`min-h-screen flex flex-col items-center justify-center p-8 ${isDayMode ? 'bg-[#cda488]' : 'bg-black'}`}>
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-t-2 border-indigo-400 rounded-full animate-spin shadow-[0_0_15px_rgba(99,102,241,0.3)]" />
-                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest animate-pulse">Autenticando Credencial...</span>
+                    <div className={`w-12 h-12 border-t-2 rounded-full animate-spin ${
+                        isDayMode ? 'border-t-[#855b3c] border-[#cbd5e1]' : 'border-t-indigo-400 border-indigo-500/20'
+                    }`} />
+                    <span className={`text-[10px] font-bold uppercase tracking-widest animate-pulse ${
+                        isDayMode ? 'text-[#855b3c]' : 'text-indigo-400'
+                    }`}>Autenticando Credencial...</span>
                 </div>
             </div>
         );
@@ -182,28 +193,44 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     // Unauthenticated State
     if (!user) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
+            <div className={`min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden ${
+                isDayMode ? 'bg-[#cda488]' : 'bg-black'
+            }`}>
                 <div className="fixed inset-0 pointer-events-none z-0">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.05),transparent_60%)]" />
+                    <div className={`absolute inset-0 ${isDayMode ? 'bg-amber-500/5' : 'bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.05),transparent_60%)]'}`} />
                 </div>
                 
-                <div className="w-full max-w-sm bg-zinc-950/40 border border-indigo-500/20 rounded-[2.5rem] p-8 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(99,102,241,0.1)]">
-                    <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)] mx-auto">
-                        <Lock size={24} className="text-indigo-400 animate-pulse" />
+                <div className={`w-full max-w-sm rounded-[2.5rem] p-8 border relative z-10 ${
+                    isDayMode 
+                        ? 'bg-white/85 border-[#cbd5e1] border-b-[6px] border-b-[#cbd5e1]' 
+                        : 'bg-zinc-950/40 border-indigo-500/20 shadow-[0_0_50px_rgba(99,102,241,0.1)] backdrop-blur-xl'
+                }`}>
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border mx-auto ${
+                        isDayMode ? 'bg-[#cda488]/20 border-[#a88d75]/30' : 'bg-indigo-500/10 border-indigo-500/30'
+                    }`}>
+                        <Lock size={24} className={`animate-pulse ${isDayMode ? 'text-[#855b3c]' : 'text-indigo-400'}`} />
                     </div>
-                    <h2 className="text-xl font-black text-white uppercase tracking-tighter text-center mb-1">Credencial Protegida</h2>
-                    <p className="text-[9px] font-bold text-indigo-400/60 uppercase tracking-widest text-center mb-8">Requiere Verificación de Identidad B2B</p>
+                    <h2 className={`text-xl font-black uppercase tracking-tighter text-center mb-1 ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>Credencial Protegida</h2>
+                    <p className={`text-[9px] font-bold uppercase tracking-widest text-center mb-8 ${isDayMode ? 'text-[#855b3c]/70' : 'text-indigo-400/60'}`}>Requiere Verificación de Identidad B2B</p>
 
                     <button
                         onClick={() => { playNeonClick(); login(); }}
-                        className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black uppercase tracking-[0.15em] py-4.5 rounded-2xl active:scale-95 transition-all shadow-[0_0_25px_rgba(99,102,241,0.25)] flex items-center justify-center gap-3 text-xs"
+                        className={`w-full font-black uppercase tracking-[0.15em] py-4.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-3 text-xs border ${
+                            isDayMode 
+                                ? 'bg-gradient-to-b from-[#b58866] to-[#9c7151] text-white border-[#855b3c] border-b-[4px] border-b-[#734b2f] shadow-lg' 
+                                : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white border-white/10 shadow-[0_0_25px_rgba(99,102,241,0.25)]'
+                        }`}
                     >
                         <User size={16} /> Iniciar Sesión con Google
                     </button>
                     
                     <button
                         onClick={() => { playNeonClick(); navigate(-1); }}
-                        className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white font-bold uppercase tracking-wider py-3.5 rounded-2xl active:scale-95 transition-all mt-4 text-xs"
+                        className={`w-full border font-bold uppercase tracking-wider py-3.5 rounded-2xl active:scale-95 transition-all mt-4 text-xs ${
+                            isDayMode 
+                                ? 'bg-white text-[#2d1e15] border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] hover:bg-white/95' 
+                                : 'bg-white/5 border-white/10 text-white/70 hover:text-white'
+                        }`}
                     >
                         Volver
                     </button>
@@ -215,34 +242,50 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
     // Unauthorized Access State (Gated)
     if (!isAuthorized) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
+            <div className={`min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden ${
+                isDayMode ? 'bg-[#cda488]' : 'bg-black'
+            }`}>
                 <div className="fixed inset-0 pointer-events-none z-0">
                     <div className="absolute inset-0 bg-red-950/10 pointer-events-none" />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none" />
                 </div>
                 
-                <div className="w-full max-w-sm bg-red-950/20 border border-red-500/30 rounded-[2.5rem] p-8 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(239,68,68,0.1)]">
-                    <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.2)] mx-auto">
+                <div className={`w-full max-w-sm rounded-[2.5rem] p-8 border relative z-10 ${
+                    isDayMode 
+                        ? 'bg-white/85 border-[#cbd5e1] border-b-[6px] border-b-[#cbd5e1]' 
+                        : 'bg-red-950/20 border-red-500/30 backdrop-blur-xl shadow-[0_0_50px_rgba(239,68,68,0.1)]'
+                }`}>
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border mx-auto ${
+                        isDayMode ? 'bg-red-500/20 border-red-500/30' : 'bg-red-500/10 border-red-500/30'
+                    }`}>
                         <Zap size={24} className="text-red-500 animate-bounce" />
                     </div>
                     <h2 className="text-xl font-black text-red-500 uppercase tracking-tighter text-center mb-2">Acceso Denegado</h2>
-                    <p className="text-[10px] font-bold text-red-400/80 uppercase tracking-widest leading-relaxed text-center mb-6">
-                        SU CORREO <span className="font-mono text-white select-all">{user.email}</span> NO TIENE PERMISO PARA VER ESTA CREDENCIAL DE COMERCIO.
+                    <p className={`text-[10px] font-bold uppercase tracking-widest leading-relaxed text-center mb-6 ${
+                        isDayMode ? 'text-[#2d1e15]/85' : 'text-red-400/80'
+                    }`}>
+                        SU CORREO <span className="font-mono text-black select-all bg-[#faf8f5] px-1.5 py-0.5 rounded border border-black/5">{user.email}</span> NO TIENE PERMISO PARA VER ESTA CREDENCIAL DE COMERCIO.
                     </p>
-                    <p className="text-[8px] text-white/40 uppercase tracking-widest leading-normal mb-8 border-l-2 border-red-500/30 pl-3">
+                    <p className={`text-[8px] uppercase tracking-widest leading-normal mb-8 border-l-2 pl-3 ${
+                        isDayMode ? 'text-black/50 border-red-400' : 'text-white/40 border-red-500/30'
+                    }`}>
                         El protocolo de seguridad Doberman ha registrado este evento.
                     </p>
 
                     <button
                         onClick={() => { playNeonClick(); logoutUser(); }}
-                        className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.15em] py-4 rounded-2xl active:scale-95 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)] text-xs"
+                        className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.15em] py-4 rounded-2xl active:scale-95 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)] text-xs border-none"
                     >
                         Cerrar Sesión / Cambiar Cuenta
                     </button>
                     
                     <button
                         onClick={() => { playNeonClick(); navigate(-1); }}
-                        className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white font-bold uppercase tracking-wider py-3.5 rounded-2xl active:scale-95 transition-all mt-4 text-[10px]"
+                        className={`w-full border font-bold uppercase tracking-wider py-3.5 rounded-2xl active:scale-95 transition-all mt-4 text-[10px] ${
+                            isDayMode 
+                                ? 'bg-white text-[#2d1e15] border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1]' 
+                                : 'bg-white/5 border-white/10 text-white/70 hover:text-white'
+                        }`}
                     >
                         Volver
                     </button>
@@ -251,54 +294,102 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
         );
     }
 
+    const formattedTown = townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
     return (
-        <div className="min-h-screen bg-[#020208] flex flex-col items-center px-6 py-8 relative overflow-hidden selection:bg-indigo-500/30">
+        <div className={`min-h-screen flex flex-col items-center px-6 py-8 relative overflow-hidden selection:bg-indigo-500/30 transition-colors duration-500 ${
+            isDayMode ? 'bg-[#cda488] text-[#2d1e15]' : 'bg-[#020208] text-white'
+        }`}>
             {/* HUD Background */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-indigo-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
-                <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-cyan-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
-                <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px]" />
-                {/* Tech Grid Mesh */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.18)_1px,transparent_1px)] bg-[size:30px_30px]" />
-                {/* Tech Dots Mesh */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(34,211,238,0.22)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
-                {/* Scanline Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.03] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
+                <div className={`absolute top-0 right-0 w-[450px] h-[450px] rounded-full blur-[120px] animate-pulse ${
+                    isDayMode ? 'bg-amber-500/10' : 'bg-indigo-500/18'
+                }`} style={{ animationDuration: '8s' }} />
+                {!isDayMode ? (
+                    <>
+                        <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-cyan-500/18 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
+                        <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px]" />
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.18)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(34,211,238,0.22)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.03] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
+                    </>
+                ) : (
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(140,90,50,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(140,90,50,0.03)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                )}
             </div>
 
-            {/* Back Button */}
-            <button onClick={() => { playNeonClick(); navigate(-1); }}
-                className="self-start mb-6 w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-400/60 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all z-10">
-                <ChevronLeft size={20} />
-            </button>
+            {/* HEADER */}
+            <div className="w-full max-w-sm relative z-10 flex justify-between items-center mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
+                <button 
+                    onClick={() => { playNeonClick(); navigate(-1); }}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-lg ${
+                        isDayMode 
+                            ? 'bg-white/90 border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] text-[#2d1e15] hover:bg-white active:translate-y-[2px] active:border-b-[1px]' 
+                            : 'bg-white/5 border-white/10 text-white/50 hover:text-white active:scale-95'
+                    }`}
+                >
+                    <ChevronLeft size={20} />
+                </button>
+                <div className="text-center">
+                    <h1 className={`text-2xl font-[1000] tracking-tighter uppercase ${
+                        isDayMode 
+                            ? 'text-[#2d1e15] drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' 
+                            : 'text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-400 to-blue-500 drop-shadow-[0_0_20px_rgba(0,245,255,0.4)]'
+                    }`}>
+                        Credencial VIP
+                    </h1>
+                    <p className={`text-[8px] font-[900] uppercase tracking-[0.4em] ${isDayMode ? 'text-[#855b3c]/70' : 'text-cyan-400/60'}`}>
+                        Sede: {formattedTown}
+                    </p>
+                </div>
+                <div className="w-10" />
+            </div>
+
+            {/* Brand Avatar Section */}
+            {isDayMode && (
+                <div className="flex justify-center mb-4 mt-1 model-floating select-none pointer-events-none z-20">
+                    <img 
+                        src="/ari-pointing.png" 
+                        alt="ARI Asistente Credencial Comercio" 
+                        className="h-32 w-auto object-contain drop-shadow-[0_10px_15px_rgba(88,70,50,0.15)] animate-in fade-in duration-700" 
+                    />
+                </div>
+            )}
 
             {/* ═══════════ LIVE EVENT TICKER BANNER 🟢🔴 ═══════════ */}
             {activeEvent && (
                 <div className="w-full max-w-sm mb-6 relative z-10 animate-in slide-in-from-top-6 duration-500">
                     {activeEvent.status === 'active_live' ? (
-                        <div className="bg-gradient-to-r from-emerald-500/15 via-emerald-600/20 to-teal-500/15 border border-emerald-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(16,185,129,0.15)] flex flex-col items-center justify-center relative overflow-hidden animate-pulse">
-                            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(16,185,129,0.05)_25%,rgba(16,185,129,0.05)_50%,transparent_50%,transparent_75%,rgba(16,185,129,0.05)_75%)] bg-[size:40px_40px] animate-[scan_6s_linear_infinite]" />
-                            <span className="text-[12px] font-[1000] text-emerald-400 uppercase tracking-[0.25em] text-center mb-1">
+                        <div className={`border rounded-3xl p-5 flex flex-col items-center justify-center relative overflow-hidden ${
+                            isDayMode 
+                                ? 'bg-emerald-500/10 border-emerald-500/30 shadow-[0_8px_20px_rgba(16,185,129,0.15)]' 
+                                : 'bg-gradient-to-r from-emerald-500/15 via-emerald-600/20 to-teal-500/15 border border-emerald-400/40 shadow-[0_0_20px_rgba(16,185,129,0.15)] animate-pulse'
+                        }`}>
+                            <span className={`text-[12px] font-[1000] uppercase tracking-[0.25em] text-center mb-1 ${isDayMode ? 'text-emerald-700' : 'text-emerald-400'}`}>
                                 🟢 EVENTO ACTIVO EN REGIONAL
                             </span>
-                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                            <h3 className={`text-sm font-black uppercase tracking-wider text-center mb-2 ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
                                 {activeEvent.name}
                             </h3>
-                            <div className="bg-emerald-500/25 border border-emerald-400/30 px-4 py-1.5 rounded-full text-center">
-                                <span className="text-[9px] font-black text-emerald-300 uppercase tracking-widest block">
+                            <div className={`border px-4 py-1.5 rounded-full text-center ${isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1]' : 'bg-emerald-500/25 border-emerald-400/30'}`}>
+                                <span className={`text-[9px] font-black uppercase tracking-widest block ${isDayMode ? 'text-emerald-700' : 'text-emerald-300'}`}>
                                     🎫 BENEFICIO EXCLUSIVO: ENTRADA GRATIS
                                 </span>
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-gradient-to-r from-red-500/15 via-red-600/25 to-rose-500/15 border border-red-400/40 rounded-3xl p-5 shadow-[0_0_20px_rgba(239,68,68,0.15)] flex flex-col items-center justify-center relative overflow-hidden">
-                            <span className="text-[12px] font-[1000] text-red-400 uppercase tracking-[0.25em] text-center mb-1">
+                        <div className={`border rounded-3xl p-5 flex flex-col items-center justify-center relative overflow-hidden ${
+                            isDayMode 
+                                ? 'bg-red-500/10 border-red-500/30 shadow-lg' 
+                                : 'bg-gradient-to-r from-red-500/15 via-red-600/25 to-rose-500/15 border border-red-400/40 shadow-[0_0_20px_rgba(239,68,68,0.15)]'
+                        }`}>
+                            <span className={`text-[12px] font-[1000] uppercase tracking-[0.25em] text-center mb-1 ${isDayMode ? 'text-red-700' : 'text-red-400'}`}>
                                 🔴 EVENTO SUSPENDIDO / APLAZADO
                             </span>
-                            <h3 className="text-sm font-black text-white uppercase tracking-wider text-center mb-2">
+                            <h3 className={`text-sm font-black uppercase tracking-wider text-center mb-2 ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
                                 {activeEvent.name}
                             </h3>
-                            <p className="text-[8px] font-black text-red-300 uppercase tracking-widest animate-pulse">
+                            <p className={`text-[8px] font-black uppercase tracking-widest text-center animate-pulse ${isDayMode ? 'text-red-600' : 'text-red-300'}`}>
                                 MÁS INFO VÍA ASISTENTE ARI 🤖
                             </p>
                         </div>
@@ -307,29 +398,51 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             )}
 
             <div className="w-full max-w-sm relative z-10">
-                <div className={`bg-gradient-to-br ${borderGradient} rounded-[2.5rem] p-[2px] transition-all duration-500 ${cardGlowStyle}`}>
-                    <div className="bg-[#060614]/95 rounded-[2.4rem] p-8 flex flex-col items-center relative overflow-hidden border border-white/10 backdrop-blur-2xl neon-credential-card">
-                        {/* Dynamic electronic mesh background */}
-                        <div className="absolute inset-0 bg-[linear-gradient(rgba(37,99,235,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(37,99,235,0.05)_1px,transparent_1px)] bg-[size:25px_25px] pointer-events-none z-0" style={{ backgroundImage: `linear-gradient(${neonColor}0D 1px, transparent 1px), linear-gradient(90deg, ${neonColor}0D 1px, transparent 1px)` }} />
-                        
-                        {/* Ambient glow */}
-                        <div className="absolute top-0 right-0 w-48 h-48 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none opacity-20" style={{ backgroundColor: neonColor }} />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full -ml-16 -mb-16 blur-3xl pointer-events-none opacity-15" style={{ backgroundColor: isEnterprise ? '#a855f7' : '#06b6d4' }} />
+                <div className={`absolute -inset-1 rounded-[2.5rem] blur opacity-25 ${isDayMode ? 'bg-[#855b3c]/20' : ''}`}></div>
+                
+                <div className={`relative border-2 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all ${
+                    isDayMode 
+                        ? 'bg-white/85 border-[#855b3c] border-b-[8px] border-b-[#855b3c]' 
+                        : 'bg-[#060614]/95 border-cyan-500/30 border-b-[8px] border-b-cyan-500/50 backdrop-blur-2xl'
+                }`}>
+                    <div className="p-8 flex flex-col items-center relative overflow-hidden neon-credential-card">
+                        {/* Dynamic background structures */}
+                        {!isDayMode ? (
+                            <>
+                                <div className="absolute inset-0 bg-[linear-gradient(rgba(37,99,235,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(37,99,235,0.05)_1px,transparent_1px)] bg-[size:25px_25px] pointer-events-none z-0" style={{ backgroundImage: `linear-gradient(${neonColor}0D 1px, transparent 1px), linear-gradient(90deg, ${neonColor}0D 1px, transparent 1px)` }} />
+                                <div className="absolute top-0 right-0 w-48 h-48 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none opacity-20" style={{ backgroundColor: neonColor }} />
+                                <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full -ml-16 -mb-16 blur-3xl pointer-events-none opacity-15" style={{ backgroundColor: isEnterprise ? '#a855f7' : '#06b6d4' }} />
+                            </>
+                        ) : (
+                            <div className="absolute top-0 left-0 w-full h-44 opacity-10 bg-gradient-to-br from-[#cda488] to-transparent pointer-events-none" />
+                        )}
 
-                        {/* SELLO DE VIDA INVIOLABLE CON SEGUNDEROS ⏱️ */}
-                        <div className={`w-full flex flex-col items-center justify-center gap-1 mb-6 py-3 px-4 rounded-2xl relative overflow-hidden border-2 transition-all ${isEnterprise ? 'bg-purple-500/15 border-purple-400/40 shadow-[inset_0_0_15px_rgba(139,92,246,0.25),0_0_20px_rgba(139,92,246,0.2)]' : 'bg-blue-500/15 border-blue-400/40 shadow-[inset_0_0_15px_rgba(37,99,235,0.25),0_0_20px_rgba(37,99,235,0.2)]'}`}>
-                            <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan-400/80 animate-[scan_2s_infinite_ease-in-out]" />
+                        {/* SELLO DE VIDA INVIOLABLE CON SEGUNDEROS */}
+                        <div className={`w-full flex flex-col items-center justify-center gap-1 mb-6 py-3 px-4 rounded-2xl relative overflow-hidden border-2 transition-all ${
+                            isDayMode 
+                                ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15] shadow-inner' 
+                                : isEnterprise 
+                                    ? 'bg-purple-500/15 border-purple-400/40 shadow-[inset_0_0_15px_rgba(139,92,246,0.25),0_0_20px_rgba(139,92,246,0.2)]' 
+                                    : 'bg-blue-500/15 border-blue-400/40 shadow-[inset_0_0_15px_rgba(37,99,235,0.25),0_0_20px_rgba(37,99,235,0.2)]'
+                        }`}>
+                            {!isDayMode && <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan-400/80 animate-[scan_2s_infinite_ease-in-out]" />}
                             <div className="flex items-center gap-2 relative z-10">
-                                <Clock size={13} className="animate-spin" style={{ animationDuration: '4s', color: isEnterprise ? '#c084fc' : '#22d3ee' }} />
-                                <span className="text-[12px] font-black font-mono text-cyan-300 tracking-[0.15em] tabular-nums drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
+                                <Clock size={13} className={`animate-spin ${isDayMode ? 'text-[#855b3c]' : ''}`} style={isDayMode ? { animationDuration: '4s' } : { animationDuration: '4s', color: isEnterprise ? '#c084fc' : '#22d3ee' }} />
+                                <span className={`text-[12px] font-black font-mono tracking-[0.15em] tabular-nums ${isDayMode ? 'text-[#2d1e15]' : 'text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]'}`}>
                                     {formatClock(currentTime)}
                                 </span>
                             </div>
-                            <span className="text-[7px] font-[900] text-cyan-400/80 uppercase tracking-[0.25em] relative z-10 animate-pulse">Sello de Seguridad Activo</span>
+                            <span className={`text-[7px] font-[900] uppercase tracking-[0.25em] relative z-10 ${isDayMode ? 'text-black/50' : 'text-cyan-400/80 animate-pulse'}`}>Sello de Seguridad Activo</span>
                         </div>
 
-                        {/* ownerPhoto / Shop Image - Biométrica Circular */}
-                        <div className={`relative w-24 h-24 rounded-full p-0.5 mb-5 flex-shrink-0 bg-gradient-to-br ${isEnterprise ? 'from-purple-400 to-fuchsia-500 shadow-[0_0_30px_rgba(139,92,246,0.4)]' : 'from-blue-400 to-cyan-500 shadow-[0_0_30px_rgba(37,99,235,0.4)]'}`}>
+                        {/* ownerPhoto / Shop Image */}
+                        <div className={`relative w-24 h-24 rounded-full p-0.5 mb-5 flex-shrink-0 bg-gradient-to-br ${
+                            isDayMode 
+                                ? 'from-[#b58866] to-[#cbd5e1] border border-black/5 shadow-md' 
+                                : isEnterprise 
+                                    ? 'from-purple-400 to-fuchsia-500 shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
+                                    : 'from-blue-400 to-cyan-500 shadow-[0_0_30px_rgba(37,99,235,0.4)]'
+                        }`}>
                             <div className="w-full h-full bg-zinc-950 rounded-full overflow-hidden flex items-center justify-center p-0.5 border border-black/40">
                                 {selectedShop.ownerPhoto ? (
                                     <img src={selectedShop.ownerPhoto} alt={selectedShop.ownerName} className="w-full h-full object-cover rounded-full" />
@@ -342,53 +455,72 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </div>
 
                         {/* Shop Name */}
-                        <h2 className="text-xl font-[1000] text-white uppercase tracking-tight mb-1 text-center leading-tight drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]">
+                        <h2 className={`text-xl font-[1000] uppercase tracking-tight mb-1 text-center leading-tight ${isDayMode ? 'text-[#2d1e15]' : 'text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]'}`}>
                             {selectedShop.name}
                         </h2>
-                        <p className="text-[8px] font-black text-cyan-400/60 uppercase tracking-widest mb-4 text-center">
+                        <p className={`text-[8px] font-black uppercase tracking-widest mb-4 text-center ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-400/60'}`}>
                             {selectedShop.specialty || selectedShop.category}
                         </p>
 
-                        {/* Badge */}
-                        <div className={`flex items-center gap-2 mb-6 px-5 py-2 rounded-full border transition-all ${isEnterprise ? 'bg-purple-500/20 border-purple-400/50 shadow-[0_0_20px_rgba(139,92,246,0.3)] text-purple-200' : 'bg-blue-500/20 border-blue-400/50 shadow-[0_0_20px_rgba(37,99,235,0.3)] text-blue-200'}`}>
-                            <ShieldCheck className={`w-4 h-4 drop-shadow-[0_0_5px_rgba(255,255,255,0.4)] ${isEnterprise ? 'text-purple-300' : 'text-blue-300'}`} />
-                            <span className={`text-[9px] font-[1000] uppercase tracking-[0.2em] ${isEnterprise ? 'text-purple-200' : 'text-blue-200'}`}>{isEnterprise ? 'Empresa Industrial Verificada' : 'Comercio Verificado'}</span>
+                        {/* Verified Badge */}
+                        <div className={`flex items-center gap-2 mb-6 px-5 py-2 rounded-full border transition-all ${
+                            isDayMode 
+                                ? 'bg-[#cda488]/20 border-[#a88d75]/50 text-[#855b3c]' 
+                                : isEnterprise 
+                                    ? 'bg-purple-500/20 border-purple-400/50 shadow-[0_0_20px_rgba(139,92,246,0.3)] text-purple-200' 
+                                    : 'bg-blue-500/20 border-blue-400/50 shadow-[0_0_20px_rgba(37,99,235,0.3)] text-blue-200'
+                        }`}>
+                            <ShieldCheck className={`w-4 h-4 ${isDayMode ? 'text-[#855b3c]' : isEnterprise ? 'text-purple-300' : 'text-blue-300'}`} />
+                            <span className={`text-[9px] font-[1000] uppercase tracking-[0.2em] ${isDayMode ? 'text-[#855b3c]' : isEnterprise ? 'text-purple-200' : 'text-blue-200'}`}>{isEnterprise ? 'Empresa Industrial Verificada' : 'Comercio Verificado'}</span>
                         </div>
 
                         {/* Data Grid */}
                         <div className="w-full grid grid-cols-2 gap-3 mb-6">
-                            <div className={`bg-black/60 rounded-2xl p-3.5 border transition-all ${isEnterprise ? 'border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' : 'border-blue-500/30 shadow-[0_0_15px_rgba(37,99,235,0.1)]'}`}>
-                                <p className="text-[7px] font-black uppercase tracking-widest mb-1" style={{ color: `${neonColor}99` }}>Titular</p>
-                                <p className="text-[11px] font-[1000] text-white uppercase tracking-tight truncate drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]">
+                            <div className={`rounded-2xl p-3.5 border transition-all ${
+                                isDayMode 
+                                    ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15] shadow-sm' 
+                                    : 'bg-black/60 border-white/5 shadow-[0_0_15px_rgba(37,99,235,0.1)]'
+                            }`} style={isDayMode ? {} : { borderColor: `${neonColor}30` }}>
+                                <p className={`text-[7px] font-black uppercase tracking-widest mb-1 ${isDayMode ? 'text-[#855b3c]' : ''}`} style={isDayMode ? {} : { color: `${neonColor}99` }}>Titular</p>
+                                <p className={`text-[11px] font-[1000] uppercase tracking-tight truncate ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
                                     {selectedShop.ownerName || 'Sin Registrar'}
                                 </p>
                             </div>
-                            <div className={`bg-black/60 rounded-2xl p-3.5 border transition-all ${isEnterprise ? 'border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' : 'border-blue-500/30 shadow-[0_0_15px_rgba(37,99,235,0.1)]'}`}>
-                                <p className="text-[7px] font-black uppercase tracking-widest mb-1" style={{ color: `${neonColor}99` }}>{isEnterprise ? 'ID Empresa' : 'ID Comercio'}</p>
-                                <p className="text-[11px] font-[1000] text-cyan-400 tracking-tight truncate drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+                            
+                            <div className={`rounded-2xl p-3.5 border transition-all ${
+                                isDayMode 
+                                    ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15] shadow-sm' 
+                                    : 'bg-black/60 border-white/5 shadow-[0_0_15px_rgba(37,99,235,0.1)]'
+                            }`} style={isDayMode ? {} : { borderColor: `${neonColor}30` }}>
+                                <p className={`text-[7px] font-black uppercase tracking-widest mb-1 ${isDayMode ? 'text-[#855b3c]' : ''}`} style={isDayMode ? {} : { color: `${neonColor}99` }}>{isEnterprise ? 'ID Empresa' : 'ID Comercio'}</p>
+                                <p className={`text-[11px] font-[1000] tracking-tight truncate ${isDayMode ? 'text-[#2d1e15]' : 'text-cyan-400'}`}>
                                     {selectedShop.shopNumber || selectedShop.id.slice(0, 8).toUpperCase()}
                                 </p>
                             </div>
-                            <div className={`bg-black/60 rounded-2xl p-3.5 border transition-all col-span-2 ${isEnterprise ? 'border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' : 'border-blue-500/30 shadow-[0_0_15px_rgba(37,99,235,0.1)]'}`}>
-                                <p className="text-[7px] font-black uppercase tracking-widest mb-1 flex items-center gap-1" style={{ color: `${neonColor}99` }}>
-                                    <MapPin size={8} className="text-cyan-400" /> Dirección
+                            
+                            <div className={`rounded-2xl p-3.5 border transition-all col-span-2 ${
+                                isDayMode 
+                                    ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15] shadow-sm' 
+                                    : 'bg-black/60 border-white/5 shadow-[0_0_15px_rgba(37,99,235,0.1)]'
+                            }`} style={isDayMode ? {} : { borderColor: `${neonColor}30` }}>
+                                <p className={`text-[7px] font-black uppercase tracking-widest mb-1 flex items-center gap-1 ${isDayMode ? 'text-[#855b3c]' : ''}`} style={isDayMode ? {} : { color: `${neonColor}99` }}>
+                                    <MapPin size={8} className={isDayMode ? 'text-[#855b3c]' : 'text-cyan-400'} /> Dirección
                                 </p>
-                                <p className="text-[10px] font-bold text-white/80 truncate">{selectedShop.address}</p>
+                                <p className={`text-[10px] font-bold truncate ${isDayMode ? 'text-[#2d1e15]/80' : 'text-white/80'}`}>{selectedShop.address}</p>
                             </div>
                         </div>
 
                         {/* QR Code */}
-                        <div className={`w-full bg-black/75 rounded-[2.2rem] p-6 flex flex-col items-center border-2 mb-6 relative group/qr overflow-hidden transition-all ${isEnterprise ? 'border-purple-500/40 shadow-[0_0_30px_rgba(139,92,246,0.2),inset_0_0_20px_rgba(139,92,246,0.15)]' : 'border-blue-500/40 shadow-[0_0_30px_rgba(37,99,235,0.2),inset_0_0_20px_rgba(37,99,235,0.15)]'}`}>
-                            {/* Scanning Laser Line */}
-                            <div className="absolute left-0 right-0 h-[2px] bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-[scan-laser_3s_infinite_linear] pointer-events-none z-20" />
+                        <div className={`w-full rounded-[2.2rem] p-6 flex flex-col items-center border-2 mb-6 relative group/qr overflow-hidden transition-all ${
+                            isDayMode 
+                                ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15] shadow-inner' 
+                                : isEnterprise 
+                                    ? 'bg-black/75 border-purple-500/40 shadow-[0_0_30px_rgba(139,92,246,0.2),inset_0_0_20px_rgba(139,92,246,0.15)]' 
+                                    : 'bg-black/75 border-blue-500/40 shadow-[0_0_30px_rgba(37,99,235,0.2),inset_0_0_20px_rgba(37,99,235,0.15)]'
+                        }`}>
+                            {!isDayMode && <div className="absolute left-0 right-0 h-[2px] bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-[scan-laser_3s_infinite_linear] pointer-events-none z-20" />}
                             
-                            {/* Corner Scanner brackets */}
-                            <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-cyan-400 pointer-events-none" />
-                            <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-cyan-400 pointer-events-none" />
-                            <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-cyan-400 pointer-events-none" />
-                            <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-cyan-400 pointer-events-none" />
-
-                            <div className="bg-white p-4.5 rounded-2xl mb-4 shadow-[0_0_35px_rgba(255,255,255,0.1)] relative z-10 border-2" style={{ borderColor: isEnterprise ? '#c084fc4D' : '#3b82f64D' }}>
+                            <div className="bg-white p-4.5 rounded-2xl mb-4 shadow-sm relative z-10 border-2" style={{ borderColor: isDayMode ? '#cbd5e1' : isEnterprise ? '#c084fc4D' : '#3b82f64D' }}>
                                 <QRCodeCanvas
                                     value={validationUrl}
                                     size={140}
@@ -401,42 +533,54 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                                     }}
                                 />
                             </div>
-                            <p className="text-[9px] font-black text-cyan-400 uppercase tracking-[0.25em] drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Código de Validación</p>
+                            <p className={`text-[9px] font-black uppercase tracking-[0.25em] ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]'}`}>Código de Validación</p>
                         </div>
 
-                        {/* 🛰️ SINTONIZADOR DE ACCESO / EVENTOS LIVE */}
-                        <div className="w-full bg-black/80 rounded-[2rem] p-6 border border-white/15 space-y-4 relative overflow-hidden mb-6 z-10 shadow-[inset_0_0_20px_rgba(99,102,241,0.15)]">
+                        {/* SINTONIZADOR DE ACCESO / EVENTOS LIVE */}
+                        <div className={`w-full rounded-[2rem] p-6 border space-y-4 relative overflow-hidden mb-6 z-10 ${
+                            isDayMode 
+                                ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15] shadow-inner' 
+                                : 'bg-black/80 border-white/15 shadow-[inset_0_0_20px_rgba(99,102,241,0.15)]'
+                        }`}>
                             <div className="flex justify-between items-center relative z-10">
-                                <label className="text-[9px] font-black text-cyan-300 uppercase tracking-[0.25em] flex items-center gap-2">
-                                    <Radio size={12} className="text-cyan-400 animate-pulse" /> Sintonizador de Acceso
+                                <label className={`text-[9px] font-black uppercase tracking-[0.25em] flex items-center gap-2 ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-300'}`}>
+                                    <Radio size={12} className={`animate-pulse ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-400'}`} /> Sintonizador de Acceso
                                 </label>
-                                <span className="text-[8px] font-[900] bg-cyan-500/20 border border-cyan-400/40 text-cyan-400 px-3 py-1.5 rounded-full uppercase tracking-wider animate-pulse">LIVE SINFONÍA</span>
+                                <span className={`text-[8px] font-[900] border px-3 py-1.5 rounded-full uppercase tracking-wider animate-pulse ${
+                                    isDayMode 
+                                        ? 'bg-[#cda488]/20 border-[#a88d75]/40 text-[#855b3c]' 
+                                        : 'bg-cyan-500/20 border-cyan-400/40 text-cyan-400'
+                                }`}>
+                                    LIVE SINFONÍA
+                                </span>
                             </div>
                             
                             {activeEvent ? (
                                 <div className="space-y-3.5 relative z-10">
-                                    <p className="text-[13px] font-[1000] text-white uppercase tracking-tight leading-snug drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]">
+                                    <p className={`text-[13px] font-[1000] uppercase tracking-tight leading-snug ${isDayMode ? 'text-[#2d1e15]' : 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]'}`}>
                                         {activeEvent.name}
                                     </p>
-                                    <p className="text-[9px] font-black text-cyan-300 uppercase tracking-widest leading-relaxed">
+                                    <p className={`text-[9px] font-black uppercase tracking-widest leading-relaxed ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-300'}`}>
                                         ARTISTA: {activeEvent.artist || 'Red ShopDigital'} · LOCALIDAD: {activeEvent.targetLocalities.join(', ').toUpperCase()}
                                     </p>
-                                    <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 px-3 py-1.5 rounded-xl w-fit">
-                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                        <span className="text-[9px] font-[1000] text-emerald-400 uppercase tracking-widest">
+                                    <div className={`flex items-center gap-2 border px-3 py-1.5 rounded-xl w-fit ${
+                                        isDayMode ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-emerald-500/20 border-emerald-500/40'
+                                    }`}>
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                                        <span className="text-[9px] font-[1000] text-emerald-600 uppercase tracking-widest">
                                             {isEnterprise ? 'ACCESO INDUSTRIAL VERIFICADO' : 'ACCESO COMERCIO VERIFICADO'}
                                         </span>
                                     </div>
-                                    <p className="text-[7.5px] font-bold text-white/50 uppercase tracking-widest leading-relaxed">
+                                    <p className={`text-[7.5px] font-bold uppercase tracking-widest leading-relaxed ${isDayMode ? 'text-[#2d1e15]/50' : 'text-white/50'}`}>
                                         Seguridad: Permitir el ingreso al personal asociado acreditado.
                                     </p>
                                 </div>
                             ) : (
                                 <div className="space-y-2 relative z-10">
-                                    <p className="text-[10px] font-black text-white/50 uppercase tracking-widest italic">
+                                    <p className={`text-[10px] font-black uppercase tracking-widest italic ${isDayMode ? 'text-[#2d1e15]/50' : 'text-white/50'}`}>
                                         Buscando transmisiones...
                                     </p>
-                                    <p className="text-[8px] font-bold text-white/40 uppercase tracking-wider leading-relaxed">
+                                    <p className={`text-[8px] font-bold uppercase tracking-wider leading-relaxed ${isDayMode ? 'text-[#2d1e15]/40' : 'text-white/40'}`}>
                                         Sin eventos live activos para este nodo en este radar.
                                     </p>
                                 </div>
@@ -444,9 +588,15 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         </div>
  
                         {/* Status */}
-                        <div className="w-full flex justify-between items-center text-white/90 text-[9px] font-black uppercase tracking-[0.2em] border-t pt-4" style={{ borderColor: `${neonColor}33` }}>
-                            <span className="text-white/70">Membresía Activa</span>
-                            <span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] font-black">
+                        <div className={`w-full flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] border-t pt-4 ${
+                            isDayMode ? 'border-[#cbd5e1]' : ''
+                        }`} style={isDayMode ? {} : { borderColor: `${neonColor}33` }}>
+                            <span className={isDayMode ? 'text-[#2d1e15]/70' : 'text-white/70'}>Membresía Activa</span>
+                            <span className={`font-black ${
+                                selectedShop.isActive 
+                                    ? 'text-green-600' 
+                                    : isDayMode ? 'text-amber-700' : 'text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]'
+                            }`}>
                                 {selectedShop.isActive ? '⚡ ACTIVA' : '⏳ PENDIENTE'}
                             </span>
                         </div>
@@ -459,40 +609,61 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                 {!posnetOpen ? (
                     <button
                         onClick={() => { playNeonClick(); setPosnetOpen(true); }}
-                        className="w-full h-20 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 rounded-3xl flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_10px_30px_rgba(99,102,241,0.3)] active:scale-95 transition-all text-white border border-white/10 relative overflow-hidden group"
+                        className={`w-full h-20 rounded-3xl flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-[0.2em] text-[11px] active:scale-95 transition-all border cursor-pointer ${
+                            isDayMode 
+                                ? 'bg-gradient-to-b from-[#b58866] to-[#9c7151] hover:from-[#c29673] hover:to-[#a87c5b] text-white border-2 border-[#5c4033] border-b-[8px] border-b-[#472f22] shadow-[0_10px_25px_rgba(140,90,50,0.15)] active:translate-y-[4px] active:border-b-[2px]' 
+                                : 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white border border-white/10 shadow-[0_10px_30px_rgba(99,102,241,0.3)]'
+                        }`}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
                         <CreditCard size={22} />
                         <span>💳 Abrir POSNET de Créditos</span>
                     </button>
                 ) : (
-                    <div className="bg-zinc-900/80 border border-indigo-500/20 rounded-[2rem] p-6 space-y-5 backdrop-blur-sm">
+                    <div className={`border rounded-[2rem] p-6 space-y-5 shadow-2xl transition-all ${
+                        isDayMode 
+                            ? 'bg-white border-[#cbd5e1] border-b-[6px] border-b-[#cbd5e1] text-[#2d1e15]' 
+                            : 'bg-zinc-900/80 border-indigo-500/20 backdrop-blur-sm'
+                    }`}>
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h3 className={`text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${
+                                isDayMode ? 'text-[#855b3c]' : 'text-indigo-400'
+                            }`}>
                                 <CreditCard size={14} /> POSNET de Créditos
                             </h3>
                             <button onClick={() => { playNeonClick(); setPosnetOpen(false); resetPosnet(); }}
-                                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:text-white/60 border border-white/10 text-[12px]">✕</button>
+                                className={`w-8 h-8 rounded-full flex items-center justify-center border text-[12px] cursor-pointer ${
+                                    isDayMode 
+                                        ? 'bg-black/5 border-black/10 text-black/40 hover:bg-black/10' 
+                                        : 'bg-white/5 border-white/10 text-white/30 hover:text-white/60'
+                                }`}>✕</button>
                         </div>
 
                         {/* Mode Selector */}
                         <div className="grid grid-cols-2 gap-2">
                             <button
                                 onClick={() => { playNeonClick(); setPosnetMode('load'); setTxStatus('idle'); }}
-                                className={`py-3 rounded-xl font-black uppercase tracking-widest text-[9px] border transition-all active:scale-95 flex flex-col items-center gap-1
+                                className={`py-3 rounded-xl font-black uppercase tracking-widest text-[9px] border transition-all active:scale-95 flex flex-col items-center gap-1 cursor-pointer
                                     ${posnetMode === 'load'
-                                        ? 'bg-green-500/15 border-green-400 text-green-300 shadow-[0_0_15px_rgba(34,197,94,0.2)]'
-                                        : 'bg-white/5 border-white/10 text-white/40'}`}
+                                        ? isDayMode 
+                                            ? 'bg-green-500/10 border-green-500 text-green-700 font-bold' 
+                                            : 'bg-green-500/15 border-green-400 text-green-300 shadow-[0_0_15px_rgba(34,197,94,0.2)]'
+                                        : isDayMode 
+                                            ? 'bg-black/5 border-black/10 text-black/40' 
+                                            : 'bg-white/5 border-white/10 text-white/40'}`}
                             >
                                 <ArrowUpRight size={16} />
                                 Cargar
                             </button>
                             <button
                                 onClick={() => { playNeonClick(); setPosnetMode('spend'); setTxStatus('idle'); }}
-                                className={`py-3 rounded-xl font-black uppercase tracking-widest text-[9px] border transition-all active:scale-95 flex flex-col items-center gap-1
+                                className={`py-3 rounded-xl font-black uppercase tracking-widest text-[9px] border transition-all active:scale-95 flex flex-col items-center gap-1 cursor-pointer
                                     ${posnetMode === 'spend'
-                                        ? 'bg-red-500/15 border-red-400 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
-                                        : 'bg-white/5 border-white/10 text-white/40'}`}
+                                        ? isDayMode 
+                                            ? 'bg-red-500/10 border-red-500 text-red-700 font-bold' 
+                                            : 'bg-red-500/15 border-red-400 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                                        : isDayMode 
+                                            ? 'bg-black/5 border-black/10 text-black/40' 
+                                            : 'bg-white/5 border-white/10 text-white/40'}`}
                             >
                                 <ArrowDownRight size={16} />
                                 Descontar
@@ -508,22 +679,30 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                                         value={searchTerm}
                                         onChange={e => setSearchTerm(e.target.value)}
                                         placeholder="Buscar socio (nombre, DNI, tel)..."
-                                        className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-[11px] font-bold text-white placeholder:text-white/20 focus:border-indigo-500/40 outline-none"
+                                        className={`w-full border rounded-xl p-3 text-[11px] font-bold focus:outline-none ${
+                                            isDayMode 
+                                                ? 'bg-[#faf8f5] text-[#2d1e15] border-[#cbd5e1] focus:border-[#a88d75]' 
+                                                : 'bg-black/50 border-white/10 text-white focus:border-indigo-500/40'
+                                        }`}
                                         autoFocus
                                     />
-                                    <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20" />
+                                    <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 opacity-30" />
                                 </div>
                                 {filteredClients.map(c => (
                                     <button key={c.id}
                                         onClick={() => { playNeonClick(); setSelectedClient(c); setSearchTerm(''); setTxStatus('idle'); }}
-                                        className="w-full bg-black/30 border border-white/5 hover:border-indigo-500/30 rounded-lg p-2.5 flex items-center gap-2.5 transition-all active:scale-[0.98]"
+                                        className={`w-full border rounded-lg p-2.5 flex items-center gap-2.5 transition-all active:scale-[0.98] cursor-pointer ${
+                                            isDayMode 
+                                                ? 'bg-[#faf8f5] border-black/5 hover:border-[#a88d75]/50 text-[#2d1e15]' 
+                                                : 'bg-black/30 border-white/5 hover:border-indigo-500/30 text-white'
+                                        }`}
                                     >
                                         <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/10">
-                                            {c.photo ? <img src={c.photo} className="w-full h-full object-cover rounded-full" alt="" /> : <User size={12} className="text-white/30" />}
+                                            {c.photo ? <img src={c.photo} className="w-full h-full object-cover rounded-full" alt="" /> : <User size={12} className="opacity-35" />}
                                         </div>
                                         <div className="flex-1 text-left min-w-0">
-                                            <p className="text-[10px] font-black text-white uppercase tracking-wider truncate">{c.name}</p>
-                                            <p className="text-[7px] text-white/30">{c.dni || 'Sin DNI'} · 💰 {c.credits || 0}</p>
+                                            <p className="text-[10px] font-black uppercase tracking-wider truncate">{c.name}</p>
+                                            <p className="text-[7px] opacity-40">{c.dni || 'Sin DNI'} · 💰 {c.credits || 0}</p>
                                         </div>
                                     </button>
                                 ))}
@@ -531,15 +710,17 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                         ) : (
                             <div className="space-y-3">
                                 {/* Selected Client Mini-Card */}
-                                <div className="bg-black/40 border border-indigo-500/15 rounded-xl p-3 flex items-center gap-3 relative">
+                                <div className={`border rounded-xl p-3 flex items-center gap-3 relative ${
+                                    isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1]' : 'bg-black/40 border-indigo-500/15'
+                                }`}>
                                     <button onClick={() => { playNeonClick(); resetPosnet(); }}
-                                        className="absolute top-2 right-2 text-white/20 hover:text-white/50 text-[10px]">✕</button>
-                                    <div className="w-10 h-10 rounded-full border border-indigo-500/20 overflow-hidden bg-white/5 flex-shrink-0">
-                                        {selectedClient.photo ? <img src={selectedClient.photo} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center"><User size={16} className="text-white/20" /></div>}
+                                        className="absolute top-2 right-2 opacity-30 hover:opacity-60 text-[10px] border-none bg-transparent cursor-pointer">✕</button>
+                                    <div className="w-10 h-10 rounded-full border overflow-hidden bg-white/5 flex-shrink-0" style={{ borderColor: isDayMode ? '#cbd5e1' : '#cbd5e14D' }}>
+                                        {selectedClient.photo ? <img src={selectedClient.photo} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center"><User size={16} className="opacity-20" /></div>}
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] font-black text-white uppercase tracking-wider truncate">{selectedClient.name}</p>
-                                        <p className="text-[8px] text-indigo-400">Saldo: <span className="font-[1000] tabular-nums">{selectedClient.credits || 0}</span> créditos</p>
+                                    <div className="flex-1 min-w-0 text-left">
+                                        <p className="text-[10px] font-black uppercase tracking-wider truncate">{selectedClient.name}</p>
+                                        <p className={`text-[8px] ${isDayMode ? 'text-[#855b3c]' : 'text-indigo-400'}`}>Saldo: <span className="font-[1000] tabular-nums">{selectedClient.credits || 0}</span> créditos</p>
                                     </div>
                                 </div>
 
@@ -551,27 +732,29 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                                         onChange={e => setAmount(e.target.value)}
                                         placeholder="0"
                                         className={`w-full bg-black/40 border rounded-xl p-3 text-[22px] font-[1000] placeholder:text-white/5 focus:outline-none tabular-nums text-center
-                                            ${posnetMode === 'load' ? 'border-green-500/20 text-green-400' : 'border-red-500/20 text-red-400'}`}
+                                            ${isDayMode 
+                                                ? 'bg-[#faf8f5] text-[#2d1e15] border-[#cbd5e1] focus:border-[#a88d75]' 
+                                                : posnetMode === 'load' ? 'border-green-500/20 text-green-400' : 'border-red-500/20 text-red-400'}`}
                                     />
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/20 uppercase tracking-widest">CRÉDITOS</span>
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] font-black opacity-20 uppercase tracking-widest">CRÉDITOS</span>
                                 </div>
 
                                 {/* Status */}
                                 {txStatus === 'success' && (
                                     <div className="bg-green-500/10 border border-green-500/30 p-3 rounded-xl flex items-center gap-3">
-                                        <CheckCircle size={18} className="text-green-400 flex-shrink-0" />
-                                        <div>
-                                            <p className="text-[10px] font-[1000] text-green-400 uppercase tracking-widest">
+                                        <CheckCircle size={18} className="text-green-600 flex-shrink-0" />
+                                        <div className="text-left">
+                                            <p className="text-[10px] font-[1000] text-green-600 uppercase tracking-widest">
                                                 {posnetMode === 'load' ? '✅ Créditos Cargados' : '✅ Descuento Aplicado'}
                                             </p>
-                                            <p className="text-[8px] text-white/40">Nuevo saldo: {selectedClient.credits}</p>
+                                            <p className="text-[8px] opacity-50">Nuevo saldo: {selectedClient.credits}</p>
                                         </div>
                                     </div>
                                 )}
                                 {txStatus === 'error' && (
                                     <div className="bg-red-500/10 border border-red-500/30 p-3 rounded-xl flex items-center gap-3">
-                                        <XCircle size={18} className="text-red-400 flex-shrink-0" />
-                                        <p className="text-[9px] font-black text-red-400">{errorMsg}</p>
+                                        <XCircle size={18} className="text-red-500 flex-shrink-0" />
+                                        <p className="text-[9px] font-black text-red-600 text-left">{errorMsg}</p>
                                     </div>
                                 )}
 
@@ -579,10 +762,14 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
                                 <button
                                     onClick={handleTransaction}
                                     disabled={isProcessing || !amount}
-                                    className={`w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-[0.15em] text-[10px] active:scale-95 transition-all border border-white/10 disabled:opacity-30 disabled:grayscale
+                                    className={`w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-[0.15em] text-[10px] active:scale-95 transition-all border cursor-pointer disabled:opacity-30 disabled:grayscale
                                         ${posnetMode === 'load'
-                                            ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-[0_8px_20px_rgba(34,197,94,0.2)]'
-                                            : 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-[0_8px_20px_rgba(239,68,68,0.2)]'}`}
+                                            ? isDayMode 
+                                                ? 'bg-gradient-to-b from-green-600 to-emerald-600 border-green-800 border-b-[4px] border-b-green-950 text-white' 
+                                                : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white border-white/10 shadow-[0_8px_20px_rgba(34,197,94,0.2)]'
+                                            : isDayMode 
+                                                ? 'bg-gradient-to-b from-red-600 to-rose-600 border-red-800 border-b-[4px] border-b-red-950 text-white' 
+                                                : 'bg-gradient-to-r from-red-600 to-rose-600 text-white border-white/10 shadow-[0_8px_20px_rgba(239,68,68,0.2)]'}`}
                                 >
                                     {isProcessing
                                         ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -595,7 +782,11 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
 
                                 {txStatus === 'success' && (
                                     <button onClick={() => { playNeonClick(); resetPosnet(); }}
-                                        className="w-full h-10 rounded-xl bg-white/5 border border-white/10 text-white/40 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all">
+                                        className={`w-full h-10 rounded-xl font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all cursor-pointer ${
+                                            isDayMode 
+                                                ? 'bg-white border-[#cbd5e1] border-b-[3px] border-b-[#cbd5e1] text-[#2d1e15]' 
+                                                : 'bg-white/5 border border-white/10 text-white/40'
+                                        }`}>
                                         Nueva Transacción
                                     </button>
                                 )}
@@ -609,13 +800,21 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
             <div className="w-full max-w-sm mt-6 space-y-3 relative z-10">
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/${categorySlug}/${shopSlug}/panel-autogestion`); }}
-                    className="w-full h-12 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)] flex items-center justify-center gap-2"
+                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[9px] transition-all border-2 cursor-pointer flex items-center justify-center gap-2 ${
+                        isDayMode 
+                            ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
+                            : 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.2)] active:scale-95'
+                    }`}
                 >
-                    <Store size={14} className="text-cyan-400" /> Panel de Autogestión
+                    <Store size={14} className={isDayMode ? 'text-[#855b3c]' : 'text-cyan-400'} /> Panel de Autogestión
                 </button>
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                    className="w-full h-12 rounded-2xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-black uppercase tracking-[0.2em] text-[9px] transition-all active:scale-95 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)] flex items-center justify-center"
+                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[9px] transition-all border-2 cursor-pointer flex items-center justify-center ${
+                        isDayMode 
+                            ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
+                            : 'bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)] active:scale-95'
+                    }`}
                 >
                     Volver a Inicio
                 </button>
@@ -623,13 +822,13 @@ const CredencialPage: React.FC<CredencialPageProps> = ({ allShops }) => {
 
             {/* Footer */}
             <div className="mt-10 flex flex-col items-center gap-2 relative z-10">
-                <p className="text-[8px] font-black text-indigo-400/90 uppercase tracking-[0.4em] text-center px-12 leading-loose">
+                <p className={`text-[8px] font-black uppercase tracking-[0.4em] text-center px-12 leading-loose ${isDayMode ? 'text-[#2d1e15]/60' : 'text-indigo-400/90'}`}>
                     Security ID: SHOP-{selectedShop.id.slice(0, 8).toUpperCase()}
                 </p>
                 <div className="flex items-center gap-4">
-                    <div className="h-[1px] w-8 bg-indigo-500/60" />
-                    <span className="text-[7px] font-bold text-white/70 uppercase tracking-[0.8em]">ShopDigital.tech</span>
-                    <div className="h-[1px] w-8 bg-indigo-500/60" />
+                    <div className={`h-[1px] w-8 ${isDayMode ? 'bg-[#cbd5e1]' : 'bg-indigo-500/60'}`} />
+                    <span className={`text-[7px] font-bold uppercase tracking-[0.8em] ${isDayMode ? 'text-black/50' : 'text-white/70'}`}>ShopDigital.tech</span>
+                    <div className={`h-[1px] w-8 ${isDayMode ? 'bg-[#cbd5e1]' : 'bg-indigo-500/60'}`} />
                 </div>
             </div>
             
