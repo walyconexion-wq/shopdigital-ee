@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { 
     Shield, 
     BarChart3, 
@@ -15,22 +15,23 @@ import {
     Store
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Logo from '../components/Logo';
 import { playNeonClick } from '../utils/audio';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 const AboutPage: React.FC = () => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        window.scrollTo(0, 0);
         setIsVisible(true);
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        setScrolled(e.currentTarget.scrollTop > 20);
+    };
 
     const handleShare = () => {
         playNeonClick();
@@ -44,15 +45,35 @@ const AboutPage: React.FC = () => {
         }
     };
 
+    const ariContextShop = {
+        id: 'ari-global',
+        name: 'ShopDigital',
+        category: 'Red Comercial',
+        slug: 'shopdigital',
+        address: 'Argentina',
+        phone: '',
+        description: 'Red Comercial Digital de Argentina',
+        rating: 5,
+        isActive: true,
+        offers: [],
+        visits: 0,
+        subscribers: 0,
+        tags: [],
+    } as any;
+
     return (
-        <div className="min-h-screen w-full flex flex-col justify-start relative overflow-x-hidden pb-12 transition-colors duration-700 bg-[#cda488] text-[#2d1e15] font-sans selection:bg-cyan-500/20">
-            {/* Background Grid Accent (Futiles en Modo Día pero aportan textura premium) */}
+        <div 
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="h-screen w-full flex flex-col justify-start relative overflow-y-auto pb-12 transition-colors duration-700 bg-[#cda488] text-[#2d1e15] font-sans selection:bg-cyan-500/20"
+        >
+            {/* Background Grid Accent */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(45,30,21,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(45,30,21,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
                 <div className="absolute top-1/4 left-[-10%] w-[60%] h-[40%] bg-white/10 rounded-full blur-[100px]" />
             </div>
 
-            {/* STICKY HEADER (Logo + Back) */}
+            {/* STICKY HEADER (Logo Generic + Back) */}
             <nav className={`fixed top-0 z-50 w-full transition-all duration-500 border-b ${
                 scrolled 
                     ? 'bg-white/95 backdrop-blur-xl border-slate-200 py-2 shadow-md' 
@@ -65,9 +86,17 @@ const AboutPage: React.FC = () => {
                     >
                         <ArrowLeft size={18} className="text-[#2d1e15]" />
                     </button>
-                    <div className="scale-75 origin-center">
-                        <Logo />
+                    
+                    {/* Titulo ShopDigital con mejor jerarquía y sin Esteban Echeverría */}
+                    <div className="flex flex-col items-center select-none text-center">
+                        <span className="text-[20px] font-[1000] tracking-tighter uppercase text-[#2d1e15] leading-none mb-0.5">
+                            ShopDigital
+                        </span>
+                        <span className="text-[7.5px] font-black text-slate-500 tracking-[0.2em] uppercase">
+                            Red Comercial
+                        </span>
                     </div>
+
                     <button 
                         onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
                         className="bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all active:translate-y-[2px] group shrink-0"
@@ -105,12 +134,12 @@ const AboutPage: React.FC = () => {
                             {/* Balloon tail */}
                             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-[#2d1e15] rotate-45 border-t border-l border-[#855b3c]" />
                             <p className="text-[11.5px] leading-relaxed font-bold tracking-tight">
-                                "¡Hola! Soy <strong>Ari</strong>, tu guía en **ShopDigital**. Te doy la bienvenida a nuestro espacio institucional, donde vas a descubrir cómo encendemos la red de comercios y el motor productivo regional."
+                                "¡Hola! Soy <strong>Ari</strong>, tu asistente en **ShopDigital**. Te doy la bienvenida a nuestro espacio institucional, donde vas a descubrir cómo encendemos la red de comercios y el motor productivo regional."
                             </p>
                         </div>
 
                         <div className="mt-2 space-y-2">
-                            <h1 className="text-2xl font-[1000] tracking-tighter leading-none uppercase text-shadow-premium">
+                            <h1 className="text-2.5xl font-[1000] tracking-tighter leading-none uppercase text-shadow-premium">
                                 Red Comercial <br/>
                                 <span className="text-[#0ea5e9]">ShopDigital</span>
                             </h1>
@@ -253,13 +282,18 @@ const AboutPage: React.FC = () => {
                 </section>
             </main>
 
-            {/* Footer Institucional */}
+            {/* Footer Institucional sin Esteban Echeverría */}
             <footer className="w-full flex flex-col items-center gap-3 pt-8 pb-6 border-t border-[#855b3c]/20 relative z-10 bg-black/10 backdrop-blur-sm mt-auto max-w-lg mx-auto">
-                <div className="scale-75 cursor-pointer hover:opacity-100 opacity-80 transition-opacity" onClick={() => navigate(`/${townId}/home`)}>
-                    <Logo />
+                <div className="flex flex-col items-center select-none text-center cursor-pointer hover:opacity-100 opacity-80 transition-opacity" onClick={() => navigate(`/${townId}/home`)}>
+                    <span className="text-[22px] font-[1000] tracking-tighter uppercase text-[#faf8f5] leading-none mb-0.5">
+                        ShopDigital
+                    </span>
+                    <span className="text-[8px] font-black text-white/50 tracking-[0.2em] uppercase">
+                        Red Comercial
+                    </span>
                 </div>
                 <div className="flex flex-col items-center gap-1.5">
-                    <p className="text-[9px] font-black text-white/80 uppercase tracking-[0.35em] text-center select-none">
+                    <p className="text-[9px] font-black text-white/85 uppercase tracking-[0.35em] text-center select-none">
                         © 2026 · ShopDigital
                     </p>
                     <p className="text-[7.5px] font-bold text-white/50 uppercase tracking-[0.2em] text-center">
@@ -267,6 +301,15 @@ const AboutPage: React.FC = () => {
                     </p>
                 </div>
             </footer>
+
+            {/* Ari Floating Assistant Bubble */}
+            <AriMerchantAssistant 
+                shop={ariContextShop} 
+                role="baquiana" 
+                townId="esteban-echeverria"
+                isDayMode={true}
+                globalConfig={{}}
+            />
         </div>
     );
 };
