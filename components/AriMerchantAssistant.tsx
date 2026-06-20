@@ -804,19 +804,6 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
             {/* ═══ MODO FLOTANTE: Burbuja + panel emergente ═══ */}
             {!inline && (
                 <div className="relative group">
-                    {/* Cartelito de ayuda - Siempre visible con animación suave */}
-                    <div className="absolute bottom-full right-0 mb-4 animate-bounce ari-helper-cartelito">
-                        <div className={isDayMode ? "ari-helper-cartelito-body p-[1px] rounded-2xl" : `bg-gradient-to-r ${styles.helpTextBorderGlow} p-[1px] rounded-2xl`}>
-                            <div className={`${isDayMode ? 'bg-transparent' : 'bg-black/90 backdrop-blur-md'} px-4 py-2 rounded-2xl whitespace-nowrap`}>
-                                <span className={`text-[10px] font-black uppercase tracking-widest ${isDayMode ? 'text-[#0f172a]' : `text-transparent bg-clip-text bg-gradient-to-r ${styles.helpTextGradient}`}`}>
-                                    {isIndustrial ? 'Comando B2B Online' : 'Asistente IA'}
-                                </span>
-                            </div>
-                        </div>
-                        {/* Triangulito del cartelito */}
-                        <div className={`w-3 h-3 ${isDayMode ? 'ari-helper-cartelito-triangle' : styles.helpTextTriangle} rotate-45 absolute -bottom-1.5 right-6`} />
-                    </div>
-
                     {/* Efecto de anillo pulsante de atención */}
                     <div className={`absolute inset-0 rounded-full ${styles.glowRing} animate-ping`} />
                     <div className={`absolute inset-0 rounded-full ${styles.pulseGlow} animate-pulse scale-125`} />
