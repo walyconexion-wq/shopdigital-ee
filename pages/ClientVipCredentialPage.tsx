@@ -408,7 +408,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                             ? 'text-[#2d1e15] drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' 
                             : 'text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-400 to-blue-500 drop-shadow-[0_0_20px_rgba(0,245,255,0.4)]'
                     }`}>
-                        ShopDigital
+                        Credencial VIP
                     </h1>
                     <p className={`text-[8px] font-[900] uppercase tracking-[0.4em] ${isDayMode ? 'text-[#855b3c]/70' : 'text-cyan-400/60'}`}>
                         Sede: {formattedTown}
@@ -547,10 +547,10 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
             <div className="w-full max-w-sm relative z-10 group animate-in zoom-in duration-700 delay-100">
                 <div className={`absolute -inset-1 rounded-[2.5rem] blur opacity-25 ${isDayMode ? 'bg-[#855b3c]/20' : ''}`} style={isDayMode ? {} : { backgroundColor: isSuspended ? '#ef4444' : cardColor }}></div>
                 
-                <div className={`relative border rounded-[2.5rem] overflow-hidden shadow-2xl transition-all ${
+                <div className={`relative border-2 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all ${
                     isDayMode 
-                        ? 'bg-white/85 border-[#cbd5e1] border-b-[6px] border-b-[#cbd5e1]' 
-                        : 'bg-zinc-900 border-white/10'
+                        ? 'bg-white/85 border-[#855b3c] border-b-[8px] border-b-[#855b3c]' 
+                        : 'bg-zinc-900 border-cyan-500/30 border-b-[8px] border-b-cyan-500/50'
                 }`}>
                     {/* Background structures */}
                     {!isDayMode ? (
@@ -752,10 +752,10 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
             </div>
 
             {/* QR DE VALIDACIÓN TRASACCIONAL */}
-            <div className={`w-full max-w-sm mt-8 p-6 border rounded-[2rem] flex flex-col items-center shadow-2xl ${
+            <div className={`w-full max-w-sm mt-8 p-6 border-2 rounded-[2rem] flex flex-col items-center shadow-2xl ${
                 isDayMode 
-                    ? 'bg-white/85 border-[#cbd5e1] border-b-[6px] border-b-[#cbd5e1]' 
-                    : 'bg-zinc-900 border-white/10'
+                    ? 'bg-white/85 border-[#855b3c] border-b-[8px] border-b-[#855b3c]' 
+                    : 'bg-zinc-900 border-cyan-500/30 border-b-[8px] border-b-cyan-500/50'
             }`}>
                 <p className={`text-[10px] font-black uppercase tracking-[0.4em] mb-6 ${isDayMode ? 'text-[#2d1e15]/60' : 'text-white/60'}`}>Validación de Descuentos</p>
                 <div className="bg-white p-4 rounded-2xl shadow-2xl relative group/qr">
@@ -769,10 +769,10 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                 
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/validar/${client.id}`); }}
-                    className={`mt-8 w-full h-16 rounded-2xl font-[1000] uppercase tracking-[0.2em] text-[11px] transition-all flex items-center justify-center gap-3 border cursor-pointer ${
+                    className={`mt-8 w-full h-16 rounded-2xl font-[1000] uppercase tracking-[0.2em] text-[11px] transition-all flex items-center justify-center gap-3 border-2 cursor-pointer ${
                         isDayMode 
-                            ? 'bg-gradient-to-b from-[#b58866] to-[#9c7151] hover:from-[#c29673] hover:to-[#a87c5b] text-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] shadow-[0_10px_25px_rgba(140,90,50,0.15)] active:translate-y-[4px] active:border-b-[2px]' 
-                            : 'bg-cyan-600 hover:bg-cyan-500 text-white border-white/10 border-b-[6px] border-b-cyan-800 shadow-lg active:scale-95'
+                            ? 'bg-gradient-to-b from-[#b58866] to-[#9c7151] hover:from-[#c29673] hover:to-[#a87c5b] text-white border-[#5c4033] border-b-[8px] border-b-[#472f22] shadow-[0_10px_25px_rgba(140,90,50,0.2)] active:translate-y-[4px] active:border-b-[2px]' 
+                            : 'bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-400 border-b-[8px] border-b-cyan-800 shadow-lg active:scale-95 active:translate-y-[4px]'
                     }`}
                 >
                     <Activity size={18} /> COMPLETAR DATOS
@@ -783,20 +783,20 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
             <div className="w-full max-w-sm mt-8 space-y-4 relative z-10 animate-in slide-in-from-bottom-4 duration-700 delay-300">
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/red-comercial/ofertas`); }}
-                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all border cursor-pointer ${
+                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all border-2 cursor-pointer ${
                         isDayMode 
-                            ? 'bg-white/80 hover:bg-white border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] text-[#2d1e15] active:translate-y-[2px] active:border-b-[1px]' 
-                            : 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/5 active:scale-95'
+                            ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
+                            : 'bg-[#0b1329] hover:bg-[#0b1329]/80 text-white border-cyan-500/30 border-b-[6px] border-b-cyan-600/50 active:translate-y-[4px] active:border-b-[2px]'
                     }`}
                 >
                     Explorar Beneficios
                 </button>
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all border cursor-pointer ${
+                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all border-2 cursor-pointer ${
                         isDayMode 
-                            ? 'bg-white/80 hover:bg-white border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] text-[#2d1e15] active:translate-y-[2px] active:border-b-[1px]' 
-                            : 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white/95 border border-white/5 active:scale-95'
+                            ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
+                            : 'bg-[#0b1329] hover:bg-[#0b1329]/80 text-white border-cyan-500/30 border-b-[6px] border-b-cyan-600/50 active:translate-y-[4px] active:border-b-[2px]'
                     }`}
                 >
                     Volver a Inicio
