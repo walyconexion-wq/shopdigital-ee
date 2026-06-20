@@ -213,7 +213,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                         PT
                     </button>
                 </div>
-            )}</div>
+            )}
             {/* Modo Navidad: Nieve Cayendo en CSS Puro */}
             {globalConfig?.isChristmasMode && (
                 <div className="absolute inset-0 pointer-events-none z-[999] overflow-hidden">
