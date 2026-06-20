@@ -833,77 +833,63 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         onClick={() => { setIsOpen(false); window.speechSynthesis.cancel(); }}
                         className="fixed inset-0 bg-black/25 backdrop-blur-[5px] z-[998] transition-all duration-300 animate-in fade-in cursor-default"
                     />
-                    <div className={`w-[340px] h-[500px] ari-chat-container z-[999] ${
-                        isDayMode 
-                            ? 'bg-[#faf8f5] border border-slate-200/80 shadow-xl' 
-                            : 'bg-[#050505]/95 border border-white/10'
-                    } backdrop-blur-3xl rounded-[2rem] ${styles.cardShadow} flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative`}>
-                    {/* Background Grid & Glows */}
-                    <div className={`absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.02'})_1px,transparent_1px),linear-gradient(90deg,rgba(${isDayMode ? '0,0,0,0.03' : '255,255,255,0.02'})_1px,transparent_1px)] bg-[size:20px_20px] z-0`} />
-                    <div className={`absolute top-0 right-0 w-32 h-32 ${styles.accentGlow1} rounded-full blur-3xl z-0 ${isDayMode ? 'opacity-20' : ''}`} />
-                    <div className={`absolute bottom-0 left-0 w-32 h-32 ${styles.accentGlow2} rounded-full blur-3xl z-0 ${isDayMode ? 'opacity-20' : ''}`} />
+                    <div className="w-[340px] h-[500px] ari-chat-container z-[999] bg-white border border-slate-200/80 shadow-2xl rounded-[2.5rem] flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300 relative">
+                    {/* Background Grid */}
+                    <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(0,120,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,120,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] z-0" />
 
                     {/* Header */}
-                    <div className={`p-4 ${
-                        isDayMode 
-                            ? 'bg-white border-b border-slate-100' 
-                            : `bg-gradient-to-r ${styles.headerGradient} border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]`
-                    } flex items-center justify-between relative z-10`}>
+                    <div className="p-4 bg-white border-b border-slate-100 flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full overflow-hidden border flex items-center justify-center bg-slate-950 flex-shrink-0 ${styles.headerGlow}`}>
+                            <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-100 flex items-center justify-center bg-slate-950 flex-shrink-0">
                                 <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                             </div>
-                            <div>
-                                <h3 className={`text-[12px] font-black uppercase tracking-widest ${isDayMode ? 'text-[#0f172a]' : 'text-white'}`}>
+                            <div className="text-left">
+                                <h3 className="text-[12px] font-black uppercase tracking-widest text-[#0f172a]">
                                     {styles.headerTitle}
                                 </h3>
-                                <p className={`text-[8px] ${isDayMode ? 'text-slate-500' : styles.headerStatusText} font-bold uppercase tracking-widest flex items-center gap-1`}>
+                                <p className="text-[8px] text-emerald-600 font-bold uppercase tracking-widest flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> 
-                                    {styles.headerSubtitle}
+                                    En línea y lista para guiarte
                                 </p>
                             </div>
                         </div>
                         <button 
                             onClick={() => { setIsOpen(false); playNeonClick(); window.speechSynthesis.cancel(); }}
-                            className={`p-2 rounded-xl transition-colors ${
-                                isDayMode 
-                                    ? 'text-slate-400 hover:text-slate-800 hover:bg-slate-100' 
-                                    : 'text-white/40 hover:text-white hover:bg-white/5'
-                            }`}
+                            className="p-2 rounded-xl transition-colors text-slate-400 hover:text-slate-800 hover:bg-slate-100"
                         >
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Bitácora de Marketing (Misiones Programadas) */}
-                    <div className={`${isDayMode ? 'bg-slate-50 border-b border-slate-100' : 'bg-white/[0.03] border-b border-white/5'} relative z-10`}>
+                    <div className="bg-slate-50 border-b border-slate-100 relative z-10">
                         <button 
                             onClick={() => setShowCampaigns(!showCampaigns)}
-                            className={`w-full px-4 py-2 flex items-center justify-between transition-all ${isDayMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'}`}
+                            className="w-full px-4 py-2 flex items-center justify-between transition-all hover:bg-slate-100"
                         >
                             <div className="flex items-center gap-2">
-                                <Calendar size={14} className="text-violet-400" />
-                                <span className={`text-[9px] font-black uppercase tracking-widest ${isDayMode ? 'text-slate-700' : 'text-white/70'}`}>Misiones Programadas</span>
+                                <Calendar size={14} className="text-violet-600" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-700">Misiones Programadas</span>
                                 {campaigns.filter(c => c.status === 'pending').length > 0 && (
                                     <span className="w-4 h-4 rounded-full bg-violet-600 text-[8px] font-black flex items-center justify-center text-white">
                                         {campaigns.filter(c => c.status === 'pending').length}
                                     </span>
                                 )}
                             </div>
-                            {showCampaigns ? <ChevronUp size={14} className={isDayMode ? 'text-slate-500' : 'text-white/40'} /> : <ChevronDown size={14} className={isDayMode ? 'text-slate-500' : 'text-white/40'} />}
+                            {showCampaigns ? <ChevronUp size={14} className="text-slate-500" /> : <ChevronDown size={14} className="text-slate-500" />}
                         </button>
 
                         {showCampaigns && (
                             <div className="max-h-[150px] overflow-y-auto p-3 space-y-2 no-scrollbar animate-in slide-in-from-top-2 duration-300">
                                 {campaigns.length === 0 ? (
-                                    <p className={`text-[9px] text-center py-2 italic ${isDayMode ? 'text-slate-400' : 'text-white/20'}`}>No hay misiones agendadas todavía, Jefe.</p>
+                                    <p className="text-[9px] text-center py-2 italic text-slate-400">No hay misiones agendadas todavía, Jefe.</p>
                                 ) : (
                                     campaigns.map(camp => (
-                                        <div key={camp.id} className={`${isDayMode ? 'bg-white border border-slate-200 shadow-sm' : 'bg-black/40 border border-white/5'} rounded-xl p-2.5 flex items-start gap-3 group`}>
+                                        <div key={camp.id} className="bg-white border border-slate-200 shadow-sm rounded-xl p-2.5 flex items-start gap-3 group text-left">
                                             <div className={`mt-1 w-2 h-2 rounded-full ${camp.status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <span className={`text-[8px] font-black uppercase tracking-tighter flex items-center gap-1 ${isDayMode ? 'text-slate-400' : 'text-white/40'}`}>
+                                                    <span className="text-[8px] font-black uppercase tracking-tighter flex items-center gap-1 text-slate-400">
                                                         <Clock size={8} /> {new Date(camp.scheduledDate).toLocaleDateString()}
                                                     </span>
                                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -913,11 +899,11 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                                             </button>
                                                         )}
                                                         <button onClick={() => actualizarEstadoCampania(camp.id, 'cancelled')} className="text-red-500/60 hover:text-red-400">
-                                                            <Trash2 size={12} />
-                                                        </button>
+                                                                <Trash2 size={12} />
+                                                            </button>
                                                     </div>
                                                 </div>
-                                                <p className={`text-[9px] leading-tight truncate ${isDayMode ? 'text-slate-700' : 'text-white/80'}`}>{camp.message}</p>
+                                                <p className="text-[9px] leading-tight truncate text-slate-700">{camp.message}</p>
                                             </div>
                                         </div>
                                     ))
@@ -930,18 +916,17 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar relative z-10 ari-messages-container">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] p-3.5 rounded-[1.25rem] text-[11px] leading-relaxed shadow-lg border backdrop-blur-md transition-all ${
+                                <div className={`max-w-[85%] p-3.5 rounded-[1.25rem] text-[11px] leading-relaxed shadow-md border transition-all text-left ${
                                     msg.role === 'user' 
-                                    ? styles.userMsgBg + ' text-white rounded-tr-sm user-msg-bubble' 
-                                    : (isDayMode ? 'bg-white border-slate-200/80 text-slate-800 ari-bubble-ari' : 'bg-white/5 border-white/10 text-white/90') + ' rounded-tl-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]'
+                                    ? 'bg-[#2d1e15] border-[#2d1e15]/10 text-white rounded-tr-none shadow-md user-msg-bubble' 
+                                    : 'bg-white border-slate-200/80 text-slate-800 rounded-tl-none shadow-sm shadow-slate-100'
                                 }`}>
                                     {msg.text}
                                     {msg.role === 'ari' && msg.text.includes('JEFE, ¿QUIERE que agende esta misión'.toUpperCase()) && (
-                                        <div className={`mt-3 p-2 rounded-xl border animate-pulse ${isDayMode ? 'bg-slate-50 border-slate-200' : 'bg-white/10 border-white/20'}`}>
+                                        <div className="mt-3 p-2 rounded-xl border animate-pulse bg-slate-50 border-slate-200">
                                             <button 
                                                 onClick={() => {
                                                     playNeonClick();
-                                                    // Lógica simple de extracción de fecha y mensaje (esto es una demo, en prod usaríamos un tool call de Gemini)
                                                     const dateMatch = msg.text.match(/(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i);
                                                     const day = dateMatch ? dateMatch[1] : '12';
                                                     const monthStr = dateMatch ? dateMatch[2].toLowerCase() : 'julio';
@@ -957,7 +942,7 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                                     });
                                                     setMessages(prev => [...prev, { role: 'ari', text: `✅ ¡MISIÓN RECIBIDA! Archivo guardado en las celdas de cristal para el ${day} de ${monthStr}. Los ratoncitos ya tienen el reloj sincronizado.`, timestamp: new Date() }]);
                                                 }}
-                                                className="w-full py-2 bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg hover:scale-105 transition-all"
+                                                className="w-full py-2 bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg hover:scale-105 transition-all cursor-pointer"
                                             >
                                                 Confirmar Misión
                                             </button>
@@ -969,10 +954,12 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                     {msg.role === 'ari' && (
                                         <button 
                                             onClick={() => handlePlayMessage(msg.text, i)}
-                                            className={`mt-2 ${styles.speechBtnColor} transition-colors flex items-center gap-1.5 ${isDayMode ? 'bg-slate-100 hover:bg-slate-200' : 'bg-black/20 hover:bg-black/40'} px-2.5 py-1.5 rounded-md w-max`}
+                                            className="mt-2 text-cyan-700 hover:text-cyan-800 transition-colors flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-md w-max border-none cursor-pointer"
                                         >
                                             {speakingMsgId === i ? <Volume2 size={12} className="animate-pulse" /> : <Play size={12} />}
-                                            <span className={`text-[8px] font-bold uppercase tracking-widest ${isDayMode ? 'text-slate-600' : ''}`}>{speakingMsgId === i ? 'Pausar' : 'Escuchar Voz'}</span>
+                                            <span className="text-[8px] font-bold uppercase tracking-widest">
+                                                {speakingMsgId === i ? 'Pausar' : 'Escuchar Voz'}
+                                            </span>
                                         </button>
                                     )}
                                 </div>
@@ -980,11 +967,11 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                         ))}
                         {isLoading && (
                             <div className="flex justify-start">
-                                <div className={`p-3 rounded-2xl rounded-tl-none ${isDayMode ? 'bg-slate-100 border border-slate-200' : 'bg-white/5 border border-white/10'}`}>
+                                <div className="p-3 rounded-2xl rounded-tl-none bg-slate-100 border border-slate-200">
                                     <div className="flex gap-1">
-                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce`}></div>
-                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.2s]`}></div>
-                                        <div className={`w-1.5 h-1.5 ${styles.loadingDot} rounded-full animate-bounce [animation-delay:0.4s]`}></div>
+                                        <div className="w-1.5 h-1.5 bg-cyan-600 rounded-full animate-bounce"></div>
+                                        <div className="w-1.5 h-1.5 bg-cyan-600 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                                        <div className="w-1.5 h-1.5 bg-cyan-600 rounded-full animate-bounce [animation-delay:0.4s]"></div>
                                     </div>
                                 </div>
                             </div>
@@ -993,43 +980,43 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Action Quick Chips */}
-                    <div className={`px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t ${isDayMode ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-white/[0.02]'}`}>
+                    <div className="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t border-slate-100 bg-white/40">
                         {isIndustrial ? (
                             <>
-                                <button onClick={() => setInput('¿Cuántas empresas hay registradas en total y activas?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}>
+                                <button onClick={() => setInput('¿Cuántas empresas hay registradas en total y activas?')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-amber-50 border-amber-200/60 text-amber-700 hover:bg-amber-100/80 cursor-pointer">
                                     <BarChart3 size={10} /> Total Empresas
                                 </button>
-                                <button onClick={() => setInput('¿Qué empresas hay por alcance?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('yellow')}`}>
+                                <button onClick={() => setInput('¿Qué empresas hay por alcance?')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-yellow-50 border-yellow-200/60 text-yellow-700 hover:bg-yellow-100/80 cursor-pointer">
                                     <Globe size={10} /> Alcance B2B
                                 </button>
-                                <button onClick={() => setInput('Recomendame proveedores de alimentos')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}>
+                                <button onClick={() => setInput('Recomendame proveedores de alimentos')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-amber-50 border-amber-200/60 text-amber-700 hover:bg-amber-100/80 cursor-pointer">
                                     <Sparkles size={10} /> Proveedores
                                 </button>
                             </>
                         ) : isMarketing ? (
                             <>
-                                <button onClick={() => setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('emerald')}`}>
+                                <button onClick={() => setInput('Redactame un copy para WhatsApp para captar nuevos comercios con la Landing Unirse')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-emerald-50 border-emerald-200/60 text-emerald-700 hover:bg-emerald-100/80 cursor-pointer">
                                     <Megaphone size={10} /> Copy B2B
                                 </button>
-                                <button onClick={() => setInput('Armame una campaña para el fin de semana con las Ofertas VIP para clientes')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('cyan')}`}>
+                                <button onClick={() => setInput('Armame una campaña para el fin de semana con las Ofertas VIP para clientes')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-cyan-50 border-cyan-200/60 text-cyan-700 hover:bg-cyan-100/80 cursor-pointer">
                                     <Sparkles size={10} /> Campaña B2C
                                 </button>
-                                <button onClick={() => setInput('Quiero captar Embajadores, redactame el texto para el formulario de Reclutamiento')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}>
+                                <button onClick={() => setInput('Quiero captar Embajadores, redactame el texto para el formulario de Reclutamiento')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-violet-50 border-violet-200/60 text-violet-700 hover:bg-violet-100/80 cursor-pointer">
                                     <Bot size={10} /> Reclutar
                                 </button>
-                                <button onClick={() => setInput('¿Cuántas campañas tengo activas y qué landing conviene disparar primero?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('emerald')}`}>
+                                <button onClick={() => setInput('¿Cuántas campañas tengo activas y qué landing conviene disparar primero?')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-emerald-50 border-emerald-200/60 text-emerald-700 hover:bg-emerald-100/80 cursor-pointer">
                                     <BarChart3 size={10} /> Estado
                                 </button>
                             </>
                         ) : (
                             <>
-                                <button onClick={() => setInput('¿Cuántas visitas tuve hoy?')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('cyan')}`}>
+                                <button onClick={() => setInput('¿Cuántas visitas tuve hoy?')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-cyan-50 border-cyan-200/60 text-cyan-700 hover:bg-cyan-100/80 cursor-pointer">
                                     <BarChart3 size={10} /> Visitas
                                 </button>
-                                <button onClick={() => setInput('Crear campaña de WhatsApp')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('violet')}`}>
+                                <button onClick={() => setInput('Crear campaña de WhatsApp')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-violet-50 border-violet-200/60 text-violet-700 hover:bg-violet-100/80 cursor-pointer">
                                     <Megaphone size={10} /> Campaña
                                 </button>
-                                <button onClick={() => setInput('Sugerencias para vender más')} className={`whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${getChipClass('amber')}`}>
+                                <button onClick={() => setInput('Sugerencias para vender más')} className="whitespace-nowrap px-3 py-1.5 border rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 bg-amber-50 border-amber-200/60 text-amber-700 hover:bg-amber-100/80 cursor-pointer">
                                     <Sparkles size={10} /> Consejos
                                 </button>
                             </>
@@ -1037,15 +1024,15 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                     </div>
 
                     {/* Input Area */}
-                    <div className={`p-4 ${isDayMode ? 'bg-[#faf8f5] border-t border-slate-200' : 'bg-black/40 backdrop-blur-xl border-t border-white/10'} relative z-10`}>
-                        <div className={`flex items-center gap-2 ${isDayMode ? 'bg-slate-100 border border-slate-200 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)]' : 'bg-white/5 border border-white/10 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]'} rounded-2xl p-1 px-3`}>
+                    <div className="p-4 bg-[#f8f9fa] border-t border-slate-200/60 relative z-10">
+                        <div className="flex items-center gap-2 bg-[#f1f3f7] border border-transparent shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)] rounded-3xl p-1 px-3">
                             <input 
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                 placeholder="Comandá a Ari..."
-                                className={`flex-1 bg-transparent border-none ${isDayMode ? 'text-slate-800 placeholder:text-slate-400' : 'text-white placeholder:text-white/30'} text-[11px] py-3 focus:outline-none font-medium tracking-wide`}
+                                className="flex-1 bg-transparent border-none text-slate-800 placeholder:text-slate-400 text-[11px] py-3 focus:outline-none font-medium tracking-wide"
                             />
                             <input 
                                 type="file"
@@ -1067,22 +1054,24 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                             />
                             <button
                                 onClick={() => document.getElementById('ari-image-upload-floating')?.click()}
-                                className={`p-2.5 rounded-xl transition-all ${isDayMode ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
+                                className="p-2.5 rounded-xl transition-all text-slate-400 hover:text-slate-700 hover:bg-slate-200 border-none bg-transparent cursor-pointer"
                             >
                                 <Camera size={18} />
                             </button>
                             <button 
                                 onClick={handleToggleMic}
-                                className={`p-2.5 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' : isDayMode ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
+                                className={`p-2.5 rounded-xl transition-all border-none bg-transparent cursor-pointer ${
+                                    isListening ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-200'
+                                }`}
                             >
                                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
                             </button>
                             <button 
                                 onClick={() => handleSend()}
                                 disabled={!input.trim() || isLoading}
-                                className={`p-2.5 bg-gradient-to-r ${styles.sendBtn} text-black rounded-xl hover:scale-105 transition-all disabled:opacity-30 disabled:grayscale disabled:hover:scale-100`}
+                                className="p-2.5 bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-full transition-all disabled:opacity-30 disabled:grayscale disabled:hover:scale-100 border-none cursor-pointer flex items-center justify-center"
                             >
-                                <Send size={18} />
+                                <Send size={16} />
                             </button>
                         </div>
                     </div>
