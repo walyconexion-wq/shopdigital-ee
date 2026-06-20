@@ -209,7 +209,7 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
             </div>
 
             {/* Header */}
-            <div className={`backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b mb-8 sticky top-0 z-50 transition-all duration-300 ${
+            <div className={`backdrop-blur-md pt-8 pb-6 px-8 flex flex-col items-center border-b mb-4 sticky top-0 z-50 transition-all duration-300 ${
                 isDayMode 
                     ? 'bg-[#cbd5e1]/45 border-white/20 shadow-[0_10px_25px_rgba(88,70,50,0.08)]' 
                     : 'bg-zinc-900/50 border-cyan-500/20 shadow-[0_4px_20px_rgba(0,251,255,0.05)]'
@@ -263,11 +263,11 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                     
                     {/* Brand Avatar Section */}
                     {isDayMode && (
-                        <div className="flex justify-center mb-4 model-floating select-none pointer-events-none">
+                        <div className="flex justify-center mb-2 model-floating select-none pointer-events-none">
                             <img 
                                 src="/ari-fullbody.png" 
                                 alt="ARI Asistente VIP" 
-                                className="h-44 w-auto object-contain drop-shadow-[0_10px_15px_rgba(88,70,50,0.15)] animate-in fade-in zoom-in-75 duration-700" 
+                                className="h-32 w-auto object-contain drop-shadow-[0_10px_15px_rgba(88,70,50,0.15)] animate-in fade-in zoom-in-75 duration-700" 
                             />
                         </div>
                     )}
@@ -402,11 +402,11 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                     
                     {/* Brand Avatar Section */}
                     {isDayMode && (
-                        <div className="flex justify-center mb-2 model-floating select-none pointer-events-none">
+                        <div className="flex justify-center mb-1 model-floating select-none pointer-events-none">
                             <img 
                                 src="/ari-pointing.png" 
                                 alt="ARI Asistente OTP" 
-                                className="h-44 w-auto object-contain drop-shadow-[0_10px_15px_rgba(88,70,50,0.15)] animate-in fade-in duration-700" 
+                                className="h-32 w-auto object-contain drop-shadow-[0_10px_15px_rgba(88,70,50,0.15)] animate-in fade-in duration-700" 
                             />
                         </div>
                     )}
@@ -520,11 +520,11 @@ const ClientSubscriptionPage: React.FC<ClientSubscriptionPageProps> = ({ allShop
                     
                     {/* Brand Avatar Section */}
                     {isDayMode && (
-                        <div className="flex justify-center mb-2 model-floating select-none pointer-events-none">
+                        <div className="flex justify-center mb-1 model-floating select-none pointer-events-none">
                             <img 
                                 src="/ari-avatar.png" 
                                 alt="ARI Asistente Bienvenido" 
-                                className="h-44 w-auto object-contain drop-shadow-[0_10px_15px_rgba(88,70,50,0.15)] animate-in fade-in duration-700" 
+                                className="h-32 w-auto object-contain drop-shadow-[0_10px_15px_rgba(88,70,50,0.15)] animate-in fade-in duration-700" 
                             />
                         </div>
                     )}
