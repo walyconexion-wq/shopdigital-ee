@@ -19,6 +19,7 @@ import AdminPanelPage from './pages/AdminPanelPage';
 import DiscountsPage from './pages/DiscountsPage';
 import LandingPage from './pages/LandingPage';
 import AboutPage from './pages/AboutPage';
+import MerchantLandingPage from './pages/MerchantLandingPage';
 import MasterPanelPage from './pages/MasterPanelPage';
 import { DirectorBunkerPage } from './pages/DirectorBunkerPage';
 import { AdminBunkerPage } from './pages/AdminBunkerPage';
@@ -339,6 +340,9 @@ const App: React.FC = () => {
 
                     {/* 🌐 NOSOTROS INSTITUCIONAL — Genérico */}
                     <Route path="/nosotros" element={<AboutPage />} />
+
+                    {/* 🌐 VENDER LANDING — Genérico para Comerciantes */}
+                    <Route path="/vender" element={<MerchantLandingPage />} />
 
                     {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
                     <Route path="/region/:regionId" element={<RegionSelectPage />} />
