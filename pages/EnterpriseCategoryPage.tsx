@@ -128,7 +128,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                 <div className="w-full px-6 flex flex-col pb-2">
                     <button
                         onClick={() => { playNeonClick(); navigate(`/empresas`); }}
-                        className="absolute top-6 left-5 z-[60] w-11 h-11 flex items-center justify-center rounded-2xl glass-card-neon transition-all hover:scale-105 active:scale-95 group overflow-hidden"
+                        className="absolute top-6 left-5 z-[60] w-11 h-11 flex items-center justify-center rounded-2xl glass-card-neon transition-all hover:scale-105 active:translate-y-[4px] group overflow-hidden border-b-[4px] border-b-cyan-500/40"
                     >
                         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <ChevronLeft size={24} style={{ color: primaryColor }} />
@@ -168,15 +168,19 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                             <button
                                 key={filter.id}
                                 onClick={() => { playNeonClick(); setActiveReach(filter.id); }}
-                                className="flex-1 min-w-[80px] py-3 px-2 rounded-2xl border flex items-center justify-center gap-1.5 transition-all duration-300 active:scale-95 relative overflow-hidden"
+                                className="flex-1 min-w-[80px] py-3 px-2 rounded-2xl border flex items-center justify-center gap-1.5 transition-all duration-300 active:translate-y-[4px] relative overflow-hidden"
                                 style={isActive ? {
                                     backgroundColor: hexToRgba(secondaryColor, 0.3),
                                     borderColor: primaryColor,
+                                    borderBottomWidth: '4px',
+                                    borderBottomColor: hexToRgba(primaryColor, 0.8),
                                     color: '#ffffff',
                                     boxShadow: `0 0 20px ${hexToRgba(primaryColor, 0.4)}`,
                                 } : {
                                     backgroundColor: 'rgba(255,255,255,0.02)',
                                     borderColor: 'rgba(255,255,255,0.1)',
+                                    borderBottomWidth: '4px',
+                                    borderBottomColor: 'rgba(255,255,255,0.2)',
                                     color: 'rgba(255,255,255,0.5)',
                                 }}
                             >
@@ -196,8 +200,8 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                         {filteredEnterprises.map((enterprise, index) => (
                             <div
                                 key={enterprise.id}
-                                style={{ animationDelay: `${index * 80}ms` }}
-                                className="glass-card-neon overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px] rounded-2xl relative group"
+                                style={{ animationDelay: `${index * 80}ms`, borderBottomWidth: '5px', borderBottomColor: hexToRgba(primaryColor, 0.3) }}
+                                className="glass-card-neon overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px] rounded-2xl relative group shadow-[0_15px_30px_rgba(6,182,212,0.1)]"
                             >
                                 {/* Brillo interactivo de la tarjeta */}
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
@@ -250,10 +254,12 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                     <div className="w-full flex justify-center py-3 px-4">
                                         <button
                                             onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory!.slug}/${enterprise.slug || enterprise.id}`); }}
-                                            className="w-full py-2.5 px-4 text-[9px] text-white font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 rounded-xl border relative overflow-hidden group hover:scale-[1.02] active:scale-95"
+                                            className="w-full py-2.5 px-4 text-[9px] text-white font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 rounded-xl border relative overflow-hidden group hover:scale-[1.02] active:translate-y-[4px]"
                                             style={{
                                                 background: `linear-gradient(135deg, ${hexToRgba(secondaryColor, 0.5)}, ${hexToRgba(primaryColor, 0.4)})`,
                                                 borderColor: primaryColor,
+                                                borderBottomWidth: '4px',
+                                                borderBottomColor: hexToRgba(primaryColor, 0.8),
                                                 boxShadow: `0 5px 20px -5px ${primaryColor}`,
                                             }}
                                         >

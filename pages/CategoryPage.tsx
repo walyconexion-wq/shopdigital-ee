@@ -16,11 +16,11 @@ interface CategoryPageProps {
 
 // Paleta de colores cíclica para las localidades dinámicas
 const LOCALITY_COLORS = [
-    { border: 'border-violet-400/80', bg: 'bg-violet-600/50', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.8)]', pin: 'text-violet-400', line: 'bg-violet-400/30', dot: 'bg-violet-500/20 border-violet-400/50', card: 'card-neon-violet', btn: 'border-violet-400/50 bg-violet-600/30 shadow-[0_4px_0_rgba(139,92,246,0.5)]' },
-    { border: 'border-cyan-400/80',   bg: 'bg-cyan-600/50',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.8)]',  pin: 'text-cyan-400',   line: 'bg-cyan-400/30',   dot: 'bg-cyan-500/20 border-cyan-400/50',   card: 'card-neon-cyan',   btn: 'border-cyan-400/50 bg-cyan-600/30 shadow-[0_4px_0_rgba(34,211,238,0.5)]' },
-    { border: 'border-rose-400/80',   bg: 'bg-rose-600/50',   shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.8)]',   pin: 'text-rose-400',   line: 'bg-rose-400/30',   dot: 'bg-rose-500/20 border-rose-400/50',   card: 'card-neon-red',    btn: 'border-rose-400/50 bg-rose-600/30 shadow-[0_4px_0_rgba(244,63,94,0.5)]' },
-    { border: 'border-green-400/80',  bg: 'bg-green-600/50',  shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.8)]',   pin: 'text-green-400',  line: 'bg-green-400/30',  dot: 'bg-green-500/20 border-green-400/50',  card: 'card-neon-green',  btn: 'border-green-400/50 bg-green-600/30 shadow-[0_4px_0_rgba(34,197,94,0.5)]' },
-    { border: 'border-amber-400/80',  bg: 'bg-amber-600/50',  shadow: 'shadow-[0_0_20px_rgba(245,158,11,0.8)]',  pin: 'text-amber-400',  line: 'bg-amber-400/30',  dot: 'bg-amber-500/20 border-amber-400/50',  card: 'card-neon-amber',  btn: 'border-amber-400/50 bg-amber-600/30 shadow-[0_4px_0_rgba(245,158,11,0.5)]' },
+    { border: 'border-violet-400/80 border-b-[4px] border-b-violet-500/60', bg: 'bg-violet-600/50', shadow: 'shadow-[0_0_20px_rgba(139,92,246,0.5)]', pin: 'text-violet-400', line: 'bg-violet-400/30', dot: 'bg-violet-500/20 border-violet-400/50', card: 'card-neon-violet border-b-[5px] border-b-violet-500/30 shadow-[0_15px_30px_rgba(139,92,246,0.15)]', btn: 'border-violet-400/50 bg-violet-600/30 border-b-[4px] border-b-violet-500/80 shadow-lg text-white' },
+    { border: 'border-cyan-400/80 border-b-[4px] border-b-cyan-500/60',   bg: 'bg-cyan-600/50',   shadow: 'shadow-[0_0_20px_rgba(34,211,238,0.5)]',  pin: 'text-cyan-400',   line: 'bg-cyan-400/30',   dot: 'bg-cyan-500/20 border-cyan-400/50',   card: 'card-neon-cyan border-b-[5px] border-b-cyan-500/30 shadow-[0_15px_30px_rgba(34,211,238,0.15)]',   btn: 'border-cyan-400/50 bg-cyan-600/30 border-b-[4px] border-b-cyan-500/80 shadow-lg text-white' },
+    { border: 'border-rose-400/80 border-b-[4px] border-b-rose-500/60',   bg: 'bg-rose-600/50',   shadow: 'shadow-[0_0_20px_rgba(244,63,94,0.5)]',   pin: 'text-rose-400',   line: 'bg-rose-400/30',   dot: 'bg-rose-500/20 border-rose-400/50',   card: 'card-neon-red border-b-[5px] border-b-rose-500/30 shadow-[0_15px_30px_rgba(244,63,94,0.15)]',    btn: 'border-rose-400/50 bg-rose-600/30 border-b-[4px] border-b-rose-500/80 shadow-lg text-white' },
+    { border: 'border-green-400/80 border-b-[4px] border-b-green-500/60',  bg: 'bg-green-600/50',  shadow: 'shadow-[0_0_20px_rgba(34,197,94,0.5)]',   pin: 'text-green-400',  line: 'bg-green-400/30',  dot: 'bg-green-500/20 border-green-400/50',  card: 'card-neon-green border-b-[5px] border-b-green-500/30 shadow-[0_15px_30px_rgba(34,197,94,0.15)]',  btn: 'border-green-400/50 bg-green-600/30 border-b-[4px] border-b-green-500/80 shadow-lg text-white' },
+    { border: 'border-amber-400/80 border-b-[4px] border-b-amber-500/60',  bg: 'bg-amber-600/50',  shadow: 'shadow-[0_0_20px_rgba(245,158,11,0.5)]',  pin: 'text-amber-400',  line: 'bg-amber-400/30',  dot: 'bg-amber-500/20 border-amber-400/50',  card: 'card-neon-amber border-b-[5px] border-b-amber-500/30 shadow-[0_15px_30px_rgba(245,158,11,0.15)]',  btn: 'border-amber-400/50 bg-amber-600/30 border-b-[4px] border-b-amber-500/80 shadow-lg text-white' },
 ];
 
 const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) => {
@@ -223,7 +223,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
             <header className="flex-shrink-0 w-full max-w-[340px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-0 px-4 mb-2.5">
                 <div
                     onClick={handleTitleClick}
-                    className="glass-header rounded-3xl p-5 border backdrop-blur-md cursor-pointer select-none active:scale-95 transition-all w-full text-center"
+                    className={`glass-header rounded-3xl p-5 border backdrop-blur-md cursor-pointer select-none active:translate-y-[4px] transition-all w-full text-center ${isDayMode ? 'border-b-[6px] border-slate-300' : 'border-b-[4px] border-white/20'}`}
                     style={{
                         borderColor: hexToRgba(themeColor, 0.5),
                         boxShadow: `0 15px 40px ${hexToRgba(themeColor, 0.4)}`,
@@ -274,7 +274,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                 <button
                                     key={loc}
                                     onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                                    className={`locality-tab flex-1 min-w-[72px] py-3 px-2 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 active:scale-95 ${activeClass}`}
+                                    className={`locality-tab flex-1 min-w-[72px] py-3 px-2 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 active:translate-y-[4px] ${activeClass} ${isDayMode && !isActive ? 'border-b-[4px] border-slate-300' : ''}`}
                                 >
                                     <span className={`text-[10px] sm:text-[11px] font-[1000] uppercase tracking-widest text-center leading-tight ${isActive ? 'text-shadow-premium' : ''}`}>
                                         {loc}
@@ -291,15 +291,15 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                         {selectedCategory.subcategories.map((sub: string) => {
                             const isActive = activeSubcategory === sub;
                             const btnClass = isDayMode
-                                ? `px-4 py-2.5 rounded-full text-[8.5px] font-[1000] uppercase tracking-widest transition-all duration-150 active:translate-y-[2px] ${
+                                ? `px-4 py-2.5 rounded-2xl text-[8.5px] font-[1000] uppercase tracking-widest transition-all duration-150 active:translate-y-[4px] ${
                                     isActive 
-                                        ? 'border-sky-400 bg-sky-500/20 text-sky-950 scale-105 shadow-[0_0_12px_rgba(14,165,233,0.3)]' 
-                                        : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 hover:-translate-y-[1.5px]'
+                                        ? 'border-sky-400 bg-sky-500/10 text-sky-900 border-b-[4px] border-b-sky-500/40 shadow-sm' 
+                                        : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50 border-b-[4px] border-b-slate-300 shadow-sm'
                                   }`
-                                : `px-4 py-2 rounded-full border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest ${
+                                : `px-4 py-2 rounded-2xl border transition-all duration-300 text-[8.5px] font-black uppercase tracking-widest active:translate-y-[4px] ${
                                     isActive
-                                        ? 'active-sub backdrop-blur-md text-white scale-105 animate-pulse'
-                                        : 'backdrop-blur-sm text-white/90 hover:text-white hover:scale-105 active:scale-95'
+                                        ? 'active-sub backdrop-blur-md text-white border-b-[4px] border-b-white/40 shadow-lg'
+                                        : 'backdrop-blur-sm text-white/90 hover:text-white border-b-[4px] border-b-white/20'
                                   }`;
 
                             const btnStyle = isDayMode
@@ -393,9 +393,14 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                     <div className="w-full flex justify-center py-3 px-4">
                                         <button
                                             onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${townId}/${selectedCategory.slug}/${shop.slug || shop.id}`); }}
-                                            className={`py-2.5 px-6 text-[9px] text-white font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all duration-75 rounded-full border backdrop-blur-md active:translate-y-[4px] ${activeColors.btn}`}
+                                            className={`w-[90%] py-3 px-4 text-[10px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-75 rounded-2xl border backdrop-blur-md active:translate-y-[4px] ${
+                                                isDayMode 
+                                                    ? 'bg-white text-slate-800 border-slate-200 border-b-[5px] border-b-slate-300 hover:bg-slate-50 shadow-md' 
+                                                    : activeColors.btn
+                                            }`}
                                         >
-                                            <BookOpen size={14} strokeWidth={3} className="text-white drop-shadow-md" />VER CATÁLOGO
+                                            <BookOpen size={16} strokeWidth={2.5} className={`${isDayMode ? 'text-slate-600' : 'text-white'} drop-shadow-md`} />
+                                            VER CATÁLOGO
                                         </button>
                                     </div>
                                 </div>
@@ -410,7 +415,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 </div>
 
                 <div className="w-full flex justify-center mb-8">
-                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-full flex items-center gap-2 shadow-lg active:translate-y-[4px] transition-all duration-75" style={{ backgroundColor: hexToRgba(themeColor, 0.2), borderColor: hexToRgba(themeColor, 0.4), color: themeColor }}>
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className={`glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-2xl flex items-center gap-2 shadow-lg active:translate-y-[4px] transition-all duration-75 ${isDayMode ? 'bg-white text-slate-800 border-slate-200 border-b-[4px] border-b-slate-300' : 'border-b-[4px] border-b-white/20'}`} style={!isDayMode ? { backgroundColor: hexToRgba(themeColor, 0.2), borderColor: hexToRgba(themeColor, 0.4), color: themeColor } : {}}>
                         <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
                     </button>
                 </div>
