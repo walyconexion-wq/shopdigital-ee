@@ -137,7 +137,7 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
             {/* HEADER */}
             <div className="w-full max-w-sm relative z-10 flex justify-between items-center mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
                 <button 
-                    onClick={() => { playNeonClick(); navigate(-1); }}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
                     className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-lg ${
                         isDayMode 
                             ? 'bg-white/90 border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] text-[#2d1e15] hover:bg-white active:translate-y-[2px] active:border-b-[1px]' 
