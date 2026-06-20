@@ -4,6 +4,7 @@ import { guardarComercio } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import { Shop } from '../types';
 import { CATEGORIES } from '../constants';
+import { processImageToDataUrl } from '../utils/imageProcessor';
 import {
     ChevronLeft,
     Rocket,
@@ -62,43 +63,19 @@ const SubscriptionPage: React.FC = () => {
             .replace(/-+$/, '');
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 600;
-                const MAX_HEIGHT = 600;
-                let width = img.width;
-                let height = img.height;
-
-                if (width > height) {
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
-                    }
-                } else {
-                    if (height > MAX_HEIGHT) {
-                        width *= MAX_HEIGHT / height;
-                        height = MAX_HEIGHT;
-                    }
-                }
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx = canvas.getContext('2d');
-                ctx?.drawImage(img, 0, 0, width, height);
-
-                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                setFormData({ ...formData, bannerImage: compressedDataUrl });
-            };
-            img.src = event.target?.result as string;
-        };
-        reader.readAsDataURL(file);
+        try {
+            // Pipeline WebP: max 800px · 80% quality · fondo blanco para PNG
+            const dataUrl = await processImageToDataUrl(file, 'banner');
+            setFormData({ ...formData, bannerImage: dataUrl });
+        } catch (err) {
+            console.warn('[SubscriptionPage] Compresión fallida, cargando imagen original.', err);
+            const reader = new FileReader();
+            reader.onload = (ev) => setFormData({ ...formData, bannerImage: ev.target?.result as string });
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

@@ -4,6 +4,7 @@ import { Offer } from '../types';
 import { useTownCategories } from '../hooks/useTownCategories';
 import { guardarOferta } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
+import { processImageToDataUrl } from '../utils/imageProcessor';
 import {
     ChevronLeft,
     Save,
@@ -89,23 +90,16 @@ const OfferFormPage: React.FC<OfferFormPageProps> = ({ allOffers }) => {
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new window.Image();
-        img.onload = () => {
-            const MAX = 600;
-            let w = img.width, h = img.height;
-            if (w > MAX || h > MAX) {
-                const ratio = Math.min(MAX / w, MAX / h);
-                w *= ratio; h *= ratio;
-            }
-            canvas.width = w; canvas.height = h;
-            ctx?.drawImage(img, 0, 0, w, h);
-            const base64 = canvas.toDataURL('image/jpeg', 0.7);
-            setFormData(prev => ({ ...prev, image: base64 }));
-        };
-        img.src = URL.createObjectURL(file);
+        try {
+            // Pipeline WebP: max 600px · 80% quality · sin dependencias externas
+            const dataUrl = await processImageToDataUrl(file, 'offer');
+            setFormData(prev => ({ ...prev, image: dataUrl }));
+        } catch (err) {
+            console.warn('[OfferForm] Compresión fallida, cargando imagen original.', err);
+            const reader = new FileReader();
+            reader.onload = (ev) => setFormData(prev => ({ ...prev, image: ev.target?.result as string }));
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async () => {

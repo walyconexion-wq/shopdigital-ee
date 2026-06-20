@@ -17,6 +17,7 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { processImageToDataUrl } from '../utils/imageProcessor';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 import {
     suscribirseARelevamientos,
@@ -81,33 +82,19 @@ const AmbassadorAgendaPage: React.FC = () => {
         localStorage.setItem(`agenda_notes_${townId}`, JSON.stringify(notes));
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800;
-                let width = img.width;
-                let height = img.height;
-
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx = canvas.getContext('2d');
-                ctx?.drawImage(img, 0, 0, width, height);
-                setFormData({ ...formData, photo: canvas.toDataURL('image/jpeg', 0.7) });
-            };
-            img.src = event.target?.result as string;
-        };
-        reader.readAsDataURL(file);
+        try {
+            // Pipeline WebP: max 400px · 75% quality (fotos de relevamiento)
+            const dataUrl = await processImageToDataUrl(file, 'thumbnail');
+            setFormData({ ...formData, photo: dataUrl });
+        } catch (err) {
+            console.warn('[AgendaPage] Compresión fallida, cargando imagen original.', err);
+            const reader = new FileReader();
+            reader.onload = (ev) => setFormData({ ...formData, photo: ev.target?.result as string });
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleVoiceRecord = () => {

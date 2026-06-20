@@ -9,6 +9,7 @@ import {
     PartyPopper, ImagePlus, Globe, MapPin, FileText, MessageCircle
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
+import { processImageToDataUrl } from '../utils/imageProcessor';
 
 const REACH_OPTIONS = [
     { value: 'national', label: 'Nacional 🌎', desc: 'Opera en todo el país' },
@@ -40,25 +41,19 @@ const EnterpriseSubscriptionPage: React.FC = () => {
             .replace(/\s+/g, '-').replace(/[^\w\-]+/g, '')
             .replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX = 600;
-                let w = img.width, h = img.height;
-                if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
-                else { if (h > MAX) { w *= MAX / h; h = MAX; } }
-                canvas.width = w; canvas.height = h;
-                canvas.getContext('2d')?.drawImage(img, 0, 0, w, h);
-                setFormData(prev => ({ ...prev, bannerImage: canvas.toDataURL('image/jpeg', 0.7) }));
-            };
-            img.src = event.target?.result as string;
-        };
-        reader.readAsDataURL(file);
+        try {
+            // Pipeline WebP: max 800px · 85% quality (logos empresariales)
+            const dataUrl = await processImageToDataUrl(file, 'enterprise');
+            setFormData(prev => ({ ...prev, bannerImage: dataUrl }));
+        } catch (err) {
+            console.warn('[EnterpriseSubscription] Compresión fallida, cargando imagen original.', err);
+            const reader = new FileReader();
+            reader.onload = (ev) => setFormData(prev => ({ ...prev, bannerImage: ev.target?.result as string }));
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

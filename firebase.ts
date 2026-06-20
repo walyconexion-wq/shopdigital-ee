@@ -1427,55 +1427,20 @@ export const actualizarEntradaCliente = async (clientId: string, ticketData: any
     }
 };
 
-const compressBunkerImage = (file: File, maxDim: number = 800): Promise<Blob | File> => {
-    return new Promise((resolve) => {
-        if (!file.type.startsWith('image/')) {
-            resolve(file);
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                
-                if (width > height) {
-                    if (width > maxDim) {
-                        height = Math.round((height * maxDim) / width);
-                        width = maxDim;
-                    }
-                } else {
-                    if (height > maxDim) {
-                        width = Math.round((width * maxDim) / height);
-                        height = maxDim;
-                    }
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                    ctx.drawImage(img, 0, 0, width, height);
-                    canvas.toBlob((blob) => {
-                        if (blob) {
-                            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
-                        } else {
-                            resolve(file);
-                        }
-                    }, 'image/jpeg', 0.75);
-                } else {
-                    resolve(file);
-                }
-            };
-            img.onerror = () => resolve(file);
-            img.src = e.target?.result as string;
-        };
-        reader.onerror = () => resolve(file);
-        reader.readAsDataURL(file);
-    });
+// ── Image Processor: reutiliza el pipeline central de WebP ────────────────
+import { processImageToBlob } from './utils/imageProcessor';
+
+/** @deprecated Usa processImageToBlob('bunker') en su lugar. Mantenemos para compatibilidad. */
+const compressBunkerImage = async (file: File): Promise<Blob | File> => {
+    try {
+        const { blob } = await processImageToBlob(file, 'bunker');
+        return blob;
+    } catch {
+        console.warn('[ShopDigital] Compresión fallida, usando imagen original.');
+        return file;
+    }
 };
+
 
 export const subirArchivoBunker = async (file: File, path: string): Promise<string> => {
     let fileToUpload: Blob | File = file;

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "migrate": "node scripts/migrar.js"
+    "migrate": "node scripts/migrar.js",
+    "audit:images": "npx tsx scripts/auditImages.ts"
   },
   "dependencies": {
     "eve": "^0.11.6",
