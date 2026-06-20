@@ -454,7 +454,7 @@
 }
 
 .day-mode .glass-button-3d svg {
-  color: #2d1e15 !important;
+  color: var(--theme-primary, #22d3ee) !important;
 }
 
 .day-mode .glass-button-3d:hover {
