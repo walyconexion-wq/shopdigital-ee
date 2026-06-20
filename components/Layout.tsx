@@ -69,7 +69,8 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
         location.pathname.includes('/mi-catalogo') || 
         location.pathname.includes('/embajador') ||
         location.pathname.includes('/subscripcion') ||
-        location.pathname.includes('/inscripcion');
+        location.pathname.includes('/inscripcion') ||
+        location.pathname.includes('/cliente-subscripcion');
 
     // Helper to convert hex to rgba
     const hexToRgba = (hex: string, alpha: number) => {
@@ -124,7 +125,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 const hexGlowSvg = `data:image/svg+xml,${encodeURIComponent(`
                     <svg xmlns="http://www.w3.org/2000/svg" width="56" height="100" viewBox="0 0 56 100">
                         <path d="M28 66L0 50L0 16L28 0L56 16L56 50Z M0 100L28 84L56 100 M56 0L28 16L0 0" 
-                              fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${shouldApplyDayMode ? 0.25 : 0.4}" />
+                               fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${shouldApplyDayMode ? 0.25 : 0.4}" />
                     </svg>
                 `)}`;
                 return { texture: `url("${hexGlowSvg}")`, opacity: 1, grid: false, glow: 0.15 };
@@ -143,7 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
                         <rect x="5" y="5" width="30" height="30" rx="8" fill="none" stroke="${themeColor}" stroke-width="1" opacity="${shouldApplyDayMode ? 0.12 : 0.2}" />
                         <rect x="45" y="15" width="25" height="45" rx="8" fill="none" stroke="${themeColor}" stroke-width="1.2" opacity="${shouldApplyDayMode ? 0.18 : 0.3}" />
-                        <rect x="15" y="45" width="25" height="25" rx="6" fill="none" stroke="${themeColor}" stroke-width="1" opacity="${shouldApplyDayMode ? 0.1 : 0.15}" />
+                        <rect x="15" y="45" width="25" height="25" rx="6" fill="none" stroke="${themeColor}" stroke-width="1" opacity="${shouldApplyDayMode ? 0.15 : 0.15}" />
                     </svg>
                 `)}`;
                 return { texture: `url("${roundedRectsSvg}")`, opacity: 1, grid: false, glow: 0.1 };
@@ -181,36 +182,38 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 backgroundColor: shouldApplyDayMode ? '#cda488' : bgColor 
             }}
         >
-            {/* Selector de Idioma (Operación Babel) */}
-            <div className={`absolute top-3.5 right-3.5 z-[100] flex items-center gap-1.5 backdrop-blur-md px-2.5 py-1 rounded-full border shadow-md transition-all duration-300 ${
-                shouldApplyDayMode 
-                    ? 'bg-white/70 border-slate-200/50 text-slate-800' 
-                    : 'bg-slate-950/60 border-white/10 text-white'
-            }`}>
-                <button 
-                    onClick={() => setLanguage('es')} 
-                    className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
-                    style={{ color: language === 'es' ? themeColor : 'inherit', opacity: language === 'es' ? 1 : 0.5 }}
-                >
-                    ES
-                </button>
-                <span className="text-[9px] opacity-20">|</span>
-                <button 
-                    onClick={() => setLanguage('en')} 
-                    className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
-                    style={{ color: language === 'en' ? themeColor : 'inherit', opacity: language === 'en' ? 1 : 0.5 }}
-                >
-                    EN
-                </button>
-                <span className="text-[9px] opacity-20">|</span>
-                <button 
-                    onClick={() => setLanguage('pt')} 
-                    className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
-                    style={{ color: language === 'pt' ? themeColor : 'inherit', opacity: language === 'pt' ? 1 : 0.5 }}
-                >
-                    PT
-                </button>
-            </div>
+            {/* Selector de Idioma (Operación Babel) - Oculto en la página de subscripción VIP */}
+            {!location.pathname.includes('/cliente-subscripcion') && (
+                <div className={`absolute top-3.5 right-3.5 z-[100] flex items-center gap-1.5 backdrop-blur-md px-2.5 py-1 rounded-full border shadow-md transition-all duration-300 ${
+                    shouldApplyDayMode 
+                        ? 'bg-white/70 border-slate-200/50 text-slate-800' 
+                        : 'bg-slate-950/60 border-white/10 text-white'
+                }`}>
+                    <button 
+                        onClick={() => setLanguage('es')} 
+                        className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
+                        style={{ color: language === 'es' ? themeColor : 'inherit', opacity: language === 'es' ? 1 : 0.5 }}
+                    >
+                        ES
+                    </button>
+                    <span className="text-[9px] opacity-20">|</span>
+                    <button 
+                        onClick={() => setLanguage('en')} 
+                        className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
+                        style={{ color: language === 'en' ? themeColor : 'inherit', opacity: language === 'en' ? 1 : 0.5 }}
+                    >
+                        EN
+                    </button>
+                    <span className="text-[9px] opacity-20">|</span>
+                    <button 
+                        onClick={() => setLanguage('pt')} 
+                        className={`text-[9.5px] font-[1000] tracking-wider transition-colors duration-200`}
+                        style={{ color: language === 'pt' ? themeColor : 'inherit', opacity: language === 'pt' ? 1 : 0.5 }}
+                    >
+                        PT
+                    </button>
+                </div>
+            )}</div>
             {/* Modo Navidad: Nieve Cayendo en CSS Puro */}
             {globalConfig?.isChristmasMode && (
                 <div className="absolute inset-0 pointer-events-none z-[999] overflow-hidden">
