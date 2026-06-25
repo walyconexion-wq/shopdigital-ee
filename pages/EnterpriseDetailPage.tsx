@@ -86,6 +86,15 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
     const themeColor = '#06b6d4'; // Forzamos Tech Neon
     const secondaryColor = '#3b82f6';
     const bgColor = '#020617';
+
+    // Theme Mode Resolver
+    const [currentTime] = useState(new Date());
+    const themeMode = localStorage.getItem('global_home_theme_mode') || 'auto';
+    const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
+        const hour = currentTime.getHours();
+        return hour >= 8 && hour < 20;
+    })());
+
     const hexToRgba = (hex: string, alpha: number) => {
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
@@ -295,7 +304,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
 
     return (
         <div 
-          className="pb-24 animate-in fade-in duration-1000 min-h-screen relative text-white tech-grid-bg"
+          className={`pb-24 animate-in fade-in duration-1000 min-h-screen relative text-white tech-grid-bg day-mode-bg-reset ${isDayMode ? 'day-mode' : ''}`}
           style={{ backgroundColor: bgColor }}
         >
             {/* ── CSS Animations Inline ── */}
@@ -323,6 +332,79 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                     backdrop-filter: blur(12px);
                     border: 1px solid ${hexToRgba(themeColor, 0.2)};
                     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+                }
+                /* ☀️ REGLAS TÁCTICAS PARA EL MODO DÍA B2B */
+                .day-mode .day-mode-bg-reset {
+                    background: transparent !important;
+                }
+                .day-mode .glass-card-neon {
+                    background: #ffffff !important;
+                    border: 1.5px solid rgba(8, 145, 178, 0.3) !important;
+                    border-bottom: 4px solid rgba(8, 145, 178, 0.45) !important;
+                    box-shadow: 0 4px 10px rgba(8, 145, 178, 0.04) !important;
+                }
+                .day-mode .glass-card-neon h3, 
+                .day-mode .glass-card-neon p,
+                .day-mode .glass-card-neon span {
+                    color: #083344 !important;
+                    text-shadow: none !important;
+                }
+                .day-mode .glass-card-neon svg {
+                    color: #0891b2 !important;
+                }
+                .day-mode .neon-sign-title {
+                    color: #083344 !important;
+                    text-shadow: 
+                        1px 1px 0px #ffffff,
+                        2px 2px 0px #e6dccf,
+                        3px 3px 4px rgba(8, 51, 68, 0.15) !important;
+                    -webkit-text-stroke: 0.2px rgba(8, 51, 68, 0.2) !important;
+                    animation: none !important;
+                }
+                .day-mode .neon-sign-glow {
+                    display: none !important;
+                }
+                .day-mode .glass-module-card {
+                    background: #ffffff !important;
+                    border: 1.5px solid rgba(8, 145, 178, 0.25) !important;
+                    box-shadow: 0 10px 25px rgba(8, 145, 178, 0.05) !important;
+                }
+                .day-mode .glass-module-card h3 {
+                    color: #083344 !important;
+                }
+                .day-mode .glass-module-card svg {
+                    color: #0891b2 !important;
+                }
+                .day-mode .glass-module-btn {
+                    background: #f8fafc !important;
+                    border: 1px solid rgba(8, 145, 178, 0.2) !important;
+                    color: #083344 !important;
+                }
+                .day-mode .glass-module-btn span {
+                    color: #083344 !important;
+                }
+                .day-mode .glass-module-btn svg.text-white {
+                    color: #083344 !important;
+                }
+                .day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] {
+                    background: #ffffff !important;
+                    border: 1.5px solid rgba(8, 145, 178, 0.4) !important;
+                }
+                .day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] p {
+                    color: rgba(8, 51, 68, 0.6) !important;
+                }
+                .day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] h3 {
+                    background: linear-gradient(to right, #083344, #0284c7) !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    color: #083344 !important;
+                }
+                .day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] div[class*="bg-cyan-500/10"] {
+                    background-color: rgba(8, 145, 178, 0.1) !important;
+                    border-color: rgba(8, 145, 178, 0.3) !important;
+                }
+                .day-mode .bg-gradient-to-br.from-zinc-900.via-black.to-zinc-900.rounded-\[2rem\] div[class*="bg-cyan-500/10"] span {
+                    color: #0891b2 !important;
                 }
             `}</style>
 
@@ -374,9 +456,9 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                         playNeonClick();
                         navigate(`${basePath}/${categorySlug}`);
                     }}
-                    className="back-button absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                    className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer"
                 >
-                    <ArrowLeft size={22} className="text-white drop-shadow-md pr-0.5" />
+                    <ArrowLeft size={22} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
                 </button>
 
                 {gallery.map((img, idx) => (
@@ -442,15 +524,10 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                                 playNeonClick();
                                 navigate(`${basePath}/${categorySlug}/${enterpriseSlug}/menu`);
                             }}
-                            className="w-full glass-card-neon py-4 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:scale-95 group shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
-                            style={{ 
-                                backgroundColor: hexToRgba(themeColor, 0.2),
-                                borderColor: hexToRgba(themeColor, 0.4),
-                                boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.15)}`
-                            }}
+                            className="w-full py-4 font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 cursor-pointer btn-3d-celeste group"
                         >
-                            <span className="group-hover:scale-110 transition-transform" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Abrir Catálogo Completo</span>
-                            <ArrowLeft size={14} className="rotate-180 opacity-70 group-hover:translate-x-1 transition-transform" />
+                            <span style={isDayMode ? { color: '#083344' } : { color: '#ffffff' }}>Abrir Catálogo Completo</span>
+                            <ArrowLeft size={14} className="rotate-180 opacity-70 group-hover:translate-x-1 transition-transform" style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} />
                         </button>
                     </div>
 
@@ -514,21 +591,21 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
 
                 {/* ---------- DASHBOARD DE CONTACTO ---------- */}
                 <div className="w-full px-5 mb-14">
-                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] glass-module-card">
                         <div className="flex items-center gap-2 mb-5">
-                            <MessageCircle size={14} className="text-white/60" />
+                            <MessageCircle size={14} className="text-white/60 animate-pulse" />
                             <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Canales de Atención</h3>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
-                            <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="btn-neon-red flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#EA044E]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                            <button onClick={() => handleOpenLink('https://www.pedidosya.com.ar/')} className="btn-neon-red flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#EA044E]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group cursor-pointer">
                                 <span className="italic text-[20px] font-black text-[#EA044E] drop-shadow-[0_0_8px_rgba(234,4,78,0.8)] group-hover:scale-110 transition-transform">P</span>
                                 <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">PedidosYa</span>
                             </button>
-                            <button onClick={() => enterprise.phone && handleOpenLink(`https://wa.me/549${enterprise.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="btn-neon-green flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#25D366]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                            <button onClick={() => enterprise.phone && handleOpenLink(`https://wa.me/549${enterprise.phone.replace(/\D/g, '')}?text=Hola!%20Vengo%20de%20la%20App%20de%20Waly`)} className="btn-neon-green flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#25D366]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group cursor-pointer">
                                 <MessageCircle size={20} className="text-[#25D366] drop-shadow-[0_0_8px_rgba(37,211,102,0.8)] group-hover:scale-110 transition-transform" fill="currentColor" strokeWidth={0} />
                                 <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">WhatsApp</span>
                             </button>
-                            <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="btn-neon-blue flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#009EE3]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group">
+                            <button onClick={() => handleOpenLink('https://www.mercadopago.com.ar/')} className="btn-neon-blue flex flex-col items-center justify-center gap-2 bg-black/40 border border-[#009EE3]/30 py-4 rounded-[1.25rem] transition-transform active:scale-95 group cursor-pointer">
                                 <Handshake size={20} className="text-[#009EE3] drop-shadow-[0_0_8px_rgba(0,158,227,0.8)] group-hover:scale-110 transition-transform" strokeWidth={2.5} />
                                 <span className="text-[7.5px] tracking-[0.15em] font-bold text-white/90 uppercase">M. Pago</span>
                             </button>
@@ -568,7 +645,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
 
                 {/* ---------- MÓDULO DE UBICACIÓN ---------- */}
                 <div className="w-full px-5 mb-14">
-                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] glass-module-card">
                         <div className="flex items-center gap-2 mb-5">
                             <MapPin size={14} className="text-white/60" />
                             <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/80">Dónde Encontrarnos</h3>
@@ -583,21 +660,23 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                                 style={{ border: 0 }}
                                 allowFullScreen={false}
                                 loading="lazy"
-                                className="rounded-[1.25rem] invert-[95%] hue-rotate-180 contrast-[120%] saturate-[200%] brightness-[85%] opacity-90 pointer-events-auto transition-all group-hover:opacity-100"
+                                className={`rounded-[1.25rem] pointer-events-auto transition-all group-hover:opacity-100 ${
+                                    isDayMode ? 'opacity-90' : 'invert-[95%] hue-rotate-180 contrast-[120%] saturate-[200%] brightness-[85%] opacity-90'
+                                }`}
                             ></iframe>
                             <div className="absolute inset-0 pointer-events-none rounded-[1.25rem] shadow-[inset_0_0_40px_rgba(0,0,0,0.8)]"></div>
                         </div>
 
-                        <p className="text-[8px] text-center font-bold uppercase tracking-widest mb-5" style={{ color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>
+                        <p className="text-[8px] text-center font-bold uppercase tracking-widest mb-5" style={isDayMode ? { color: '#0891b2' } : { color: themeColor, filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.6)})` }}>
                             {enterprise.address}
                         </p>
 
                         <div className="grid grid-cols-2 gap-3">
-                            <button onClick={() => { logEvento('click_location', enterprise.id, { metodo: 'google_maps' }); handleOpenLink(enterprise.mapSheetUrl || '#'); }} className="bg-black/40 border border-violet-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_location', enterprise.id, { metodo: 'google_maps' }); handleOpenLink(enterprise.mapSheetUrl || '#'); }} className="bg-black/40 border border-violet-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform cursor-pointer glass-module-btn font-bold">
                                 <Navigation size={14} className="text-violet-400 drop-shadow-[0_0_5px_rgba(139,92,246,0.8)]" />
                                 <span className="text-[8.5px] font-bold uppercase tracking-wider text-violet-200">Cómo llegar</span>
                             </button>
-                            <button onClick={() => { logEvento('click_location', enterprise.id, { metodo: 'uber' }); handleOpenLink('https://m.uber.com/ul/'); }} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_location', enterprise.id, { metodo: 'uber' }); handleOpenLink('https://m.uber.com/ul/'); }} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform cursor-pointer glass-module-btn font-bold">
                                 <Car size={14} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" />
                                 <span className="text-[8.5px] font-bold uppercase tracking-wider text-white/90">Pedir Uber</span>
                             </button>
@@ -607,22 +686,22 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
 
                 {/* ---------- MÓDULO COMUNIDAD ---------- */}
                 <div className="w-full px-5 mb-12">
-                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] flex flex-col gap-4">
+                    <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] glass-module-card flex flex-col gap-4">
                         <div className="grid grid-cols-3 gap-3">
-                            <button onClick={() => { logEvento('click_social', enterprise.id, { plataforma: 'facebook' }); enterprise.facebook && handleOpenLink(enterprise.facebook); }} className="bg-black/40 border border-[#1877F2]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_social', enterprise.id, { plataforma: 'facebook' }); enterprise.facebook && handleOpenLink(enterprise.facebook); }} className="bg-black/40 border border-[#1877F2]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform cursor-pointer glass-module-btn font-bold">
                                 <Facebook size={16} className="text-[#1877F2]" fill="currentColor" strokeWidth={0} />
                                 <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">Facebook</span>
                             </button>
-                            <button onClick={() => { logEvento('click_social', enterprise.id, { plataforma: 'instagram' }); enterprise.instagram && handleOpenLink(enterprise.instagram); }} className="bg-black/40 border border-[#E4405F]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_social', enterprise.id, { plataforma: 'instagram' }); enterprise.instagram && handleOpenLink(enterprise.instagram); }} className="bg-black/40 border border-[#E4405F]/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform cursor-pointer glass-module-btn font-bold">
                                 <Instagram size={16} className="text-[#E4405F]" strokeWidth={2.5} />
                                 <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">Instagram</span>
                             </button>
-                            <button onClick={() => { logEvento('click_social', enterprise.id, { plataforma: 'tiktok' }); enterprise.tiktok && handleOpenLink(enterprise.tiktok); }} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                            <button onClick={() => { logEvento('click_social', enterprise.id, { plataforma: 'tiktok' }); enterprise.tiktok && handleOpenLink(enterprise.tiktok); }} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform cursor-pointer glass-module-btn font-bold">
                                 <Music size={16} className="text-white" strokeWidth={2.5} />
                                 <span className="text-[7.5px] font-bold uppercase tracking-wider text-white/80">TikTok</span>
                             </button>
                         </div>
-                        <button onClick={handleShare} className="w-full bg-gradient-to-r from-emerald-900/40 to-green-900/40 border border-green-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 active:scale-95 transition-transform mt-2">
+                        <button onClick={handleShare} className="w-full bg-gradient-to-r from-emerald-900/40 to-green-900/40 border border-green-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 active:scale-95 transition-transform mt-2 cursor-pointer">
                             <Share2 size={14} className="text-green-400" />
                             <span className="text-[9px] font-black uppercase tracking-widest text-green-100">Compartir Catálogo</span>
                         </button>
@@ -632,7 +711,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                             <button onClick={() => {
                                 playNeonClick();
                                 handleLockTap();
-                            }} className={`flex items-center justify-center gap-1.5 py-2 transition-all duration-300 ${
+                            }} className={`flex items-center justify-center gap-1.5 py-2 transition-all duration-300 cursor-pointer ${
                                 lockClicks >= 4 
                                 ? 'text-cyan-400 scale-110 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' 
                                 : lockClicks >= 2 

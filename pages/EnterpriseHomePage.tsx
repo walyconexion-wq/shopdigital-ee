@@ -82,6 +82,13 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     const [visits, setVisits] = React.useState<number>(1);
     const loggedRef = React.useRef<string | null>(null);
 
+    // Theme Mode Resolver
+    const themeMode = globalConfig?.themeMode || 'auto';
+    const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
+        const hour = time.getHours();
+        return hour >= 8 && hour < 20;
+    })());
+
     // Incrementar visitas de empresas atómicamente al montar
     React.useEffect(() => {
         incrementarVisitasZona('empresas');
@@ -220,93 +227,94 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                     opacity: 0 !important;
                 }
                 .day-mode .enterprise-home-title {
-                    color: #2d1e15 !important;
-                    text-shadow: 
-                        0 1px 0 #ffffff,
-                        0 2px 0 #ebd7c8,
-                        0 3px 6px rgba(45, 30, 21, 0.15) !important;
+                    background: linear-gradient(to right, #083344, #0284c7);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    text-shadow: 0 2px 4px rgba(8, 51, 68, 0.12) !important;
                 }
                 .day-mode .enterprise-home-subtitle {
-                    color: #5c4033 !important;
-                    opacity: 0.9 !important;
+                    color: #0284c7 !important;
+                    font-weight: 700 !important;
+                    text-shadow: 0 1px 2px rgba(8, 51, 68, 0.1) !important;
+                    opacity: 1 !important;
                 }
                 .day-mode .section-header-text {
-                    color: #3d2b1f !important;
-                    opacity: 0.95 !important;
+                    color: #083344 !important;
+                    font-weight: 800 !important;
+                    opacity: 1 !important;
                 }
-                .day-mode .back-home-btn {
-                    background: rgba(255, 255, 255, 0.8) !important;
-                    border-color: rgba(88, 70, 50, 0.15) !important;
-                    box-shadow: 0 4px 10px rgba(88, 70, 50, 0.05) !important;
+                .day-mode .telemetry-widget {
+                    background: #ffffff !important;
+                    border: 1.5px solid rgba(8, 145, 178, 0.4) !important;
+                    border-bottom: 4px solid #0891b2 !important;
+                    box-shadow: 0 8px 20px rgba(8, 145, 178, 0.1) !important;
                 }
-                .day-mode .back-home-btn svg {
-                    color: #2d1e15 !important;
+                .day-mode .telemetry-widget span {
+                    color: rgba(8, 51, 68, 0.5) !important;
+                }
+                .day-mode .telemetry-widget .telemetry-widget-value {
+                    color: #083344 !important;
+                    font-weight: 900 !important;
+                }
+                .day-mode .telemetry-divider {
+                    background-color: rgba(8, 145, 178, 0.2) !important;
                 }
                 .day-mode .factory-header-card {
                     background: #ffffff !important;
-                    border: 1px solid rgba(88, 70, 50, 0.15) !important;
-                    border-bottom: 4px solid var(--theme-primary, ${primaryColor}) !important;
-                    box-shadow: 0 10px 25px rgba(88, 70, 50, 0.08) !important;
+                    border: 2px solid rgba(8, 145, 178, 0.45) !important;
+                    border-bottom: 5px solid #0891b2 !important;
+                    box-shadow: 
+                        0 10px 25px rgba(8, 145, 178, 0.08),
+                        0 0 15px rgba(8, 145, 178, 0.05) !important;
                 }
                 .day-mode .factory-header-card svg {
-                    color: var(--theme-primary, ${primaryColor}) !important;
-                    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08)) !important;
+                    color: #0891b2 !important;
+                    filter: drop-shadow(0 4px 8px rgba(8, 145, 178, 0.15)) !important;
                 }
                 .day-mode .prov-select-btn {
-                    background: rgba(255, 255, 255, 0.45) !important;
-                    border-color: rgba(88, 70, 50, 0.15) !important;
-                    color: #5c4033 !important;
-                    box-shadow: 0 2px 6px rgba(88, 70, 50, 0.04) !important;
+                    background: rgba(255, 255, 255, 0.5) !important;
+                    border-color: rgba(8, 145, 178, 0.2) !important;
+                    color: #083344 !important;
+                    box-shadow: 0 2px 6px rgba(8, 145, 178, 0.03) !important;
                     text-shadow: none !important;
                 }
                 .day-mode .prov-select-btn:hover {
-                    background: rgba(255, 255, 255, 0.75) !important;
-                    border-color: rgba(88, 70, 50, 0.3) !important;
+                    background: rgba(255, 255, 255, 0.8) !important;
+                    border-color: rgba(8, 145, 178, 0.35) !important;
                 }
                 .day-mode .prov-select-btn.active {
                     background: #ffffff !important;
-                    color: #2d1e15 !important;
-                    border: 2px solid var(--theme-primary, ${primaryColor}) !important;
-                    box-shadow: 0 4px 12px rgba(88, 70, 50, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+                    color: #083344 !important;
+                    border: 2px solid #0891b2 !important;
+                    box-shadow: 
+                        0 4px 12px rgba(8, 145, 178, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
                     text-shadow: none !important;
                 }
                 .day-mode .glass-card-neon {
                     background: #ffffff !important;
-                    border: 1px solid rgba(88, 70, 50, 0.12) !important;
-                    border-bottom: 3.5px solid rgba(88, 70, 50, 0.2) !important;
-                    box-shadow: 0 4px 10px rgba(88, 70, 50, 0.05) !important;
+                    border: 1.5px solid rgba(8, 145, 178, 0.3) !important;
+                    border-bottom: 4px solid rgba(8, 145, 178, 0.45) !important;
+                    box-shadow: 0 4px 10px rgba(8, 145, 178, 0.04) !important;
                 }
                 .day-mode .glass-card-neon:hover {
-                    background: #fdfbf7 !important;
+                    background: #f0fdfa !important;
                     transform: translateY(-4px) scale(1.02) !important;
-                    border-color: rgba(88, 70, 50, 0.25) !important;
-                    border-bottom-color: var(--theme-primary, ${primaryColor}) !important;
-                    box-shadow: 0 8px 20px rgba(88, 70, 50, 0.1) !important;
+                    border-color: rgba(8, 145, 178, 0.45) !important;
+                    border-bottom-color: #0891b2 !important;
+                    box-shadow: 
+                        0 8px 20px rgba(8, 145, 178, 0.12),
+                        0 0 12px rgba(8, 145, 178, 0.08) !important;
                 }
                 .day-mode .glass-card-neon span {
-                    color: #2d1e15 !important;
+                    color: #083344 !important;
                 }
                 .day-mode .glass-card-neon svg {
-                    color: var(--theme-primary, ${primaryColor}) !important;
-                    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05)) !important;
-                }
-                .day-mode .auth-factory-btn {
-                    background: var(--theme-primary, ${primaryColor}) !important;
-                    border-color: var(--theme-primary, ${primaryColor}) !important;
-                    color: #ffffff !important;
-                    box-shadow: 0 8px 20px rgba(88, 70, 50, 0.15) !important;
-                }
-                .day-mode .auth-factory-btn:hover {
-                    opacity: 0.92 !important;
-                }
-                .day-mode .share-coords-btn span {
-                    color: #2d1e15 !important;
-                }
-                .day-mode .share-coords-btn svg {
-                    color: var(--theme-primary, ${primaryColor}) !important;
+                    color: #0891b2 !important;
+                    filter: drop-shadow(0 2px 4px rgba(8, 145, 178, 0.1)) !important;
                 }
                 .day-mode footer p {
-                    color: #5c4033 !important;
+                    color: #083344 !important;
                     opacity: 0.75 !important;
                 }
             `}</style>
@@ -326,10 +334,9 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
             <header className="flex flex-col items-center relative z-10 px-6 mb-8 mt-2">
                 <button
                     onClick={() => { playNeonClick(); navigate(-1); }}
-                    className="self-start mb-6 w-11 h-11 rounded-2xl glass-card-neon flex items-center justify-center transition-all hover:scale-105 active:scale-95 group relative overflow-hidden back-home-btn"
+                    className="self-start mb-6 w-11 h-11 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer z-10 back-home-btn"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <ChevronLeft size={24} style={{ color: primaryColor }} />
+                    <ChevronLeft size={24} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
                 </button>
 
                 {/* Animated Logo Container with background glow-orb at night */}
@@ -374,21 +381,21 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
                             {currentTimeStr}
                         </span>
                     </div>
-                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="w-[1px] h-5 bg-white/10 telemetry-divider" />
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('FECHA')}</span>
                         <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             {currentDateStr}
                         </span>
                     </div>
-                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="w-[1px] h-5 bg-white/10 telemetry-divider" />
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('VISITAS')}</span>
                         <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
                             👁️ {visits}
                         </span>
                     </div>
-                    <div className="w-[1px] h-5 bg-white/10" />
+                    <div className="w-[1px] h-5 bg-white/10 telemetry-divider" />
                     <div className="flex flex-col items-center flex-1">
                         <span className="text-white/40 text-[6.5px] tracking-[0.25em] mb-0.5">{t('CLIMA')}</span>
                         <span className="telemetry-widget-value text-white text-[10px] tracking-wider">
@@ -468,27 +475,20 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
             <div className="mt-14 px-6 flex flex-col gap-4 items-center w-full relative z-10">
                 <button
                     onClick={() => { playNeonClick(); navigate('/empresas/inscripcion'); }}
-                    className="w-full py-5 rounded-2xl font-bold uppercase tracking-[0.15em] text-[11px] transition-all flex items-center justify-center gap-3 relative overflow-hidden group border cursor-pointer auth-factory-btn"
-                    style={{
-                        background: `linear-gradient(135deg, ${hexToRgba(secondaryColor, 0.8)}, ${hexToRgba(primaryColor, 0.6)})`,
-                        color: '#ffffff',
-                        borderColor: primaryColor,
-                        boxShadow: `0 10px 30px -10px ${primaryColor}, inset 0 2px 10px rgba(255,255,255,0.2)`,
-                    }}
+                    className="w-full py-5 font-bold uppercase tracking-[0.15em] text-[11px] flex items-center justify-center gap-3 cursor-pointer btn-3d-celeste group"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
-                    <ShieldCheck size={18} className="animate-pulse" />
-                    <span>Autenticar Fábrica / Empresa</span>
-                    <Zap size={14} className="opacity-50" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+                    <ShieldCheck size={18} className="animate-pulse" style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} />
+                    <span style={isDayMode ? { color: '#083344' } : { color: '#ffffff' }}>Autenticar Fábrica / Empresa</span>
+                    <Zap size={14} className="opacity-50" style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} />
                 </button>
 
                 <button
                     onClick={handleShare}
-                    className="w-full py-4 text-[10px] font-semibold uppercase tracking-[0.2em] transition-all border flex items-center justify-center gap-3 rounded-2xl glass-card-neon hover:bg-white/5 cursor-pointer share-coords-btn"
-                    style={{ borderColor: 'rgba(255,255,255,0.1)' }}
+                    className="w-full py-4 text-[10px] font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer btn-3d-celeste"
                 >
-                    <Share2 size={16} style={{ color: secondaryColor }} />
-                    <span>Transmitir Coordenadas</span>
+                    <Share2 size={16} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} />
+                    <span style={isDayMode ? { color: '#083344' } : { color: '#ffffff' }}>Transmitir Coordenadas</span>
                 </button>
             </div>
 

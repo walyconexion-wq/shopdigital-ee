@@ -23,6 +23,14 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
     const location = useLocation();
     const [activeReach, setActiveReach] = useState('all');
 
+    // Theme Mode Resolver
+    const [currentTime] = React.useState(new Date());
+    const themeMode = localStorage.getItem('global_home_theme_mode') || 'auto';
+    const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
+        const hour = currentTime.getHours();
+        return hour >= 8 && hour < 20;
+    })());
+
     // Leer provincia del query param (viene del Home cuando se seleccionó una cápsula)
     const searchParams = new URLSearchParams(location.search);
     const activeProvince = searchParams.get('provincia') || 'all';
@@ -111,12 +119,43 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                     border: 1px solid ${hexToRgba(primaryColor, 0.2)};
                     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
                 }
+                /* ☀️ REGLAS TÁCTICAS PARA EL MODO DÍA B2B */
+                .day-mode .day-mode-bg-reset {
+                    background: transparent !important;
+                }
+                .day-mode .glass-card-neon {
+                    background: #ffffff !important;
+                    border: 1.5px solid rgba(8, 145, 178, 0.3) !important;
+                    border-bottom: 4px solid rgba(8, 145, 178, 0.45) !important;
+                    box-shadow: 0 4px 10px rgba(8, 145, 178, 0.04) !important;
+                }
+                .day-mode .glass-card-neon h2 {
+                    color: #083344 !important;
+                    text-shadow: none !important;
+                }
+                .day-mode .glass-card-neon p {
+                    color: #0284c7 !important;
+                }
+                .day-mode .glass-card-neon p.italic {
+                    color: rgba(8, 51, 68, 0.5) !important;
+                }
+                .day-mode .glass-card-neon span {
+                    color: #083344 !important;
+                }
+                .day-mode .glass-card-neon svg {
+                    color: #0891b2 !important;
+                    filter: none !important;
+                }
+                .day-mode footer p {
+                    color: #083344 !important;
+                    opacity: 0.75 !important;
+                }
             `}</style>
 
             {/* ── HUD Background Tech ── */}
             <div className="fixed inset-0 pointer-events-none z-0 tech-grid-bg">
-                <div className="absolute top-40 right-[-10%] w-72 h-72 rounded-full blur-[120px] opacity-30 mix-blend-screen" style={{ backgroundColor: primaryColor }} />
-                <div className="absolute bottom-40 left-[-10%] w-72 h-72 rounded-full blur-[120px] opacity-40 mix-blend-screen" style={{ backgroundColor: secondaryColor }} />
+                <div className="absolute top-40 right-[-10%] w-72 h-72 rounded-full blur-[120px] opacity-30 mix-blend-screen" style={isDayMode ? { display: 'none' } : { backgroundColor: primaryColor }} />
+                <div className="absolute bottom-40 left-[-10%] w-72 h-72 rounded-full blur-[120px] opacity-40 mix-blend-screen" style={isDayMode ? { display: 'none' } : { backgroundColor: secondaryColor }} />
                 
                 {/* Scanline Effect */}
                 <div className="absolute inset-0 w-full h-[20vh] opacity-10 pointer-events-none" 
@@ -128,10 +167,9 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                 <div className="w-full px-6 flex flex-col pb-2">
                     <button
                         onClick={() => { playNeonClick(); navigate(`/empresas`); }}
-                        className="absolute top-6 left-5 z-[60] w-11 h-11 flex items-center justify-center rounded-2xl glass-card-neon transition-all hover:scale-105 active:translate-y-[4px] group overflow-hidden border-b-[4px] border-b-cyan-500/40"
+                        className="absolute top-6 left-5 z-[60] w-11 h-11 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <ChevronLeft size={24} style={{ color: primaryColor }} />
+                        <ChevronLeft size={24} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
                     </button>
 
                     <div className="flex justify-center w-full px-2 mt-2">
@@ -168,21 +206,38 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                             <button
                                 key={filter.id}
                                 onClick={() => { playNeonClick(); setActiveReach(filter.id); }}
-                                className="flex-1 min-w-[80px] py-3 px-2 rounded-2xl border flex items-center justify-center gap-1.5 transition-all duration-300 active:translate-y-[4px] relative overflow-hidden"
-                                style={isActive ? {
-                                    backgroundColor: hexToRgba(secondaryColor, 0.3),
-                                    borderColor: primaryColor,
-                                    borderBottomWidth: '4px',
-                                    borderBottomColor: hexToRgba(primaryColor, 0.8),
-                                    color: '#ffffff',
-                                    boxShadow: `0 0 20px ${hexToRgba(primaryColor, 0.4)}`,
-                                } : {
-                                    backgroundColor: 'rgba(255,255,255,0.02)',
-                                    borderColor: 'rgba(255,255,255,0.1)',
-                                    borderBottomWidth: '4px',
-                                    borderBottomColor: 'rgba(255,255,255,0.2)',
-                                    color: 'rgba(255,255,255,0.5)',
-                                }}
+                                className="flex-1 min-w-[80px] py-3 px-2 rounded-2xl border flex items-center justify-center gap-1.5 transition-all duration-300 active:translate-y-[4px] relative overflow-hidden cursor-pointer"
+                                style={isDayMode ? (
+                                    isActive ? {
+                                        backgroundColor: 'rgba(8, 145, 178, 0.15)',
+                                        borderColor: '#0891b2',
+                                        borderBottomWidth: '4px',
+                                        borderBottomColor: '#0891b2',
+                                        color: '#083344',
+                                        boxShadow: '0 4px 12px rgba(8, 145, 178, 0.15)',
+                                    } : {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                                        borderColor: 'rgba(8, 145, 178, 0.2)',
+                                        borderBottomWidth: '4px',
+                                        borderBottomColor: 'rgba(8, 145, 178, 0.3)',
+                                        color: 'rgba(8, 51, 68, 0.6)',
+                                    }
+                                ) : (
+                                    isActive ? {
+                                        backgroundColor: hexToRgba(secondaryColor, 0.3),
+                                        borderColor: primaryColor,
+                                        borderBottomWidth: '4px',
+                                        borderBottomColor: hexToRgba(primaryColor, 0.8),
+                                        color: '#ffffff',
+                                        boxShadow: `0 0 20px ${hexToRgba(primaryColor, 0.4)}`,
+                                    } : {
+                                        backgroundColor: 'rgba(255,255,255,0.02)',
+                                        borderColor: 'rgba(255,255,255,0.1)',
+                                        borderBottomWidth: '4px',
+                                        borderBottomColor: 'rgba(255,255,255,0.2)',
+                                        color: 'rgba(255,255,255,0.5)',
+                                    }
+                                )}
                             >
                                 {isActive && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]" />}
                                 <span style={{ color: isActive ? primaryColor : 'rgba(255,255,255,0.3)' }}>{filter.icon}</span>
@@ -200,7 +255,11 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                         {filteredEnterprises.map((enterprise, index) => (
                             <div
                                 key={enterprise.id}
-                                style={{ animationDelay: `${index * 80}ms`, borderBottomWidth: '5px', borderBottomColor: hexToRgba(primaryColor, 0.3) }}
+                                style={{ 
+                                    animationDelay: `${index * 80}ms`, 
+                                    borderBottomWidth: '5px', 
+                                    borderBottomColor: isDayMode ? 'rgba(8, 145, 178, 0.45)' : hexToRgba(primaryColor, 0.3) 
+                                }}
                                 className="glass-card-neon overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px] rounded-2xl relative group shadow-[0_15px_30px_rgba(6,182,212,0.1)]"
                             >
                                 {/* Brillo interactivo de la tarjeta */}
@@ -208,7 +267,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                      style={{ background: `radial-gradient(circle at center, ${hexToRgba(primaryColor, 0.1)} 0%, transparent 70%)` }} />
 
                                 {/* Imagen lateral */}
-                                <div className="relative w-32 flex-shrink-0 overflow-hidden border-r" style={{ borderColor: hexToRgba(primaryColor, 0.2) }}>
+                                <div className="relative w-32 flex-shrink-0 overflow-hidden border-r" style={{ borderColor: isDayMode ? 'rgba(8, 145, 178, 0.25)' : hexToRgba(primaryColor, 0.2) }}>
                                     <img
                                         src={enterprise.bannerImage || enterprise.image}
                                         alt={enterprise.name}
@@ -224,11 +283,11 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                 {/* Info */}
                                 <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-transparent z-10">
                                     <div className="space-y-1.5 overflow-hidden p-4 pb-2">
-                                        <h3 className="font-bold text-[17px] text-white uppercase tracking-tighter leading-none" style={{ textShadow: `0 0 10px ${hexToRgba(primaryColor, 0.5)}` }}>
+                                        <h3 className="font-bold text-[17px] text-white uppercase tracking-tighter leading-none" style={isDayMode ? { color: '#083344' } : { textShadow: `0 0 10px ${hexToRgba(primaryColor, 0.5)}` }}>
                                             {enterprise.name.replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
                                         </h3>
                                         <div className="flex items-start gap-1 pb-1 text-cyan-100/80 uppercase text-[9px] font-semibold tracking-tight leading-snug overflow-hidden">
-                                            <MapPin size={11} strokeWidth={2.5} className="flex-shrink-0 mt-[1px]" style={{ color: primaryColor }} />
+                                            <MapPin size={11} strokeWidth={2.5} className="flex-shrink-0 mt-[1px]" style={{ color: isDayMode ? '#0891b2' : primaryColor }} />
                                             <span className="break-words line-clamp-2">{enterprise.address || enterprise.zone}</span>
                                         </div>
                                         <div className="flex justify-between items-end mt-auto pt-1">
@@ -242,9 +301,9 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                                 {enterprise.specialty && <p className="text-[8px] font-medium text-cyan-200/50 italic tracking-wide leading-tight line-clamp-1">"{enterprise.specialty}"</p>}
                                             </div>
                                             {/* Badge Alcance */}
-                                            <div className="flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-md border shadow-inner" style={{ backgroundColor: hexToRgba(secondaryColor, 0.2), borderColor: hexToRgba(primaryColor, 0.3) }}>
-                                                <Globe size={9} style={{ color: primaryColor }} />
-                                                <span className="text-[7px] font-bold uppercase tracking-wider" style={{ color: primaryColor }}>
+                                            <div className="flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-md border shadow-inner" style={isDayMode ? { backgroundColor: 'rgba(8, 145, 178, 0.1)', borderColor: 'rgba(8, 145, 178, 0.3)' } : { backgroundColor: hexToRgba(secondaryColor, 0.2), borderColor: hexToRgba(primaryColor, 0.3) }}>
+                                                <Globe size={9} style={{ color: isDayMode ? '#0891b2' : primaryColor }} />
+                                                <span className="text-[7px] font-bold uppercase tracking-wider" style={{ color: isDayMode ? '#0891b2' : primaryColor }}>
                                                     {enterprise.reach === 'national' ? 'Nacional' : enterprise.reach === 'regional' ? 'Regional' : 'Local'}
                                                 </span>
                                             </div>
@@ -254,17 +313,11 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                     <div className="w-full flex justify-center py-3 px-4">
                                         <button
                                             onClick={() => { playNeonClick(); navigate(`/empresas/${selectedCategory!.slug}/${enterprise.slug || enterprise.id}`); }}
-                                            className="w-full py-2.5 px-4 text-[9px] text-white font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 rounded-xl border relative overflow-hidden group hover:scale-[1.02] active:translate-y-[4px]"
-                                            style={{
-                                                background: `linear-gradient(135deg, ${hexToRgba(secondaryColor, 0.5)}, ${hexToRgba(primaryColor, 0.4)})`,
-                                                borderColor: primaryColor,
-                                                borderBottomWidth: '4px',
-                                                borderBottomColor: hexToRgba(primaryColor, 0.8),
-                                                boxShadow: `0 5px 20px -5px ${primaryColor}`,
-                                            }}
+                                            className="w-full py-2.5 px-4 text-[9px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 cursor-pointer btn-3d-celeste group"
                                         >
-                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out pointer-events-none" />
-                                            <BookOpen size={14} className="text-white" />VER CATÁLOGO
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out pointer-events-none" />
+                                            <BookOpen size={14} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} />
+                                            <span style={isDayMode ? { color: '#083344' } : { color: '#ffffff' }}>VER CATÁLOGO</span>
                                         </button>
                                     </div>
                                 </div>
@@ -288,8 +341,8 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                     alert('❌ Error al inyectar: ' + e.message);
                                 }
                             }}
-                            className="mt-6 px-6 py-3 rounded-xl border flex items-center gap-2 mx-auto active:scale-95 transition-all text-[9px] font-bold uppercase tracking-widest"
-                            style={{ backgroundColor: hexToRgba(primaryColor, 0.1), borderColor: hexToRgba(primaryColor, 0.4), color: primaryColor }}
+                            className="mt-6 px-6 py-3 rounded-xl border flex items-center gap-2 mx-auto active:scale-95 transition-all text-[9px] font-bold uppercase tracking-widest cursor-pointer"
+                            style={isDayMode ? { backgroundColor: 'rgba(8, 145, 178, 0.1)', borderColor: 'rgba(8, 145, 178, 0.4)', color: '#0891b2' } : { backgroundColor: hexToRgba(primaryColor, 0.1), borderColor: hexToRgba(primaryColor, 0.4), color: primaryColor }}
                         >
                             <Zap size={14} /> Inyectar Empresa Demo
                         </button>
