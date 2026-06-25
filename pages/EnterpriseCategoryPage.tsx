@@ -6,6 +6,29 @@ import { ChevronLeft, Factory, MapPin, Star, BookOpen, Globe, Landmark, Phone, Z
 import { playNeonClick } from '../utils/audio';
 import { inyectarEmpresaPruebaB2B } from '../scripts/seedEnterpriseB2B';
 
+const FOOD_IMAGES = [
+    'https://images.unsplash.com/photo-1608228080908-1481d530059b?w=500&auto=format&fit=crop&q=80', // Embutidos / Chacinados
+    'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=80', // Panificadora / Harinas
+    'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80', // Carnes / Distribución
+    'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500&auto=format&fit=crop&q=80', // Cocina / Alimentos Elaborados
+    'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&auto=format&fit=crop&q=80', // Bebidas / Embotelladora
+    'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&auto=format&fit=crop&q=80', // Alimentos Gourmet / Quesos
+];
+
+const DEFAULT_DEMO_IMG = 'APNQkAFW_DwehRWqr6azXnpgkRWLBOcVKBC_5GNrCSPemAFiDcTlOd6KusGcQ0e0lP61o0wUDcL_lJsju2sMWqTcAMyBW5tb_Zo18tb2yrsbsD58uCr2E-zUcRmajkj2GVyl9GtxQHBETQ';
+
+export const getEnterpriseImage = (shopId: string, customImage?: string) => {
+    if (!customImage || customImage.includes(DEFAULT_DEMO_IMG)) {
+        let hash = 0;
+        for (let i = 0; i < shopId.length; i++) {
+            hash = shopId.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const idx = Math.abs(hash) % FOOD_IMAGES.length;
+        return FOOD_IMAGES[idx];
+    }
+    return customImage;
+};
+
 interface EnterpriseCategoryPageProps {
     allShops: Shop[];
 }
@@ -269,7 +292,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                                 {/* Imagen lateral */}
                                 <div className="relative w-32 flex-shrink-0 overflow-hidden border-r" style={{ borderColor: isDayMode ? 'rgba(8, 145, 178, 0.25)' : hexToRgba(primaryColor, 0.2) }}>
                                     <img
-                                        src={enterprise.bannerImage || enterprise.image}
+                                        src={getEnterpriseImage(enterprise.id, enterprise.bannerImage || enterprise.image)}
                                         alt={enterprise.name}
                                         className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110 opacity-90"
                                     />

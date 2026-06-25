@@ -1,6 +1,29 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shop, ProductOffer } from '../types';
+
+const FOOD_IMAGES = [
+    'https://images.unsplash.com/photo-1608228080908-1481d530059b?w=500&auto=format&fit=crop&q=80', // Embutidos / Chacinados
+    'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=80', // Panificadora / Harinas
+    'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80', // Carnes / Distribución
+    'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500&auto=format&fit=crop&q=80', // Cocina / Alimentos Elaborados
+    'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&auto=format&fit=crop&q=80', // Bebidas / Embotelladora
+    'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&auto=format&fit=crop&q=80', // Alimentos Gourmet / Quesos
+];
+
+const DEFAULT_DEMO_IMG = 'APNQkAFW_DwehRWqr6azXnpgkRWLBOcVKBC_5GNrCSPemAFiDcTlOd6KusGcQ0e0lP61o0wUDcL_lJsju2sMWqTcAMyBW5tb_Zo18tb2yrsbsD58uCr2E-zUcRmajkj2GVyl9GtxQHBETQ';
+
+export const getEnterpriseImage = (shopId: string, customImage?: string) => {
+    if (!customImage || customImage.includes(DEFAULT_DEMO_IMG)) {
+        let hash = 0;
+        for (let i = 0; i < shopId.length; i++) {
+            hash = shopId.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const idx = Math.abs(hash) % FOOD_IMAGES.length;
+        return FOOD_IMAGES[idx];
+    }
+    return customImage;
+};
 import {
     Share2,
     MapPin,
@@ -128,14 +151,20 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
     const [broadcasts, setBroadcasts] = useState<Broadcast[]>([]);
     const slideTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    const gallery = useMemo(() => {
+        if (!enterprise) return [];
+        const rawGallery = enterprise.galleryImages && enterprise.galleryImages.length > 0
+            ? enterprise.galleryImages
+            : [enterprise.bannerImage, enterprise.image, enterprise.offers[0]?.image].filter(Boolean) as string[];
+        return rawGallery.map(img => getEnterpriseImage(enterprise.id, img));
+    }, [enterprise]);
+
     const feedGallery = useMemo(() => {
         if (!enterprise) return [];
-        if (enterprise.feedImages && enterprise.feedImages.length > 0) {
-            return enterprise.feedImages;
-        }
-        if (enterprise.bannerImage) return [enterprise.bannerImage];
-        if (enterprise.image) return [enterprise.image];
-        return [];
+        const rawFeed = enterprise.feedImages && enterprise.feedImages.length > 0
+            ? enterprise.feedImages
+            : [enterprise.bannerImage, enterprise.image].filter(Boolean) as string[];
+        return rawFeed.map(img => getEnterpriseImage(enterprise.id, img));
     }, [enterprise]);
 
     // Mezclar feed local + broadcasts globales
@@ -196,10 +225,6 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
         if (enterprise) {
             setFeedLikesCount(enterprise.feedLikes || 0);
 
-            const gallery = enterprise.galleryImages && enterprise.galleryImages.length > 0
-                ? enterprise.galleryImages
-                : [enterprise.bannerImage, enterprise.image, enterprise.offers[0]?.image].filter(Boolean) as string[];
-
             if (gallery.length > 1) {
                 const timer = setInterval(() => {
                     setCurrentImageIndex((prev) => (prev + 1) % gallery.length);
@@ -208,7 +233,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
             }
         }
         return undefined;
-    }, [enterprise]);
+    }, [enterprise, gallery]);
 
     // Auto-scroll híbrido del carrusel de ofertas
     useEffect(() => {
@@ -281,9 +306,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
         );
     }
 
-    const gallery = enterprise.galleryImages && enterprise.galleryImages.length > 0
-        ? enterprise.galleryImages
-        : [enterprise.bannerImage, enterprise.image, enterprise.offers[0]?.image].filter(Boolean) as string[];
+
 
     const isCustomColor = enterprise.customBackground?.startsWith('#');
     
@@ -440,13 +463,13 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                 <meta property="og:type" content="website" />
                 <meta property="og:title" content={`${enterprise.name} - Catálogo de Ofertas`} />
                 <meta property="og:description" content={`Mirá nuestro menú digital de ${enterprise.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
-                <meta property="og:image" content={enterprise.bannerImage || enterprise.image} />
+                <meta property="og:image" content={getEnterpriseImage(enterprise.id, enterprise.bannerImage || enterprise.image)} />
 
                 {/* Twitter */}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={`${enterprise.name} - Catálogo de Ofertas`} />
                 <meta name="twitter:description" content={`Mirá nuestro menú digital de ${enterprise.specialty || 'gastronomía'} en nuestra app. Pedidos directos por WhatsApp.`} />
-                <meta name="twitter:image" content={enterprise.bannerImage || enterprise.image} />
+                <meta name="twitter:image" content={getEnterpriseImage(enterprise.id, enterprise.bannerImage || enterprise.image)} />
             </Helmet>
 
             <div className="relative w-full h-[360px] bg-black overflow-hidden">
