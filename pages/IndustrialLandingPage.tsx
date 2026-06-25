@@ -345,7 +345,7 @@ const IndustrialLandingPage: React.FC = () => {
                                     : 'bg-white/5 hover:bg-white/10 border-white/10 text-amber-400'
                             }`}
                         >
-                            {isDayMode ? <Moon size={16} /> : <Sun size={16} />}
+                            {isDayMode ? <Sun size={16} className="text-amber-500" /> : <Moon size={16} className="text-cyan-400" />}
                         </button>
                     </div>
                 </div>

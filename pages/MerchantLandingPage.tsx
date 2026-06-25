@@ -247,10 +247,10 @@ const MerchantLandingPage: React.FC = () => {
             <nav className={`fixed top-0 z-50 w-full transition-all duration-500 border-b ${
                 scrolled 
                     ? isDayMode 
-                        ? 'bg-[#faf8f5]/95 backdrop-blur-xl border-[#855b3c]/20 py-2 shadow-md' 
+                        ? 'bg-[#e5cca5]/95 backdrop-blur-xl border-[#855b3c]/20 py-2 shadow-md' 
                         : 'bg-[#050505]/95 backdrop-blur-xl border-white/15 py-2 shadow-[0_4px_30px_rgba(0,0,0,0.8)] shadow-cyan-950/10'
                     : isDayMode 
-                        ? 'bg-[#faf8f5] border-[#855b3c]/10 py-3.5' 
+                        ? 'bg-[#e5cca5] border-[#855b3c]/10 py-3.5' 
                         : 'bg-[#050505] border-white/5 py-3.5'
             }`}>
                 <div className="px-4 flex items-center justify-between w-full max-w-lg mx-auto">
@@ -287,7 +287,7 @@ const MerchantLandingPage: React.FC = () => {
                                     : 'bg-white/5 hover:bg-white/10 border-white/10 text-cyan-400'
                             }`}
                         >
-                            {isDayMode ? <Moon size={16} /> : <Sun size={16} />}
+                            {isDayMode ? <Sun size={16} className="text-amber-500" /> : <Moon size={16} className="text-cyan-400" />}
                         </button>
                     </div>
                 </div>
@@ -298,7 +298,7 @@ const MerchantLandingPage: React.FC = () => {
                 {/* IN-PAGE NAV BAR */}
                 <div className={`w-full mt-4 flex items-center justify-between px-2 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-wider transition-colors duration-500 ${
                     isDayMode 
-                        ? 'bg-[#faf8f5]/80 backdrop-blur-md border-[#855b3c]/20 text-[#2d1e15]' 
+                        ? 'bg-[#e5cca5]/80 backdrop-blur-md border-[#855b3c]/20 text-[#2d1e15]' 
                         : 'bg-white/5 backdrop-blur-md border-white/10 text-slate-300'
                 }`}>
                     <a href="#inicio" className="flex-1 text-center py-1.5 hover:text-cyan-400 transition-colors">Inicio</a>
@@ -318,7 +318,7 @@ const MerchantLandingPage: React.FC = () => {
                 <RevealSection id="inicio" className="w-full mt-6">
                     <div className={`border border-b-[6px] p-6 rounded-[2.5rem] shadow-lg flex flex-col items-center gap-5 text-center relative overflow-hidden transition-all duration-700 ${
                         isDayMode 
-                            ? 'bg-[#faf8f5] border-slate-200 border-b-[#855b3c]' 
+                            ? 'bg-[#e5cca5] border-[#d4b08c] border-b-[#855b3c]' 
                             : 'bg-[#0e1726]/40 backdrop-blur-xl border-cyan-500/20 border-b-cyan-500 shadow-cyan-950/20'
                     }`}>
                         <div className={`absolute top-0 right-0 text-[7px] font-[1000] uppercase tracking-[0.25em] px-4 py-1.5 rounded-bl-2xl transition-colors duration-500 ${
@@ -554,7 +554,7 @@ const MerchantLandingPage: React.FC = () => {
                 <RevealSection id="como-funciona" className="w-full mt-6">
                     <div className={`border border-b-[6px] p-6 rounded-[2.5rem] shadow-lg space-y-6 transition-all duration-700 ${
                         isDayMode 
-                            ? 'bg-[#faf8f5] border-slate-200 border-b-[#855b3c]' 
+                            ? 'bg-[#e5cca5] border-[#d4b08c] border-b-[#855b3c]' 
                             : 'bg-[#0e1726]/40 backdrop-blur-xl border-cyan-500/20 border-b-cyan-500 shadow-cyan-950/20'
                     }`}>
                         <div className="text-center py-1">

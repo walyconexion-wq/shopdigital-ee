@@ -56,6 +56,7 @@ import {
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 import { useAuth } from '../components/AuthContext';
 import { incrementarLikesFeed, suscribirseABroadcast, Broadcast } from '../firebase';
 import { logEvento } from '../services/telemetry';
@@ -495,7 +496,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                 <button
                     onClick={() => {
                         playNeonClick();
-                        navigate(`${basePath}/${categorySlug}`);
+                        navigate('/empresas?provincia=buenos-aires');
                     }}
                     className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer"
                 >
@@ -1028,6 +1029,12 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                     </div>
                 </div>
             )}
+            
+            {/* Ari Floating Assistant Bubble */}
+            <AriMerchantAssistant 
+                shop={{ id: enterprise.id, name: enterprise.name, category: enterprise.category } as any} 
+                initialMessage={`¡Hola! Soy Ari. ¿Querés que te pase información detallada o el dossier corporativo de ${enterprise.name}?`}
+            />
         </div>
     );
 };

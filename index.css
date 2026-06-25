@@ -343,11 +343,11 @@
 
 .day-mode {
   --app-bg: #cda488;
-  --app-text: #0f172a;
-  --app-text-muted: #475569;
-  --card-bg: #ffffff;
-  --card-border: #cbd5e1;
-  --card-shadow: 0 10px 25px -5px rgba(88, 70, 50, 0.08), 0 8px 16px -6px rgba(88, 70, 50, 0.08);
+  --app-text: #2d1e15;
+  --app-text-muted: #4a382d;
+  --card-bg: #e5cca5;
+  --card-border: #d4b08c;
+  --card-shadow: 0 10px 25px -5px rgba(88, 70, 50, 0.15), 0 8px 16px -6px rgba(88, 70, 50, 0.1);
   --neon-opacity: 0.05;
 }
 
@@ -388,13 +388,13 @@
 }
 /* Encabezado */
 .day-mode .glass-header {
-  background: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-  border-bottom: 4px solid rgba(0, 0, 0, 0.10) !important;
+  background: #e5cca5 !important;
+  border-color: rgba(133, 91, 60, 0.1) !important;
+  border-bottom: 4px solid rgba(133, 91, 60, 0.2) !important;
   box-shadow: 
-    0 12px 35px rgba(0, 0, 0, 0.08),
-    0 4px 8px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+    0 12px 35px rgba(88, 70, 50, 0.1),
+    0 4px 8px rgba(88, 70, 50, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
 
 .day-mode .glass-header h1 span {

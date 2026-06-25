@@ -12,7 +12,9 @@ import {
     Info,
     CalendarCheck,
     Building2,
-    MessageSquare
+    MessageSquare,
+    Sun,
+    Moon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -21,6 +23,20 @@ import { playNeonClick } from '../utils/audio';
 const BusinessLandingPage: React.FC = () => {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(false);
+    
+    // Theme state - synchronized with global_home_theme_mode
+    const [isDayMode, setIsDayMode] = useState<boolean>(() => {
+        const saved = localStorage.getItem('global_home_theme_mode');
+        return saved === 'light';
+    });
+
+    const toggleTheme = () => {
+        playNeonClick();
+        const nextMode = !isDayMode;
+        setIsDayMode(nextMode);
+        localStorage.setItem('global_home_theme_mode', nextMode ? 'light' : 'dark');
+        window.dispatchEvent(new Event('theme-changed'));
+    };
     
     // Formulario Inversor/Empresa
     const [formData, setFormData] = useState({
@@ -56,32 +72,64 @@ const BusinessLandingPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white flex flex-col font-sans relative overflow-x-hidden selection:bg-cyan-500/30">
+        <div className={`min-h-screen flex flex-col font-sans relative overflow-x-hidden transition-colors duration-700 selection:bg-cyan-500/30 ${
+            isDayMode ? 'bg-[#cda488] text-[#2d1e15] day-mode' : 'bg-[#050505] text-white dark'
+        }`}>
             {/* Enterprise Tech Background Overlay */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                {/* Subtle Grid */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[size:40px_40px] perspective-1000 transform scale-110" />
-                {/* Ambient Glows */}
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-600/5 rounded-full blur-[150px] animate-pulse" />
-                <div className="absolute bottom-0 left-[-20%] w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[150px] animate-pulse" />
+                {isDayMode ? (
+                    <>
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(45,30,21,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(45,30,21,0.02)_1px,transparent_1px)] bg-[size:40px_40px] perspective-1000 transform scale-110" />
+                        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/20 rounded-full blur-[150px] animate-pulse" />
+                        <div className="absolute bottom-0 left-[-20%] w-[500px] h-[500px] bg-white/10 rounded-full blur-[150px] animate-pulse" />
+                    </>
+                ) : (
+                    <>
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[size:40px_40px] perspective-1000 transform scale-110" />
+                        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-600/5 rounded-full blur-[150px] animate-pulse" />
+                        <div className="absolute bottom-0 left-[-20%] w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[150px] animate-pulse" />
+                    </>
+                )}
             </div>
 
             {/* Corporate Header */}
-            <header className="relative z-20 pt-6 pb-4 px-6 flex flex-col gap-4 sm:flex-row sm:justify-between items-center max-w-4xl mx-auto w-full border-b border-white/5">
+            <header className={`relative z-20 pt-6 pb-4 px-6 flex flex-col gap-4 sm:flex-row sm:justify-between items-center max-w-4xl mx-auto w-full border-b transition-colors duration-700 ${
+                isDayMode ? 'border-[#855b3c]/20' : 'border-white/5'
+            }`}>
                 <div className="scale-100 flex items-center gap-3">
                     <Logo />
-                    <div className="h-6 w-px bg-white/20 hidden sm:block"></div>
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-cyan-500/80 bg-cyan-900/20 px-3 py-1 rounded-full border border-cyan-500/20">Enterprise</span>
+                    <div className={`h-6 w-px hidden sm:block ${isDayMode ? 'bg-[#855b3c]/20' : 'bg-white/20'}`}></div>
+                    <span className={`text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] px-3 py-1 rounded-full border ${
+                        isDayMode ? 'text-amber-700 bg-amber-500/10 border-amber-500/20' : 'text-cyan-500/80 bg-cyan-900/20 border-cyan-500/20'
+                    }`}>Enterprise</span>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-                    <button onClick={() => { playNeonClick(); navigate('/'); }} className="shrink-0 bg-transparent border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-white/5 transition-all text-white/70">
-                        <LayoutDashboard size={14} /> <span className="text-[9px] font-bold uppercase tracking-widest text-white">App Central</span>
+                    <button onClick={() => { playNeonClick(); navigate('/'); }} className={`shrink-0 border px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+                        isDayMode ? 'bg-white/50 border-[#855b3c]/10 hover:bg-white/80 text-[#2d1e15]' : 'bg-transparent border-white/10 hover:bg-white/5 text-white/70'
+                    }`}>
+                        <LayoutDashboard size={14} /> <span className={`text-[9px] font-bold uppercase tracking-widest ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>App Central</span>
                     </button>
-                    <button onClick={() => { playNeonClick(); navigate('/nosotros'); }} className="shrink-0 bg-transparent border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-white/5 transition-all text-white/70">
-                        <Info size={14} /> <span className="text-[9px] font-bold uppercase tracking-widest text-white">Nosotros</span>
+                    <button onClick={() => { playNeonClick(); navigate('/nosotros'); }} className={`shrink-0 border px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+                        isDayMode ? 'bg-white/50 border-[#855b3c]/10 hover:bg-white/80 text-[#2d1e15]' : 'bg-transparent border-white/10 hover:bg-white/5 text-white/70'
+                    }`}>
+                        <Info size={14} /> <span className={`text-[9px] font-bold uppercase tracking-widest ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>Nosotros</span>
                     </button>
-                    <button onClick={handleShare} className="shrink-0 bg-cyan-500/10 border border-cyan-500/30 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-cyan-500/20 transition-all text-cyan-400">
+                    <button onClick={handleShare} className={`shrink-0 border px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+                        isDayMode ? 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20 text-amber-700' : 'bg-cyan-500/10 border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-400'
+                    }`}>
                         <Share2 size={14} /> <span className="text-[9px] font-bold uppercase tracking-widest">Dossier</span>
+                    </button>
+                    {/* Theme Toggle Button */}
+                    <button
+                        onClick={toggleTheme}
+                        aria-label="Alternar modo de color"
+                        className={`p-2 rounded-lg border transition-all active:scale-95 shrink-0 ${
+                            isDayMode 
+                                ? 'bg-white/50 hover:bg-white/80 border-[#855b3c]/20 text-[#2d1e15]' 
+                                : 'bg-white/5 hover:bg-white/10 border-white/10 text-cyan-400'
+                        }`}
+                    >
+                        {isDayMode ? <Sun size={16} className="text-amber-500" /> : <Moon size={16} className="text-cyan-400" />}
                     </button>
                 </div>
             </header>
