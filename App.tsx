@@ -26,6 +26,7 @@ import LandingPage from './pages/LandingPage';
 // Páginas genéricas y públicas
 const AboutPage               = React.lazy(() => import('./pages/AboutPage'));
 const MerchantLandingPage     = React.lazy(() => import('./pages/MerchantLandingPage'));
+const IndustrialLandingPage   = React.lazy(() => import('./pages/IndustrialLandingPage'));
 const RegionSelectPage        = React.lazy(() => import('./pages/RegionSelectPage'));
 const RegionSeedPage          = React.lazy(() => import('./pages/RegionSeedPage'));
 const CategoryPage            = React.lazy(() => import('./pages/CategoryPage'));
@@ -392,6 +393,9 @@ const App: React.FC = () => {
 
                     {/* 🌐 VENDER LANDING — Genérico para Comerciantes */}
                     <Route path="/vender" element={<MerchantLandingPage />} />
+
+                    {/* 🌐 INDUSTRIAL LANDING — Promocionar el directorio industrial */}
+                    <Route path="/industrial" element={<IndustrialLandingPage />} />
 
                     {/* 🗺️ SELECTOR DE LOCALIDAD POR REGIÓN */}
                     <Route path="/region/:regionId" element={<RegionSelectPage />} />
