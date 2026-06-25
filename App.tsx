@@ -32,6 +32,8 @@ const CategoryPage            = React.lazy(() => import('./pages/CategoryPage'))
 const ShopDetailPage          = React.lazy(() => import('./pages/ShopDetailPage'));
 const CredencialPage          = React.lazy(() => import('./pages/CredencialPage'));
 const DiscountsPage           = React.lazy(() => import('./pages/DiscountsPage'));
+const VipBenefitsPage         = React.lazy(() => import('./pages/VipBenefitsPage'));
+const MerchantBenefitsPage    = React.lazy(() => import('./pages/MerchantBenefitsPage'));
 const TermsPage               = React.lazy(() => import('./pages/TermsPage'));
 const EventLandingPage        = React.lazy(() => import('./pages/EventLandingPage'));
 const ShopMenuPage            = React.lazy(() => import('./pages/ShopMenuPage'));
@@ -241,12 +243,17 @@ const TownController: React.FC = () => {
     const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
     const isInPatagonia = PATAGONIA_7_LAGOS_REGION.towns.some(t => t.id === townId);
 
+    // Forzar color celeste (#22d3ee) para Esteban Echeverría para mantener consistencia de branding
+    const baseGlobalConfig = townId === 'esteban-echeverria'
+        ? { ...globalConfig, primaryColor: '#22d3ee', themeColor: '#22d3ee' }
+        : globalConfig;
+
     // Inyectar configuración regional si aplica
     const effectiveGlobalConfig = isInTraslasierra 
-        ? { ...globalConfig, categories: TRASLASIERRA_REGION.categories }
+        ? { ...baseGlobalConfig, categories: TRASLASIERRA_REGION.categories }
         : isInPatagonia
-        ? { ...globalConfig, categories: PATAGONIA_7_LAGOS_REGION.categories }
-        : globalConfig;
+        ? { ...baseGlobalConfig, categories: PATAGONIA_7_LAGOS_REGION.categories }
+        : baseGlobalConfig;
 
     return (
         <>
@@ -266,6 +273,8 @@ const TownController: React.FC = () => {
                     <Route path=":categorySlug/:shopSlug/validar" element={<ValidationPage allShops={allShops} />} />
                     <Route path="red-comercial/descuentos" element={<DiscountsPage allOffers={allOffers} />} />
                     <Route path="red-comercial/ofertas" element={<ClientOffersPage allOffers={allOffers} />} />
+                    <Route path="beneficios-vip" element={<VipBenefitsPage />} />
+                    <Route path="beneficios-comercios" element={<MerchantBenefitsPage />} />
                     <Route path="unirse" element={<LandingPage />} />
                     <Route path="negocios" element={<BusinessLandingPage />} />
                     <Route path="descubrir" element={<ClientLandingPage />} />

@@ -66,7 +66,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
     const navigate = useNavigate();
     const { t, language } = useLanguage();
-    const themeColor = globalConfig?.themeColor || '#22d3ee';
+    const themeColor = globalConfig?.primaryColor || globalConfig?.themeColor || '#22d3ee';
     const isInTraslasierra = TRASLASIERRA_REGION.towns.some(t => t.id === townId);
     const isInPatagonia = PATAGONIA_7_LAGOS_REGION.towns.some(t => t.id === townId);
     const activeTheme = globalConfig?.isChristmasMode ? 'christmas' : (globalConfig?.theme || 'default');
@@ -260,37 +260,19 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             <div className="absolute top-20 left-[-10%] w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
             <div className="absolute bottom-20 right-[-10%] w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: hexToRgba(themeColor, 0.1) }} />
             
-            {/* Botón de retroceso premium con estilo 3D (adaptado a modo día/noche) */}
+            {/* Botón de retroceso premium con estilo 3D y sombreado celeste de navegación */}
             <button
                 onClick={() => {
                     playNeonClick();
                     navigate('/');
                 }}
-                className={`absolute left-4 top-6 z-30 p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-center glass-button-3d ${
-                    isDayMode 
-                        ? 'bg-white border-slate-200 text-slate-800' 
-                        : 'text-white/70 hover:text-white'
-                }`}
-                style={
-                    isDayMode
-                        ? {
-                            borderWidth: '1px',
-                            borderBottomWidth: '4px',
-                            borderBottomColor: '#cbd5e1',
-                            boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
-                          }
-                        : {
-                            backgroundColor: hexToRgba(themeColor, 0.15),
-                            borderColor: hexToRgba(themeColor, 0.35),
-                            boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(themeColor, 0.05)}`
-                          }
-                }
+                className="absolute left-4 top-6 z-30 p-3.5 rounded-2xl cursor-pointer flex items-center justify-center btn-3d-celeste"
             >
                 <ArrowLeft 
                     size={16} 
                     style={
                         isDayMode 
-                            ? { color: '#2d1e15' } 
+                            ? { color: '#083344' } 
                             : { color: themeColor, filter: `drop-shadow(0 0 6px ${themeColor})` }
                     } 
                 />
@@ -553,28 +535,18 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             <div className="mt-12 mb-4 px-14 flex flex-col gap-4 justify-center items-center w-full fade-up-item relative z-10" style={{ animationDelay: '700ms' }}>
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
-                    className="glass-action-btn w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 border flex items-center justify-center gap-3 transition-all"
-                    style={{ 
-                        backgroundColor: hexToRgba(themeColor, 0.3),
-                        borderColor: hexToRgba(themeColor, 0.6),
-                        boxShadow: `0 0 30px ${hexToRgba(themeColor, 0.3)}`
-                    }}
+                    className="w-full py-4 rounded-2xl text-[10px] font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-3 btn-3d-celeste"
                 >
-                    <Store size={18} style={{ color: hexToRgba(themeColor, 0.8) }} strokeWidth={3} />
-                    <span className="text-white text-shadow-premium">{t('Suscribir Comercio')}</span>
+                    <Store size={18} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                    <span className={isDayMode ? "" : "text-shadow-premium"}>{t('Suscribir Comercio')}</span>
                 </button>
 
                 <button
                     onClick={handleShare}
-                    className="glass-action-btn w-full py-4 text-[10px] font-[1100] uppercase tracking-[0.25em] active:scale-95 border flex items-center justify-center gap-3"
-                    style={{ 
-                        backgroundColor: hexToRgba(themeColor, 0.3),
-                        borderColor: hexToRgba(themeColor, 0.6),
-                        boxShadow: `0 0 30px ${hexToRgba(themeColor, 0.3)}`
-                    }}
+                    className="w-full py-4 rounded-2xl text-[10px] font-[1100] uppercase tracking-[0.25em] flex items-center justify-center gap-3 btn-3d-celeste"
                 >
-                    <Share2 size={16} style={{ color: hexToRgba(themeColor, 0.8) }} strokeWidth={3} />
-                    <span className="text-white text-shadow-premium">Compartir App</span>
+                    <Share2 size={16} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                    <span className={isDayMode ? "" : "text-shadow-premium"}>Compartir App</span>
                 </button>
             </div>
 

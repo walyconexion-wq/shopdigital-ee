@@ -6,7 +6,7 @@ import {
     Play, Pause, Edit2, Clock, Calendar, Server, Save, Plus, AlertOctagon, ShieldAlert
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { 
     guardarBroadcast, 
     obtenerBroadcasts, 
@@ -162,9 +162,11 @@ ${activeDirectivesText}
         const zonaTxt = targetTowns.includes('global') ? 'Cadena Nacional' : targetTowns.join(' y ').replace(/-/g, ' ').toUpperCase();
         const confirmPrompt = `Director acaba de inyectar la campaña "${titleCopy}" en el target de ${zonaTxt}. Dame un reporte táctico breve de la operación y el estado general de la malla (ya que tenés la lista actualizada de pautas en contexto).`;
         
-        const response = await generateAriResponse([{ role: 'director', text: confirmPrompt }], buildAriContext(), (retryMsg) => {
-            setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: retryMsg }]);
-        });
+        const response = await generateEveResponse(
+            'sinfonia-transmision',
+            [{ role: 'director', text: confirmPrompt }],
+            buildAriContext()
+        );
         setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari', text: response }]);
         setIsThinking(false);
     };
@@ -293,9 +295,11 @@ ${activeDirectivesText}
         setMsgInput('');
         setIsThinking(true);
         
-        const response = await generateAriResponse(newHistory, buildAriContext(), (retryMsg) => {
-            setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: retryMsg }]);
-        });
+        const response = await generateEveResponse(
+            'sinfonia-transmision',
+            newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
+            buildAriContext()
+        );
         setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: response }]);
         setIsThinking(false);
     };

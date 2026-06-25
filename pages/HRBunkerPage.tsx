@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
@@ -128,7 +128,8 @@ KPIs DE RECURSOS HUMANOS:
 
         const fullContext = `${ARI_HR_PROMPT}\n\n${currentHRSummary}\n\n${activeDirectivesText}`;
 
-        const response = await generateAriResponse(
+        const response = await generateEveResponse(
+            'recursos-humanos',
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
             fullContext
         );

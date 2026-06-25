@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
@@ -165,7 +165,8 @@ KPIs CONTABLES Y LEGALES:
 
         const fullContext = `${ARI_ACCOUNTING_PROMPT}\n\n${currentAccountingSummary}\n\n${activeDirectivesText}`;
 
-        const response = await generateAriResponse(
+        const response = await generateEveResponse(
+            'contabilidad',
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
             fullContext
         );

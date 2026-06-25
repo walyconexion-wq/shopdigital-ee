@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { registrarIntrusionBunker, subirArchivoBunker, saveGlobalConfig, saveCategoriesConfig, DEFAULT_CATEGORIES_CONFIG, guardarComercio, guardarCliente, saveTown, guardarComerciosMasivos } from '../firebase';
 import { PATAGONIA_7_LAGOS_REGION } from '../data/regionalTemplates/patagonia7LagosConfig';
 import { BtuComponent } from '../components/BtuComponent';
@@ -139,7 +139,8 @@ KPIs DE CLONACIÓN:
 
         const fullContext = `${ARI_CLONING_PROMPT}\n\n${currentCloningSummary}\n\n${activeDirectivesText}`;
 
-        const response = await generateAriResponse(
+        const response = await generateEveResponse(
+            'clonacion',
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
             fullContext
         );

@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
@@ -128,7 +128,8 @@ KPIs DE PLANIFICACIÓN Y DESARROLLO:
 
         const fullContext = `${ARI_PLANNING_PROMPT}\n\n${currentPlanSummary}\n\n${activeDirectivesText}`;
 
-        const response = await generateAriResponse(
+        const response = await generateEveResponse(
+            'planificacion-desarrollo',
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
             fullContext
         );

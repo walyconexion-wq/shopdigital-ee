@@ -9,6 +9,7 @@ import {
     Star, 
     QrCode, 
     ChevronLeft,
+    ArrowLeft,
     Share2,
     Activity,
     User,
@@ -26,7 +27,9 @@ import {
     Check,
     Radio,
     Wifi,
-    WifiOff
+    WifiOff,
+    Moon,
+    Sun
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 
@@ -67,11 +70,34 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
     const [isSaving, setIsSaving] = useState(false);
 
     // Theme Mode Resolver (sincronizado con GlobalHomePage, ClientSubscriptionPage y SubscriptionPage)
-    const themeMode = localStorage.getItem('global_home_theme_mode') || 'dark';
-    const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
-        const hour = currentTime.getHours();
-        return hour >= 8 && hour < 20;
-    })());
+    const [isDayMode, setIsDayMode] = useState(() => {
+        const themeMode = localStorage.getItem('global_home_theme_mode') || 'dark';
+        return themeMode === 'light' || (themeMode === 'auto' && (() => {
+            const hour = new Date().getHours();
+            return hour >= 8 && hour < 20;
+        })());
+    });
+
+    const toggleTheme = () => {
+        playNeonClick();
+        const nextMode = isDayMode ? 'dark' : 'light';
+        localStorage.setItem('global_home_theme_mode', nextMode);
+        window.dispatchEvent(new Event('theme_change'));
+        setIsDayMode(!isDayMode);
+    };
+
+    // Listen for changes from other pages
+    useEffect(() => {
+        const handleThemeChange = () => {
+            const themeMode = localStorage.getItem('global_home_theme_mode') || 'dark';
+            setIsDayMode(themeMode === 'light' || (themeMode === 'auto' && (() => {
+                const hour = new Date().getHours();
+                return hour >= 8 && hour < 20;
+            })()));
+        };
+        window.addEventListener('theme_change', handleThemeChange);
+        return () => window.removeEventListener('theme_change', handleThemeChange);
+    }, []);
 
     // Subscribe to live events
     useEffect(() => {
@@ -167,7 +193,13 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                 isTicket: false
             };
         }
-        return null;
+        // Fallback mock event for demonstration
+        return {
+            name: "Jazz & Pizza VIP Night - Monte Grande 🎷",
+            details: "ARTISTA: GUSTAVO DIAZ QUINTET · ACCESO EXCLUSIVO CON CREDENCIAL VIP",
+            access: "PASE VIP ACTIVO",
+            isTicket: false
+        };
     }, [client, ticketEvent, generalActiveEvent]);
 
     // Encontrar el comercio origen
@@ -316,26 +348,35 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
     }
 
     if (!shop || !client) {
+        const targetHome = townId ? `/${townId}/home` : '/esteban-echeverria/home';
         return (
-            <div className={`min-h-screen flex flex-col items-center justify-center p-8 text-center ${
+            <div className={`min-h-screen flex flex-col items-center justify-center p-8 text-center relative overflow-hidden ${
                 isDayMode ? 'bg-[#cda488] text-[#2d1e15]' : 'bg-black text-white'
             }`}>
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-pulse border ${
-                    isDayMode ? 'bg-white/90 border-[#cbd5e1] text-[#ef4444]' : 'bg-red-500/10 border-red-500/30 text-red-500'
+                {/* HUD Background Layers */}
+                <div className="fixed inset-0 pointer-events-none z-0">
+                    {isDayMode ? (
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(140,90,50,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(140,90,50,0.03)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                    ) : (
+                        <>
+                            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,245,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(0,245,255,0.12)_1px,transparent_1px)] bg-[size:30px_30px]" />
+                            <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,245,255,0.18)_1px,transparent_1.5px)] bg-[size:15px_15px]" />
+                        </>
+                    )}
+                </div>
+
+                <div className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-pulse border-2 ${
+                    isDayMode ? 'bg-white/95 border-red-200 text-[#ef4444] shadow-md' : 'bg-red-500/10 border-red-500/30 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.1)]'
                 }`}>
                     <ShieldCheck size={40} />
                 </div>
-                <h2 className="text-xl font-black uppercase tracking-tighter mb-2">Socio No Encontrado</h2>
-                <p className={`text-[10px] uppercase mb-8 leading-relaxed ${isDayMode ? 'text-[#2d1e15]/60' : 'text-white/40'}`}>
+                <h2 className="relative z-10 text-xl font-black uppercase tracking-tighter mb-2">Socio No Encontrado</h2>
+                <p className={`relative z-10 text-[10px] uppercase mb-8 leading-relaxed ${isDayMode ? 'text-[#2d1e15]/60' : 'text-white/40'}`}>
                     La credencial no pertenece a este radar o ha sido revocada.
                 </p>
                 <button 
-                    onClick={() => navigate('/')} 
-                    className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer border ${
-                        isDayMode 
-                            ? 'bg-white text-[#2d1e15] border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] hover:bg-white/90 active:translate-y-[2px]' 
-                            : 'bg-white/5 border-white/10 text-white hover:bg-white/10 active:scale-95'
-                    }`}
+                    onClick={() => { playNeonClick(); navigate(targetHome); }} 
+                    className="relative z-10 py-4 px-8 text-[10px] font-[1100] uppercase tracking-[0.25em] btn-3d-celeste flex items-center justify-center gap-2 shadow-lg cursor-pointer"
                 >
                     Volver al Inicio
                 </button>
@@ -362,9 +403,22 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                 .neon-credential-card .text-white\/30, .day-mode .neon-credential-card .text-white\/30 { color: rgba(255, 255, 255, 0.3) !important; }
                 .neon-credential-card .text-white\/20, .day-mode .neon-credential-card .text-white\/20 { color: rgba(255, 255, 255, 0.2) !important; }
                 
+                /* High contrast input styling */
+                .premium-input {
+                    color: ${isDayMode ? '#083344' : '#ffffff'} !important;
+                    background-color: ${isDayMode ? '#ffffff' : '#050505'} !important;
+                    border: 2.5px solid ${isDayMode ? '#0891b2' : 'rgba(0, 245, 255, 0.2)'} !important;
+                    box-shadow: ${isDayMode ? '0 2px 5px rgba(8, 145, 178, 0.08), inset 0 2px 4px rgba(0,0,0,0.03)' : 'inset 0 2px 4px rgba(0,0,0,0.8)'} !important;
+                    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+                }
+                .premium-input:focus {
+                    border-color: ${isDayMode ? '#083344' : '#00f5ff'} !important;
+                    box-shadow: ${isDayMode ? '0 0 0 3.5px rgba(8, 51, 68, 0.15), inset 0 2px 4px rgba(0,0,0,0.03)' : '0 0 10px rgba(0, 245, 255, 0.25), inset 0 2px 4px rgba(0,0,0,0.8)'} !important;
+                }
+
                 input, option, select {
-                    color: ${isDayMode ? '#2d1e15' : '#ffffff'} !important;
-                    background-color: ${isDayMode ? '#faf8f5' : '#0b1329'} !important;
+                    color: ${isDayMode ? '#083344' : '#ffffff'} !important;
+                    background-color: ${isDayMode ? '#ffffff' : '#050505'} !important;
                 }
                 
                 @keyframes scanner-line {
@@ -391,48 +445,51 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
             </div>
 
             {/* HEADER */}
-            <div className="w-full max-w-sm relative z-10 flex justify-between items-center mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="w-full max-w-sm relative z-10 flex justify-between items-center mb-6 gap-3 animate-in fade-in slide-in-from-top-4 duration-700">
                 <button 
-                    onClick={() => { playNeonClick(); navigate(-1); }}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-lg ${
-                        isDayMode 
-                            ? 'bg-white/90 border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] text-[#2d1e15] hover:bg-white active:translate-y-[2px] active:border-b-[1px]' 
-                            : 'bg-white/5 border-white/10 text-white/50 hover:text-white active:scale-95'
-                    }`}
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center btn-3d-celeste shadow-lg transition-all cursor-pointer"
+                    aria-label="Regresar"
                 >
-                    <ChevronLeft size={20} />
+                    <ArrowLeft size={18} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
                 </button>
-                <div className="text-center">
-                    <h1 className={`text-2xl font-[1000] tracking-tighter uppercase ${
+                <div className="text-center flex-1">
+                    <h1 className={`text-[19px] font-[1000] tracking-tighter uppercase leading-tight ${
                         isDayMode 
                             ? 'text-[#2d1e15] drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' 
                             : 'text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-400 to-blue-500 drop-shadow-[0_0_20px_rgba(0,245,255,0.4)]'
                     }`}>
-                        Credencial VIP
+                        Credencial VIP Cliente
                     </h1>
-                    <p className={`text-[8px] font-[900] uppercase tracking-[0.4em] ${isDayMode ? 'text-[#855b3c]/70' : 'text-cyan-400/60'}`}>
+                    <p className={`text-[7px] font-[900] uppercase tracking-[0.3em] ${isDayMode ? 'text-[#855b3c]/70' : 'text-cyan-400/60'}`}>
                         Sede: {formattedTown}
                     </p>
                 </div>
-                <button 
-                    onClick={() => {
-                        playNeonClick();
-                        if (navigator.share) {
-                            navigator.share({
-                                title: `Credencial VIP de ${client.name}`,
-                                text: `Mirá mi Credencial VIP en ShopDigital: ${shop.name}`,
-                                url: window.location.href,
-                             });
-                        }
-                    }}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-lg ${
-                        isDayMode 
-                            ? 'bg-white/90 border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] text-[#2d1e15] hover:bg-white active:translate-y-[2px] active:border-b-[1px]' 
-                            : 'bg-white/5 border-white/10 text-white/50 hover:text-white active:scale-95'
-                    }`}
-                >
-                    <Share2 size={18} />
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggleTheme}
+                        aria-label="Alternar modo de color"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center btn-3d-celeste shadow-lg transition-all cursor-pointer"
+                    >
+                        {isDayMode ? <Moon size={16} style={{ color: '#083344' }} /> : <Sun size={16} style={{ color: '#22d3ee' }} />}
+                    </button>
+                    <button 
+                        onClick={() => {
+                            playNeonClick();
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: `Credencial VIP de ${client.name}`,
+                                    text: `Mirá mi Credencial VIP en ShopDigital: ${shop.name}`,
+                                    url: window.location.href,
+                                 });
+                            }
+                        }}
+                        className="w-10 h-10 rounded-xl flex items-center justify-center btn-3d-celeste shadow-lg transition-all cursor-pointer"
+                        aria-label="Compartir"
+                    >
+                        <Share2 size={16} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} />
+                    </button>
+                </div>
             </div>
 
             {/* Brand Avatar Section */}
@@ -588,14 +645,10 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 {isAuthorized && (
                                     <button 
                                         onClick={() => { playNeonClick(); setIsEditing(true); }}
-                                        className={`p-1.5 rounded-lg border transition-all cursor-pointer active:scale-95 ${
-                                            isDayMode 
-                                                ? 'bg-white/80 border-[#cbd5e1] border-b-[3px] text-[#2d1e15] hover:bg-white' 
-                                                : 'bg-white/5 border-white/10 text-white/50 hover:text-white'
-                                        }`}
+                                        className="w-8 h-8 rounded-xl flex items-center justify-center btn-3d-celeste shadow-md transition-all cursor-pointer"
                                         title="Editar Perfil"
                                     >
-                                        <Edit2 size={14} />
+                                        <Edit2 size={14} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} />
                                     </button>
                                 )}
                                 <Star size={24} className={isDayMode ? 'text-[#855b3c]' : 'text-cyan-400'} style={isDayMode ? { fill: '#855b3c', color: '#855b3c' } : { color: cardColor, fill: cardColor }} />
@@ -603,30 +656,28 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                         </div>
 
                         <div className="mb-10 relative">
-                            <p className={`text-[10px] font-black uppercase tracking-[0.3em] mb-1 ${isDayMode ? 'text-[#5c4033]/60' : 'text-white/60'}`}>Membresía ShopDigital</p>
+                            <p className={`text-[10px] font-black uppercase tracking-[0.3em] mb-1 ${isDayMode ? 'text-[#5c4033]/60' : 'text-white/60'}`}>Titular VIP</p>
                             <h3 className={`text-3xl font-[1000] uppercase tracking-tighter leading-none mb-2 ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
-                                {shop.name}
+                                {client.name}
                             </h3>
-                            <div className={`flex items-center gap-2 ${isDayMode ? 'text-[#5c4033]/80' : 'text-white/70'}`}>
+                            <div className={`flex items-center gap-2 ${isDayMode ? 'text-[#5c4033]/85' : 'text-white/70'}`}>
                                 <MapPin size={12} style={isDayMode ? { color: '#855b3c' } : { color: cardColor }} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest leading-none mt-0.5">{shop.zone || formattedTown} · {shop.category}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest leading-none mt-0.5">{shop.zone || formattedTown}</span>
                             </div>
                         </div>
 
-                        <div className={`w-full aspect-square border rounded-[2rem] flex flex-col items-center justify-center p-8 mb-8 relative overflow-hidden group/photo ${
-                            isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1]' : 'bg-white/[0.03] border-white/10'
+                        <div className={`w-full aspect-square border-2 rounded-[2rem] flex flex-col items-center justify-center p-8 mb-8 relative overflow-hidden group/photo transition-colors duration-500 ${
+                            isDayMode ? 'bg-[#ebd9c5] border-[#855b3c]/30' : 'bg-white/[0.03] border-white/10'
                         }`}>
                             <div className="absolute inset-0" style={{ background: isDayMode ? '' : `radial-gradient(circle at center, ${cardColor}1A, transparent 70%)` }} />
                             
                             <div className="relative w-40 h-40 rounded-full border-2 p-1 shadow-2xl overflow-hidden group-hover/photo:scale-105 transition-transform duration-500" 
-                                 style={isDayMode ? { borderColor: '#cbd5e1', backgroundColor: '#faf8f5' } : { borderColor: `${cardColor}4D`, backgroundColor: `${cardColor}0D` }}>
-                                {client.photo ? (
-                                    <img src={client.photo} className="w-full h-full object-cover rounded-full" alt={client.name} />
-                                ) : (
-                                    <div className="w-full h-full rounded-full bg-white/5 flex flex-col items-center justify-center opacity-40">
-                                        <User size={80} style={isDayMode ? { color: '#855b3c' } : { color: cardColor }} />
-                                    </div>
-                                )}
+                                 style={isDayMode ? { borderColor: '#855b3c/30', backgroundColor: '#ebd9c5' } : { borderColor: `${cardColor}4D`, backgroundColor: `${cardColor}0D` }}>
+                                <img 
+                                    src={client.photo || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80'} 
+                                    className="w-full h-full object-cover rounded-full" 
+                                    alt={client.name} 
+                                />
                                 
                                 {isAuthorized && (
                                     <button 
@@ -647,9 +698,9 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 )}
                             </div>
 
-                            <div className={`mt-8 border px-5 py-2 rounded-2xl ${isDayMode ? 'bg-[#cda488]/10 border-[#a88d75]/30' : 'bg-zinc-950/80 border-white/10'}`}>
-                                <p className={`text-[10px] font-black tracking-[0.3em] flex items-center gap-2 ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
-                                    <CheckCircle2 size={12} className="text-green-600" /> IDENTIDAD VERIFICADA
+                            <div className={`mt-8 border-2 px-5 py-2 rounded-2xl transition-colors duration-500 ${isDayMode ? 'bg-black border-[#855b3c]/40 text-white' : 'bg-zinc-950/80 border-white/10'}`}>
+                                <p className={`text-[10px] font-black tracking-[0.3em] flex items-center gap-2 ${isDayMode ? 'text-emerald-400' : 'text-white'}`}>
+                                    <CheckCircle2 size={12} className="text-emerald-400" /> IDENTIDAD VERIFICADA
                                 </p>
                             </div>
                         </div>
@@ -657,9 +708,9 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                         <div className="space-y-6 border-t border-white/5 pt-8">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className={`text-[8px] font-black uppercase tracking-widest mb-1 ${isDayMode ? 'text-[#5c4033]/60' : 'text-white/60'}`}>Titular VIP</p>
-                                    <p className={`text-[20px] font-[1000] tracking-tighter uppercase leading-tight ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
-                                        {client.name}
+                                    <p className={`text-[8px] font-black uppercase tracking-widest mb-1 ${isDayMode ? 'text-[#5c4033]/60' : 'text-white/60'}`}>Local de Suscripción</p>
+                                    <p className={`text-[15px] font-[1000] tracking-tighter uppercase leading-tight ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
+                                        {shop.name}
                                     </p>
                                 </div>
                                 <div className="text-right">
@@ -672,11 +723,11 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 </div>
                             </div>
 
-                            <div className={`border p-5 rounded-3xl flex justify-between items-center shadow-inner group/wallet ${
-                                isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1]' : 'bg-gradient-to-br from-white/[0.05] to-transparent border-white/10'
+                            <div className={`border-2 p-5 rounded-3xl flex justify-between items-center shadow-inner group/wallet transition-colors duration-500 ${
+                                isDayMode ? 'bg-[#ebd9c5] border-[#855b3c]/30 text-[#2d1e15]' : 'bg-gradient-to-br from-white/[0.05] to-transparent border-white/10 text-white'
                             }`}>
                                 <div>
-                                    <label className={`text-[8px] font-black uppercase tracking-[0.2em] mb-1 flex items-center gap-1.5 ${isDayMode ? 'text-[#5c4033]/70' : 'text-white/60'}`}>
+                                    <label className={`text-[8px] font-black uppercase tracking-[0.2em] mb-1 flex items-center gap-1.5 ${isDayMode ? 'text-[#2d1e15]/75' : 'text-white/60'}`}>
                                         <Wallet size={10} style={isDayMode ? { color: '#855b3c' } : { color: cardColor }} /> Créditos ShopDigital
                                     </label>
                                     <p className={`text-2xl font-[1000] font-inter tabular-nums ${isDayMode ? 'text-[#2d1e15]' : 'text-white'}`}>
@@ -684,9 +735,9 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <div className={`inline-block px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${
+                                    <div className={`inline-block px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest transition-colors ${
                                         isDayMode 
-                                            ? 'bg-[#cda488]/20 border-[#a88d75]/30 text-[#855b3c]' 
+                                            ? 'bg-black border-[#855b3c]/50 text-white' 
                                             : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
                                     }`}>
                                         DISPONIBLES
@@ -695,18 +746,18 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                             </div>
 
                             {/* 🛰️ SINTONIZADOR DE ACCESO / EVENTOS LIVE */}
-                            <div className={`rounded-[2.5rem] p-6 border space-y-4 relative overflow-hidden ${
+                            <div className={`rounded-[2.5rem] p-6 border-2 space-y-4 relative overflow-hidden transition-colors duration-500 ${
                                 isDayMode 
-                                    ? 'bg-[#faf8f5] border-[#cbd5e1] shadow-inner text-[#2d1e15]' 
-                                    : 'bg-black/80 border-white/15 shadow-[inset_0_0_20px_rgba(0,245,255,0.15)]'
+                                    ? 'bg-black border-[#855b3c] text-white shadow-lg' 
+                                    : 'bg-black/80 border-white/15 shadow-[inset_0_0_20px_rgba(0,245,255,0.15)] text-white'
                             }`}>
                                 <div className="flex justify-between items-center relative z-10">
-                                    <label className={`text-[9px] font-black uppercase tracking-[0.25em] flex items-center gap-2 ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-300'}`}>
-                                        <Radio size={12} className={`animate-pulse ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-400'}`} /> Sintonizador de Acceso
+                                    <label className={`text-[9px] font-black uppercase tracking-[0.25em] flex items-center gap-2 ${isDayMode ? 'text-amber-400' : 'text-cyan-300'}`}>
+                                        <Radio size={12} className={`animate-pulse ${isDayMode ? 'text-amber-400' : 'text-cyan-400'}`} /> Sintonizador de Acceso
                                     </label>
                                     <span className={`text-[8px] font-[900] border px-3 py-1.5 rounded-full uppercase tracking-wider animate-pulse ${
                                         isDayMode 
-                                            ? 'bg-[#cda488]/20 border-[#a88d75]/40 text-[#855b3c]' 
+                                            ? 'bg-amber-500/20 border-amber-400/40 text-amber-300' 
                                             : 'bg-cyan-500/20 border-cyan-400/40 text-cyan-400'
                                     }`}>
                                         LIVE SINFONÍA
@@ -715,30 +766,30 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 
                                 {client.eventPassEnabled !== false && sintonizadorEventData ? (
                                     <div className="space-y-3.5 relative z-10">
-                                        <p className={`text-[13px] font-[1000] uppercase tracking-tight leading-snug ${isDayMode ? 'text-[#2d1e15]' : 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]'}`}>
+                                        <p className={`text-[13px] font-[1000] uppercase tracking-tight leading-snug ${isDayMode ? 'text-white drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]' : 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]'}`}>
                                             {sintonizadorEventData.name}
                                         </p>
-                                        <p className={`text-[9px] font-black uppercase tracking-widest leading-relaxed ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-300'}`}>
+                                        <p className={`text-[9px] font-black uppercase tracking-widest leading-relaxed ${isDayMode ? 'text-amber-300/90' : 'text-cyan-300'}`}>
                                             {sintonizadorEventData.details}
                                         </p>
                                         <div className={`flex items-center gap-2 border px-3 py-1.5 rounded-xl w-fit ${
-                                            isDayMode ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-emerald-500/20 border-emerald-500/40'
+                                            isDayMode ? 'bg-emerald-500/20 border-emerald-500/40' : 'bg-emerald-500/20 border-emerald-500/40'
                                         }`}>
-                                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                                            <span className="text-[9px] font-[1000] text-emerald-600 uppercase tracking-widest">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                            <span className="text-[9px] font-[1000] text-emerald-400 uppercase tracking-widest">
                                                 {sintonizadorEventData.access}
                                             </span>
                                         </div>
-                                        <p className={`text-[7.5px] font-bold uppercase tracking-widest leading-relaxed ${isDayMode ? 'text-[#2d1e15]/50' : 'text-white/50'}`}>
+                                        <p className="text-[7.5px] font-bold uppercase tracking-widest leading-relaxed text-white/50">
                                             Control de Puerta: Permitir acceso y verificar DNI/Membresía.
                                         </p>
                                     </div>
                                 ) : (
                                     <div className="space-y-2 relative z-10">
-                                        <p className={`text-[10px] font-black uppercase tracking-widest italic ${isDayMode ? 'text-[#2d1e15]/50' : 'text-white/50'}`}>
+                                        <p className={`text-[10px] font-black uppercase tracking-widest italic ${isDayMode ? 'text-white/50' : 'text-white/50'}`}>
                                             {client.eventPassEnabled === false ? 'Sintonizador inactivo (OFF)' : 'Buscando transmisiones...'}
                                         </p>
-                                        <p className={`text-[8px] font-bold uppercase tracking-wider leading-relaxed ${isDayMode ? 'text-[#2d1e15]/40' : 'text-white/40'}`}>
+                                        <p className="text-[8px] font-bold uppercase tracking-wider leading-relaxed text-white/40">
                                             {client.eventPassEnabled === false 
                                                 ? 'Active el sintonizador arriba para recibir pases de eventos live.' 
                                                 : 'Sin eventos live activos en este radar. Acceso comercial estándar.'}
@@ -754,7 +805,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
             {/* QR DE VALIDACIÓN TRASACCIONAL */}
             <div className={`w-full max-w-sm mt-8 p-6 border-2 rounded-[2rem] flex flex-col items-center shadow-2xl ${
                 isDayMode 
-                    ? 'bg-white/85 border-[#855b3c] border-b-[8px] border-b-[#855b3c]' 
+                    ? 'bg-white/85 border-slate-200 border-b-[8px] border-b-[#855b3c]' 
                     : 'bg-zinc-900 border-cyan-500/30 border-b-[8px] border-b-cyan-500/50'
             }`}>
                 <p className={`text-[10px] font-black uppercase tracking-[0.4em] mb-6 ${isDayMode ? 'text-[#2d1e15]/60' : 'text-white/60'}`}>Validación de Descuentos</p>
@@ -769,13 +820,9 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                 
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/validar/${client.id}`); }}
-                    className={`mt-8 w-full h-16 rounded-2xl font-[1000] uppercase tracking-[0.2em] text-[11px] transition-all flex items-center justify-center gap-3 border-2 cursor-pointer ${
-                        isDayMode 
-                            ? 'bg-gradient-to-b from-[#b58866] to-[#9c7151] hover:from-[#c29673] hover:to-[#a87c5b] text-white border-[#5c4033] border-b-[8px] border-b-[#472f22] shadow-[0_10px_25px_rgba(140,90,50,0.2)] active:translate-y-[4px] active:border-b-[2px]' 
-                            : 'bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-400 border-b-[8px] border-b-cyan-800 shadow-lg active:scale-95 active:translate-y-[4px]'
-                    }`}
+                    className="mt-8 w-full h-16 text-[11px] font-[1100] uppercase tracking-[0.2em] btn-3d-celeste flex items-center justify-center gap-3 shadow-lg cursor-pointer"
                 >
-                    <Activity size={18} /> COMPLETAR DATOS
+                    <Activity size={18} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} /> COMPLETAR DATOS
                 </button>
             </div>
 
@@ -783,23 +830,15 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
             <div className="w-full max-w-sm mt-8 space-y-4 relative z-10 animate-in slide-in-from-bottom-4 duration-700 delay-300">
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/red-comercial/ofertas`); }}
-                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all border-2 cursor-pointer ${
-                        isDayMode 
-                            ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
-                            : 'bg-[#0b1329] hover:bg-[#0b1329]/80 text-white border-cyan-500/30 border-b-[6px] border-b-cyan-600/50 active:translate-y-[4px] active:border-b-[2px]'
-                    }`}
+                    className="w-full h-14 text-[10px] font-[1100] uppercase tracking-[0.2em] btn-3d-celeste flex items-center justify-center shadow-md cursor-pointer"
                 >
                     Explorar Beneficios
                 </button>
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all border-2 cursor-pointer ${
-                        isDayMode 
-                            ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
-                            : 'bg-[#0b1329] hover:bg-[#0b1329]/80 text-white border-cyan-500/30 border-b-[6px] border-b-cyan-600/50 active:translate-y-[4px] active:border-b-[2px]'
-                    }`}
+                    className="w-full h-14 text-[10px] font-[1100] uppercase tracking-[0.2em] btn-3d-celeste flex items-center justify-center shadow-md cursor-pointer"
                 >
-                    Volver a Inicio
+                    Volver al Inicio
                 </button>
             </div>
 
@@ -808,10 +847,10 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setIsEditing(false)} />
                     
-                    <div className={`relative w-full max-w-sm rounded-[2.5rem] p-8 overflow-hidden border shadow-2xl ${
+                    <div className={`relative w-full max-w-sm rounded-[2.5rem] p-8 overflow-hidden border-2 shadow-2xl transition-all ${
                         isDayMode 
-                            ? 'bg-white border-[#cbd5e1] border-b-[6px] border-b-[#cbd5e1] text-[#2d1e15]' 
-                            : 'bg-zinc-950 border-cyan-500/30 text-white'
+                            ? 'bg-white border-slate-200 border-b-[8px] border-b-[#855b3c] text-[#2d1e15]' 
+                            : 'bg-zinc-950 border-cyan-500/30 border-b-[8px] border-b-cyan-500/50 text-white'
                     }`}>
                         {!isDayMode && (
                             <div className="absolute inset-0 bg-[linear-gradient(rgba(0,245,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,245,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none z-0" />
@@ -824,10 +863,15 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 <ShieldCheck size={18} className={isDayMode ? 'text-[#855b3c]' : 'text-cyan-400'} /> Editar Perfil VIP
                             </h3>
                             <button 
-                                onClick={() => setIsEditing(false)} 
-                                className={`cursor-pointer active:scale-90 border-none bg-transparent ${isDayMode ? 'text-black/40 hover:text-black' : 'text-white/20 hover:text-white'}`}
+                                onClick={() => { playNeonClick(); setIsEditing(false); }} 
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all border ${
+                                    isDayMode 
+                                        ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-500 hover:text-slate-800' 
+                                        : 'bg-white/5 hover:bg-white/10 border-white/10 text-cyan-400 hover:text-white'
+                                }`}
+                                aria-label="Cerrar"
                             >
-                                <X size={20} />
+                                <X size={16} />
                             </button>
                         </div>
 
@@ -838,12 +882,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                     required
                                     value={editForm.name}
                                     onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                                    className={`w-full border p-3 text-sm rounded-xl focus:outline-none uppercase font-black ${
-                                        isDayMode 
-                                            ? 'bg-[#faf8f5] text-[#2d1e15] border-[#cbd5e1] focus:border-[#a88d75]' 
-                                            : 'bg-white/5 border border-white/10 text-white focus:border-cyan-400'
-                                    }`}
-                                    style={isDayMode ? { color: '#2d1e15', backgroundColor: '#faf8f5' } : { color: '#ffffff', backgroundColor: '#0b1329' }}
+                                    className="w-full p-3 text-sm rounded-xl focus:outline-none uppercase font-black premium-input"
                                 />
                             </div>
 
@@ -855,12 +894,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                         placeholder="Ej: 41234567"
                                         value={editForm.dni}
                                         onChange={(e) => setEditForm({ ...editForm, dni: e.target.value })}
-                                        className={`w-full border p-3 text-sm rounded-xl focus:outline-none font-bold ${
-                                            isDayMode 
-                                                ? 'bg-[#faf8f5] text-[#2d1e15] border-[#cbd5e1] focus:border-[#a88d75]' 
-                                                : 'bg-white/5 border border-white/10 text-white focus:border-cyan-400'
-                                        }`}
-                                        style={isDayMode ? { color: '#2d1e15', backgroundColor: '#faf8f5' } : { color: '#ffffff', backgroundColor: '#0b1329' }}
+                                        className="w-full p-3 text-sm rounded-xl focus:outline-none font-bold premium-input"
                                     />
                                 </div>
                                 <div>
@@ -869,12 +903,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                         required
                                         value={editForm.phone}
                                         onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                                        className={`w-full border p-3 text-sm rounded-xl focus:outline-none font-bold ${
-                                            isDayMode 
-                                                ? 'bg-[#faf8f5] text-[#2d1e15] border-[#cbd5e1] focus:border-[#a88d75]' 
-                                                : 'bg-white/5 border border-white/10 text-white focus:border-cyan-400'
-                                        }`}
-                                        style={isDayMode ? { color: '#2d1e15', backgroundColor: '#faf8f5' } : { color: '#ffffff', backgroundColor: '#0b1329' }}
+                                        className="w-full p-3 text-sm rounded-xl focus:outline-none font-bold premium-input"
                                     />
                                 </div>
                             </div>
@@ -886,12 +915,7 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                     type="email"
                                     value={editForm.email}
                                     onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                                    className={`w-full border p-3 text-xs rounded-xl focus:outline-none ${
-                                        isDayMode 
-                                            ? 'bg-[#faf8f5] text-[#2d1e15] border-[#cbd5e1] focus:border-[#a88d75]' 
-                                            : 'bg-white/5 border border-white/10 text-white focus:border-cyan-400'
-                                    }`}
-                                    style={isDayMode ? { color: '#2d1e15', backgroundColor: '#faf8f5' } : { color: '#ffffff', backgroundColor: '#0b1329' }}
+                                    className="w-full p-3 text-xs rounded-xl focus:outline-none premium-input"
                                 />
                             </div>
 
@@ -899,22 +923,14 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                                 <label className={`text-[8px] font-black uppercase tracking-[0.2em] mb-2 block ${isDayMode ? 'text-[#2d1e15]/60' : 'text-white/60'}`}>Foto de Perfil</label>
                                 <div className="flex gap-2 items-center">
                                     <div className={`w-12 h-12 rounded-xl border overflow-hidden flex items-center justify-center shrink-0 ${
-                                        isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1]' : 'bg-white/5 border-white/10'
+                                        isDayMode ? 'bg-[#faf8f5] border-[#0891b2]/45' : 'bg-white/5 border-white/10'
                                     }`}>
-                                        {editForm.photo ? (
-                                            <img src={editForm.photo} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <User size={20} className={isDayMode ? 'text-[#2d1e15]/20' : 'text-white/20'} />
-                                        )}
+                                        <img src={editForm.photo || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80'} className="w-full h-full object-cover" />
                                     </div>
                                     <button
                                         type="button"
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className={`flex-1 py-3 border rounded-xl text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer active:scale-95 ${
-                                            isDayMode 
-                                                ? 'bg-white/80 border-[#cbd5e1] border-b-[3px] border-b-[#cbd5e1] text-[#2d1e15] hover:bg-white hover:border-[#a88d75]' 
-                                                : 'bg-white/5 border border-white/10 text-cyan-400 hover:bg-white/10'
-                                        }`}
+                                        onClick={() => { playNeonClick(); fileInputRef.current?.click(); }}
+                                        className="flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest btn-3d-celeste flex items-center justify-center shadow-md cursor-pointer"
                                     >
                                         Subir Foto
                                     </button>
@@ -924,17 +940,13 @@ const ClientVipCredentialPage: React.FC<ClientVipCredentialPageProps> = ({ allSh
                             <button 
                                 type="submit"
                                 disabled={isSaving}
-                                className={`w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-[1000] uppercase tracking-[0.2em] text-[10px] border transition-all cursor-pointer ${
-                                    isDayMode 
-                                        ? 'bg-gradient-to-b from-[#b58866] to-[#9c7151] text-white border-[#855b3c] border-b-[4px] border-b-[#734b2f] active:translate-y-[2px]' 
-                                        : 'bg-cyan-600 hover:bg-cyan-500 text-white border-white/20 border-b-[4px] border-b-cyan-800 active:scale-95'
-                                } disabled:opacity-50`}
+                                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-[1000] uppercase tracking-[0.2em] text-[10px] btn-3d-celeste shadow-lg disabled:opacity-50 cursor-pointer"
                             >
                                 {isSaving ? (
                                     <div className="w-4 h-4 border-2 border-white/25 border-t-white rounded-full animate-spin" />
                                 ) : (
                                     <>
-                                        <Check size={16} />
+                                        <Check size={16} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
                                         <span>Guardar Cambios</span>
                                     </>
                                 )}

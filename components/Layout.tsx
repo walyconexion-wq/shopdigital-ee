@@ -70,7 +70,9 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
         location.pathname.includes('/embajador') ||
         location.pathname.includes('/subscripcion') ||
         location.pathname.includes('/inscripcion') ||
-        location.pathname.includes('/cliente-subscripcion');
+        location.pathname.includes('/cliente-subscripcion') ||
+        location.pathname.includes('/beneficios-vip') ||
+        location.pathname.includes('/beneficios-comercios');
 
     // Helper to convert hex to rgba
     const hexToRgba = (hex: string, alpha: number) => {
@@ -182,8 +184,8 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                 backgroundColor: shouldApplyDayMode ? '#cda488' : bgColor 
             }}
         >
-            {/* Selector de Idioma (Operación Babel) - Oculto en la página de subscripción VIP, credencial y factura */}
-            {!location.pathname.includes('/cliente-subscripcion') && !location.pathname.includes('/credencial-vip') && !location.pathname.includes('/factura') && (
+            {/* Selector de Idioma (Operación Babel) - Deshabilitado */}
+            {false && (
                 <div className={`absolute top-3.5 right-3.5 z-[100] flex items-center gap-1.5 backdrop-blur-md px-2.5 py-1 rounded-full border shadow-md transition-all duration-300 ${
                     shouldApplyDayMode 
                         ? 'bg-white/70 border-slate-200/50 text-slate-800' 

@@ -66,7 +66,7 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
         return (
             <div className={`min-h-screen flex items-center justify-center ${isDayMode ? 'bg-[#cda488]' : 'bg-black'}`}>
                 <div className={`w-12 h-12 border-4 rounded-full animate-spin ${
-                    isDayMode ? 'border-t-[#855b3c] border-[#cbd5e1]' : 'border-t-cyan-500 border-cyan-500/20'
+                    isDayMode ? 'border-t-[#0891b2] border-slate-200' : 'border-t-cyan-500 border-cyan-500/20'
                 }`}></div>
             </div>
         );
@@ -75,7 +75,7 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
     if (error || !invoice) {
         return (
             <div className={`min-h-screen flex flex-col items-center justify-center p-6 text-center ${
-                isDayMode ? 'bg-[#cda488] text-[#2d1e15]' : 'bg-black text-white'
+                isDayMode ? 'bg-[#cda488] text-[#083344]' : 'bg-black text-white'
             }`}>
                 <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 border ${
                     isDayMode ? 'bg-red-500/10 border-red-500/30' : 'bg-red-500/10 border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.2)]'
@@ -88,17 +88,13 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
                 </p>
                 <div className="space-y-3 w-full max-w-xs">
                     <button 
-                        onClick={() => navigate(`/${townId}/home`)}
-                        className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border cursor-pointer ${
-                            isDayMode 
-                                ? 'bg-white text-[#2d1e15] border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] hover:bg-white/95 active:translate-y-[2px] active:border-b-[1px]' 
-                                : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'
-                        }`}
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
+                        className="w-full h-14 text-[10px] font-[1100] uppercase tracking-[0.2em] btn-3d-celeste flex items-center justify-center shadow-lg cursor-pointer"
                     >
                         Volver al Inicio
                     </button>
                     <div className={`pt-4 mt-4 border-t ${isDayMode ? 'border-black/5' : 'border-white/5'}`}>
-                        <p className={`text-[8px] font-black uppercase tracking-widest mb-3 ${isDayMode ? 'text-[#855b3c]' : 'text-violet-400/50'}`}>Acceso Director Global</p>
+                        <p className={`text-[8px] font-black uppercase tracking-widest mb-3 ${isDayMode ? 'text-[#0891b2]' : 'text-violet-400/50'}`}>Acceso Director Global</p>
                         <button 
                             onClick={() => window.location.href = window.location.href.split('?')[0] + '?inject=true'}
                             className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border-none cursor-pointer ${
@@ -138,23 +134,20 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
             <div className="w-full max-w-sm relative z-10 flex justify-between items-center mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
                 <button 
                     onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-lg ${
-                        isDayMode 
-                            ? 'bg-white/90 border-[#cbd5e1] border-b-[4px] border-b-[#cbd5e1] text-[#2d1e15] hover:bg-white active:translate-y-[2px] active:border-b-[1px]' 
-                            : 'bg-white/5 border-white/10 text-white/50 hover:text-white active:scale-95'
-                    }`}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center btn-3d-celeste shadow-lg transition-all cursor-pointer z-10"
+                    aria-label="Regresar"
                 >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={20} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
                 </button>
                 <div className="text-center">
                     <h1 className={`text-2xl font-[1000] tracking-tighter uppercase ${
                         isDayMode 
-                            ? 'text-[#2d1e15] drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' 
+                            ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#083344] via-[#0891b2] to-[#0284c7] drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' 
                             : 'text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-400 to-blue-500 drop-shadow-[0_0_20px_rgba(34,211,238,0.4)]'
                     }`}>
                         Factura Electrónica
                     </h1>
-                    <p className={`text-[8px] font-[900] uppercase tracking-[0.4em] ${isDayMode ? 'text-[#855b3c]/70' : 'text-cyan-400/60'}`}>
+                    <p className={`text-[8px] font-[900] uppercase tracking-[0.4em] ${isDayMode ? 'text-[#0891b2]' : 'text-cyan-400/60'}`}>
                         ShopDigital · Red Comercial
                     </p>
                 </div>
@@ -175,11 +168,13 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
             {/* PREMIUM INVOICE CONTAINER */}
             <div className={`w-full max-w-sm border-2 rounded-[2.5rem] p-9 relative z-10 overflow-hidden shadow-2xl transition-all duration-500 animate-in zoom-in-95 duration-700 ${
                 isDayMode 
-                    ? 'bg-white/85 border-[#855b3c] border-b-[8px] border-b-[#855b3c]' 
+                    ? 'bg-white/85 border-[#0891b2] border-b-[8px] border-b-[#083344]' 
                     : invoice.status === 'paid' 
                         ? 'border-green-500/40 shadow-[0_0_40px_rgba(34,197,94,0.15)] bg-zinc-900/40' 
                         : 'border-cyan-500/40 shadow-[0_0_40px_rgba(34,211,238,0.15)] bg-zinc-900/40'
             }`}>
+                {/* Laser scan line inside the card */}
+                {!isDayMode && <div className="absolute left-0 right-0 h-[2px] bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-[scan-laser_3s_infinite_linear] pointer-events-none z-20" />}
                 
                 {/* Internal Decorative Glow */}
                 {!isDayMode && (
@@ -205,16 +200,16 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
                     <div className="text-center">
                         <p className={`text-[9px] font-black uppercase tracking-[0.3em] mb-1.5 ${isDayMode ? 'text-black/40' : 'text-white/30'}`}>Comprobante N°</p>
                         <p className={`text-[13px] font-mono font-bold px-4 py-1.5 rounded-xl border uppercase ${
-                            isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15]' : 'bg-white/5 border-white/10 text-white/90'
+                            isDayMode ? 'bg-[#faf8f5] border-[#0891b2]/45 text-[#083344]' : 'bg-white/5 border-white/10 text-white/90'
                         }`}>{invoice.id}</p>
                     </div>
                 </div>
 
                 {/* MERCHANT NAME SECTION */}
                 <div className="text-center mb-8">
-                    <p className={`text-[9px] font-black uppercase tracking-[0.3em] mb-2.5 ${isDayMode ? 'text-[#855b3c]' : 'text-cyan-400/50'}`}>Facturado a:</p>
+                    <p className={`text-[9px] font-black uppercase tracking-[0.3em] mb-2.5 ${isDayMode ? 'text-[#0891b2]' : 'text-cyan-400/50'}`}>Facturado a:</p>
                     <h2 className={`text-3xl font-[1000] uppercase tracking-tight leading-[0.9] ${
-                        isDayMode ? 'text-[#2d1e15]' : 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]'
+                        isDayMode ? 'text-[#083344]' : 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]'
                     }`}>
                         {invoice.shopName}
                     </h2>
@@ -223,7 +218,7 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
                 {/* CONCEPT & AMOUNT (THE CORE) */}
                 <div className={`rounded-[2rem] p-8 mb-8 border relative overflow-hidden group ${
                     isDayMode 
-                        ? 'bg-[#faf8f5] border-[#cbd5e1] text-[#2d1e15] shadow-inner' 
+                        ? 'bg-[#faf8f5] border-[#0891b2]/45 text-[#083344] shadow-inner' 
                         : 'bg-black/60 border-white/10 shadow-inner'
                 }`}>
                     <div className="absolute top-0 right-0 w-40 h-40 bg-black/5 rounded-full blur-[50px] -mr-10 -mt-10 pointer-events-none" />
@@ -250,13 +245,13 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
                 {/* TIMESTAMPS GRID */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className={`border rounded-2xl p-4 flex flex-col items-center ${
-                        isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1]' : 'bg-white/5 border-white/5'
+                        isDayMode ? 'bg-[#faf8f5] border-[#0891b2]/45 text-[#083344]' : 'bg-white/5 border-white/5'
                     }`}>
                         <p className={`text-[9px] font-black uppercase tracking-[0.2em] mb-1.5 ${isDayMode ? 'text-black/40' : 'text-white/30'}`}>Emisión</p>
                         <p className="text-[12px] font-[900]">{new Date(invoice.issueDate).toLocaleDateString('es-AR')}</p>
                     </div>
                     <div className={`border rounded-2xl p-4 flex flex-col items-center ${
-                        isDayMode ? 'bg-[#faf8f5] border-[#cbd5e1]' : 'bg-white/5 border-white/5'
+                        isDayMode ? 'bg-[#faf8f5] border-[#0891b2]/45 text-[#083344]' : 'bg-white/5 border-white/5'
                     }`}>
                         <p className={`text-[9px] font-black uppercase tracking-[0.2em] mb-1.5 ${isDayMode ? 'text-black/40' : 'text-white/30'}`}>Vencimiento</p>
                         <p className="text-[12px] font-[900]">{new Date(invoice.dueDate).toLocaleDateString('es-AR')}</p>
@@ -280,13 +275,10 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
                     <div className="mt-8">
                         <button 
                             onClick={handleWhatsAppNotify}
-                            className={`w-full py-5 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-3 active:scale-95 transition-all border-2 cursor-pointer ${
-                                isDayMode 
-                                    ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
-                                    : 'bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-400/50 shadow-[0_0_30px_rgba(34,211,238,0.3)]'
-                            }`}
+                            className="w-full h-16 text-[11px] font-[1100] uppercase tracking-[0.2em] btn-3d-celeste flex items-center justify-center gap-3 shadow-lg cursor-pointer"
                         >
-                            <Smartphone size={18} /> Avisar Pago WhatsApp
+                            <Smartphone size={18} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={2.5} />
+                            <span>Avisar Pago WhatsApp</span>
                         </button>
                     </div>
                 )}
@@ -296,13 +288,10 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
             <div className="mt-8 relative z-10 w-full max-w-sm flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-700 delay-300">
                 <button 
                     onClick={() => { playNeonClick(); window.print(); }}
-                    className={`w-full border-2 rounded-2xl py-5 flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[11px] transition-all active:scale-[0.98] cursor-pointer shadow-xl ${
-                        isDayMode 
-                            ? 'bg-[#faf8f5] hover:bg-white border-[#855b3c] border-b-[6px] border-b-[#734b2f] text-[#2d1e15] active:translate-y-[4px] active:border-b-[2px]' 
-                            : 'bg-zinc-900 border-white/10 hover:bg-zinc-800 text-white/90'
-                    }`}
+                    className="w-full h-16 text-[11px] font-[1100] uppercase tracking-[0.2em] btn-3d-celeste flex items-center justify-center gap-3 shadow-lg cursor-pointer"
                 >
-                    <Download size={18} className={isDayMode ? 'text-[#855b3c]' : 'text-cyan-400'} /> Descargar PDF
+                    <Download size={18} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={2.5} />
+                    <span>Descargar PDF</span>
                 </button>
                 
                 <p className={`text-[8.5px] uppercase tracking-[0.4em] font-bold text-center leading-[1.8] mt-4 px-6 ${
@@ -311,6 +300,15 @@ const InvoiceViewerPage: React.FC<InvoiceViewerPageProps> = ({ allShops = [] }) 
                     Este documento es un comprobante de servicio proforma temporal, válido para seguimiento interno de membresía. No válido como factura electrónica de AFIP.
                 </p>
             </div>
+            
+            {/* Scan animation stylesheet keyframes */}
+            <style>{`
+                @keyframes scan-laser {
+                    0% { top: 5%; }
+                    50% { top: 95%; }
+                    100% { top: 5%; }
+                }
+            `}</style>
         </div>
     );
 };

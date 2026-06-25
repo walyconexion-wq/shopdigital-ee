@@ -8,7 +8,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse, generateMatrixResponse } from '../services/gemini';
+import { generateMatrixResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { registrarIntrusionBunker, obtenerIntrusiones, eliminarIntrusion, limpiarTodasIntrusiones, suscribirseAAutorizados, enviarMensajeBunker, suscribirseAMensajesBunker, suscribirseATelemetriaVisitas, subirArchivoBunker, suscribirseATodasDirectivas, enviarDirectivaBunker, archivarDirectiva, activarDirectiva, suscribirseAMatriz, enviarMensajeMatriz, SncMessage } from '../firebase';
 import { BunkerDirective, BunkerReply } from '../types';
 import { RadarScanner } from '../components/RadarScanner';
@@ -518,9 +519,11 @@ ${telemetryLogs.slice(0, 10).map(l => `  * Zona: ${l.townId} | Fecha: ${l.dateSt
 
         const fullContext = `${ARI_BUNKER_PROMPT}\n\n${telemetrySummary}`;
 
-        const response = await generateAriResponse(newHistory, fullContext, (retryMsg) => {
-            setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: retryMsg }]);
-        });
+        const response = await generateEveResponse(
+            'director',
+            newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
+            fullContext
+        );
         setAriMsgs(prev => [...prev.filter(m => !m.text.includes('Fallo de conexión')), { role: 'ari' as const, text: response }]);
         setIsThinking(false);
     };

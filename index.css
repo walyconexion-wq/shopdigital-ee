@@ -2,6 +2,15 @@
 /* All main styles are currently inline in index.html */
 
 /* ═══════════════════════════════════════════ */
+/* 🖼️ PROGRESSIVE IMAGE — Skeleton & Shimmer */
+/* ═══════════════════════════════════════════ */
+
+@keyframes shimmer-slide {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ═══════════════════════════════════════════ */
 /* 📺 MURO VIVO — Glitch & Transition Effects */
 /* ═══════════════════════════════════════════ */
 
@@ -1156,4 +1165,281 @@
 
 .model-floating {
   animation: model-float 4s ease-in-out infinite !important;
+}
+
+/* ========================================== */
+/* 🎨 BOTONES 3D CELESTES / DYNAMIC (GLOW & RELIEF) */
+/* ========================================== */
+
+.btn-3d-celeste {
+  position: relative;
+  transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease !important;
+  border: 1px solid color-mix(in srgb, var(--theme-primary, #22d3ee) 40%, transparent) !important;
+  border-bottom: 7px solid color-mix(in srgb, var(--theme-primary, #22d3ee) 85%, #000) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 25%, transparent) 0%, rgba(15, 23, 42, 0.75) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 
+    0 10px 20px rgba(0, 0, 0, 0.3),
+    0 4px 15px color-mix(in srgb, var(--theme-primary, #22d3ee) 20%, transparent), 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.2) !important;
+  border-radius: 1.25rem !important;
+}
+
+.btn-3d-celeste:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 35%, transparent) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+  border-color: color-mix(in srgb, var(--theme-primary, #22d3ee) 60%, transparent) !important;
+  border-bottom-color: var(--theme-primary, #22d3ee) !important;
+  border-bottom-width: 8px !important;
+  box-shadow: 
+    0 12px 25px rgba(0, 0, 0, 0.4),
+    0 6px 20px color-mix(in srgb, var(--theme-primary, #22d3ee) 35%, transparent), 
+    inset 0 2px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.btn-3d-celeste:active {
+  transform: translateY(6px) scale(0.98) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 1px 5px color-mix(in srgb, var(--theme-primary, #22d3ee) 10%, transparent), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Modo Día para Botones 3D Dinámicos */
+.day-mode .btn-3d-celeste {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 40%, #fff) 0%, color-mix(in srgb, var(--theme-primary, #22d3ee) 65%, #fff) 100%) !important;
+  border: 1px solid color-mix(in srgb, var(--theme-primary, #22d3ee) 50%, transparent) !important;
+  border-bottom: 7px solid color-mix(in srgb, var(--theme-primary, #22d3ee) 85%, #000) !important;
+  box-shadow: 
+    0 10px 18px rgba(8, 51, 68, 0.15), 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.5) !important;
+  color: #083344 !important;
+}
+
+.day-mode .btn-3d-celeste:hover {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 50%, #fff) 0%, color-mix(in srgb, var(--theme-primary, #22d3ee) 75%, #fff) 100%) !important;
+  border-color: color-mix(in srgb, var(--theme-primary, #22d3ee) 65%, transparent) !important;
+  border-bottom-color: color-mix(in srgb, var(--theme-primary, #22d3ee) 95%, #000) !important;
+  border-bottom-width: 8px !important;
+  box-shadow: 
+    0 12px 22px rgba(8, 51, 68, 0.2), 
+    inset 0 2px 0 rgba(255, 255, 255, 0.6) !important;
+  transform: translateY(-2px) scale(1.01) !important;
+}
+
+.day-mode .btn-3d-celeste:active {
+  transform: translateY(6px) scale(0.98) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 
+    0 2px 6px rgba(8, 51, 68, 0.08), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ========================================== */
+/* ⚡ BOTÓN VER CATÁLOGO 3D CON PULSO NEÓN  */
+/* ========================================== */
+
+@keyframes neon-pulse-celeste {
+  0%, 100% {
+    box-shadow: 
+      0 0 8px color-mix(in srgb, var(--theme-primary, #22d3ee) 35%, transparent),
+      0 6px 15px color-mix(in srgb, var(--theme-primary, #22d3ee) 20%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  }
+  50% {
+    box-shadow: 
+      0 0 20px color-mix(in srgb, var(--theme-primary, #22d3ee) 75%, transparent),
+      0 8px 30px color-mix(in srgb, var(--theme-primary, #22d3ee) 50%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+@keyframes neon-pulse-celeste-day {
+  0%, 100% {
+    box-shadow: 
+      0 0 6px color-mix(in srgb, var(--theme-primary, #22d3ee) 30%, transparent),
+      0 6px 15px color-mix(in srgb, var(--theme-primary, #22d3ee) 15%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  }
+  50% {
+    box-shadow: 
+      0 0 15px color-mix(in srgb, var(--theme-primary, #22d3ee) 60%, transparent),
+      0 8px 25px color-mix(in srgb, var(--theme-primary, #22d3ee) 35%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  }
+}
+
+.btn-ver-catalogo-3d {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, background-color 0.2s ease !important;
+  border: 1.5px solid color-mix(in srgb, var(--theme-primary, #22d3ee) 40%, transparent) !important;
+  border-bottom: 5px solid var(--theme-primary, #22d3ee) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 20%, transparent) 0%, rgba(15, 23, 42, 0.6) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 1.25rem !important;
+  animation: neon-pulse-celeste 2s infinite ease-in-out !important;
+  color: #ffffff !important;
+}
+
+.btn-ver-catalogo-3d:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 30%, transparent) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
+  border-color: var(--theme-primary, #22d3ee) !important;
+  border-bottom-color: var(--theme-primary, #22d3ee) !important;
+  animation: none !important;
+  box-shadow: 
+    0 0 25px color-mix(in srgb, var(--theme-primary, #22d3ee) 80%, transparent),
+    0 12px 35px color-mix(in srgb, var(--theme-primary, #22d3ee) 60%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.btn-ver-catalogo-3d:active {
+  transform: translateY(4px) scale(0.98) !important;
+  border-bottom-width: 1px !important;
+  animation: none !important;
+  box-shadow: 
+    0 2px 10px color-mix(in srgb, var(--theme-primary, #22d3ee) 15%, transparent), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ========================================== */
+/* ⚡ BOTÓN VER CATÁLOGO 3D - Mismo Estilo que Regresar */
+/* ========================================== */
+
+.btn-ver-catalogo-3d {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease !important;
+  border: 1px solid rgba(205, 164, 136, 0.35) !important;
+  border-bottom: 5px solid #cda488 !important;
+  background: linear-gradient(135deg, rgba(205, 164, 136, 0.2) 0%, rgba(15, 23, 42, 0.6) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 
+    0 8px 25px rgba(205, 164, 136, 0.2), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  border-radius: 1.25rem !important;
+  color: #ffffff !important;
+}
+
+.btn-ver-catalogo-3d:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  background: linear-gradient(135deg, rgba(205, 164, 136, 0.3) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
+  border-color: rgba(205, 164, 136, 0.5) !important;
+  border-bottom-color: #e5bba0 !important;
+  box-shadow: 
+    0 12px 30px rgba(205, 164, 136, 0.3), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.btn-ver-catalogo-3d:active {
+  transform: translateY(4px) scale(0.99) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 
+    0 2px 10px rgba(205, 164, 136, 0.1), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Modo Día */
+.day-mode .btn-ver-catalogo-3d {
+  background: linear-gradient(135deg, #f3e9e2 0%, #e8d5c8 100%) !important;
+  border: 1px solid #d4beae !important;
+  border-bottom: 5px solid #a8846c !important;
+  box-shadow: 
+    0 8px 22px rgba(133, 91, 60, 0.15), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  color: #2d1e15 !important;
+}
+
+.day-mode .btn-ver-catalogo-3d:hover {
+  background: linear-gradient(135deg, #f7f0eb 0%, #e0c8b6 100%) !important;
+  border-color: #cda488 !important;
+  border-bottom-color: #855b3c !important;
+  box-shadow: 
+    0 12px 28px rgba(133, 91, 60, 0.25), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  transform: translateY(-2px) scale(1.01) !important;
+}
+
+.day-mode .btn-ver-catalogo-3d:active {
+  transform: translateY(4px) scale(0.99) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 
+    0 2px 10px rgba(133, 91, 60, 0.08), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ========================================== */
+/* 🗺️ BOTONES 3D DE LOCALIDAD (MONTE GRANDE, GUILLON, JAGUEL) */
+/* ========================================== */
+
+.btn-locality-3d-tab {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 5px solid rgba(255, 255, 255, 0.15) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(15, 23, 42, 0.4) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 
+    0 6px 15px rgba(0, 0, 0, 0.3), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  border-radius: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.btn-locality-3d-tab:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  box-shadow: 
+    0 10px 22px rgba(0, 0, 0, 0.45), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.btn-locality-3d-tab:active {
+  transform: translateY(4px) scale(0.98) !important;
+  border-bottom-width: 1px !important;
+}
+
+/* Active State in Dark Mode (Unified Theme Color Cyan/Celeste) */
+.btn-locality-3d-tab.active-3d-primary {
+  border-color: color-mix(in srgb, var(--theme-primary, #22d3ee) 50%, transparent) !important;
+  border-bottom: 5px solid var(--theme-primary, #22d3ee) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 25%, transparent) 0%, rgba(15, 23, 42, 0.7) 100%) !important;
+  box-shadow: 
+    0 8px 25px color-mix(in srgb, var(--theme-primary, #22d3ee) 45%, transparent), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  transform: translateY(2px);
+}
+
+/* Day Mode styling for the 3D Locality Tabs */
+.day-mode .btn-locality-3d-tab {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid rgba(88, 70, 50, 0.15) !important;
+  border-bottom: 5px solid #cda488 !important; /* Caramelo Base relief */
+  color: #57534e !important;
+  box-shadow: 
+    0 4px 10px rgba(88, 70, 50, 0.08), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+.day-mode .btn-locality-3d-tab:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%) !important;
+  border-color: rgba(88, 70, 50, 0.25) !important;
+  color: #1c1917 !important;
+  box-shadow: 
+    0 8px 18px rgba(88, 70, 50, 0.14), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Active State in Day Mode (Unified Theme Color Cyan/Celeste) */
+.day-mode .btn-locality-3d-tab.active-3d-primary {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--theme-primary, #22d3ee) 12%, transparent) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+  border: 1.5px solid color-mix(in srgb, var(--theme-primary, #22d3ee) 40%, transparent) !important;
+  border-bottom: 5px solid var(--theme-primary, #22d3ee) !important;
+  box-shadow: 
+    0 8px 20px color-mix(in srgb, var(--theme-primary, #22d3ee) 22%, transparent), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  color: #083344 !important;
+  transform: translateY(2px);
 }

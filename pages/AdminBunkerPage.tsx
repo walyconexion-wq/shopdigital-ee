@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { doc, updateDoc } from 'firebase/firestore';
 import { 
     registrarIntrusionBunker, db,
@@ -260,7 +260,8 @@ KPIs ADMINISTRATIVOS ACTUALES:
 
         const fullContext = `${ARI_ADMIN_PROMPT}\n\n${currentBudgetSummary}\n\n${activeDirectivesText}`;
 
-        const response = await generateAriResponse(
+        const response = await generateEveResponse(
+            'administracion',
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
             fullContext
         );

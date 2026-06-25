@@ -29,6 +29,7 @@ import { playNeonClick } from '../utils/audio';
 import { useAuth } from '../components/AuthContext';
 import { incrementarLikesFeed, suscribirseABroadcast, Broadcast } from '../firebase';
 import { logEvento } from '../services/telemetry';
+import ProgressiveShopImage from '../components/ProgressiveShopImage';
 
 interface ShopDetailPageProps {
     allShops: Shop[];
@@ -41,6 +42,12 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
     const isEnterprisePath = window.location.pathname.startsWith('/empresas');
     const basePath = isEnterprisePath ? '/empresas' : `/${townId}`;
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [currentTime] = useState(new Date());
+    const themeMode = localStorage.getItem('global_home_theme_mode') || 'dark';
+    const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
+        const hour = currentTime.getHours();
+        return hour >= 8 && hour < 20;
+    })());
     const catalogRef = useRef<HTMLDivElement>(null);
     const offersCarouselRef = useRef<HTMLDivElement>(null);
     const offersTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -294,7 +301,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
 
     return (
         <div 
-          className={`pb-24 animate-in fade-in duration-700 min-h-screen relative ${wallpaperClass} ${isLightWallpaper ? 'text-zinc-900' : 'text-white'}`}
+          className={`pb-24 animate-in fade-in duration-700 min-h-screen relative ${wallpaperClass} ${isDayMode ? 'day-mode bg-[#cda488] text-[#2d1e15]' : 'bg-[#060d1a] text-white'}`}
           style={isCustomColor ? { backgroundColor: selectedShop.customBackground } : {}}
         >
 
@@ -346,9 +353,9 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                         playNeonClick();
                         navigate(`${basePath}/${categorySlug}`);
                     }}
-                    className="back-button absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/20 active:scale-90 transition-all hover:bg-black/50 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                    className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center rounded-full btn-3d-celeste active:scale-90 transition-all"
                 >
-                    <ArrowLeft size={22} className="text-white drop-shadow-md pr-0.5" />
+                    <ArrowLeft size={18} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
                 </button>
 
                 {gallery.map((img, idx) => (
@@ -421,15 +428,10 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                                 playNeonClick();
                                 navigate(`${basePath}/${categorySlug}/${shopSlug}/menu`);
                             }}
-                            className="w-full glass-action-btn backdrop-blur-md border py-4 rounded-[1.25rem] flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[10px] text-white transition-all duration-75 active:scale-95 group shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
-                            style={{ 
-                                backgroundColor: hexToRgba(themeColor, 0.2),
-                                borderColor: hexToRgba(themeColor, 0.4),
-                                boxShadow: `0 0 20px ${hexToRgba(themeColor, 0.15)}`
-                            }}
+                            className="w-full py-4 flex items-center justify-center gap-3 font-[1100] uppercase tracking-[0.25em] text-[10px] text-white btn-3d-celeste"
                         >
-                            <span className="group-hover:scale-110 transition-transform" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Abrir Catálogo Completo</span>
-                            <ArrowLeft size={14} className="rotate-180 opacity-70 group-hover:translate-x-1 transition-transform" />
+                            <ShoppingBag size={16} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                            <span className={isDayMode ? "" : "text-shadow-premium"}>Abrir Catálogo Completo</span>
                         </button>
                     </div>
 
@@ -455,9 +457,15 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                                 return (
                                     <div key={`${offer.id}-${idx}`} className="glass-card-3d offer-card-neon flex-shrink-0 w-44 p-3.5 flex flex-col relative group snap-center cursor-pointer" onClick={() => { playNeonClick(); setSelectedOfferForModal(offer); logEvento('view_offer', selectedShop.id, { producto: offer.name }); }}>
                                         <div className="rounded-2xl overflow-hidden aspect-square mb-3.5 border border-white/20 shadow-xl relative">
-                                            <img src={offer.image} alt={offer.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
+                                            <ProgressiveShopImage
+                                                src={offer.image}
+                                                alt={offer.name}
+                                                className="w-full h-full group-hover:scale-110 transition-transform duration-700 pointer-events-none"
+                                                priority={idx < 4}
+                                                skeletonColor="rgba(255,255,255,0.05)"
+                                            />
                                             {/* Dynamic Badge */}
-                                            <div className={`absolute top-2 right-2 text-white text-[7.5px] font-black px-2 py-1 rounded-full uppercase backdrop-blur-md ${badgeProps.bg} ${badgeProps.shadow} border border-white/20 pointer-events-none`}>
+                                            <div className={`absolute top-2 right-2 text-white text-[7.5px] font-black px-2 py-1 rounded-full uppercase backdrop-blur-md ${badgeProps.bg} ${badgeProps.shadow} border border-white/20 pointer-events-none z-10`}>
                                                 {badgeProps.text}
                                             </div>
                                         </div>
@@ -516,32 +524,17 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                 </div>
 
                 {/* ---------- CREDENCIAL VIP PREMIUM ---------- */}
-                <div className="w-full px-5 mb-14 flex flex-col items-center">
+                <div className="w-full px-5 mb-14">
                     <button
                         onClick={() => {
                             playNeonClick();
                             logEvento('click_vip_access', selectedShop.id);
                             navigate(`${basePath}/${categorySlug}/${shopSlug}/cliente-subscripcion`);
                         }}
-                        className="w-full relative overflow-hidden rounded-[2rem] p-[1px] active:scale-95 transition-transform duration-300 group shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                        className="w-full py-4 text-white btn-3d-celeste flex items-center justify-center gap-3"
                     >
-                        {/* Golden Border Glow */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-yellow-600 to-yellow-900 opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                        
-                        {/* Inner Metallic Card */}
-                        <div className="relative w-full h-full bg-gradient-to-br from-zinc-900 via-black to-zinc-900 rounded-[2rem] p-6 flex flex-col items-center justify-center gap-3 border border-white/5 backdrop-blur-xl z-10" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent)', backgroundSize: '6px 6px' }}>
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full pointer-events-none"></div>
-                            <div className="flex items-center gap-2">
-                                <Star size={16} className="text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)] fill-yellow-500/50" />
-                                <h3 className="font-black text-[12px] uppercase tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600">Club Exclusivo</h3>
-                            </div>
-                            <p className="text-[8px] text-center font-bold uppercase tracking-widest text-zinc-400 mt-1">
-                                Beneficios locales para clientes
-                            </p>
-                            <div className="mt-3 bg-yellow-500/10 border border-yellow-500/30 px-6 py-2.5 rounded-full backdrop-blur-md group-hover:bg-yellow-500/20 transition-colors">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-yellow-500">Obtener Credencial</span>
-                            </div>
-                        </div>
+                        <Star size={16} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                        <span className={`text-[10px] font-[1100] uppercase tracking-[0.25em] ${isDayMode ? '' : 'text-shadow-premium'}`}>Obtener Credencial VIP</span>
                     </button>
                 </div>
 
@@ -572,13 +565,19 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                         </p>
 
                         <div className="grid grid-cols-2 gap-3">
-                            <button onClick={() => { logEvento('click_location', selectedShop.id, { metodo: 'google_maps' }); handleOpenLink(selectedShop.mapSheetUrl || '#'); }} className="bg-black/40 border border-violet-500/30 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
-                                <Navigation size={14} className="text-violet-400 drop-shadow-[0_0_5px_rgba(139,92,246,0.8)]" />
-                                <span className="text-[8.5px] font-bold uppercase tracking-wider text-violet-200">Cómo llegar</span>
+                            <button 
+                                onClick={() => { logEvento('click_location', selectedShop.id, { metodo: 'google_maps' }); handleOpenLink(selectedShop.mapSheetUrl || '#'); }} 
+                                className="py-3 flex items-center justify-center gap-2 text-white btn-3d-celeste"
+                            >
+                                <Navigation size={14} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                                <span className={`text-[8.5px] font-[1100] uppercase tracking-wider ${isDayMode ? '' : 'text-shadow-premium'}`}>Cómo llegar</span>
                             </button>
-                            <button onClick={() => { logEvento('click_location', selectedShop.id, { metodo: 'uber' }); handleOpenLink('https://m.uber.com/ul/'); }} className="bg-black/40 border border-white/20 py-3 rounded-[1rem] flex items-center justify-center gap-2 text-white active:scale-95 transition-transform">
-                                <Car size={14} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" />
-                                <span className="text-[8.5px] font-bold uppercase tracking-wider text-white/90">Pedir Uber</span>
+                            <button 
+                                onClick={() => { logEvento('click_location', selectedShop.id, { metodo: 'uber' }); handleOpenLink('https://m.uber.com/ul/'); }} 
+                                className="py-3 flex items-center justify-center gap-2 text-white btn-3d-celeste"
+                            >
+                                <Car size={14} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                                <span className={`text-[8.5px] font-[1100] uppercase tracking-wider ${isDayMode ? '' : 'text-shadow-premium'}`}>Pedir Uber</span>
                             </button>
                         </div>
                     </div>
@@ -747,43 +746,30 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                     {/* Actions: View All / Leave Review */}
                     <div className="grid grid-cols-2 gap-3 w-full">
                         <button 
-                            className="glass-action-btn backdrop-blur-md border py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white transition-all duration-75 active:translate-y-[4px]"
-                            style={{ 
-                                backgroundColor: hexToRgba(themeColor, 0.2), 
-                                borderColor: hexToRgba(themeColor, 0.3),
-                                boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.3)}, 0 8px 15px ${hexToRgba(themeColor, 0.15)}`
-                            }}
+                            className="py-3 flex items-center justify-center gap-2 text-white btn-3d-celeste"
                         >
-                            <span className="text-[8px] font-black uppercase tracking-widest" style={{ color: themeColor, filter: `drop-shadow(0 0 5px ${hexToRgba(themeColor, 0.5)})` }}>Ver Todas</span>
+                            <span className={`text-[8px] font-[1100] uppercase tracking-widest ${isDayMode ? '' : 'text-shadow-premium'}`}>Ver Todas</span>
                         </button>
                         <button 
-                            className="glass-action-btn backdrop-blur-md border py-3 rounded-[1.25rem] flex items-center justify-center gap-2 text-white transition-all duration-75 active:translate-y-[4px]"
-                            style={{ 
-                                backgroundColor: hexToRgba(themeColor, 0.3), 
-                                borderColor: hexToRgba(themeColor, 0.5),
-                                boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 10px 20px ${hexToRgba(themeColor, 0.2)}`
-                            }}
+                            className="py-3 flex items-center justify-center gap-2 text-white btn-3d-celeste"
                         >
-                            <span className="text-[8px] font-[1100] uppercase tracking-widest text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Dejar Reseña</span>
+                            <MessageSquare size={12} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                            <span className={`text-[8px] font-[1100] uppercase tracking-widest ${isDayMode ? '' : 'text-shadow-premium'}`}>Dejar Reseña</span>
                         </button>
                     </div>
                 </div>
                 {/* ----------------------------------------------- */}
 
                 <div className="w-full flex justify-center mb-8">
-                    <button onClick={() => {
-                        playNeonClick();
-                        navigate(`${basePath}/${categorySlug}`);
-                    }} 
-                        className="glass-action-btn backdrop-blur-md border w-max py-2.5 px-8 rounded-full flex items-center gap-2 text-white transition-all duration-75 active:translate-y-[4px]"
-                        style={{ 
-                            backgroundColor: hexToRgba(themeColor, 0.35), 
-                            borderColor: hexToRgba(themeColor, 0.5),
-                            boxShadow: `0 4px 0 ${hexToRgba(themeColor, 0.5)}, 0 10px 20px ${hexToRgba(themeColor, 0.2)}`
-                        }}
+                    <button 
+                        onClick={() => {
+                            playNeonClick();
+                            navigate(`${basePath}/${categorySlug}`);
+                        }} 
+                        className="w-max py-3 px-8 rounded-full flex items-center gap-2 text-white btn-3d-celeste"
                     >
-                        <ArrowLeft size={16} className="text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }} />
-                        <span className="text-[10px] font-[1100] uppercase tracking-widest text-white" style={{ filter: `drop-shadow(0 0 8px ${hexToRgba(themeColor, 0.8)})` }}>Regresar</span>
+                        <ArrowLeft size={14} style={{ color: '#22d3ee', filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.6))' }} strokeWidth={3} />
+                        <span className={`text-[10px] font-[1100] uppercase tracking-widest ${isDayMode ? '' : 'text-shadow-premium'}`}>Regresar</span>
                     </button>
                 </div>
 

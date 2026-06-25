@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { playNeonClick } from '../utils/audio';
-import { generateAriResponse } from '../services/gemini';
+import { generateEveResponse } from '../services/eve';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
@@ -132,7 +132,8 @@ HISTORIAL DE ACTIVOS DE LA EMPRESA:
 
         const fullContext = `${ARI_INVESTMENT_PROMPT}\n\n${currentInvestmentSummary}\n\n${activeDirectivesText}`;
 
-        const response = await generateAriResponse(
+        const response = await generateEveResponse(
+            'inversion-exponencial',
             newHistory.map(m => ({ role: m.role === 'ari' ? 'ari' as const : 'director' as const, text: m.text })),
             fullContext
         );

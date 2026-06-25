@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Firebase Admin SDK Service Account Key (NUNCA subir al repo)
+serviceAccountKey.json

@@ -8,6 +8,7 @@ import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye } from 'lucide-reac
 import { playNeonClick } from '../utils/audio';
 import { incrementarVisitas } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
+import ProgressiveShopImage from '../components/ProgressiveShopImage';
 
 interface CategoryPageProps {
     allShops: Shop[];
@@ -187,34 +188,16 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.04] to-transparent h-[200%] w-full -translate-y-1/2 animate-[scanner-line_8s_linear_infinite]" />
             </div>
 
-            {/* Botón de retroceso premium con estilo 3D (adaptado a modo día/noche) */}
+            {/* Botón de retroceso premium con estilo 3D y sombreado celeste de navegación */}
             <button
                 onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                className={`absolute left-4 top-6 z-30 p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-center glass-button-3d ${
-                    isDayMode 
-                        ? 'bg-white border-slate-200 text-slate-800' 
-                        : 'text-white/70 hover:text-white'
-                }`}
-                style={
-                    isDayMode
-                        ? {
-                            borderWidth: '1px',
-                            borderBottomWidth: '4px',
-                            borderBottomColor: '#cbd5e1',
-                            boxShadow: '0 6px 12px rgba(88, 70, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
-                          }
-                        : {
-                            backgroundColor: hexToRgba(themeColor, 0.15),
-                            borderColor: hexToRgba(themeColor, 0.35),
-                            boxShadow: `0 8px 30px rgba(0,0,0,0.5), inset 0 0 10px ${hexToRgba(themeColor, 0.05)}`
-                          }
-                }
+                className="absolute left-4 top-6 z-30 p-3.5 rounded-2xl cursor-pointer flex items-center justify-center btn-3d-celeste"
             >
                 <ArrowLeft 
                     size={16} 
                     style={
                         isDayMode 
-                            ? { color: '#2d1e15' } 
+                            ? { color: '#083344' } 
                             : { color: themeColor, filter: `drop-shadow(0 0 6px ${themeColor})` }
                     } 
                 />
@@ -261,20 +244,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                         </h3>
                     </div>
                 )}
-                {/* Pestañas de Localidades — cargadas dinámicamente desde Firebase */}
                 {localities.length > 1 && (!isInTraslasierra) && (!isInPatagonia) && (
                     <div className="flex gap-2 w-full justify-center px-2 mb-2 overflow-x-auto no-scrollbar">
                         {localities.map((loc, idx) => {
                             const isActive = activeLocation === loc;
-                            const colors = LOCALITY_COLORS[idx % LOCALITY_COLORS.length];
                             const activeClass = isActive
-                                ? `${colors.border} ${colors.bg} ${colors.shadow} scale-110 z-10 text-white`
-                                : 'border-white/20 text-white/70 bg-white/10 hover:bg-white/15';
+                                ? 'active-3d-primary'
+                                : 'inactive-3d';
                             return (
                                 <button
                                     key={loc}
                                     onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                                    className={`locality-tab flex-1 min-w-[72px] py-3 px-2 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 active:translate-y-[4px] ${activeClass} ${isDayMode && !isActive ? 'border-b-[4px] border-slate-300' : ''}`}
+                                    className={`locality-tab flex-1 min-w-[72px] py-3 px-2 flex flex-col items-center justify-center btn-locality-3d-tab ${activeClass}`}
                                 >
                                     <span className={`text-[10px] sm:text-[11px] font-[1000] uppercase tracking-widest text-center leading-tight ${isActive ? 'text-shadow-premium' : ''}`}>
                                         {loc}
@@ -367,7 +348,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                         groupedShops[activeLocation].map((shop, index) => (
                             <div key={shop.id} style={{ animationDelay: `${index * 80}ms` }} className={`glass-card-3d ${activeColors.card} overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px]`}>
                                 <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-white/20">
-                                    <img src={shop.bannerImage} alt={shop.name} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
+                                    <ProgressiveShopImage
+                                        src={shop.bannerImage}
+                                        alt={shop.name}
+                                        className="w-full h-full transition-transform duration-1000 hover:scale-110"
+                                        priority={index < 4}
+                                        skeletonColor={isDayMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'}
+                                    />
                                 </div>
                                 <div className={`flex-1 flex flex-col justify-between text-left min-w-0 ${isDayMode ? 'bg-slate-50/50' : 'bg-white/[0.04]'}`}>
                                     <div className="space-y-1.5 overflow-hidden p-4 pb-2">
@@ -393,13 +380,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                                     <div className="w-full flex justify-center py-3 px-4">
                                         <button
                                             onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${townId}/${selectedCategory.slug}/${shop.slug || shop.id}`); }}
-                                            className={`w-[90%] py-3 px-4 text-[10px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-75 rounded-2xl border backdrop-blur-md active:translate-y-[4px] ${
-                                                isDayMode 
-                                                    ? 'bg-white text-slate-800 border-slate-200 border-b-[5px] border-b-slate-300 hover:bg-slate-50 shadow-md' 
-                                                    : activeColors.btn
-                                            }`}
+                                            className="w-[90%] py-3 px-4 text-[10px] font-[1100] uppercase tracking-[0.2em] flex items-center justify-center gap-2 btn-ver-catalogo-3d"
                                         >
-                                            <BookOpen size={16} strokeWidth={2.5} className={`${isDayMode ? 'text-slate-600' : 'text-white'} drop-shadow-md`} />
+                                            <BookOpen size={16} strokeWidth={2.5} className={`${isDayMode ? 'text-cyan-950' : 'text-white'} drop-shadow-md`} />
                                             VER CATÁLOGO
                                         </button>
                                     </div>
@@ -415,8 +398,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 </div>
 
                 <div className="w-full flex justify-center mb-8">
-                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className={`glass-action-btn backdrop-blur-md border w-max py-2.5 px-6 rounded-2xl flex items-center gap-2 shadow-lg active:translate-y-[4px] transition-all duration-75 ${isDayMode ? 'bg-white text-slate-800 border-slate-200 border-b-[4px] border-b-slate-300' : 'border-b-[4px] border-b-white/20'}`} style={!isDayMode ? { backgroundColor: hexToRgba(themeColor, 0.2), borderColor: hexToRgba(themeColor, 0.4), color: themeColor } : {}}>
-                        <ArrowLeft size={16} /><span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
+                    <button onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="w-max py-2.5 px-6 rounded-2xl flex items-center gap-2 btn-3d-celeste">
+                        <ArrowLeft size={16} style={isDayMode ? { color: '#083344' } : { color: themeColor }} />
+                        <span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
                     </button>
                 </div>
             </div>
