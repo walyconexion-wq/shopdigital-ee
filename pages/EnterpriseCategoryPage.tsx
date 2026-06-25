@@ -15,10 +15,15 @@ const FOOD_IMAGES = [
     'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&auto=format&fit=crop&q=80', // Alimentos Gourmet / Quesos
 ];
 
-const DEFAULT_DEMO_IMG = 'APNQkAFW_DwehRWqr6azXnpgkRWLBOcVKBC_5GNrCSPemAFiDcTlOd6KusGcQ0e0lP61o0wUDcL_lJsju2sMWqTcAMyBW5tb_Zo18tb2yrsbsD58uCr2E-zUcRmajkj2GVyl9GtxQHBETQ';
+const SEED_MOCKUP_PATTERNS = [
+    'APNQkAFW_DwehRWqr6azXnpgkRWLBOcVKBC_5GNrCSPemAFiDcTlOd6KusGcQ0e0lP61o0wUDcL_lJsju2sMWqTcAMyBW5tb_Zo18tb2yrsbsD58uCr2E-zUcRmajkj2GVyl9GtxQHBETQ',
+    'photo-1527960656366-ee2a5e98f661', // Imagen de bebidas de muestra rota (404)
+    'photo-1606787366850-de6330128bfc', // Imagen de alimentos de muestra repetida
+];
 
 export const getEnterpriseImage = (shopId: string, customImage?: string) => {
-    if (!customImage || customImage.includes(DEFAULT_DEMO_IMG)) {
+    const isMock = !customImage || SEED_MOCKUP_PATTERNS.some(pat => customImage.includes(pat));
+    if (isMock) {
         let hash = 0;
         for (let i = 0; i < shopId.length; i++) {
             hash = shopId.charCodeAt(i) + ((hash << 5) - hash);
