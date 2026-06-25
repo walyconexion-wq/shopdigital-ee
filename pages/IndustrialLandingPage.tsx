@@ -27,6 +27,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 import { guardarRelevamiento } from '../firebase';
+import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 
 // Custom hook to trigger scroll reveals on scroll
 const useScrollReveal = () => {
@@ -76,6 +77,22 @@ const RevealSection: React.FC<RevealSectionProps> = ({ children, className = '',
         </div>
     );
 };
+
+const ariContextShop = {
+    id: 'ari-industrial',
+    name: 'ShopDigital Industrial',
+    category: 'Directorio Industrial',
+    slug: 'shopdigital-industrial',
+    address: 'Buenos Aires, Argentina',
+    phone: '1140607059',
+    description: 'Nodo de Vinculación y Proveedores Industriales de ShopDigital',
+    rating: 5,
+    isActive: true,
+    offers: [],
+    visits: 0,
+    subscribers: 0,
+    tags: [],
+} as any;
 
 const IndustrialLandingPage: React.FC = () => {
     const navigate = useNavigate();
@@ -296,7 +313,7 @@ const IndustrialLandingPage: React.FC = () => {
             }`}>
                 <div className="px-4 flex items-center justify-between w-full max-w-lg mx-auto">
                     <button 
-                        onClick={() => { playNeonClick(); navigate('/'); }}
+                        onClick={() => { playNeonClick(); navigate('/empresas?provincia=buenos-aires'); }}
                         className={`p-2.5 rounded-xl transition-all active:translate-y-[2px] ${
                             isDayMode 
                                 ? 'hover:bg-slate-200 text-[#2d1e15]' 
@@ -307,7 +324,7 @@ const IndustrialLandingPage: React.FC = () => {
                     </button>
                     
                     {/* Pulsing Dot Logo */}
-                    <div className="flex items-center gap-1.5 select-none cursor-pointer" onClick={() => navigate('/')}>
+                    <div className="flex items-center gap-1.5 select-none cursor-pointer" onClick={() => navigate('/empresas?provincia=buenos-aires')}>
                         <span className={`text-[19px] font-[1000] tracking-tighter uppercase leading-none ${
                             isDayMode ? 'text-[#2d1e15]' : 'text-white'
                         }`}>
@@ -767,6 +784,15 @@ const IndustrialLandingPage: React.FC = () => {
                     </div>
                 </RevealSection>
             </main>
+
+            {/* Floating Ari Assistant Bubble */}
+            <AriMerchantAssistant 
+                shop={ariContextShop} 
+                role="industrial" 
+                townId="esteban-echeverria"
+                isDayMode={isDayMode}
+                globalConfig={{}}
+            />
         </div>
     );
 };
