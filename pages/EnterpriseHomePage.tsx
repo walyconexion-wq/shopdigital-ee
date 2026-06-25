@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
-import { Factory, ChevronLeft, Share2, MapPin, ShieldCheck, Zap } from 'lucide-react';
+import { Factory, ChevronLeft, Share2, MapPin, ShieldCheck, Zap, Sun, Moon } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db, incrementarVisitasZona, registrarVisitaConTelemetria } from '../firebase';
@@ -83,11 +83,21 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     const loggedRef = React.useRef<string | null>(null);
 
     // Theme Mode Resolver
-    const themeMode = globalConfig?.themeMode || 'auto';
+    const [themeMode, setThemeMode] = React.useState<string>(() => {
+        return localStorage.getItem('global_home_theme_mode') || 'auto';
+    });
+
     const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
         const hour = time.getHours();
         return hour >= 8 && hour < 20;
     })());
+
+    const toggleTheme = () => {
+        playNeonClick();
+        const nextMode = isDayMode ? 'dark' : 'light';
+        localStorage.setItem('global_home_theme_mode', nextMode);
+        setThemeMode(nextMode);
+    };
 
     // Incrementar visitas de empresas atómicamente al montar
     React.useEffect(() => {
@@ -178,7 +188,7 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
     };
 
     return (
-        <div className="flex flex-col pt-6 pb-16 animate-in fade-in duration-1000 relative overflow-hidden min-h-screen enterprise-home-root day-mode-bg-reset" style={{ backgroundColor: bgColor }}>
+        <div className={`flex flex-col pt-6 pb-16 animate-in fade-in duration-1000 relative overflow-hidden min-h-screen enterprise-home-root day-mode-bg-reset ${isDayMode ? 'day-mode' : ''}`} style={isDayMode ? { backgroundColor: '#f8fafc' } : { backgroundColor: bgColor }}>
             {/* ── CSS Animations Inline ── */}
             <style>{`
                 @keyframes levitate {
@@ -332,12 +342,26 @@ const EnterpriseHomePage: React.FC<EnterpriseHomePageProps> = ({ globalConfig })
 
             {/* ── Header ── */}
             <header className="flex flex-col items-center relative z-10 px-6 mb-8 mt-2">
-                <button
-                    onClick={() => { playNeonClick(); navigate(-1); }}
-                    className="self-start mb-6 w-11 h-11 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer z-10 back-home-btn"
-                >
-                    <ChevronLeft size={24} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
-                </button>
+                <div className="w-full flex justify-between items-center mb-6">
+                    <button
+                        onClick={() => { playNeonClick(); navigate(-1); }}
+                        className="w-11 h-11 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer z-10 back-home-btn"
+                    >
+                        <ChevronLeft size={24} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
+                    </button>
+
+                    <button
+                        onClick={toggleTheme}
+                        className="w-11 h-11 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer z-10 theme-toggle-btn"
+                        title={isDayMode ? "Activar Modo Noche" : "Activar Modo Día"}
+                    >
+                        {isDayMode ? (
+                            <Sun size={20} className="text-amber-500 animate-[spin_8s_linear_infinite]" strokeWidth={2.5} />
+                        ) : (
+                            <Moon size={20} className="text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" strokeWidth={2.5} />
+                        )}
+                    </button>
+                </div>
 
                 {/* Animated Logo Container with background glow-orb at night */}
                 <div className="relative flex items-center justify-center w-full mb-6">

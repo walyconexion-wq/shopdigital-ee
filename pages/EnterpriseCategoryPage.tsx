@@ -120,7 +120,7 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
     }
 
     return (
-        <div className="flex flex-col animate-in slide-in-from-bottom-6 duration-1000 relative overflow-hidden min-h-screen pb-10" style={{ backgroundColor: bgColor }}>
+        <div className={`flex flex-col animate-in slide-in-from-bottom-6 duration-1000 relative overflow-hidden min-h-screen pb-10 day-mode-bg-reset ${isDayMode ? 'day-mode' : ''}`} style={isDayMode ? { backgroundColor: '#f8fafc' } : { backgroundColor: bgColor }}>
             {/* ── CSS Animations Inline ── */}
             <style>{`
                 @keyframes levitate {

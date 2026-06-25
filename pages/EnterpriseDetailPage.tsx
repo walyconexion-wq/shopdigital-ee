@@ -333,7 +333,7 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
     return (
         <div 
           className={`pb-24 animate-in fade-in duration-1000 min-h-screen relative text-white tech-grid-bg day-mode-bg-reset ${isDayMode ? 'day-mode' : ''}`}
-          style={{ backgroundColor: bgColor }}
+          style={isDayMode ? { backgroundColor: '#f8fafc' } : { backgroundColor: bgColor }}
         >
             {/* ── CSS Animations Inline ── */}
             <style>{`
