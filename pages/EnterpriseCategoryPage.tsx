@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
 import { Shop } from '../types';
-import { ChevronLeft, Factory, MapPin, Star, BookOpen, Globe, Landmark, Phone, Zap } from 'lucide-react';
+import { ChevronLeft, Factory, MapPin, Star, BookOpen, Globe, Landmark, Phone, Zap, Sun, Moon } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { inyectarEmpresaPruebaB2B } from '../scripts/seedEnterpriseB2B';
 
@@ -53,11 +53,22 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
 
     // Theme Mode Resolver
     const [currentTime] = React.useState(new Date());
-    const themeMode = localStorage.getItem('global_home_theme_mode') || 'auto';
+    const [themeMode, setThemeMode] = useState(() => {
+        return localStorage.getItem('global_home_theme_mode') || 'auto';
+    });
+
     const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
         const hour = currentTime.getHours();
         return hour >= 8 && hour < 20;
     })());
+
+    const toggleTheme = () => {
+        playNeonClick();
+        const nextMode = isDayMode ? 'dark' : 'light';
+        localStorage.setItem('global_home_theme_mode', nextMode);
+        setThemeMode(nextMode);
+        window.dispatchEvent(new Event('theme-changed'));
+    };
 
     // Leer provincia del query param (viene del Home cuando se seleccionó una cápsula)
     const searchParams = new URLSearchParams(location.search);
@@ -198,6 +209,18 @@ const EnterpriseCategoryPage: React.FC<EnterpriseCategoryPageProps> = ({ allShop
                         className="absolute top-6 left-5 z-[60] w-11 h-11 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer"
                     >
                         <ChevronLeft size={24} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
+                    </button>
+
+                    <button
+                        onClick={toggleTheme}
+                        className="absolute top-6 right-5 z-[60] w-11 h-11 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer"
+                        title={isDayMode ? "Activar Modo Noche" : "Activar Modo Día"}
+                    >
+                        {isDayMode ? (
+                            <Sun size={20} className="text-amber-500 animate-[spin_8s_linear_infinite]" strokeWidth={2.5} />
+                        ) : (
+                            <Moon size={20} className="text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" strokeWidth={2.5} />
+                        )}
                     </button>
 
                     <div className="flex justify-center w-full px-2 mt-2">

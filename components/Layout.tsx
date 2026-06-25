@@ -17,8 +17,10 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     
     // Helper to check if it is currently day mode
     const checkIsDayMode = (mode: string) => {
-        if (mode === 'light') return true;
-        if (mode === 'dark') return false;
+        const saved = localStorage.getItem('global_home_theme_mode');
+        const effectiveMode = saved || mode;
+        if (effectiveMode === 'light') return true;
+        if (effectiveMode === 'dark') return false;
         const hour = new Date().getHours();
         return hour >= 8 && hour < 20;
     };
@@ -53,14 +55,24 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     };
 
     React.useEffect(() => {
-        setIsDayMode(checkIsDayMode(themeMode));
+        const syncTheme = () => {
+            setIsDayMode(checkIsDayMode(themeMode));
+        };
+        syncTheme();
         
+        window.addEventListener('storage', syncTheme);
+        window.addEventListener('theme-changed', syncTheme);
+        
+        let interval: ReturnType<typeof setInterval> | null = null;
         if (themeMode === 'auto') {
-            const interval = setInterval(() => {
-                setIsDayMode(checkIsDayMode(themeMode));
-            }, 60000);
-            return () => clearInterval(interval);
+            interval = setInterval(syncTheme, 60000);
         }
+        
+        return () => {
+            window.removeEventListener('storage', syncTheme);
+            window.removeEventListener('theme-changed', syncTheme);
+            if (interval) clearInterval(interval);
+        };
     }, [themeMode]);
     
     // Ocultar ARI en páginas de edición, paneles y formularios de suscripción que tienen su propio ARI o no lo requieren flotante
@@ -176,12 +188,16 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
     const techStyle = getTechBgStyles();
     const { language, setLanguage } = useLanguage();
 
+    const isEnterprisePath = location.pathname.startsWith('/empresas');
+
     return (
         <div 
             className={`w-full max-w-md mx-auto h-screen flex flex-col overflow-hidden relative shadow-2xl ${shouldApplyDayMode ? 'day-mode' : ''}`}
             style={{ 
                 ...containerStyle, 
-                backgroundColor: shouldApplyDayMode ? '#cda488' : bgColor 
+                backgroundColor: shouldApplyDayMode 
+                    ? (isEnterprisePath ? '#f8fafc' : '#cda488') 
+                    : bgColor 
             }}
         >
             {/* Selector de Idioma (Operación Babel) - Deshabilitado */}
@@ -264,7 +280,9 @@ const Layout: React.FC<LayoutProps> = ({ allShops = [], globalConfig }) => {
                     className="absolute inset-0"
                     style={{
                         background: shouldApplyDayMode 
-                            ? `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.07)} 0%, transparent 65%), linear-gradient(180deg, #ebd7c8 0%, #cda488 50%, #b68d71 100%)`
+                            ? (isEnterprisePath 
+                                ? `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.05)} 0%, transparent 65%), linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)`
+                                : `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.07)} 0%, transparent 65%), linear-gradient(180deg, #ebd7c8 0%, #cda488 50%, #b68d71 100%)`)
                             : `radial-gradient(ellipse at 50% 30%, ${hexToRgba(themeColor, 0.08)} 0%, transparent 60%), linear-gradient(180deg, ${bgColor} 0%, ${bgColor} 50%, ${bgColor} 100%)`,
                     }}
                 />

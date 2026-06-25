@@ -50,7 +50,9 @@ import {
     Settings,
     Eye,
     Heart,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Sun,
+    Moon
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { playNeonClick } from '../utils/audio';
@@ -117,11 +119,22 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
 
     // Theme Mode Resolver
     const [currentTime] = useState(new Date());
-    const themeMode = localStorage.getItem('global_home_theme_mode') || 'auto';
+    const [themeMode, setThemeMode] = useState(() => {
+        return localStorage.getItem('global_home_theme_mode') || 'auto';
+    });
+
     const isDayMode = themeMode === 'light' || (themeMode === 'auto' && (() => {
         const hour = currentTime.getHours();
         return hour >= 8 && hour < 20;
     })());
+
+    const toggleTheme = () => {
+        playNeonClick();
+        const nextMode = isDayMode ? 'dark' : 'light';
+        localStorage.setItem('global_home_theme_mode', nextMode);
+        setThemeMode(nextMode);
+        window.dispatchEvent(new Event('theme-changed'));
+    };
 
     const hexToRgba = (hex: string, alpha: number) => {
         const r = parseInt(hex.slice(1, 3), 16);
@@ -487,6 +500,19 @@ const EnterpriseDetailPage: React.FC<EnterpriseDetailPageProps> = ({ allShops })
                     className="absolute top-6 left-5 z-[60] w-10 h-10 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer"
                 >
                     <ArrowLeft size={22} style={isDayMode ? { color: '#083344' } : { color: '#22d3ee' }} strokeWidth={3} />
+                </button>
+
+                {/* Theme Toggle Button */}
+                <button
+                    onClick={toggleTheme}
+                    className="absolute top-6 right-5 z-[60] w-10 h-10 flex items-center justify-center btn-3d-celeste transition-all cursor-pointer"
+                    title={isDayMode ? "Activar Modo Noche" : "Activar Modo Día"}
+                >
+                    {isDayMode ? (
+                        <Sun size={18} className="text-amber-500 animate-[spin_8s_linear_infinite]" strokeWidth={2.5} />
+                    ) : (
+                        <Moon size={18} className="text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" strokeWidth={2.5} />
+                    )}
                 </button>
 
                 {gallery.map((img, idx) => (
