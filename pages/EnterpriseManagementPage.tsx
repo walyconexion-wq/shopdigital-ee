@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Shop } from '../types';
+import { Shop, Invoice } from '../types';
 import { ENTERPRISE_CATEGORIES } from '../enterpriseConstants';
-import { guardarComercio, eliminarComercio } from '../firebase';
+import { db, guardarComercio, eliminarComercio, crearFactura } from '../firebase';
+import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import {
     ChevronLeft,
     Factory,
@@ -16,7 +17,12 @@ import {
     Edit3,
     Globe,
     Landmark,
-    Plus
+    Plus,
+    X,
+    QrCode,
+    FileText,
+    CheckCircle,
+    ShieldAlert
 } from 'lucide-react';
 import { playNeonClick, playSuccessSound } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
@@ -37,6 +43,27 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [reachFilter, setReachFilter] = useState<string>('all');
+    const [invoices, setInvoices] = useState<Invoice[]>([]);
+    
+    // Modal para ingresar datos de credencial
+    const [showCredentialsModal, setShowCredentialsModal] = useState<Shop | null>(null);
+    const [credForm, setCredForm] = useState({
+        ownerName: '',
+        gmail: ''
+    });
+
+    // Escuchar facturas en tiempo real
+    useEffect(() => {
+        const invoicesCol = collection(db, "facturas");
+        const unsub = onSnapshot(invoicesCol, (snapshot) => {
+            const list: Invoice[] = [];
+            snapshot.forEach(docSnap => {
+                list.push({ id: docSnap.id, ...docSnap.data() as any });
+            });
+            setInvoices(list);
+        });
+        return () => unsub();
+    }, []);
 
     // Filtrar solo empresas y además por provincia si provinciaParam está presente
     const allEnterprises = useMemo(() => {
@@ -114,6 +141,66 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
             } finally {
                 setProcessingId(null);
             }
+        }
+    };
+
+    const handleGenerateCredentialAndInvoice = async () => {
+        if (!showCredentialsModal) return;
+        const enterprise = showCredentialsModal;
+        
+        if (!credForm.ownerName.trim() || !credForm.gmail.trim()) {
+            alert("Por favor completá el nombre del titular y el correo de acceso.");
+            return;
+        }
+
+        setProcessingId(enterprise.id);
+        setShowCredentialsModal(null);
+        
+        try {
+            playNeonClick();
+            
+            // 1. Guardar credenciales en el comercio
+            const updatedEnterprise = {
+                ...enterprise,
+                ownerName: credForm.ownerName.toUpperCase().trim(),
+                authorizedEmail: credForm.gmail.trim().toLowerCase(),
+                gmail: credForm.gmail.trim().toLowerCase(),
+                memberNumber: enterprise.memberNumber || `IND-${enterprise.id.slice(-6).toUpperCase()}`,
+                shopNumber: enterprise.shopNumber || `LOTE-${100 + Math.floor(Math.random() * 900)}`,
+                ownerPhoto: enterprise.ownerPhoto || "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=150&h=150&fit=crop", // avatar industrial
+                updatedAt: new Date().toISOString()
+            };
+            
+            await guardarComercio(updatedEnterprise, townId);
+            
+            // 2. Crear factura de abono mensual
+            const now = new Date();
+            const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const invoiceId = `inv-${enterprise.slug || enterprise.id}-${Date.now()}`;
+            
+            const newInvoice: Invoice = {
+                id: invoiceId,
+                shopId: enterprise.id,
+                shopName: enterprise.name,
+                townId: townId,
+                locality: enterprise.zone || 'Parque Industrial',
+                period: currentPeriod,
+                amount: 10000,
+                issueDate: now.toISOString(),
+                dueDate: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                status: 'pending',
+                concept: 'ABONO MENSUAL - GESTIÓN INDUSTRIAL B2B'
+            };
+            
+            await crearFactura(newInvoice);
+            playSuccessSound();
+            alert(`⚡ ¡Credencial y factura creadas con éxito para ${enterprise.name}!`);
+        } catch (error: any) {
+            console.error("Error al generar credencial y factura:", error);
+            alert(`Error al generar: ${error.message || error}`);
+        } finally {
+            setProcessingId(null);
+            setCredForm({ ownerName: '', gmail: '' });
         }
     };
 
@@ -292,20 +379,30 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                 ) : (
                     filteredEnterprises.map(enterprise => {
                         const isActive = enterprise.isActive === true;
+                        
+                        // Verificar si tiene credenciales y facturas B2B en el mes actual
+                        const hasCredentials = !!(enterprise.ownerName && enterprise.memberNumber && enterprise.shopNumber);
+                        const currentMonthPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+                        const hasInvoice = invoices.some(inv => inv.shopId === enterprise.id && inv.period === currentMonthPeriod);
+                        const isSincronizado = hasCredentials && hasInvoice;
+
                         return (
                             <div key={enterprise.id} className={`glass-card-3d bg-white/[0.02] border rounded-3xl p-5 overflow-hidden relative transition-all ${isActive ? 'border-amber-500/30' : 'border-red-500/30 opacity-80'}`}>
                                 {/* Status + Reach Badges */}
-                                <div className="absolute top-3 right-3 flex gap-1.5">
+                                <div className="absolute top-3 right-3 flex gap-1.5 flex-wrap justify-end max-w-[70%]">
                                     <span className={`px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest ${enterprise.reach === 'national' ? 'bg-amber-500/20 text-amber-300 border border-amber-400/30' : 'bg-white/10 text-white/50 border border-white/20'}`}>
                                         {enterprise.reach === 'national' ? '🌎 Nacional' : '📍 Regional'}
                                     </span>
                                     <span className={`px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest ${isActive ? 'bg-green-500/20 text-green-300 border border-green-400/30' : 'bg-red-500/20 text-red-300 border border-red-400/30'}`}>
                                         {isActive ? '● Activa' : '● Suspendida'}
                                     </span>
+                                    <span className={`px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest ${isSincronizado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-rose-500/20 text-rose-300 border border-rose-400/30'}`}>
+                                        {isSincronizado ? '🟢 Sincronizado' : '🔴 Sin Credencial/Factura'}
+                                    </span>
                                 </div>
 
                                 {/* Info */}
-                                <div className="flex items-start gap-4 mb-4 mt-1">
+                                <div className="flex items-start gap-4 mb-4 mt-6">
                                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-black/40 border border-amber-500/20 flex-shrink-0 flex items-center justify-center">
                                         {enterprise.bannerImage ? (
                                             <img src={enterprise.bannerImage} alt={enterprise.name} className="w-full h-full object-cover" />
@@ -335,6 +432,54 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                                     </div>
                                 </div>
 
+                                {/* Fila de Sincronización Industrial (B2B) */}
+                                <div className="mt-3 mb-4 p-3 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-2">
+                                    <div className="flex justify-between items-center text-[7px] font-black uppercase tracking-widest text-white/40">
+                                        <span>Estado Operativo B2B:</span>
+                                        <span className={isSincronizado ? "text-green-400" : "text-amber-400"}>
+                                            {isSincronizado ? "LISTO PARA OPERAR" : "PENDIENTE DE CONFIGURACIÓN"}
+                                        </span>
+                                    </div>
+                                    {!isSincronizado ? (
+                                        <button
+                                            onClick={() => {
+                                                playNeonClick();
+                                                setCredForm({
+                                                    ownerName: enterprise.ownerName || '',
+                                                    gmail: enterprise.gmail || enterprise.authorizedEmail || ''
+                                                });
+                                                setShowCredentialsModal(enterprise);
+                                            }}
+                                            className="w-full bg-amber-500 hover:bg-amber-400 text-black py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.3)] border-none cursor-pointer"
+                                        >
+                                            ⚡ Generar Credencial y Factura
+                                        </button>
+                                    ) : (
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    playNeonClick();
+                                                    const catSlug = ENTERPRISE_CATEGORIES.find(c => c.id === enterprise.category || c.slug === enterprise.category)?.slug || 'insumos';
+                                                    window.open(`/empresas/${catSlug}/${enterprise.slug || enterprise.id}/credencial`, '_blank');
+                                                }}
+                                                className="flex-1 bg-green-500/10 border border-green-500/30 hover:bg-green-500/20 text-green-400 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            >
+                                                <QrCode size={12} /> Ver Credencial
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    playNeonClick();
+                                                    const catSlug = ENTERPRISE_CATEGORIES.find(c => c.id === enterprise.category || c.slug === enterprise.category)?.slug || 'insumos';
+                                                    window.open(`/${catSlug}/${enterprise.slug || enterprise.id}/factura`, '_blank');
+                                                }}
+                                                className="flex-1 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-400 py-2.5 rounded-xl font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            >
+                                                <FileText size={12} /> Ver Factura
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Botones de Control */}
                                 <div className="flex gap-2 pt-2 border-t border-white/5">
                                     <button
@@ -342,28 +487,28 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                                             playNeonClick(); 
                                             navigate(`/${townId}/embajador/empresas/editar/${enterprise.id}${provinciaParam ? `?provincia=${provinciaParam}` : ''}`); 
                                         }}
-                                        className="flex-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-amber-500/20"
+                                        className="flex-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-amber-500/20 cursor-pointer"
                                     >
                                         <Edit3 size={14} /> Editar
                                     </button>
                                     <button
                                         disabled={processingId === enterprise.id}
                                         onClick={() => handleDelete(enterprise)}
-                                        className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-red-500/20 disabled:opacity-50"
+                                        className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all hover:bg-red-500/20 disabled:opacity-50 cursor-pointer"
                                     >
                                         <Trash2 size={14} /> Eliminar
                                     </button>
                                     <button
                                         disabled={processingId === enterprise.id || !isActive}
                                         onClick={() => handleSuspend(enterprise)}
-                                        className={`flex-1 border py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30 ${isActive ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20' : 'bg-white/5 border-white/10 text-white/30'}`}
+                                        className={`flex-1 border py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30 cursor-pointer ${isActive ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20' : 'bg-white/5 border-white/10 text-white/30'}`}
                                     >
                                         <PauseCircle size={14} /> Suspender
                                     </button>
                                     <button
                                         disabled={processingId === enterprise.id || isActive}
                                         onClick={() => handleActivate(enterprise)}
-                                        className={`flex-1 border py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30 ${!isActive ? 'bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20' : 'bg-white/5 border-white/10 text-white/30'}`}
+                                        className={`flex-1 border py-3 rounded-xl flex items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] active:scale-95 transition-all disabled:opacity-30 cursor-pointer ${!isActive ? 'bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20' : 'bg-white/5 border-white/10 text-white/30'}`}
                                     >
                                         <PlayCircle size={14} /> Activar
                                     </button>
@@ -379,6 +524,52 @@ const EnterpriseManagementPage: React.FC<EnterpriseManagementPageProps> = ({ all
                     })
                 )}
             </div>
+
+            {/* Modal para ingresar datos de credencial */}
+            {showCredentialsModal && (
+                <div className="fixed inset-0 z-[1000] bg-black/85 backdrop-blur-md flex items-center justify-center p-6">
+                    <div className="w-full max-w-sm bg-zinc-950 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative">
+                        <button onClick={() => setShowCredentialsModal(null)} className="absolute top-6 right-6 text-white/40 hover:text-white border-none bg-transparent cursor-pointer">
+                            <X size={20} />
+                        </button>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-amber-400 mb-6 flex items-center gap-2">
+                            <Factory size={16} /> Credenciales de {showCredentialsModal.name}
+                        </h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1.5 block">Nombre del Titular / Director</label>
+                                <input
+                                    type="text"
+                                    placeholder="EJ: ING. ALEJANDRO BRANDT"
+                                    value={credForm.ownerName}
+                                    onChange={(e) => setCredForm({ ...credForm, ownerName: e.target.value })}
+                                    className="w-full bg-zinc-900 border border-white/10 p-3.5 rounded-xl text-xs font-black uppercase text-white outline-none focus:border-amber-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1.5 block">Correo Electrónico (Acceso Gmail)</label>
+                                <input
+                                    type="email"
+                                    placeholder="EJ: CONTROL@EMPRESA.COM"
+                                    value={credForm.gmail}
+                                    onChange={(e) => setCredForm({ ...credForm, gmail: e.target.value })}
+                                    className="w-full bg-zinc-900 border border-white/10 p-3.5 rounded-xl text-xs font-black text-white outline-none focus:border-amber-500"
+                                />
+                            </div>
+                            <p className="text-[7.5px] uppercase tracking-widest font-bold text-white/40 leading-relaxed pt-2">
+                                * Se generará automáticamente un Código Industrial de Socio y un Número de Lote aleatorio para completar la credencial.<br/>
+                                * Se creará una factura mensual de abono de $10,000 en estado pendiente.
+                            </p>
+                            <button
+                                onClick={handleGenerateCredentialAndInvoice}
+                                className="w-full bg-amber-500 text-black font-black py-4.5 rounded-xl text-[10px] uppercase tracking-widest active:scale-95 transition-all shadow-lg mt-2 flex items-center justify-center gap-2 border-none cursor-pointer"
+                            >
+                                ⚡ Confirmar y Sincronizar B2B
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <AriMerchantAssistant 
                 role="industrial" 

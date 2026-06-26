@@ -46,6 +46,7 @@ interface AriMerchantAssistantProps {
     enterpriseStats?: { total: number; national: number; regional: number; active: number; };
     isDayMode?: boolean;
     globalConfig?: any;
+    initialMessage?: string;
 }
 
 export const ARI_AMBASSADOR_FIELD_PROMPT = `Sos ARI, la asistente táctica de los Embajadores de Shop Digital.
@@ -239,7 +240,7 @@ Regla de Oro: El activo más valioso es la atención del cliente. Cada VIP es un
 `;
 
 
-export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode: isDayModeProp = false, globalConfig, shopStats, clientStats }) => {
+export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode: isDayModeProp = false, globalConfig, shopStats, clientStats, initialMessage }) => {
     const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
@@ -330,7 +331,7 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
     const [messages, setMessages] = useState<Message[]>([
         { 
             role: 'ari', 
-            text: role === 'academy'
+            text: initialMessage || (role === 'academy'
                 ? `¡Bienvenid${candidateName ? ', ' + candidateName.split(' ')[0] : ''}! 🎓 Soy ARI, tu Agente de R.R.H.H. y mentora personal en la Bóveda de Entrenamiento de Shop Digital.\n\nEstás a punto de dar el paso más importante de tu carrera. Cuando apruebés el examen de graduación vas a recibir tu KIT OFICIAL completo:\n\n📱 Credencial Electrónica Inteligente\n🏷️ Credencial Física Oficial\n👕 Remera de Shop Digital\n🧢 Gorra Táctica\n🔑 Panel de Embajador completo\n\nY a la calle a digitalizar locales. ¿Empezamos con los módulos?`
                 : role === 'home' 
                 ? `¡Bienvenidos al Comando Central de Shop Digital! 🌐 Soy Ari, tu asistente virtual IA. ¿Querés saber cómo moverte por el radar o cómo buscar los mejores locales de tu zona? ¡Mete mecha, preguntame lo que quieras!`
@@ -342,7 +343,7 @@ export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop
                 ? `¡Director, el Cañón Publicitario está cargado y apuntando! 🚀🎯 Soy ARI, tu Directora de Campañas. Tengo las 7 Térmicas de Lanzamiento listas:\n\n🌐 B2C: Nosotros · Descubrir · Ofertas VIP\n🏪 B2B: Unirse · Ofertas Red · Industrial\n🎯 Captación: Reclutamiento Embajadores\n\n¿Armamos una campaña para WhatsApp, te redacto el copy de una landing o programamos un disparo masivo? ¡Dame la orden, Comandante!`
                 : role === 'financial'
                 ? `¡Comandante! 📊 Soy ARI, tu Directora Financiera. El Radar de Tesorería está activo y el motor de cobros en Frecuencia Roja. Controlo el flujo de dinero y suspendo la morosidad a la cuenta de 3. ¿Analizamos el radar de cobranza?`
-                : `¡Hola, Jefe! Soy Ari, tu asistente de negocios. Estoy lista para ayudarte con las estadísticas de ${shop.name}, programar campañas o ajustar tu catálogo. ¿En qué puedo darte una mano hoy?`, 
+                : `¡Hola, Jefe! Soy Ari, tu asistente de negocios. Estoy lista para ayudarte con las estadísticas de ${shop.name}, programar campañas o ajustar tu catálogo. ¿En qué puedo darte una mano hoy?`), 
             timestamp: new Date() 
         }
     ]);

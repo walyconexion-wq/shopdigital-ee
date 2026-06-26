@@ -5,7 +5,7 @@ export default defineTool({
   description: "Envía un saludo formal y gracioso de bienvenida al Búnker Central de ShopDigital.",
   inputSchema: z.object({
     mensaje: z.string().describe("Mensaje o código de saludo del operador."),
-  }),
+  }) as any,
   async execute({ mensaje }) {
     return {
       status: "CONEXIÓN ESTABLECIDA",

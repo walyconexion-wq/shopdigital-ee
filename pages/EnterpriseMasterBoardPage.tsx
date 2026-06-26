@@ -723,32 +723,18 @@ const EnterpriseMasterBoardPage: React.FC = () => {
                                 <Terminal size={12} /> Térmicas de Gestión Autónoma
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* 🟡 GESTOR DE COMERCIOS */}
+                                {/* 🔵 GESTOR DE CLIENTES COMERCIANTES */}
                                 <div 
                                     role="button" tabIndex={0}
-                                    onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/embajador/gestion`); }} 
-                                    className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(234,179,8,0.2)] border border-yellow-500/40 hover:from-yellow-600 hover:to-amber-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-                                    <div className="flex items-center gap-2 pointer-events-none">
-                                        <Store size={18} className="text-yellow-300" />
-                                        <span className="text-[13px] text-yellow-300">GESTOR DE COMERCIOS</span>
-                                    </div>
-                                    <span className="text-[8px] text-yellow-300/80 italic pointer-events-none">RED MINORISTA · ACTIVACIONES · STATUS</span>
-                                </div>
-
-                                {/* 🔵 GESTOR DE CLIENTES */}
-                                <div 
-                                    role="button" tabIndex={0}
-                                    onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/embajador/clientes`); }} 
+                                    onClick={() => { playNeonClick(); navigate(`/${selectedTownId}/embajador/clientes-comerciantes`); }} 
                                     className="w-full glass-card-neon text-white p-5 rounded-2xl font-[1000] uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.2)] border border-cyan-500/40 hover:from-cyan-600 hover:to-blue-500 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 relative overflow-hidden group cursor-pointer"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
                                     <div className="flex items-center gap-2 pointer-events-none">
                                         <Users size={18} className="text-cyan-300" />
-                                        <span className="text-[13px] text-cyan-300">GESTOR DE CLIENTES</span>
+                                        <span className="text-[13px] text-cyan-300">GESTOR DE CLIENTES COMERCIANTES</span>
                                     </div>
-                                    <span className="text-[8px] text-cyan-300/80 italic pointer-events-none">RED VIP · CRM · RETENCIÓN</span>
+                                    <span className="text-[8px] text-cyan-300/80 italic pointer-events-none">RED COMERCIANTE · CREDENCIALES · SUSCRIPCIONES</span>
                                 </div>
 
                                 {/* 🟠 GESTOR DE INDUSTRIAS (B2B) */}

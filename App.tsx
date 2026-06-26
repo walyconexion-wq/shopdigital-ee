@@ -92,6 +92,7 @@ const EnterpriseFormPage         = React.lazy(() => import('./pages/EnterpriseFo
 const EnterpriseGlobalConfigPage = React.lazy(() => import('./pages/EnterpriseGlobalConfigPage'));
 const EnterpriseMasterBoardPage  = React.lazy(() => import('./pages/EnterpriseMasterBoardPage'));
 const EnterpriseSubscriptionPage = React.lazy(() => import('./pages/EnterpriseSubscriptionPage'));
+const EnterpriseClientManagementPage = React.lazy(() => import('./pages/EnterpriseClientManagementPage'));
 
 // Búnkers (bunkers chunk)
 const DirectorBunkerPage      = React.lazy(() => import('./pages/DirectorBunkerPage').then(m => ({ default: m.DirectorBunkerPage })));
@@ -318,6 +319,7 @@ const TownController: React.FC = () => {
                     <Route path="embajador/empresas" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseManagementPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="embajador/empresas/nueva" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseFormPage allShops={allShops} /></ProtectedRoute>} />
                     <Route path="embajador/empresas/editar/:enterpriseId" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseFormPage allShops={allShops} /></ProtectedRoute>} />
+                    <Route path="embajador/clientes-comerciantes" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseClientManagementPage allShops={allShops} allClients={allClients} /></ProtectedRoute>} />
                     {/* 💳 POSNET DE CRÉDITOS */}
                     <Route path="embajador/posnet" element={<ProtectedRoute roles={['admin', 'ambassador']}><CreditsPosnetPage /></ProtectedRoute>} />
                     <Route path="mi-comercio/posnet-virtual" element={<CreditsPosnetPage />} />
