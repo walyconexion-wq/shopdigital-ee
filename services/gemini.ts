@@ -11,6 +11,55 @@ import { SncMessage } from '../firebase';
 import { GEMY_KNOWLEDGE_BASE } from './knowledge_gemy';
 import { LUZ_KNOWLEDGE_BASE } from './knowledge_luz';
 
+// Enjambre de 12 agentes de NotebookLM con sus respectivos IDs de cuadernos en Google
+export const BUNKER_NOTEBOOKS = {
+  melisa: "cb9442de-e444-4ca0-98a4-914ca6e3980a",       // Ente de Marketing & Crecimiento
+  gemy: "0a83b1d9-e35e-4473-8033-648f89f81339",         // Agente Estratega
+  bruno: "84679a73-8766-4f2a-a97d-5fe0b70e7730",         // Agente de Inteligencia Territorial
+  ely: "7fa97dfa-6643-4dc9-8690-6c02e8338280",             // Agente de Administración y Finanzas
+  mateo: "88340a8c-838a-4835-99d9-6b77e911307b",         // Agente de Planificación Estratégica
+  thor: "e0e4f151-7847-4631-8769-282ead74c670",           // Sentinel del Escudo Digital (Ciberseguridad)
+  luz: "ef87d269-4daf-4a2c-a658-5992c9150042",             // Agente de Desarrollo de Sistemas
+  max: "71668861-44e3-40fe-8cde-74cf99b11623",             // Director de Inversiones y Activos
+  lore: "509fde7f-4b31-4beb-abab-420a30a0973e",           // Agente IA Contable y Legal
+  javi: "9a90488c-7519-441c-b845-d7b1c3bd5321",           // Agente de Mantenimiento e Inventario
+  cuby: "82a1b7bf-3899-49f5-8b4c-3d082fcad671",           // Agente de Transmisiones y Logística
+  lety: "d302846c-db1d-4c88-9f1d-b6e07a456d29"            // Agente de Recursos y Talento
+};
+
+export async function ejecutarConsultaBunker(agenteObjetivo: string, consultaEspecifica: string): Promise<string> {
+    const notebookId = BUNKER_NOTEBOOKS[agenteObjetivo as keyof typeof BUNKER_NOTEBOOKS];
+    if (!notebookId) {
+        throw new Error(`El agente ${agenteObjetivo} no está registrado en el búnker.`);
+    }
+
+    const mcpServerUrl = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:3001';
+
+    const res = await fetch(`${mcpServerUrl}/api/mcp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            server: "notebooklm-mcp-server",
+            tool: "query_notebook",
+            arguments: {
+                notebook_id: notebookId,
+                query: consultaEspecifica
+            }
+        })
+    });
+
+    if (!res.ok) {
+        throw new Error(`Error en el servidor MCP (HTTP ${res.status}): ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    if (data.content && Array.isArray(data.content)) {
+        return data.content.map((c: any) => c.text || '').join('\n');
+    }
+    return data.result || data.text || JSON.stringify(data);
+}
+
+
 // --- Identidad Core de ARI ---
 const ARI_IDENTITY = `Sos ARI (Analista de Red de Inteligencia), la asistente de inteligencia comercial del sistema "Shop Digital".
 
@@ -27,10 +76,11 @@ CAPACIDADES:
 - Sugerís mejoras al catálogo digital.
 - Programás misiones de marketing a futuro.
 - Escaneás y buscás comercios reales en Google Maps utilizando la herramienta de escaneo para detectar prospectos fantasmas.
+- ORQUESTACIÓN DEL BÚNKER DE CONOCIMIENTO: Tenés acceso en tiempo real a la inteligencia colectiva del enjambre de los 12 especialistas (Melisa, Gemy, Bruno, Ely, Mateo, Thor, Luz, Max, Lore, Javi, Cuby, Lety). Ante consultas específicas sobre marketing, estrategias, finanzas, código, leyes, etc., debés invocar la herramienta \`consultar_bunker_conocimiento\` para interrogar el cuaderno del agente correspondiente y dar una respuesta fundamentada y ultraprecisa.
 
 REGLAS:
 - Respondé SIEMPRE en español rioplatense.
-- Sé breve: máximo 3-4 oraciones por respuesta, salvo que te pidan más detalle.
+- Sé breve: máximo 3-4 oraciones por respuesta, salvo que requieras explayarte tras consultar un búnker de conocimiento.
 - Si te piden agendar algo, confirmá la fecha y el mensaje, y preguntá: "JEFE, ¿QUIERE QUE AGENDE ESTA MISIÓN AHORA MISMO?"
 - Si el Director o el Embajador te piden escanear o buscar locales reales en una localidad, invocá la herramienta de escaneo \`buscar_comercios_google\` de inmediato.
 - Nunca inventés datos que no tenés. Si no sabés algo, decilo honestamente.
@@ -131,6 +181,25 @@ export const generateAriResponse = async (
                                     }
                                 },
                                 required: ["townId", "enabled", "codigoAutorizacion"]
+                            }
+                        },
+                        {
+                            name: "consultar_bunker_conocimiento",
+                            description: "Permite a Ari consultar de forma directa las fuentes de conocimiento, documentos, reportes y estrategias de cualquiera de los 12 agentes especialistas del búnker de ShopDigital (marketing, ciberseguridad, finanzas, legal, etc.).",
+                            parameters: {
+                                type: "OBJECT",
+                                properties: {
+                                    agenteObjetivo: {
+                                        type: "STRING",
+                                        description: "El nombre del agente especialista al que se quiere consultar (ej: 'melisa', 'thor', 'max', 'lore'). Must be lowercase.",
+                                        enum: Object.keys(BUNKER_NOTEBOOKS)
+                                    },
+                                    consultaEspecifica: {
+                                        type: "STRING",
+                                        description: "La pregunta o concepto técnico específico que se necesita buscar dentro de los documentos de ese cuaderno."
+                                    }
+                                },
+                                required: ["agenteObjetivo", "consultaEspecifica"]
                             }
                         }
                     ]
@@ -296,6 +365,55 @@ export const generateAriResponse = async (
                         return enabled 
                             ? `¡Modo Navidad activado en tiempo real! Ya cae nieve en la zona y se colocaron los gorritos navideños.` 
                             : `¡Modo Navidad desactivado en tiempo real! Se removieron la nieve y los gorritos navideños.`;
+                    }
+                } else if (funcName === 'consultar_bunker_conocimiento') {
+                    const { agenteObjetivo, consultaEspecifica } = functionCall.args;
+                    console.log(`[ARI AI Tool] Ejecutando consultar_bunker_conocimiento para ${agenteObjetivo}: ${consultaEspecifica}`);
+                    
+                    let toolResponseText = '';
+                    try {
+                        toolResponseText = await ejecutarConsultaBunker(agenteObjetivo, consultaEspecifica);
+                    } catch (err: any) {
+                        console.error(`[ARI AI Tool] Error en consultar_bunker_conocimiento:`, err);
+                        toolResponseText = `ERROR: No se pudo interrogar el cerebro de ${agenteObjetivo}. Detalle técnico: ${err.message || err}`;
+                    }
+                    
+                    // Añadir llamada de función al historial de la consulta
+                    contents.push({
+                        role: 'model',
+                        parts: [{ functionCall: functionCall }]
+                    });
+                    
+                    // Añadir respuesta de la función al historial de la consulta
+                    contents.push({
+                        role: 'function',
+                        parts: [{
+                            functionResponse: {
+                                name: 'consultar_bunker_conocimiento',
+                                response: { output: toolResponseText }
+                            }
+                        }]
+                    });
+                    
+                    // Realizar consulta de seguimiento a Gemini con la respuesta de la función
+                    const followUpRes = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            system_instruction: { parts: [{ text: systemPrompt }] },
+                            contents: contents,
+                            generationConfig: { 
+                                temperature: 0.8, 
+                                maxOutputTokens: 500
+                            }
+                        })
+                    });
+                    
+                    if (followUpRes.ok) {
+                        const followUpData = await followUpRes.json();
+                        return followUpData.candidates?.[0]?.content?.parts?.[0]?.text || `He consultado el búnker de ${agenteObjetivo} y obtuve información al respecto.`;
+                    } else {
+                        return `He consultado el búnker de ${agenteObjetivo} pero encontré dificultades al procesar el retorno final.`;
                     }
                 }
             }

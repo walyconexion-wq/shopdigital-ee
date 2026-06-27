@@ -1,6 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { generateText, tool } from 'ai';
+import { z } from 'zod';
+
 
 // 1. Configuración de API Key para Google Gemini
 const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
@@ -12,6 +14,23 @@ if (!apiKey) {
 const googleProvider = createGoogleGenerativeAI({
     apiKey: apiKey || ""
 });
+
+// Enjambre de 12 agentes de NotebookLM con sus respectivos IDs de cuadernos en Google
+const BUNKER_NOTEBOOKS: Record<string, string> = {
+  melisa: "cb9442de-e444-4ca0-98a4-914ca6e3980a",       // Ente de Marketing & Crecimiento
+  gemy: "0a83b1d9-e35e-4473-8033-648f89f81339",         // Agente Estratega
+  bruno: "84679a73-8766-4f2a-a97d-5fe0b70e7730",         // Agente de Inteligencia Territorial
+  ely: "7fa97dfa-6643-4dc9-8690-6c02e8338280",             // Agente de Administración y Finanzas
+  mateo: "88340a8c-838a-4835-99d9-6b77e911307b",         // Agente de Planificación Estratégica
+  thor: "e0e4f151-7847-4631-8769-282ead74c670",           // Sentinel del Escudo Digital (Ciberseguridad)
+  luz: "ef87d269-4daf-4a2c-a658-5992c9150042",             // Agente de Desarrollo de Sistemas
+  max: "71668861-44e3-40fe-8cde-74cf99b11623",             // Director de Inversiones y Activos
+  lore: "509fde7f-4b31-4beb-abab-420a30a0973e",           // Agente IA Contable y Legal
+  javi: "9a90488c-7519-441c-b845-d7b1c3bd5321",           // Agente de Mantenimiento e Inventario
+  cuby: "82a1b7bf-3899-49f5-8b4c-3d082fcad671",           // Agente de Transmisiones y Logística
+  lety: "d302846c-db1d-4c88-9f1d-b6e07a456d29"            // Agente de Recursos y Talento
+};
+
 
 // 2. Registro de Prompts de Sistema e Identidades de todos los Búnkeres
 const BUNKER_PROMPTS: Record<string, string> = {
@@ -143,8 +162,11 @@ export default async function (req: VercelRequest, res: VercelResponse) {
         // Obtener prompt base del búnker correspondiente
         const basePrompt = BUNKER_PROMPTS[bunkerId] || BUNKER_PROMPTS['director'];
         
-        // Construir el prompt de sistema completo inyectando el contexto actual
+        // Construir el prompt de sistema completo inyectando el contexto de NotebookLM y el contexto actual
         let fullSystemPrompt = basePrompt;
+        fullSystemPrompt += `\n\nORQUESTACIÓN DEL BÚNKER DE CONOCIMIENTO (NOTEBOOKLM):
+Tenés acceso en tiempo real a la inteligencia colectiva de los 12 especialistas de la organización (Melisa, Gemy, Bruno, Ely, Mateo, Thor, Luz, Max, Lore, Javi, Cuby, Lety). Ante cualquier consulta técnica, legal, de marketing, de inversión, de ciberseguridad o de código que requiera información específica que no poseas, debés invocar la herramienta 'consultar_bunker_conocimiento' para interrogar el cuaderno del especialista correspondiente y fundamentar tu respuesta.`;
+
         if (systemContext) {
             fullSystemPrompt += `\n\nCONTEXTO DINÁMICO DEL BÚNKER (EN TIEMPO REAL):\n${systemContext}`;
         }
@@ -167,6 +189,44 @@ export default async function (req: VercelRequest, res: VercelResponse) {
             system: fullSystemPrompt,
             messages: messages,
             temperature: 0.8,
+            tools: {
+                consultar_bunker_conocimiento: tool({
+                    description: "Permite a cualquier agente del búnker consultar de forma directa las fuentes de conocimiento, documentos, reportes y estrategias de cualquiera de los 12 agentes especialistas del búnker de ShopDigital (marketing, ciberseguridad, finanzas, legal, etc.).",
+                    parameters: z.object({
+                        agenteObjetivo: z.enum(Object.keys(BUNKER_NOTEBOOKS) as [string, ...string[]]).describe("El nombre del agente especialista al que se quiere consultar (ej: 'melisa', 'thor', 'max', 'lore'). Must be lowercase."),
+                        consultaEspecifica: z.string().describe("La pregunta o concepto técnico específico que se necesita buscar dentro de los documentos de ese cuaderno.")
+                    }),
+                    execute: async ({ agenteObjetivo, consultaEspecifica }) => {
+                        const notebookId = BUNKER_NOTEBOOKS[agenteObjetivo];
+                        if (!notebookId) throw new Error(`El agente ${agenteObjetivo} no está registrado en el búnker.`);
+
+                        const mcpServerUrl = process.env.VITE_MCP_SERVER_URL || process.env.MCP_SERVER_URL || 'http://localhost:3001';
+
+                        const res = await fetch(`${mcpServerUrl}/api/mcp`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                server: "notebooklm-mcp-server",
+                                tool: "query_notebook",
+                                arguments: {
+                                    notebook_id: notebookId,
+                                    query: consultaEspecifica
+                                }
+                            })
+                        });
+
+                        if (!res.ok) {
+                            throw new Error(`Error en el servidor MCP (HTTP ${res.status}): ${res.statusText}`);
+                        }
+
+                        const data = await res.json();
+                        if (data.content && Array.isArray(data.content)) {
+                            return data.content.map((c: any) => c.text || '').join('\n');
+                        }
+                        return data.result || data.text || JSON.stringify(data);
+                    }
+                } as any)
+            }
         });
 
         return res.status(200).json({ response: text });
