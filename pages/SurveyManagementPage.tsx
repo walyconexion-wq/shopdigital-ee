@@ -6,7 +6,7 @@ import {
     Edit3, X, Save, Eye, PauseCircle
 } from 'lucide-react';
 import { Lead } from '../types';
-import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio, eliminarComercio, actualizarComercio } from '../firebase';
+import { suscribirseARelevamientos, eliminarRelevamiento, actualizarRelevamiento, guardarComercio, eliminarComercio, actualizarComercio, triggerOnboardingWebhook } from '../firebase';
 import { playNeonClick } from '../utils/audio';
 import { useTownCategories } from '../hooks/useTownCategories';
 import { useTownLocalities } from '../hooks/useTownLocalities';
@@ -95,8 +95,18 @@ const SurveyManagementPage: React.FC = () => {
             
             await actualizarRelevamiento(lead.id, { status: 'activated', createdShopId: newShopId });
             
-            alert(`✅ ¡${lead.name} Activado Exitosamente en ${townId}!`);
-            handleSendWelcomeMessage(lead, newShop);
+            // Disparar Webhook de Onboarding Automático
+            const webhookSuccess = await triggerOnboardingWebhook({
+                ...newShop,
+                ownerName: lead.contactName
+            }, townId);
+
+            if (webhookSuccess) {
+                alert(`✅ ¡${lead.name} Activado y Onboarding Automatizado disparado en WhatsApp!`);
+            } else {
+                alert(`✅ ¡${lead.name} Activado exitosamente! Abriendo WhatsApp manual como respaldo.`);
+                handleSendWelcomeMessage(lead, newShop);
+            }
             
         } catch (error) {
             console.error("Error activando lead", error);

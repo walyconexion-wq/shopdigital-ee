@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Shop } from '../types';
 import { useTownCategories } from '../hooks/useTownCategories';
 import { resolveIcon } from '../utils/iconResolver';
-import { guardarComercio, eliminarComercio, aprobarComercioOnboarding } from '../firebase';
+import { guardarComercio, eliminarComercio, aprobarComercioOnboarding, triggerOnboardingWebhook } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
 import {
     ChevronLeft,
@@ -134,10 +134,23 @@ const ShopManagementPage: React.FC<ShopManagementPageProps> = ({ allShops, userE
             alert("⚠️ ERROR DE SEGURIDAD: El comercio no posee un Gmail válido configurado. Edite los datos del comercio e ingrese un Gmail antes de aprobar.");
             return;
         }
-        if (window.confirm(`🚀 ¿APROBAR Y DESPLEGAR ONBOARDING de "${shop.name}"?\n\nEl comercio quedará ACTIVO y se abrirá la Pantalla de Artillería para enviar los disparadores de bienvenida al comerciante.`)) {
+        if (window.confirm(`🚀 ¿APROBAR Y DESPLEGAR ONBOARDING de "${shop.name}"?\n\nEl comercio quedará ACTIVO y se disparará la secuencia automatizada de bienvenida en WhatsApp.`)) {
             setProcessingId(shop.id);
             try {
                 await aprobarComercioOnboarding(shop.id, userEmail || 'embajador@shopdigital.ar');
+                
+                // Disparar Webhook de Onboarding Automático
+                const webhookSuccess = await triggerOnboardingWebhook({
+                    ...shop,
+                    ownerName: shop.ownerName || ''
+                }, townId);
+
+                if (webhookSuccess) {
+                    alert("🚀 ¡Comercio Aprobado y Onboarding Automatizado disparado con éxito!");
+                } else {
+                    alert("⚠️ Comercio Aprobado, pero falló el disparo automático. Redirigiendo a la Pantalla de Artillería como respaldo.");
+                }
+
                 playSuccessSound();
                 navigate(`/${townId}/embajador/onboarding/${shop.id}`);
             } catch (error) {

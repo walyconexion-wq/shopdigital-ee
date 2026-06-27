@@ -1655,4 +1655,67 @@ export const guardarComerciosMasivos = async (comercios: any[], townId: string =
     }
 };
 
+export const triggerOnboardingWebhook = async (shop: any, townId: string = 'esteban-echeverria'): Promise<boolean> => {
+    if (shop.onboardingSent) {
+        console.log(`[ONBOARDING] Webhook ya enviado anteriormente para ${shop.name}`);
+        return true;
+    }
+
+    try {
+        const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/b428rov524nlileo9bhjpxh3wpxzoynb';
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shopdigital.tech';
+        
+        const category = shop.category || 'comercios';
+        const slug = shop.slug || '';
+        
+        const credencialUrl = `${origin}/${townId}/${category}/${slug}/credencial`;
+        const landingUrl = `${origin}/${townId}/descubrir`;
+        const descuentosUrl = `${origin}/${townId}/red-comercial/descuentos`;
+        const facturaUrl = shop.invoiceSimulationUrl || `${origin}/${townId}/${category}/${slug}/factura`;
+        
+        const payload = {
+            triggerType: "welcome_onboarding",
+            shopId: shop.id,
+            shopName: shop.name,
+            ownerName: shop.ownerName || shop.contactName || '',
+            phone: shop.phone || '',
+            memberNumber: shop.memberNumber || shop.shopNumber || '001',
+            credencialUrl,
+            landingUrl,
+            descuentosUrl,
+            facturaUrl,
+            canalComerciantesUrl: 'https://whatsapp.com/channel/0029VbCU0awK0IBrdkOWkR2I',
+            canalClientesUrl: 'https://whatsapp.com/channel/0029VbCS4rvInlqNj9tcA40m',
+            ariUrl: 'https://wa.me/5491140607059',
+            townId,
+            timestamp: new Date().toISOString()
+        };
+
+        console.log(`[ONBOARDING] Enviando webhook de activación para ${shop.name}...`, payload);
+        
+        const res = await fetch(MAKE_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
+
+        // Marcar en la base de datos que ya se envió
+        const docRef = doc(db, "comercios", shop.id);
+        await updateDoc(docRef, {
+            onboardingSent: true,
+            onboardingSentAt: new Date().toISOString()
+        });
+
+        console.log(`[ONBOARDING] Webhook enviado y registrado para ${shop.name}`);
+        return true;
+    } catch (err: any) {
+        console.error('[ONBOARDING ERROR] Failed to send onboarding webhook:', err);
+        return false;
+    }
+};
+
 export default app;
