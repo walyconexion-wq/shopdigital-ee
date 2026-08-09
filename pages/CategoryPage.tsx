@@ -318,90 +318,93 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
             </div>
 
             {/* ══════════════════════════════════════════
-                LISTADO DE COMERCIOS ADHERIDOS EN TARJETAS NEUMÓRFICAS 3D
+                LISTADO DE COMERCIOS ADHERIDOS EN CONTENEDOR NEUMÓRFICO UNIFICADO
             ══════════════════════════════════════════ */}
-            <div className="w-full max-w-sm relative z-10 mb-5 flex flex-col gap-4" key={activeLocation + activeSubcategory}>
-                {/* Título de Sección con ícono Neumórfico Inset */}
-                <div className="neu-inset-title py-2 px-4 flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#f0ece6] flex items-center justify-center neu-btn-pod">
-                            <MapPin size={13} className="text-[#ff6b6b]" />
+            <div className="w-full max-w-sm relative z-10 mb-5 animate-in zoom-in duration-700 delay-100" key={activeLocation + activeSubcategory}>
+                <div className="neu-plate p-4 w-full flex flex-col gap-3.5">
+                    {/* Título de Sección Inset (Monte Grande | X Comercios) dentro del contenedor */}
+                    <div className="neu-inset-title py-2.5 px-4 flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-[#f0ece6] flex items-center justify-center neu-btn-pod">
+                                <MapPin size={13} className="text-[#ff6b6b]" />
+                            </div>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2c2440]">
+                                {isInTraslasierra || isInPatagonia ? townName : activeLocation}
+                            </h3>
                         </div>
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2c2440]">
-                            {isInTraslasierra || isInPatagonia ? townName : activeLocation}
-                        </h3>
+                        <span className="text-[8.5px] font-extrabold uppercase tracking-widest text-[#4a3d6a] bg-[#faf7f2] px-2.5 py-0.5 rounded-full border border-[#b4a594]/30">
+                            {groupedShops[activeLocation]?.length || 0} COMERCIOS
+                        </span>
                     </div>
-                    <span className="text-[8.5px] font-extrabold uppercase tracking-widest text-[#4a3d6a] bg-[#faf7f2] px-2.5 py-0.5 rounded-full border border-[#b4a594]/30">
-                        {groupedShops[activeLocation]?.length || 0} COMERCIOS
-                    </span>
+
+                    {/* Tarjetas de Comercios integradas en el contenedor neumórfico */}
+                    {groupedShops[activeLocation] && groupedShops[activeLocation].length > 0 ? (
+                        groupedShops[activeLocation].map((shop, index) => (
+                            <div 
+                                key={shop.id} 
+                                style={{ animationDelay: `${Math.min(index * 40, 200)}ms` }} 
+                                className="neu-btn-pod overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch min-h-[165px] p-0 relative rounded-2xl border border-white/60"
+                            >
+                                {/* Imagen del Comercio */}
+                                <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-[#b4a594]/25">
+                                    <ProgressiveShopImage
+                                        src={shop.bannerImage}
+                                        alt={shop.name}
+                                        className="w-full h-full transition-transform duration-1000 hover:scale-110 object-cover"
+                                        priority={index < 4}
+                                        skeletonColor="rgba(0,0,0,0.06)"
+                                    />
+                                </div>
+
+                                {/* Detalle del Comercio */}
+                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 p-3">
+                                    <div className="space-y-1.5 overflow-hidden">
+                                        <h3 className="font-[1000] text-[15px] uppercase tracking-tight leading-none text-[#2c2440]">
+                                            {String(shop.name || '').replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
+                                        </h3>
+                                        <div className="flex items-start gap-1 uppercase text-[8.5px] font-extrabold tracking-tight leading-snug text-[#4a3d6a]">
+                                            <MapPin size={10} strokeWidth={2.5} className="flex-shrink-0 mt-0.5 text-[#ff6b6b]" />
+                                            <span className="break-words line-clamp-2">{shop.address}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center pt-0.5">
+                                            <div className="flex items-center gap-0.5">
+                                                {[1, 2, 3, 4, 5].map(star => (
+                                                    <Star key={star} size={9.5} className={`${star <= Math.round(shop.rating) ? 'fill-[#ff6b6b] text-[#ff6b6b]' : 'fill-transparent text-[#4a3d6a]/30'}`} />
+                                                ))}
+                                                <span className="text-[8.5px] font-black text-[#2c2440] ml-0.5">{shop.rating}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 flex-shrink-0 px-2 py-0.5 neu-inset-title">
+                                                <Eye size={10} className="text-[#7c3aed]" />
+                                                <span className="text-[8px] font-black text-[#2c2440]">{shop.visits || 0} visitas</span>
+                                            </div>
+                                        </div>
+                                        {shop.specialty && (
+                                            <p className="text-[7.5px] font-extrabold italic tracking-wide leading-tight line-clamp-1 text-[#4a3d6a]">
+                                                "{shop.specialty}"
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Botón Ver Catálogo con efecto 3D neu-cat-card e ícono encendido */}
+                                    <div className="w-full pt-1.5">
+                                        <button
+                                            onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${townId}/${selectedCategory.slug}/${shop.slug || shop.id}`); }}
+                                            className="neu-cat-card w-full py-2 px-2.5 text-[8.5px] font-black uppercase tracking-[0.16em] flex items-center justify-center gap-1.5 cursor-pointer"
+                                        >
+                                            <BookOpen size={13} strokeWidth={2.5} className="neu-icon-lit" />
+                                            <span>VER CATÁLOGO</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="neu-inset-title py-8 px-6 text-center text-[#2c2440]">
+                            <MapPin size={26} className="mx-auto mb-2 text-[#ff6b6b] opacity-80" />
+                            <p className="text-[9.5px] font-black uppercase tracking-widest leading-relaxed">No hay comercios adheridos <br/>en {activeLocation} para {selectedCategory?.name}</p>
+                        </div>
+                    )}
                 </div>
-
-                {groupedShops[activeLocation] && groupedShops[activeLocation].length > 0 ? (
-                    groupedShops[activeLocation].map((shop, index) => (
-                        <div 
-                            key={shop.id} 
-                            style={{ animationDelay: `${Math.min(index * 40, 200)}ms` }} 
-                            className="neu-plate overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch min-h-[175px] p-0 relative"
-                        >
-                            {/* Imagen del Comercio */}
-                            <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-[#b4a594]/25">
-                                <ProgressiveShopImage
-                                    src={shop.bannerImage}
-                                    alt={shop.name}
-                                    className="w-full h-full transition-transform duration-1000 hover:scale-110 object-cover"
-                                    priority={index < 4}
-                                    skeletonColor="rgba(0,0,0,0.06)"
-                                />
-                            </div>
-
-                            {/* Detalle del Comercio */}
-                            <div className="flex-1 flex flex-col justify-between text-left min-w-0 p-3.5">
-                                <div className="space-y-1.5 overflow-hidden">
-                                    <h3 className="font-[1000] text-[16px] uppercase tracking-tight leading-none text-[#2c2440]">
-                                        {String(shop.name || '').replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
-                                    </h3>
-                                    <div className="flex items-start gap-1 uppercase text-[8.5px] font-extrabold tracking-tight leading-snug text-[#4a3d6a]">
-                                        <MapPin size={11} strokeWidth={2.5} className="flex-shrink-0 mt-0.5 text-[#ff6b6b]" />
-                                        <span className="break-words line-clamp-2">{shop.address}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center pt-1">
-                                        <div className="flex items-center gap-1">
-                                            {[1, 2, 3, 4, 5].map(star => (
-                                                <Star key={star} size={10} className={`${star <= Math.round(shop.rating) ? 'fill-[#ff6b6b] text-[#ff6b6b]' : 'fill-transparent text-[#4a3d6a]/30'}`} />
-                                            ))}
-                                            <span className="text-[9px] font-black text-[#2c2440] ml-0.5">{shop.rating}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1 flex-shrink-0 px-2 py-0.5 neu-inset-title">
-                                            <Eye size={11} className="text-[#7c3aed]" />
-                                            <span className="text-[8.5px] font-black text-[#2c2440]">{shop.visits || 0} visitas</span>
-                                        </div>
-                                    </div>
-                                    {shop.specialty && (
-                                        <p className="text-[8px] font-extrabold italic tracking-wide leading-tight line-clamp-1 text-[#4a3d6a]">
-                                            "{shop.specialty}"
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Botón Ver Catálogo estilo neu-cat-card con ícono encendido */}
-                                <div className="w-full pt-2">
-                                    <button
-                                        onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${townId}/${selectedCategory.slug}/${shop.slug || shop.id}`); }}
-                                        className="neu-cat-card w-full py-2.5 px-3 text-[9px] font-black uppercase tracking-[0.18em] flex items-center justify-center gap-2 cursor-pointer"
-                                    >
-                                        <BookOpen size={14} strokeWidth={2.5} className="neu-icon-lit" />
-                                        <span>VER CATÁLOGO</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="neu-plate py-10 px-6 text-center text-[#2c2440]">
-                        <MapPin size={30} className="mx-auto mb-2 text-[#ff6b6b] opacity-80" />
-                        <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">No hay comercios adheridos <br/>en {activeLocation} para {selectedCategory?.name}</p>
-                    </div>
-                )}
             </div>
 
             {/* ══════════════════════════════════════════
