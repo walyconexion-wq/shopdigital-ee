@@ -431,15 +431,15 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                             <button
                                 key={cat.id}
                                 onClick={() => { playNeonClick(); navigate(`/${townId}/${cat.slug}`); }}
-                                className="neu-btn-pod aspect-square p-2 flex flex-col items-center justify-center gap-1.5 transition-all group"
+                                className="neu-cat-card aspect-square p-2 flex flex-col items-center justify-center gap-1.5 transition-all group"
                                 style={{
                                     animation: `fadeUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) ${index * 30}ms both`
                                 }}
                             >
-                                <div className="text-[#2c2440] group-hover:text-[#ff6b6b] transform group-hover:scale-110 transition-transform duration-300">
+                                <div className="neu-icon-lit flex items-center justify-center">
                                     {cat.iconKey ? resolveIcon(cat.iconKey) : cat.icon}
                                 </div>
-                                <span className="text-[8px] text-center font-extrabold uppercase leading-tight tracking-wide text-[#2c2440] group-hover:text-[#ff6b6b] transition-colors">
+                                <span className="text-[8px] text-center font-extrabold uppercase leading-tight tracking-wide text-[#2c2440] group-hover:text-[#7c3aed] transition-colors">
                                     {t(cat.name)}
                                 </span>
                             </button>
