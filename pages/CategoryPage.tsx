@@ -4,7 +4,7 @@ import { CATEGORIES } from '../constants';
 import { Shop } from '../types';
 import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
 import { PATAGONIA_7_LAGOS_REGION } from '../data/regionalTemplates/patagonia7LagosConfig';
-import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye, Sun, Moon, Clock, Wifi, Share2, Store } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { incrementarVisitas } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
@@ -53,11 +53,27 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     };
     const [isDayMode, setIsDayMode] = React.useState(checkIsDayMode);
 
-    React.useEffect(() => {
-        const syncTheme = () => setIsDayMode(checkIsDayMode());
-        window.addEventListener('theme-changed', syncTheme);
-        return () => window.removeEventListener('theme-changed', syncTheme);
+    const [currentTime, setCurrentTime] = useState(new Date());
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
     }, []);
+
+    const formatClock = (d: Date) => {
+        const dateStr = d.toLocaleDateString('es-AR');
+        const hourStr = d.toLocaleTimeString('es-AR', { hour12: false });
+        return `${dateStr} - ${hourStr}`;
+    };
+
+    const handleShare = () => {
+        playNeonClick();
+        const shareText = `¡Mirá los comercios de ${selectedCategory?.name || 'Categoría'} en ${townName}! 🚀`;
+        if (navigator.share) {
+            navigator.share({ title: 'ShopDigital', text: shareText, url: window.location.href }).catch(console.error);
+        } else {
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + window.location.href)}`, '_blank');
+        }
+    };
 
     const hexToRgba = (hex: string, alpha: number) => {
         try {
@@ -166,200 +182,265 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     }
 
     return (
-        <div className="flex flex-col pt-6 pb-10 animate-in slide-in-from-bottom-6 duration-700 relative overflow-hidden min-h-screen bg-transparent text-[#2c2440]">
+        <div className="min-h-screen w-full flex flex-col items-center px-4 py-6 relative overflow-y-auto selection:bg-cyan-500/30 bg-transparent text-[#2c2440]">
             {/* Fondo Ciber-Digital de Circuitos Animados */}
             <CyberCircuitBackground />
 
-            {/* ── Encabezado Principal de Categoría (Placa Neumórfica Crema HD) ── */}
-            <header className="flex-shrink-0 w-full max-w-[365px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-3 px-4 mb-2.5">
-                <div
-                    onClick={handleTitleClick}
-                    className="neu-plate cursor-pointer select-none active:scale-95 transition-all w-full text-center py-5 px-6"
-                >
-                    <h2 className="text-[19px] font-[900] uppercase tracking-[0.15em] leading-none text-center mb-2 text-[#2c2440]">
-                        {activeSubcategory || selectedCategory.name}
-                    </h2>
-                    <div className="h-[1px] w-16 mb-2.5 mx-auto bg-[#b4a594]/40"></div>
-                    <p className="text-[8.5px] font-extrabold uppercase tracking-[0.16em] leading-tight text-center px-2 text-[#4a3d6a]">
-                        Seleccioná tu comercio y descubrí ofertas magníficas en {townName}
-                    </p>
-                </div>
-            </header>
-
-            <div className="flex flex-col gap-6 px-4 relative z-10 max-w-[365px] mx-auto w-full">
-                {/* Botones de control (Volver / Modo Noche) Neumórficos 3D */}
-                <div className="flex items-center justify-between w-full mx-auto px-1 z-20 gap-3">
-                    <button
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                        className="neu-btn-3d py-3 px-6 text-[9px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 flex-1"
-                    >
-                        <ArrowLeft size={14} className="text-[#ff6b6b]" />
-                        <span>Volver</span>
-                    </button>
-
-                    <button
-                        onClick={() => {
-                            playNeonClick();
-                            const current = localStorage.getItem('global_home_theme_mode') || 'light';
-                            const nextTheme = current === 'light' ? 'dark' : 'light';
-                            localStorage.setItem('global_home_theme_mode', nextTheme);
-                            window.dispatchEvent(new Event('theme-changed'));
-                        }}
-                        className="neu-btn-3d py-3 px-6 text-[9px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 flex-1"
-                    >
-                        {isDayMode ? (
-                            <>
-                                <Moon size={14} className="text-[#2c2440]" />
-                                <span>Modo Noche</span>
-                            </>
-                        ) : (
-                            <>
-                                <Sun size={14} className="text-[#ff6b6b]" />
-                                <span>Modo Día</span>
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                {/* Localidades / Zonas Neumórficas 3D */}
-                {localities.length > 1 && (!isInTraslasierra) && (!isInPatagonia) && (
-                    <div className="flex gap-2 w-full justify-center px-1 overflow-x-auto no-scrollbar">
-                        {localities.map((loc) => {
-                            const isActive = activeLocation === loc;
-                            return (
-                                <button
-                                    key={loc}
-                                    onClick={() => { playNeonClick(); setActiveLocation(loc); }}
-                                    className={`flex-1 min-w-[72px] py-2.5 px-2 flex flex-col items-center justify-center text-[9px] font-extrabold uppercase tracking-wider text-center leading-tight transition-all ${
-                                        isActive ? 'neu-btn-3d-active' : 'neu-btn-3d'
-                                    }`}
-                                >
-                                    {loc}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
-
-                {/* Pestañas de Subcategorías Neumórficas 3D */}
-                {selectedCategory.subcategories && selectedCategory.subcategories.length > 0 && (
-                    <div className="flex flex-wrap justify-center gap-2 px-1 mb-1">
-                        {selectedCategory.subcategories.map((sub: string) => {
-                            const isActive = activeSubcategory === sub;
-                            return (
-                                <button
-                                    key={sub}
-                                    onClick={() => { 
-                                        playNeonClick(); 
-                                        setActiveSubcategory(prev => prev === sub ? '' : sub); 
-                                    }}
-                                    className={`py-2 px-3.5 text-[8px] font-extrabold uppercase tracking-wider transition-all ${
-                                        isActive ? 'neu-btn-3d-active' : 'neu-btn-3d'
-                                    }`}
-                                >
-                                    {sub}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
-
-                <div className="flex flex-col gap-5" key={activeLocation + activeSubcategory}>
-                    {/* Título de Sección con ícono Neumórfico Inset */}
-                    <div className="neu-inset-title py-2 px-4 flex items-center gap-2.5 w-full">
-                        <div className="w-6 h-6 rounded-full bg-[#f0ece6] flex items-center justify-center shadow-sm">
-                            <MapPin size={14} className="text-[#ff6b6b]" />
-                        </div>
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#2c2440]">
-                            {isInTraslasierra || isInPatagonia ? townName : activeLocation}
-                        </h3>
-                        <div className="h-[1px] flex-1 bg-[#b4a594]/30"></div>
-                    </div>
-
-                    {groupedShops[activeLocation] && groupedShops[activeLocation].length > 0 ? (
-                        groupedShops[activeLocation].map((shop, index) => (
-                            <div key={shop.id} style={{ animationDelay: `${Math.min(index * 40, 200)}ms` }} className="neu-plate overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch h-[170px] p-0 border border-white/60">
-                                <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-[#b4a594]/30">
-                                    <ProgressiveShopImage
-                                        src={shop.bannerImage}
-                                        alt={shop.name}
-                                        className="w-full h-full transition-transform duration-1000 hover:scale-110 object-cover"
-                                        priority={index < 4}
-                                        skeletonColor="rgba(0,0,0,0.06)"
-                                    />
-                                </div>
-                                <div className="flex-1 flex flex-col justify-between text-left min-w-0 bg-[#f0ece6]/90 p-3.5">
-                                    <div className="space-y-1.5 overflow-hidden">
-                                        <h3 className="font-[900] text-[17px] uppercase tracking-tight leading-none text-[#2c2440]">{String(shop.name || '').replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}</h3>
-                                        <div className="flex items-start gap-1 pb-1 uppercase text-[8.5px] font-extrabold tracking-tight leading-snug text-[#4a3d6a]">
-                                            <MapPin size={11} strokeWidth={2.5} className="flex-shrink-0 mt-0.5 text-[#ff6b6b]" />
-                                            <span className="break-words line-clamp-2">{shop.address}</span>
-                                        </div>
-                                        <div className="flex justify-between items-end mt-auto pt-1">
-                                            <div className="flex flex-col gap-0.5 min-w-0 pr-2">
-                                                <div className="flex items-center gap-1">
-                                                    {[1, 2, 3, 4, 5].map(star => (<Star key={star} size={10} className={`${star <= Math.round(shop.rating) ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-slate-300'}`} />))}
-                                                    <span className="text-[9px] font-bold text-amber-500 ml-1">{shop.rating}</span>
-                                                </div>
-                                                {shop.specialty && <p className="text-[8px] font-extrabold italic tracking-wide leading-tight line-clamp-1 text-[#4a3d6a]/80">"{shop.specialty}"</p>}
-                                            </div>
-                                            <div className="flex items-center gap-1 flex-shrink-0 px-2 py-0.5 rounded-lg border border-[#b4a594]/30 bg-[#e6e2dc] shadow-inner">
-                                                <Eye size={11} className="text-[#4a3d6a]" />
-                                                <span className="text-[8.5px] font-black text-[#2c2440]">{shop.visits || 0} visitas</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="w-full flex justify-center pt-2">
-                                        <button
-                                            onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${townId}/${selectedCategory.slug}/${shop.slug || shop.id}`); }}
-                                            className="neu-btn-3d w-full py-2 px-3 text-[9px] font-black uppercase tracking-[0.18em] flex items-center justify-center gap-2"
-                                        >
-                                            <BookOpen size={13} strokeWidth={2.5} className="text-[#ff6b6b]" />
-                                            VER CATÁLOGO
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="neu-plate py-10 px-6 text-center text-[#2c2440]">
-                            <MapPin size={30} className="mx-auto mb-2 text-[#ff6b6b] opacity-80" />
-                            <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">No hay comercios adheridos <br/>en {activeLocation} para {selectedCategory?.name}</p>
-                        </div>
-                    )}
-                </div>
-
-                <div className="w-full flex justify-center mt-2 mb-4">
+            {/* ══════════════════════════════════════════
+                CABECERA SUPERIOR EN CONTENEDOR NEUMÓRFICO UNIFICADO (PARIDAD INTERFAZ 1 Y CREDECIALES)
+            ══════════════════════════════════════════ */}
+            <div className="w-full max-w-sm relative z-10 mb-5 p-3.5 neu-plate flex flex-col items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-700">
+                {/* HEADER NEUMÓRFICO CON PODS DE CABECERA */}
+                <div className="w-full flex justify-between items-center gap-2">
                     <button 
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} 
-                        className="neu-btn-3d py-2.5 px-6 rounded-2xl flex items-center gap-2 text-[9.5px] font-black uppercase tracking-widest"
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
+                        className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group shrink-0"
+                        aria-label="Volver a Inicio de Zona"
+                        title="Volver"
                     >
-                        <ArrowLeft size={15} className="text-[#ff6b6b]" />
-                        <span>Regresar a Zona</span>
+                        <ArrowLeft size={16} className="text-[#2c2440] group-hover:-translate-x-0.5 transition-transform" strokeWidth={3} />
                     </button>
+
+                    <div 
+                        onClick={handleTitleClick}
+                        className="flex-1 text-center px-3 py-1.5 neu-inset-title cursor-pointer active:scale-95 transition-transform"
+                    >
+                        <h1 className="text-xs font-black tracking-tight uppercase leading-tight text-[#2c2440]">
+                            {activeSubcategory || selectedCategory.name}
+                        </h1>
+                        <p className="text-[7px] font-extrabold uppercase tracking-widest text-[#4a3d6a]">
+                            {townName}
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                            onClick={() => {
+                                playNeonClick();
+                                const current = localStorage.getItem('global_home_theme_mode') || 'light';
+                                const nextTheme = current === 'light' ? 'dark' : 'light';
+                                localStorage.setItem('global_home_theme_mode', nextTheme);
+                                window.dispatchEvent(new Event('theme-changed'));
+                            }}
+                            aria-label="Alternar modo de color"
+                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
+                            title="Modo de Color"
+                        >
+                            {isDayMode 
+                                ? <Moon size={15} className="text-[#2c2440] group-hover:rotate-12 transition-transform" /> 
+                                : <Sun size={15} className="text-[#ff6b6b] group-hover:rotate-45 transition-transform" />
+                            }
+                        </button>
+                        <button 
+                            onClick={handleShare}
+                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
+                            aria-label="Compartir"
+                            title="Compartir Categoría"
+                        >
+                            <Share2 size={15} className="text-[#2c2440] group-hover:scale-110 transition-transform" />
+                        </button>
+                    </div>
                 </div>
+
+                {/* Avatar ARI Integrado en Cabecera */}
+                {isDayMode && (
+                    <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
+                        <img 
+                            src="/ari-pointing.png" 
+                            alt="ARI Asistente Categorías" 
+                            className="h-20 w-auto object-contain drop-shadow-[0_4px_10px_rgba(44,36,64,0.18)] animate-in fade-in duration-700" 
+                        />
+                        <div className="ari-3d-shadow mt-0.5 scale-75" />
+                    </div>
+                )}
+
+                {/* SELLO DE VIDA — TIMESTAMP ANTI-FALSIFICACIÓN & ESTADO LUZ VERDE */}
+                <div className="w-full flex items-center justify-between neu-inset-title px-4 py-2">
+                    <div className="flex items-center gap-2">
+                        <Clock size={12} className="text-[#ff6b6b] animate-spin flex-shrink-0" style={{ animationDuration: '6s' }} />
+                        <p className="text-[9.5px] font-black font-mono tracking-widest tabular-nums text-[#2c2440]">
+                            {formatClock(currentTime)}
+                        </p>
+                    </div>
+                    <div className="h-3.5 w-[1px] bg-[#4a3d6a]/20" />
+                    <div className="flex items-center gap-1.5 font-black text-[8.5px] uppercase tracking-widest text-emerald-600">
+                        <Wifi size={12} className="animate-pulse text-emerald-600" />
+                        <span>LUZ VERDE ACTIVA</span>
+                    </div>
+                </div>
+
+                {/* Localidades / Zonas Neumórficas (Sub-pills) */}
+                {localities.length > 1 && (!isInTraslasierra) && (!isInPatagonia) && (
+                    <div className="w-full mt-0.5">
+                        <div className="grid grid-cols-3 gap-1.5 w-full">
+                            {localities.map((loc) => {
+                                const isActive = activeLocation === loc;
+                                return (
+                                    <button
+                                        key={loc}
+                                        onClick={() => { playNeonClick(); setActiveLocation(loc); }}
+                                        className={`py-2 px-1 text-[8px] font-black uppercase tracking-wider text-center transition-all ${
+                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-pod'
+                                        }`}
+                                    >
+                                        {loc}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Pestañas de Subcategorías Neumórficas */}
+                {selectedCategory.subcategories && selectedCategory.subcategories.length > 0 && (
+                    <div className="w-full mt-0.5">
+                        <div className="flex flex-wrap justify-center gap-1.5 w-full">
+                            {selectedCategory.subcategories.map((sub: string) => {
+                                const isActive = activeSubcategory === sub;
+                                return (
+                                    <button
+                                        key={sub}
+                                        onClick={() => { 
+                                            playNeonClick(); 
+                                            setActiveSubcategory(prev => prev === sub ? '' : sub); 
+                                        }}
+                                        className={`py-1.5 px-3 text-[8px] font-black uppercase tracking-wider transition-all ${
+                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-pod'
+                                        }`}
+                                    >
+                                        {sub}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
-            {/* Pie de Página Neumórfico Crema HD */}
-            <footer className="w-full max-w-[365px] mx-auto px-4 z-10 pt-2 pb-2 mt-auto relative">
-                <div className="neu-footer flex items-center justify-between w-full">
-                    <p className="text-[8px] font-extrabold uppercase tracking-[0.22em] text-[#2c2440] select-none">
-                        © 2026 · ShopDigital
-                    </p>
-                    <div className="flex items-center gap-3">
+            {/* ══════════════════════════════════════════
+                LISTADO DE COMERCIOS ADHERIDOS EN TARJETAS NEUMÓRFICAS 3D
+            ══════════════════════════════════════════ */}
+            <div className="w-full max-w-sm relative z-10 mb-5 flex flex-col gap-4" key={activeLocation + activeSubcategory}>
+                {/* Título de Sección con ícono Neumórfico Inset */}
+                <div className="neu-inset-title py-2 px-4 flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#f0ece6] flex items-center justify-center neu-btn-pod">
+                            <MapPin size={13} className="text-[#ff6b6b]" />
+                        </div>
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2c2440]">
+                            {isInTraslasierra || isInPatagonia ? townName : activeLocation}
+                        </h3>
+                    </div>
+                    <span className="text-[8.5px] font-extrabold uppercase tracking-widest text-[#4a3d6a] bg-[#faf7f2] px-2.5 py-0.5 rounded-full border border-[#b4a594]/30">
+                        {groupedShops[activeLocation]?.length || 0} COMERCIOS
+                    </span>
+                </div>
+
+                {groupedShops[activeLocation] && groupedShops[activeLocation].length > 0 ? (
+                    groupedShops[activeLocation].map((shop, index) => (
+                        <div 
+                            key={shop.id} 
+                            style={{ animationDelay: `${Math.min(index * 40, 200)}ms` }} 
+                            className="neu-plate overflow-hidden flex flex-row cursor-default fade-up-item w-full items-stretch min-h-[175px] p-0 relative"
+                        >
+                            {/* Imagen del Comercio */}
+                            <div className="relative w-32 shop-image-wrapper flex-shrink-0 overflow-hidden border-r border-[#b4a594]/25">
+                                <ProgressiveShopImage
+                                    src={shop.bannerImage}
+                                    alt={shop.name}
+                                    className="w-full h-full transition-transform duration-1000 hover:scale-110 object-cover"
+                                    priority={index < 4}
+                                    skeletonColor="rgba(0,0,0,0.06)"
+                                />
+                            </div>
+
+                            {/* Detalle del Comercio */}
+                            <div className="flex-1 flex flex-col justify-between text-left min-w-0 p-3.5">
+                                <div className="space-y-1.5 overflow-hidden">
+                                    <h3 className="font-[1000] text-[16px] uppercase tracking-tight leading-none text-[#2c2440]">
+                                        {String(shop.name || '').replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
+                                    </h3>
+                                    <div className="flex items-start gap-1 uppercase text-[8.5px] font-extrabold tracking-tight leading-snug text-[#4a3d6a]">
+                                        <MapPin size={11} strokeWidth={2.5} className="flex-shrink-0 mt-0.5 text-[#ff6b6b]" />
+                                        <span className="break-words line-clamp-2">{shop.address}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center pt-1">
+                                        <div className="flex items-center gap-1">
+                                            {[1, 2, 3, 4, 5].map(star => (
+                                                <Star key={star} size={10} className={`${star <= Math.round(shop.rating) ? 'fill-[#ff6b6b] text-[#ff6b6b]' : 'fill-transparent text-[#4a3d6a]/30'}`} />
+                                            ))}
+                                            <span className="text-[9px] font-black text-[#2c2440] ml-0.5">{shop.rating}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 flex-shrink-0 px-2 py-0.5 neu-inset-title">
+                                            <Eye size={11} className="text-[#7c3aed]" />
+                                            <span className="text-[8.5px] font-black text-[#2c2440]">{shop.visits || 0} visitas</span>
+                                        </div>
+                                    </div>
+                                    {shop.specialty && (
+                                        <p className="text-[8px] font-extrabold italic tracking-wide leading-tight line-clamp-1 text-[#4a3d6a]">
+                                            "{shop.specialty}"
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Botón Ver Catálogo estilo neu-cat-card con ícono encendido */}
+                                <div className="w-full pt-2">
+                                    <button
+                                        onClick={() => { playNeonClick(); incrementarVisitas(shop.id); navigate(`/${townId}/${selectedCategory.slug}/${shop.slug || shop.id}`); }}
+                                        className="neu-cat-card w-full py-2.5 px-3 text-[9px] font-black uppercase tracking-[0.18em] flex items-center justify-center gap-2 cursor-pointer"
+                                    >
+                                        <BookOpen size={14} strokeWidth={2.5} className="neu-icon-lit" />
+                                        <span>VER CATÁLOGO</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="neu-plate py-10 px-6 text-center text-[#2c2440]">
+                        <MapPin size={30} className="mx-auto mb-2 text-[#ff6b6b] opacity-80" />
+                        <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">No hay comercios adheridos <br/>en {activeLocation} para {selectedCategory?.name}</p>
+                    </div>
+                )}
+            </div>
+
+            {/* ══════════════════════════════════════════
+                ACCIONES Y PIE DE PÁGINA EN CONTENEDOR NEUMÓRFICO UNIFICADO
+            ══════════════════════════════════════════ */}
+            <footer className="w-full max-w-sm relative z-10 mb-5 animate-in slide-in-from-bottom-4 duration-700">
+                <div className="neu-plate p-4.5 w-full flex flex-col gap-3.5">
+                    {/* Botón 3D: Regresar a Zona */}
+                    <button
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
+                        className="neu-btn-hero w-full h-13 text-[9.5px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5 cursor-pointer"
+                    >
+                        <ArrowLeft size={16} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                        <span>Regresar a Zona</span>
+                    </button>
+
+                    {/* Sello Inset Neumórfico para Pie de Página y Términos */}
+                    <div className="neu-inset-title flex items-center justify-between w-full py-2.5 px-4 mt-0.5">
                         <p 
                             onClick={handleWalyClick}
-                            className="text-[8px] font-extrabold uppercase tracking-[0.15em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
+                            className="text-[8px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440] select-none cursor-pointer"
                         >
-                            {activeSubcategory || selectedCategory.name}
+                            © 2026 · ShopDigital
                         </p>
-                        <span className="text-[#b4a594]/50 text-[7px] select-none">|</span>
-                        <button 
-                            onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
-                            className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
-                        >
-                            Términos
-                        </button>
+                        <div className="flex items-center gap-2.5">
+                            <p 
+                                onClick={handleWalyClick}
+                                className="text-[8px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
+                            >
+                                {activeSubcategory || selectedCategory.name}
+                            </p>
+                            <span className="text-[#4a3d6a]/40 text-[7px] select-none">|</span>
+                            <button 
+                                onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
+                                className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
+                            >
+                                Términos
+                            </button>
+                        </div>
                     </div>
                 </div>
             </footer>
