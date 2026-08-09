@@ -410,36 +410,36 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
             {/* ══════════════════════════════════════════
                 ACCIONES Y PIE DE PÁGINA EN CONTENEDOR NEUMÓRFICO UNIFICADO
             ══════════════════════════════════════════ */}
-            <footer className="w-full max-w-sm relative z-10 mb-5 animate-in slide-in-from-bottom-4 duration-700">
-                <div className="neu-plate p-4.5 w-full flex flex-col gap-3.5">
+            <footer className="w-full max-w-sm relative z-10 mb-6 animate-in slide-in-from-bottom-4 duration-700">
+                <div className="neu-plate p-5 sm:p-6 w-full flex flex-col gap-4">
                     {/* Botón 3D: Regresar a Zona */}
                     <button
                         onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }}
-                        className="neu-btn-hero w-full h-13 text-[9.5px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5 cursor-pointer"
+                        className="neu-btn-hero w-full h-14 sm:h-15 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5 cursor-pointer shadow-md"
                     >
-                        <ArrowLeft size={16} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                        <ArrowLeft size={17} className="text-[#ff6b6b]" strokeWidth={2.5} />
                         <span>Regresar a Zona</span>
                     </button>
 
                     {/* Sello Inset Neumórfico para Pie de Página y Términos */}
-                    <div className="neu-inset-title flex items-center justify-between w-full py-2.5 px-4 mt-0.5">
+                    <div className="neu-inset-title flex items-center justify-between w-full py-3 px-4.5 mt-0.5">
                         <p 
                             onClick={handleWalyClick}
-                            className="text-[8px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440] select-none cursor-pointer"
+                            className="text-[8.5px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440] select-none cursor-pointer"
                         >
                             © 2026 · ShopDigital
                         </p>
                         <div className="flex items-center gap-2.5">
                             <p 
                                 onClick={handleWalyClick}
-                                className="text-[8px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
+                                className="text-[8.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
                             >
                                 {activeSubcategory || selectedCategory.name}
                             </p>
                             <span className="text-[#4a3d6a]/40 text-[7px] select-none">|</span>
                             <button 
                                 onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
-                                className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
+                                className="text-[8px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
                             >
                                 Términos
                             </button>
