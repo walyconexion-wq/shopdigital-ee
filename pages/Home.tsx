@@ -449,51 +449,51 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             </div>
 
             {/* ══════════════════════════════════════════
-                ACCIONES CTA HERO NEUMÓRFICAS (SUSCRIBIR COMERCIO & COMPARTIR)
+                ACCIONES CTA HERO Y PIE DE PÁGINA EN CONTENEDOR NEUMÓRFICO UNIFICADO
             ══════════════════════════════════════════ */}
-            <div className="w-full max-w-sm relative z-10 mb-5 flex flex-col gap-3">
-                <button
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
-                    className="neu-btn-hero w-full h-14 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer"
-                >
-                    <Store size={16} className="text-[#ff6b6b]" strokeWidth={2.5} />
-                    <span>{t('Suscribir Comercio')}</span>
-                </button>
-
-                <button
-                    onClick={handleShare}
-                    className="neu-btn-3d w-full h-14 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer"
-                >
-                    <Share2 size={16} className="text-[#2c2440]" strokeWidth={2.5} />
-                    <span>Compartir App</span>
-                </button>
-            </div>
-
-            {/* ══════════════════════════════════════════
-                PIE DE PÁGINA NEUMÓRFICO CREMA HD
-            ══════════════════════════════════════════ */}
-            <footer className="w-full max-w-sm relative z-10 mb-4">
-                <div className="neu-footer flex items-center justify-between w-full">
-                    <p 
-                        onClick={handleWalyClick}
-                        className="text-[8px] font-extrabold uppercase tracking-[0.22em] text-[#2c2440] select-none cursor-pointer"
+            <footer className="w-full max-w-sm relative z-10 mb-5 animate-in slide-in-from-bottom-4 duration-700">
+                <div className="neu-plate p-4.5 w-full flex flex-col gap-3.5">
+                    {/* Botón Hero: Suscribir Comercio */}
+                    <button
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
+                        className="neu-btn-hero w-full h-14 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer"
                     >
-                        © 2026 · ShopDigital
-                    </p>
-                    <div className="flex items-center gap-3">
+                        <Store size={16} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                        <span>{t('Suscribir Comercio')}</span>
+                    </button>
+
+                    {/* Botón 3D: Compartir App */}
+                    <button
+                        onClick={handleShare}
+                        className="neu-btn-3d w-full h-14 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer"
+                    >
+                        <Share2 size={16} className="text-[#2c2440]" strokeWidth={2.5} />
+                        <span>Compartir App</span>
+                    </button>
+
+                    {/* Sello Inset Neumórfico para Pie de Página y Términos */}
+                    <div className="neu-inset-title flex items-center justify-between w-full py-2.5 px-4 mt-0.5">
                         <p 
                             onClick={handleWalyClick}
-                            className="text-[8px] font-extrabold uppercase tracking-[0.15em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
+                            className="text-[8px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440] select-none cursor-pointer"
                         >
-                            {isInPatagonia ? 'Patagonia' : townName}
+                            © 2026 · ShopDigital
                         </p>
-                        <span className="text-[#4a3d6a]/40 text-[7px] select-none">|</span>
-                        <button 
-                            onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
-                            className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
-                        >
-                            Términos
-                        </button>
+                        <div className="flex items-center gap-2.5">
+                            <p 
+                                onClick={handleWalyClick}
+                                className="text-[8px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
+                            >
+                                {isInPatagonia ? 'Patagonia' : townName}
+                            </p>
+                            <span className="text-[#4a3d6a]/40 text-[7px] select-none">|</span>
+                            <button 
+                                onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
+                                className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
+                            >
+                                Términos
+                            </button>
+                        </div>
                     </div>
                 </div>
             </footer>
