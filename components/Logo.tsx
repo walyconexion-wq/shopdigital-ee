@@ -90,9 +90,9 @@ const Logo: React.FC = () => {
                 )}
                 {isDayMode ? (
                     <span 
-                        className="text-black font-[1000] select-none transition-all duration-300"
+                        className="text-[#2c2440] font-[1000] select-none transition-all duration-300"
                         style={{ 
-                            textShadow: '0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 0px rgba(255, 255, 255, 0.8)' 
+                            textShadow: '0 2px 4px rgba(44, 36, 64, 0.1), 0 1px 0px rgba(255, 255, 255, 0.8)' 
                         }}
                     >
                         {getTownTitle(townId)}
@@ -108,7 +108,7 @@ const Logo: React.FC = () => {
             <div className="flex flex-col items-center gap-0.5 relative z-10">
                 <p 
                     className={`text-[7.5px] font-black tracking-[0.3em] uppercase transition-all duration-300 ${
-                        isDayMode ? 'text-black/80' : 'text-white/50 drop-shadow-md'
+                        isDayMode ? 'text-[#4a3d6a]' : 'text-white/50 drop-shadow-md'
                     }`}
                     style={isDayMode ? { textShadow: '0 1px 0px rgba(255, 255, 255, 0.5)' } : {}}
                 >

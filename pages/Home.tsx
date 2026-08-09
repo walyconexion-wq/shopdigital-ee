@@ -1,7 +1,7 @@
 import React from 'react';
 import { CATEGORIES } from '../constants';
 import Logo from '../components/Logo';
-import { Share2, Store, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { Share2, Store, ArrowLeft, Sun, Moon, Clock, Wifi } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 import { resolveIcon } from '../utils/iconResolver';
@@ -246,96 +246,100 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     };
 
     return (
-        <div className="flex flex-col pt-8 pb-12 animate-in fade-in duration-700 relative overflow-hidden min-h-screen bg-transparent">
+        <div className="min-h-screen w-full flex flex-col items-center px-4 py-6 relative overflow-y-auto selection:bg-cyan-500/30 bg-transparent text-[#2c2440]">
             {/* Fondo Ciber-Digital de Circuitos Animados */}
             <CyberCircuitBackground />
             
             <SeasonalDecoration />
 
-            {/* Panel de Telemetría Neumórfico Crema HD (Hora, Fecha, Visitas, Clima) */}
-            <div className="neu-inset-title absolute top-5 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2.5rem)] max-w-[345px] px-3.5 py-2 text-[8.5px] font-extrabold uppercase tracking-widest flex items-center justify-between">
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('HORA')}</span>
-                    <span className="font-mono text-[9.5px] tracking-wider text-[#2c2440]">
-                        {currentTimeStr}
-                    </span>
-                </div>
-                <div className="w-[1px] h-4 bg-[#b4a594]/30" />
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('FECHA')}</span>
-                    <span className="text-[9.5px] tracking-wider text-[#2c2440]">
-                        {currentDateStr}
-                    </span>
-                </div>
-                <div className="w-[1px] h-4 bg-[#b4a594]/30" />
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('VISITAS')}</span>
-                    <span className="text-[9.5px] tracking-wider text-[#2c2440]">
-                        👁️ {globalConfig?.visits || 1}
-                    </span>
-                </div>
-                <div className="w-[1px] h-4 bg-[#b4a594]/30" />
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('CLIMA')}</span>
-                    <span className="text-[9.5px] tracking-wider text-[#2c2440]">
-                        {getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : (weatherError ? '18°C' : '...')}
-                    </span>
-                </div>
-            </div>
-
-            {/* Header del Nombre de la Zona (Placa Neumórfica Crema HD) */}
-            <header className="flex-shrink-0 w-full max-w-[345px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-14 px-4 mb-3">
-                <div 
-                    onClick={handleLogoClick}
-                    className="neu-plate cursor-pointer active:scale-95 transition-all w-full text-center py-5 px-6"
-                >
-                    <Logo />
-                </div>
-            </header>
-
-            <div className="flex flex-col items-center mb-6 mt-1 fade-up-item relative z-10 px-6">
-                
-                {/* Botones de control (Volver / Modo Noche) Neumórficos 3D */}
-                <div className="flex items-center justify-between w-full max-w-[345px] mb-4 px-1 z-20 gap-3">
-                    <button
-                        onClick={() => {
-                            playNeonClick();
-                            navigate('/');
-                        }}
-                        className="neu-btn-3d py-3 px-6 text-[9px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 flex-1"
+            {/* ══════════════════════════════════════════
+                CABECERA SUPERIOR EN CONTENEDOR NEUMÓRFICO UNIFICADO (PARIDAD TOTAL CON CREDECIAL COMERCIANTE)
+            ══════════════════════════════════════════ */}
+            <div className="w-full max-w-sm relative z-10 mb-5 p-3.5 neu-plate flex flex-col items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-700">
+                {/* HEADER NEUMÓRFICO CON PODS DE CABECERA */}
+                <div className="w-full flex justify-between items-center gap-2">
+                    <button 
+                        onClick={() => { playNeonClick(); navigate('/'); }}
+                        className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group shrink-0"
+                        aria-label="Volver a Inicio Global"
+                        title="Volver"
                     >
-                        <ArrowLeft size={14} className="text-[#ff6b6b]" />
-                        <span>Volver</span>
+                        <ArrowLeft size={16} className="text-[#2c2440] group-hover:-translate-x-0.5 transition-transform" strokeWidth={3} />
                     </button>
 
-                    <button
-                        onClick={() => {
-                            playNeonClick();
-                            const current = localStorage.getItem('global_home_theme_mode') || 'light';
-                            const nextTheme = current === 'light' ? 'dark' : 'light';
-                            localStorage.setItem('global_home_theme_mode', nextTheme);
-                            window.dispatchEvent(new Event('theme-changed'));
-                        }}
-                        className="neu-btn-3d py-3 px-6 text-[9px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 flex-1"
+                    <div 
+                        onClick={handleLogoClick}
+                        className="flex-1 text-center px-3 py-1.5 neu-inset-title cursor-pointer active:scale-95 transition-transform"
                     >
-                        {isDayMode ? (
-                            <>
-                                <Moon size={14} className="text-[#2c2440]" />
-                                <span>Modo Noche</span>
-                            </>
-                        ) : (
-                            <>
-                                <Sun size={14} className="text-[#ff6b6b]" />
-                                <span>Modo Día</span>
-                            </>
-                        )}
-                    </button>
+                        <h1 className="text-xs font-black tracking-tight uppercase leading-tight text-[#2c2440]">
+                            {townName}
+                        </h1>
+                        <p className="text-[7px] font-extrabold uppercase tracking-widest text-[#4a3d6a]">
+                            {t('RED COMERCIAL DIGITAL')}
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                            onClick={() => {
+                                playNeonClick();
+                                const current = localStorage.getItem('global_home_theme_mode') || 'light';
+                                const nextTheme = current === 'light' ? 'dark' : 'light';
+                                localStorage.setItem('global_home_theme_mode', nextTheme);
+                                window.dispatchEvent(new Event('theme-changed'));
+                            }}
+                            aria-label="Alternar modo de color"
+                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
+                            title="Modo de Color"
+                        >
+                            {isDayMode 
+                                ? <Moon size={15} className="text-[#2c2440] group-hover:rotate-12 transition-transform" /> 
+                                : <Sun size={15} className="text-[#ff6b6b] group-hover:rotate-45 transition-transform" />
+                            }
+                        </button>
+                        <button 
+                            onClick={handleShare}
+                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
+                            aria-label="Compartir"
+                            title="Compartir App"
+                        >
+                            <Share2 size={15} className="text-[#2c2440] group-hover:scale-110 transition-transform" />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Botones de Navegación Buenos Aires Sur (Neumórficos 3D) */}
+                {/* Avatar ARI Integrado en Cabecera */}
+                {isDayMode && (
+                    <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
+                        <img 
+                            src="/ari-pointing.png" 
+                            alt="ARI Asistente Local" 
+                            className="h-20 w-auto object-contain drop-shadow-[0_4px_10px_rgba(44,36,64,0.18)] animate-in fade-in duration-700" 
+                        />
+                        <div className="ari-3d-shadow mt-0.5 scale-75" />
+                    </div>
+                )}
+
+                {/* SELLO DE VIDA — TIMESTAMP ANTI-FALSIFICACIÓN & TELEMETRÍA */}
+                <div className="w-full flex items-center justify-between neu-inset-title px-4 py-2">
+                    <div className="flex items-center gap-2">
+                        <Clock size={12} className="text-[#ff6b6b] animate-spin flex-shrink-0" style={{ animationDuration: '6s' }} />
+                        <p className="text-[9.5px] font-black font-mono tracking-widest tabular-nums text-[#2c2440]">
+                            {currentTimeStr}
+                        </p>
+                    </div>
+                    <div className="h-3.5 w-[1px] bg-[#4a3d6a]/20" />
+                    <div className="flex items-center gap-2 text-[8.5px] font-extrabold uppercase tracking-widest text-[#4a3d6a]">
+                        <span>👁️ {globalConfig?.visits || 1}</span>
+                        <span>•</span>
+                        <span>{getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : '18°C'}</span>
+                    </div>
+                </div>
+
+                {/* Botones de Navegación Buenos Aires Sur (Sub-pills Neumórficos) */}
                 {isInBuenosAires && (
-                    <div className="w-full mt-2 mb-2">
-                        <div className="grid grid-cols-4 gap-2 px-1 max-w-[345px] mx-auto">
+                    <div className="w-full mt-0.5">
+                        <div className="grid grid-cols-4 gap-1.5 w-full">
                             {[
                                 { id: 'esteban-echeverria', label: 'Echeverría' },
                                 { id: 'ezeiza', label: 'Ezeiza' },
@@ -354,8 +358,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                                 navigate(`/${item.id}/home`);
                                             }
                                         }}
-                                        className={`py-2.5 px-0.5 text-[8px] font-extrabold uppercase tracking-wider text-center transition-all ${
-                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-3d'
+                                        className={`py-2 px-0.5 text-[8px] font-black uppercase tracking-wider text-center transition-all ${
+                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-pod'
                                         }`}
                                     >
                                         {item.label}
@@ -366,10 +370,10 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     </div>
                 )}
 
-                {/* Botones de Navegación Patagonia (Neumórficos 3D) */}
+                {/* Botones de Navegación Patagonia */}
                 {isInPatagonia && (
-                    <div className="w-full mt-2 mb-2">
-                        <div className="grid grid-cols-3 gap-2 px-1 max-w-[345px] mx-auto">
+                    <div className="w-full mt-0.5">
+                        <div className="grid grid-cols-3 gap-1.5 w-full">
                             {PATAGONIA_7_LAGOS_REGION.towns.map((town) => {
                                 const isActive = townId === town.id;
                                 return (
@@ -379,8 +383,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                             playNeonClick();
                                             if (!isActive) navigate(`/${town.id}/home`);
                                         }}
-                                        className={`py-2.5 px-1 text-[7.5px] font-extrabold uppercase tracking-wider text-center transition-all whitespace-nowrap overflow-hidden ${
-                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-3d'
+                                        className={`py-2 px-1 text-[7.5px] font-black uppercase tracking-wider text-center transition-all whitespace-nowrap overflow-hidden ${
+                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-pod'
                                         }`}
                                     >
                                         {town.id === 'san-martin-de-los-andes' ? 'San Martín' : town.id === 'villa-la-angostura' ? 'V. Angostura' : 'Bariloche'}
@@ -391,10 +395,10 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     </div>
                 )}
 
-                {/* Chips Regionales para Traslasierra (Neumórficos 3D) */}
+                {/* Chips Regionales para Traslasierra */}
                 {isInTraslasierra && (
-                    <div className="w-full mt-2 mb-2">
-                        <div className="flex flex-wrap justify-center gap-2 px-1 max-w-[345px] mx-auto">
+                    <div className="w-full mt-0.5">
+                        <div className="flex flex-wrap justify-center gap-1.5 w-full">
                             {TRASLASIERRA_REGION.towns.map((town) => {
                                 const isActive = townId === town.id;
                                 return (
@@ -404,8 +408,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                                             playNeonClick();
                                             if (!isActive) navigate(`/${town.id}/home`);
                                         }}
-                                        className={`py-2 px-3.5 text-[8px] font-extrabold uppercase tracking-wider text-center transition-all ${
-                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-3d'
+                                        className={`py-1.5 px-3 text-[8px] font-black uppercase tracking-wider text-center transition-all ${
+                                            isActive ? 'neu-btn-3d-active' : 'neu-btn-pod'
                                         }`}
                                     >
                                         {town.name}
@@ -417,15 +421,17 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                 )}
             </div>
 
-            {/* Contenedor Neumórfico Crema HD para la Grilla de Categorías */}
-            <div className="px-4 relative z-10 max-w-[365px] mx-auto w-full">
-                <div className="neu-plate w-full grid grid-cols-3 gap-3">
+            {/* ══════════════════════════════════════════
+                GRILLA DE CATEGORÍAS EN CONTENEDOR NEUMÓRFICO CREMA HD
+            ══════════════════════════════════════════ */}
+            <div className="w-full max-w-sm relative z-10 mb-5 animate-in zoom-in duration-700 delay-100">
+                <div className="neu-plate p-5 w-full grid grid-cols-3 gap-3">
                     {(globalConfig?.categories || CATEGORIES).filter((c: any) => c.isActive !== false).map((cat: any, index: number) => {
                         return (
                             <button
                                 key={cat.id}
                                 onClick={() => { playNeonClick(); navigate(`/${townId}/${cat.slug}`); }}
-                                className="neu-btn-3d aspect-square p-2 flex flex-col items-center justify-center gap-1.5 transition-all group"
+                                className="neu-btn-pod aspect-square p-2 flex flex-col items-center justify-center gap-1.5 transition-all group"
                                 style={{
                                     animation: `fadeUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) ${index * 30}ms both`
                                 }}
@@ -442,29 +448,36 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                 </div>
             </div>
 
-            {/* Botones Neumórficos de Suscribir Comercio y Compartir App */}
-            <div className="mt-6 mb-4 px-4 flex flex-col gap-3 justify-center items-center w-full max-w-[365px] mx-auto fade-up-item relative z-10">
+            {/* ══════════════════════════════════════════
+                ACCIONES CTA HERO NEUMÓRFICAS (SUSCRIBIR COMERCIO & COMPARTIR)
+            ══════════════════════════════════════════ */}
+            <div className="w-full max-w-sm relative z-10 mb-5 flex flex-col gap-3">
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
-                    className="neu-btn-3d w-full py-3.5 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5"
+                    className="neu-btn-hero w-full h-14 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer"
                 >
-                    <Store size={15} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                    <Store size={16} className="text-[#ff6b6b]" strokeWidth={2.5} />
                     <span>{t('Suscribir Comercio')}</span>
                 </button>
 
                 <button
                     onClick={handleShare}
-                    className="neu-btn-3d w-full py-3.5 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5"
+                    className="neu-btn-3d w-full h-14 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer"
                 >
-                    <Share2 size={15} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                    <Share2 size={16} className="text-[#2c2440]" strokeWidth={2.5} />
                     <span>Compartir App</span>
                 </button>
             </div>
 
-            {/* Pie de Página Neumórfico Crema HD */}
-            <footer className="w-full max-w-[365px] mx-auto px-4 z-10 pt-2 pb-2 mt-auto relative">
+            {/* ══════════════════════════════════════════
+                PIE DE PÁGINA NEUMÓRFICO CREMA HD
+            ══════════════════════════════════════════ */}
+            <footer className="w-full max-w-sm relative z-10 mb-4">
                 <div className="neu-footer flex items-center justify-between w-full">
-                    <p className="text-[8px] font-extrabold uppercase tracking-[0.22em] text-[#2c2440] select-none">
+                    <p 
+                        onClick={handleWalyClick}
+                        className="text-[8px] font-extrabold uppercase tracking-[0.22em] text-[#2c2440] select-none cursor-pointer"
+                    >
                         © 2026 · ShopDigital
                     </p>
                     <div className="flex items-center gap-3">
@@ -474,7 +487,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                         >
                             {isInPatagonia ? 'Patagonia' : townName}
                         </p>
-                        <span className="text-[#b4a594]/50 text-[7px] select-none">|</span>
+                        <span className="text-[#4a3d6a]/40 text-[7px] select-none">|</span>
                         <button 
                             onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
                             className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
