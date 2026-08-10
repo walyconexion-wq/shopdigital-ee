@@ -411,71 +411,83 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                 <meta name="twitter:image" content={selectedShop.bannerImage || selectedShop.image} />
             </Helmet>
 
-            {/* ---------- PORTADA PRINCIPAL / HERO BANNER ---------- */}
-            <div className="relative w-full h-[350px] bg-zinc-900 overflow-hidden shadow-2xl rounded-b-[2.5rem] border-b border-[#b4a594]/30">
-                {/* Botón Volver Neumórfico 3D */}
-                <button
-                    onClick={() => { playNeonClick(); navigate(`${basePath}/${categorySlug}`); }}
-                    className="neu-btn-3d absolute top-5 left-5 z-[60] w-11 h-11 flex items-center justify-center rounded-2xl transition-transform active:scale-90"
-                    title="Volver"
-                >
-                    <ArrowLeft size={18} className="text-[#ff6b6b]" strokeWidth={2.5} />
-                </button>
+            {/* ---------- PORTADA PRINCIPAL / HERO BANNER EN CONTENEDOR NEUMÓRFICO CREMA HD ---------- */}
+            <div className="w-full max-w-sm mx-auto px-4 pt-4 relative z-20">
+                <div className="relative w-full h-[360px] bg-zinc-900 overflow-hidden shadow-2xl rounded-[2.5rem] neu-plate p-0 border border-white/60">
+                    {/* Botones de Cabecera Neumórficos (Pods) */}
+                    <div className="absolute top-4 left-4 right-4 z-[60] flex items-center justify-between pointer-events-auto">
+                        <button
+                            onClick={() => { playNeonClick(); navigate(`${basePath}/${categorySlug}`); }}
+                            className="w-10 h-10 flex items-center justify-center neu-btn-pod rounded-2xl cursor-pointer transition-transform active:scale-90"
+                            title="Volver"
+                        >
+                            <ArrowLeft size={17} className="text-[#2c2440]" strokeWidth={3} />
+                        </button>
 
-                {/* Botón Modo Noche/Día Neumórfico 3D */}
-                <button
-                    onClick={() => {
-                        playNeonClick();
-                        const current = localStorage.getItem('global_home_theme_mode') || 'light';
-                        const nextTheme = current === 'light' ? 'dark' : 'light';
-                        localStorage.setItem('global_home_theme_mode', nextTheme);
-                        window.dispatchEvent(new Event('theme-changed'));
-                    }}
-                    className="neu-btn-3d absolute top-5 right-5 z-[60] w-11 h-11 flex items-center justify-center rounded-2xl transition-transform active:scale-90"
-                    title="Cambiar Modo"
-                >
-                    {isDayMode ? <Moon size={17} className="text-[#2c2440]" /> : <Sun size={17} className="text-[#ff6b6b]" />}
-                </button>
-
-                {/* Imágenes de Fondo de Portada */}
-                {gallery.map((img, idx) => (
-                    <img
-                        key={idx}
-                        src={img}
-                        alt={`Cover ${idx}`}
-                        loading={idx === 0 ? 'eager' : 'lazy'}
-                        fetchPriority={idx === 0 ? 'high' : 'low'}
-                        decoding="async"
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${idx === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
-                    />
-                ))}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50" />
-
-                {/* Placa Neumórfica de Nombre y Ubicación */}
-                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] max-w-[345px] flex flex-col items-center">
-                    <div className="neu-plate w-full py-4 px-6 text-center border border-white/70 shadow-2xl backdrop-blur-md">
-                        <h1 className="text-[20px] sm:text-[22px] font-[1000] uppercase tracking-wider text-[#2c2440] leading-tight mb-1 drop-shadow-sm">
-                            {String(selectedShop.name || '').replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
-                        </h1>
-                        <div className="flex items-center justify-center gap-1.5 mt-2">
-                            <MapPin size={13} className="text-[#ff6b6b]" strokeWidth={2.5} />
-                            <span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-[#4a3d6a]">
-                                {selectedShop.zone || 'Tu zona'}
-                            </span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => {
+                                    playNeonClick();
+                                    const current = localStorage.getItem('global_home_theme_mode') || 'light';
+                                    const nextTheme = current === 'light' ? 'dark' : 'light';
+                                    localStorage.setItem('global_home_theme_mode', nextTheme);
+                                    window.dispatchEvent(new Event('theme-changed'));
+                                }}
+                                className="w-10 h-10 flex items-center justify-center neu-btn-pod rounded-2xl cursor-pointer transition-transform active:scale-90"
+                                title="Cambiar Modo"
+                            >
+                                {isDayMode ? <Moon size={16} className="text-[#2c2440]" /> : <Sun size={16} className="text-[#ff6b6b]" />}
+                            </button>
+                            <button
+                                onClick={handleShare}
+                                className="w-10 h-10 flex items-center justify-center neu-btn-pod rounded-2xl cursor-pointer transition-transform active:scale-90"
+                                title="Compartir Comercio"
+                            >
+                                <Share2 size={16} className="text-[#2c2440]" />
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                {/* Badges Inferiores de Visitas y Suscriptores (Simétricos y Neumórficos) */}
-                <div className="absolute bottom-5 left-0 right-0 z-40 px-5 flex items-center justify-between pointer-events-none">
-                    <div className="neu-inset-title flex items-center gap-1.5 px-3 py-1.5 text-[8.5px] font-black text-[#2c2440] uppercase tracking-widest backdrop-blur-sm bg-[#faf7f2]/80">
-                        <Eye size={12} className="text-[#4a3d6a]" />
-                        <span>{selectedShop.visits || 0} visitas</span>
+                    {/* Imágenes de Fondo de Portada (Carrusel) */}
+                    {gallery.map((img, idx) => (
+                        <img
+                            key={idx}
+                            src={img}
+                            alt={`Cover ${idx}`}
+                            loading={idx === 0 ? 'eager' : 'lazy'}
+                            fetchPriority={idx === 0 ? 'high' : 'low'}
+                            decoding="async"
+                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${idx === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                        />
+                    ))}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/50" />
+
+                    {/* Placa Neumórfica de Nombre y Ubicación */}
+                    <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] max-w-[320px] flex flex-col items-center">
+                        <div className="neu-plate w-full py-4.5 px-6 text-center border border-white/70 shadow-2xl backdrop-blur-md">
+                            <h1 className="text-[20px] sm:text-[22px] font-[1000] uppercase tracking-wider text-[#2c2440] leading-tight mb-1.5 drop-shadow-sm">
+                                {String(selectedShop.name || '').replace(/\s*\(.*\)\s*/, '').split('-')[0].trim()}
+                            </h1>
+                            <div className="flex items-center justify-center gap-1.5 neu-inset-title py-1 px-3.5 mx-auto w-fit">
+                                <MapPin size={12} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4a3d6a]">
+                                    {selectedShop.zone || 'Tu zona'}
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="neu-inset-title flex items-center gap-1.5 px-3 py-1.5 text-[8.5px] font-black text-[#2c2440] uppercase tracking-widest backdrop-blur-sm bg-[#faf7f2]/80">
-                        <Users size={12} className="text-[#ff6b6b]" />
-                        <span>{selectedShop.subscribers || 0} suscriptores</span>
+                    {/* Badges Inferiores de Visitas y Suscriptores */}
+                    <div className="absolute bottom-5 left-0 right-0 z-40 px-5 flex items-center justify-between pointer-events-none">
+                        <div className="neu-inset-title flex items-center gap-1.5 px-3.5 py-1.5 text-[8.5px] font-black text-[#2c2440] uppercase tracking-widest backdrop-blur-md bg-[#faf7f2]/90">
+                            <Eye size={12} className="text-[#7c3aed]" />
+                            <span>{selectedShop.visits || 0} visitas</span>
+                        </div>
+
+                        <div className="neu-inset-title flex items-center gap-1.5 px-3.5 py-1.5 text-[8.5px] font-black text-[#2c2440] uppercase tracking-widest backdrop-blur-md bg-[#faf7f2]/90">
+                            <Users size={12} className="text-[#ff6b6b]" />
+                            <span>{selectedShop.subscribers || 0} suscriptores</span>
+                        </div>
                     </div>
                 </div>
             </div>
