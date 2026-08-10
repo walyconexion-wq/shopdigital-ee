@@ -991,38 +991,44 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                         </div>
                     </div>
                 </div>
-
-
-                {/* Botón Regresar Neumórfico */}
-                <div className="w-full px-4 mb-14 flex justify-center">
-                    <button
-                        onClick={() => { playNeonClick(); navigate(`${basePath}/${categorySlug}`); }}
-                        className="neu-btn-3d py-3 px-10 flex items-center gap-2.5 text-[#2c2440]"
-                    >
-                        <ArrowLeft size={14} className="text-[#ff6b6b]" strokeWidth={2.5} />
-                        <span className="text-[10px] font-[1100] uppercase tracking-widest">Regresar</span>
-                    </button>
-                </div>
-
             </div>
 
-            {/* PIE DE PÁGINA NEUMÓRFICO */}
-            <footer className="w-full max-w-[365px] mx-auto px-4 z-10 pt-2 pb-4 mt-auto relative">
-                <div className="neu-plate flex items-center justify-between w-full py-3 px-5">
-                    <p className="text-[8px] font-black uppercase tracking-[0.25em] text-[#5c4033] select-none">
-                        © 2026 · ShopDigital
-                    </p>
-                    <div className="flex items-center gap-2.5">
-                        <p className="text-[8px] font-extrabold uppercase tracking-[0.15em] text-[#2c2440] select-none">
-                            {selectedShop?.name?.split('-')[0]?.trim() || 'Catálogo'}
-                        </p>
-                        <span className="text-[#5c4033]/40 text-[7px] select-none">|</span>
-                        <button
-                            onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
-                            className="text-[7.5px] font-extrabold uppercase tracking-[0.15em] text-[#ff6b6b] hover:underline active:opacity-75 transition-opacity select-none"
+            {/* ══════════════════════════════════════════
+                ACCIONES Y PIE DE PÁGINA EN CONTENEDOR NEUMÓRFICO UNIFICADO (PARIDAD INTERFAZ 1 Y 2)
+            ══════════════════════════════════════════ */}
+            <footer className="w-full max-w-sm relative z-10 mb-6 mx-auto px-4 animate-in slide-in-from-bottom-4 duration-700">
+                <div className="neu-plate p-5 sm:p-6 w-full flex flex-col gap-4">
+                    {/* Botón Hero: Regresar a Categoría */}
+                    <button
+                        onClick={() => { playNeonClick(); navigate(`${basePath}/${categorySlug}`); }}
+                        className="neu-btn-hero w-full h-14 sm:h-15 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5 cursor-pointer shadow-md"
+                    >
+                        <ArrowLeft size={17} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                        <span>Regresar a Categoría</span>
+                    </button>
+
+                    {/* Sello Inset Neumórfico para Pie de Página y Términos */}
+                    <div className="neu-inset-title flex items-center justify-between w-full py-3 px-4.5 mt-0.5">
+                        <p 
+                            className="text-[8.5px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440] select-none cursor-pointer"
                         >
-                            Términos
-                        </button>
+                            © 2026 · ShopDigital
+                        </p>
+                        <div className="flex items-center gap-2.5">
+                            <p 
+                                onClick={handleLockTap}
+                                className="text-[8.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
+                            >
+                                {selectedShop?.name?.replace(/\s*\(.*\)\s*/, '')?.split('-')[0]?.trim() || 'Catálogo'}
+                            </p>
+                            <span className="text-[#4a3d6a]/40 text-[7px] select-none">|</span>
+                            <button 
+                                onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
+                                className="text-[8px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
+                            >
+                                Términos
+                            </button>
+                        </div>
                     </div>
                 </div>
             </footer>
