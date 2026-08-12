@@ -252,6 +252,7 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             
             <SeasonalDecoration />
 
+<<<<<<< HEAD
             {/* ══════════════════════════════════════════
                 CABECERA SUPERIOR EN CONTENEDOR NEUMÓRFICO UNIFICADO (PARIDAD TOTAL CON CREDECIAL COMERCIANTE)
             ══════════════════════════════════════════ */}
@@ -263,6 +264,59 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                         className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group shrink-0"
                         aria-label="Volver a Inicio Global"
                         title="Volver"
+=======
+            {/* Panel de Telemetría Neumórfico Crema HD (Hora, Fecha, Visitas, Clima) */}
+            <div className="neu-inset-title absolute top-5 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2.5rem)] max-w-[345px] px-3.5 py-2 text-[8.5px] font-extrabold uppercase tracking-widest flex items-center justify-between">
+                <div className="flex flex-col items-center flex-1">
+                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('HORA')}</span>
+                    <span className="font-mono text-[9.5px] tracking-wider text-[#2c2440]">
+                        {currentTimeStr}
+                    </span>
+                </div>
+                <div className="w-[1px] h-4 bg-[#b4a594]/30" />
+                <div className="flex flex-col items-center flex-1">
+                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('FECHA')}</span>
+                    <span className="text-[9.5px] tracking-wider text-[#2c2440]">
+                        {currentDateStr}
+                    </span>
+                </div>
+                <div className="w-[1px] h-4 bg-[#b4a594]/30" />
+                <div className="flex flex-col items-center flex-1">
+                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('VISITAS')}</span>
+                    <span className="text-[9.5px] tracking-wider text-[#2c2440]">
+                        👁️ {globalConfig?.visits || 1}
+                    </span>
+                </div>
+                <div className="w-[1px] h-4 bg-[#b4a594]/30" />
+                <div className="flex flex-col items-center flex-1">
+                    <span className="text-[#4a3d6a] text-[6.5px] tracking-[0.2em] mb-0.5">{t('CLIMA')}</span>
+                    <span className="text-[9.5px] tracking-wider text-[#2c2440]">
+                        {getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : (weatherError ? '18°C' : '...')}
+                    </span>
+                </div>
+            </div>
+
+            {/* Header del Nombre de la Zona (Placa Neumórfica Crema HD) */}
+            <header className="flex-shrink-0 w-full max-w-[345px] mx-auto relative z-20 transition-all duration-700 bg-transparent pt-14 px-4 mb-3">
+                <div 
+                    onClick={handleLogoClick}
+                    className="neu-plate cursor-pointer active:scale-95 transition-all w-full text-center py-5 px-6"
+                >
+                    <Logo />
+                </div>
+            </header>
+
+            <div className="flex flex-col items-center mb-4 mt-1 fade-up-item relative z-10 px-6">
+                
+                {/* Botones de control (Volver / Modo Noche) Neumórficos 3D */}
+                <div className="flex items-center justify-between w-full max-w-[345px] mb-2 px-1 z-20 gap-3">
+                    <button
+                        onClick={() => {
+                            playNeonClick();
+                            navigate('/');
+                        }}
+                        className="neu-btn-3d py-3 px-6 text-[9px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 flex-1"
+>>>>>>> 71960fa (feat(footer): redisenio neumorfico unificado de pie de pagina con simetria delicada y eliminacion de boton duplicado compartir red)
                     >
                         <ArrowLeft size={16} className="text-[#2c2440] group-hover:-translate-x-0.5 transition-transform" strokeWidth={3} />
                     </button>
@@ -307,7 +361,9 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                         </button>
                     </div>
                 </div>
+            </div>
 
+<<<<<<< HEAD
                 {/* Avatar ARI Integrado en Cabecera */}
                 {isDayMode && (
                     <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
@@ -340,6 +396,14 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                 {isInBuenosAires && (
                     <div className="w-full mt-0.5">
                         <div className="grid grid-cols-4 gap-1.5 w-full">
+=======
+            {/* Contenedor Neumórfico Crema HD para la Grilla de Categorías */}
+            <div className="px-4 relative z-10 max-w-[365px] mx-auto w-full flex flex-col gap-3">
+                {/* Botones de Navegación Buenos Aires Sur (Neumórficos 3D) */}
+                {isInBuenosAires && (
+                    <div className="w-full neu-inset-title p-2">
+                        <div className="grid grid-cols-4 gap-2 px-1 max-w-[345px] mx-auto">
+>>>>>>> 71960fa (feat(footer): redisenio neumorfico unificado de pie de pagina con simetria delicada y eliminacion de boton duplicado compartir red)
                             {[
                                 { id: 'esteban-echeverria', label: 'Echeverría' },
                                 { id: 'ezeiza', label: 'Ezeiza' },
@@ -372,8 +436,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
 
                 {/* Botones de Navegación Patagonia */}
                 {isInPatagonia && (
-                    <div className="w-full mt-0.5">
-                        <div className="grid grid-cols-3 gap-1.5 w-full">
+                    <div className="w-full neu-inset-title p-2">
+                        <div className="grid grid-cols-3 gap-2 px-1 max-w-[345px] mx-auto">
                             {PATAGONIA_7_LAGOS_REGION.towns.map((town) => {
                                 const isActive = townId === town.id;
                                 return (
@@ -397,8 +461,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
 
                 {/* Chips Regionales para Traslasierra */}
                 {isInTraslasierra && (
-                    <div className="w-full mt-0.5">
-                        <div className="flex flex-wrap justify-center gap-1.5 w-full">
+                    <div className="w-full neu-inset-title p-2">
+                        <div className="flex flex-wrap justify-center gap-2 px-1 max-w-[345px] mx-auto">
                             {TRASLASIERRA_REGION.towns.map((town) => {
                                 const isActive = townId === town.id;
                                 return (
@@ -419,13 +483,8 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                         </div>
                     </div>
                 )}
-            </div>
 
-            {/* ══════════════════════════════════════════
-                GRILLA DE CATEGORÍAS EN CONTENEDOR NEUMÓRFICO CREMA HD
-            ══════════════════════════════════════════ */}
-            <div className="w-full max-w-sm relative z-10 mb-5 animate-in zoom-in duration-700 delay-100">
-                <div className="neu-plate p-5 w-full grid grid-cols-3 gap-3">
+                <div className="neu-plate w-full grid grid-cols-3 gap-3">
                     {(globalConfig?.categories || CATEGORIES).filter((c: any) => c.isActive !== false).map((cat: any, index: number) => {
                         return (
                             <button
@@ -448,52 +507,58 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                 </div>
             </div>
 
-            {/* ══════════════════════════════════════════
-                ACCIONES CTA HERO Y PIE DE PÁGINA EN CONTENEDOR NEUMÓRFICO UNIFICADO
-            ══════════════════════════════════════════ */}
-            <footer className="w-full max-w-sm relative z-10 mb-6 animate-in slide-in-from-bottom-4 duration-700">
-                <div className="neu-plate p-5 sm:p-6 w-full flex flex-col gap-4">
-                    {/* Botón Hero: Suscribir Comercio */}
-                    <button
-                        onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
-                        className="neu-btn-hero w-full h-14 sm:h-15 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer shadow-md"
-                    >
-                        <Store size={17} className="text-[#ff6b6b]" strokeWidth={2.5} />
-                        <span>{t('Suscribir Comercio')}</span>
-                    </button>
-
-                    {/* Botón 3D: Compartir App */}
-                    <button
-                        onClick={handleShare}
-                        className="neu-btn-3d w-full h-14 sm:h-15 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-pointer"
-                    >
-                        <Share2 size={17} className="text-[#2c2440]" strokeWidth={2.5} />
-                        <span>Compartir App</span>
-                    </button>
-
-                    {/* Sello Inset Neumórfico para Pie de Página y Términos */}
-                    <div className="neu-inset-title flex items-center justify-between w-full py-3 px-4.5 mt-0.5">
-                        <p 
-                            onClick={handleWalyClick}
-                            className="text-[8.5px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440] select-none cursor-pointer"
+            {/* ════════════════════════════════════════════════════════════════ */}
+            {/* 🏛️ PIE DE PÁGINA PROFESIONAL — SIMETRÍA Y DISEÑO DELICADO      */}
+            {/* ════════════════════════════════════════════════════════════════ */}
+            <footer className="w-full max-w-[365px] mx-auto px-4 z-10 pt-4 pb-8 mt-auto relative fade-up-item">
+                <div className="neu-plate w-full flex flex-col items-center gap-4 text-center">
+                    {/* Botones de Acción (Suscribir Comercio y Compartir App) */}
+                    <div className="w-full flex flex-col gap-3">
+                        <button
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/subscripcion`); }}
+                            className="neu-btn-hero w-full py-3.5 px-4 text-[9.5px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5 active:scale-95 transition-all"
                         >
-                            © 2026 · ShopDigital
-                        </p>
-                        <div className="flex items-center gap-2.5">
-                            <p 
-                                onClick={handleWalyClick}
-                                className="text-[8.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] select-none cursor-pointer active:scale-95 transition-all" 
-                            >
-                                {isInPatagonia ? 'Patagonia' : townName}
-                            </p>
-                            <span className="text-[#4a3d6a]/40 text-[7px] select-none">|</span>
-                            <button 
+                            <Store size={16} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                            <span>{t('Suscribir Comercio')}</span>
+                        </button>
+
+                        <button
+                            onClick={handleShare}
+                            className="neu-btn-3d w-full py-3.5 px-4 text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2.5 text-[#2c2440] hover:text-[#ff6b6b] active:scale-95 transition-all"
+                        >
+                            <Share2 size={15} className="text-[#ff6b6b]" strokeWidth={2.5} />
+                            <span>Compartir App</span>
+                        </button>
+                    </div>
+
+                    {/* Titulo Brand & Boton Inset para Términos (Simetría Perfecta) */}
+                    <div className="flex flex-col items-center gap-2.5 w-full pt-1">
+                        <h3 
+                            onClick={handleLogoClick}
+                            className="text-[13px] font-[1000] tracking-[0.25em] uppercase text-[#2c2440] select-none cursor-pointer hover:opacity-80 transition-opacity"
+                        >
+                            SHOPDIGITAL
+                        </h3>
+
+                        {/* Contenedor Hundido (Inset) para Términos y Condiciones */}
+                        <div className="neu-inset-title py-2 px-6 inline-flex items-center justify-center">
+                            <button
                                 onClick={() => { playNeonClick(); navigate(`/${townId}/terminos`); }}
-                                className="text-[8px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] active:opacity-75 transition-all select-none"
+                                className="text-[8.5px] font-extrabold uppercase tracking-[0.16em] text-[#2c2440] hover:text-[#ff6b6b] active:scale-95 transition-all select-none"
                             >
-                                Términos
+                                Términos y Condiciones
                             </button>
                         </div>
+                    </div>
+
+                    {/* Copyright & Subtitulo Verificado */}
+                    <div className="flex flex-col items-center gap-1 text-center pt-2 border-t border-[#b4a594]/20 w-full">
+                        <p className="text-[8px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440]/80 select-none">
+                            © 2026 · ShopDigital · <span onClick={handleWalyClick} className="cursor-pointer hover:text-[#ff6b6b] transition-colors">{isInPatagonia ? 'Patagonia' : townName}</span>
+                        </p>
+                        <p className="text-[7px] font-extrabold uppercase tracking-[0.15em] text-[#4a3d6a]/70 select-none">
+                            Infraestructura de Comercio Local Verificado
+                        </p>
                     </div>
                 </div>
             </footer>

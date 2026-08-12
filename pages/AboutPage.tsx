@@ -662,8 +662,6 @@ const AboutPage: React.FC = () => {
                 {/* Secondary navigation for Footer */}
                 <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-wider text-white/60">
                     <button onClick={() => { playNeonClick(); navigate(`/terminos`); }} className="hover:text-white transition-colors">Términos y Condiciones</button>
-                    <span>·</span>
-                    <button onClick={handleShare} className="hover:text-white transition-colors">Compartir Red</button>
                 </div>
 
                 <div className="flex flex-col items-center gap-1 mt-1 text-center">
