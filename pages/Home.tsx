@@ -252,19 +252,6 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             
             <SeasonalDecoration />
 
-<<<<<<< HEAD
-            {/* ══════════════════════════════════════════
-                CABECERA SUPERIOR EN CONTENEDOR NEUMÓRFICO UNIFICADO (PARIDAD TOTAL CON CREDECIAL COMERCIANTE)
-            ══════════════════════════════════════════ */}
-            <div className="w-full max-w-sm relative z-10 mb-5 p-3.5 neu-plate flex flex-col items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-700">
-                {/* HEADER NEUMÓRFICO CON PODS DE CABECERA */}
-                <div className="w-full flex justify-between items-center gap-2">
-                    <button 
-                        onClick={() => { playNeonClick(); navigate('/'); }}
-                        className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group shrink-0"
-                        aria-label="Volver a Inicio Global"
-                        title="Volver"
-=======
             {/* Panel de Telemetría Neumórfico Crema HD (Hora, Fecha, Visitas, Clima) */}
             <div className="neu-inset-title absolute top-5 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2.5rem)] max-w-[345px] px-3.5 py-2 text-[8.5px] font-extrabold uppercase tracking-widest flex items-center justify-between">
                 <div className="flex flex-col items-center flex-1">
@@ -307,7 +294,6 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
             </header>
 
             <div className="flex flex-col items-center mb-4 mt-1 fade-up-item relative z-10 px-6">
-                
                 {/* Botones de control (Volver / Modo Noche) Neumórficos 3D */}
                 <div className="flex items-center justify-between w-full max-w-[345px] mb-2 px-1 z-20 gap-3">
                     <button
@@ -316,94 +302,42 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                             navigate('/');
                         }}
                         className="neu-btn-3d py-3 px-6 text-[9px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 flex-1"
->>>>>>> 71960fa (feat(footer): redisenio neumorfico unificado de pie de pagina con simetria delicada y eliminacion de boton duplicado compartir red)
                     >
-                        <ArrowLeft size={16} className="text-[#2c2440] group-hover:-translate-x-0.5 transition-transform" strokeWidth={3} />
+                        <ArrowLeft size={14} className="text-[#ff6b6b]" />
+                        <span>Volver</span>
                     </button>
 
-                    <div 
-                        onClick={handleLogoClick}
-                        className="flex-1 text-center px-3 py-1.5 neu-inset-title cursor-pointer active:scale-95 transition-transform"
+                    <button
+                        onClick={() => {
+                            playNeonClick();
+                            const current = localStorage.getItem('global_home_theme_mode') || 'light';
+                            const nextTheme = current === 'light' ? 'dark' : 'light';
+                            localStorage.setItem('global_home_theme_mode', nextTheme);
+                            window.dispatchEvent(new Event('theme-changed'));
+                        }}
+                        className="neu-btn-3d py-3 px-6 text-[9px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 flex-1"
                     >
-                        <h1 className="text-xs font-black tracking-tight uppercase leading-tight text-[#2c2440]">
-                            {townName}
-                        </h1>
-                        <p className="text-[7px] font-extrabold uppercase tracking-widest text-[#4a3d6a]">
-                            {t('RED COMERCIAL DIGITAL')}
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 shrink-0">
-                        <button
-                            onClick={() => {
-                                playNeonClick();
-                                const current = localStorage.getItem('global_home_theme_mode') || 'light';
-                                const nextTheme = current === 'light' ? 'dark' : 'light';
-                                localStorage.setItem('global_home_theme_mode', nextTheme);
-                                window.dispatchEvent(new Event('theme-changed'));
-                            }}
-                            aria-label="Alternar modo de color"
-                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
-                            title="Modo de Color"
-                        >
-                            {isDayMode 
-                                ? <Moon size={15} className="text-[#2c2440] group-hover:rotate-12 transition-transform" /> 
-                                : <Sun size={15} className="text-[#ff6b6b] group-hover:rotate-45 transition-transform" />
-                            }
-                        </button>
-                        <button 
-                            onClick={handleShare}
-                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
-                            aria-label="Compartir"
-                            title="Compartir App"
-                        >
-                            <Share2 size={15} className="text-[#2c2440] group-hover:scale-110 transition-transform" />
-                        </button>
-                    </div>
+                        {isDayMode ? (
+                            <>
+                                <Moon size={14} className="text-[#2c2440]" />
+                                <span>Modo Noche</span>
+                            </>
+                        ) : (
+                            <>
+                                <Sun size={14} className="text-[#ff6b6b]" />
+                                <span>Modo Día</span>
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
 
-<<<<<<< HEAD
-                {/* Avatar ARI Integrado en Cabecera */}
-                {isDayMode && (
-                    <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
-                        <img 
-                            src="/ari-pointing.png" 
-                            alt="ARI Asistente Local" 
-                            className="h-20 w-auto object-contain drop-shadow-[0_4px_10px_rgba(44,36,64,0.18)] animate-in fade-in duration-700" 
-                        />
-                        <div className="ari-3d-shadow mt-0.5 scale-75" />
-                    </div>
-                )}
-
-                {/* SELLO DE VIDA — TIMESTAMP ANTI-FALSIFICACIÓN & TELEMETRÍA */}
-                <div className="w-full flex items-center justify-between neu-inset-title px-4 py-2">
-                    <div className="flex items-center gap-2">
-                        <Clock size={12} className="text-[#ff6b6b] animate-spin flex-shrink-0" style={{ animationDuration: '6s' }} />
-                        <p className="text-[9.5px] font-black font-mono tracking-widest tabular-nums text-[#2c2440]">
-                            {currentTimeStr}
-                        </p>
-                    </div>
-                    <div className="h-3.5 w-[1px] bg-[#4a3d6a]/20" />
-                    <div className="flex items-center gap-2 text-[8.5px] font-extrabold uppercase tracking-widest text-[#4a3d6a]">
-                        <span>👁️ {globalConfig?.visits || 1}</span>
-                        <span>•</span>
-                        <span>{getWeatherEmoji(weatherCode)} {temp !== null ? `${temp}°C` : '18°C'}</span>
-                    </div>
-                </div>
-
-                {/* Botones de Navegación Buenos Aires Sur (Sub-pills Neumórficos) */}
-                {isInBuenosAires && (
-                    <div className="w-full mt-0.5">
-                        <div className="grid grid-cols-4 gap-1.5 w-full">
-=======
             {/* Contenedor Neumórfico Crema HD para la Grilla de Categorías */}
             <div className="px-4 relative z-10 max-w-[365px] mx-auto w-full flex flex-col gap-3">
                 {/* Botones de Navegación Buenos Aires Sur (Neumórficos 3D) */}
                 {isInBuenosAires && (
                     <div className="w-full neu-inset-title p-2">
                         <div className="grid grid-cols-4 gap-2 px-1 max-w-[345px] mx-auto">
->>>>>>> 71960fa (feat(footer): redisenio neumorfico unificado de pie de pagina con simetria delicada y eliminacion de boton duplicado compartir red)
                             {[
                                 { id: 'esteban-echeverria', label: 'Echeverría' },
                                 { id: 'ezeiza', label: 'Ezeiza' },
