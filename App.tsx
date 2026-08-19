@@ -41,6 +41,7 @@ const EventLandingPage        = React.lazy(() => import('./pages/EventLandingPag
 const ShopMenuPage            = React.lazy(() => import('./pages/ShopMenuPage'));
 const BusinessLandingPage     = React.lazy(() => import('./pages/BusinessLandingPage'));
 const MuroNovedades           = React.lazy(() => import('./components/MuroNovedades'));
+const JarvisDashboard         = React.lazy(() => import('./pages/JarvisDashboard'));
 
 // Suscripciones y onboarding
 const SubscriptionPage        = React.lazy(() => import('./pages/SubscriptionPage'));
@@ -109,6 +110,7 @@ const MaintenanceBunkerPage   = React.lazy(() => import('./pages/MaintenanceBunk
 const SecOpsBunkerPage        = React.lazy(() => import('./pages/SecOpsBunkerPage').then(m => ({ default: m.SecOpsBunkerPage })));
 const CloningBunkerPage       = React.lazy(() => import('./pages/CloningBunkerPage').then(m => ({ default: m.CloningBunkerPage })));
 const LiveBroadcastPage       = React.lazy(() => import('./pages/LiveBroadcastPage'));
+const AriChatLabPage          = React.lazy(() => import('./pages/AriChatLabPage'));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 💤 Suspense fallback — pantalla mínima mientras se descarga el chunk
@@ -337,6 +339,8 @@ const TownController: React.FC = () => {
                     <Route path="embajador/clientes-comerciantes" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseClientManagementPage allShops={allShops} allClients={allClients} /></ProtectedRoute>} />
                     {/* 💳 POSNET DE CRÉDITOS */}
                     <Route path="embajador/posnet" element={<ProtectedRoute roles={['admin', 'ambassador']}><CreditsPosnetPage /></ProtectedRoute>} />
+                    {/* 🧪 LABORATORIO — ARI Chat Interno (solo DEV) */}
+                    <Route path="lab/ari-chat" element={<AriChatLabPage />} />
                     <Route path="mi-comercio/posnet-virtual" element={<ProtectedRoute roles={['admin', 'ambassador']}><CreditsPosnetPage /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="home" replace />} />
                 </Route>
@@ -404,6 +408,9 @@ const App: React.FC = () => {
 
                     {/* 🌐 HOME GLOBAL — Comando Central del Hormiguero */}
                     <Route path="/" element={<GlobalHomePage />} />
+
+                    {/* 🤖 JARVIS OS DASHBOARD — Control Agentil Luz 01 */}
+                    <Route path="/jarvis" element={<JarvisDashboard />} />
 
                     {/* 🌐 NOSOTROS INSTITUCIONAL — Genérico */}
                     <Route path="/nosotros" element={<AboutPage />} />

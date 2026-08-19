@@ -11,6 +11,7 @@ import { generateEveResponse } from '../services/eve';
 import { registrarIntrusionBunker, subirArchivoBunker } from '../firebase';
 import { BtuComponent } from '../components/BtuComponent';
 import { DirectiveNotifier } from '../components/DirectiveNotifier';
+import { BunkerInfraDisplay } from '../components/BunkerInfraDisplay';
 
 const getWeatherEmoji = (code: number | null): string => {
     if (code === null) return '🌡️';
@@ -231,7 +232,11 @@ KPIs DE SISTEMAS E INFRAESTRUCTURA:
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 relative z-10 flex flex-col xl:flex-row w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] pb-20">
+            <main className="flex-1 relative z-10 flex flex-col w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6 min-h-[calc(100vh-80px)] pb-20">
+                {/* Auto-Healing Infrastructure Bunker Display */}
+                <BunkerInfraDisplay />
+
+                <div className="flex flex-col xl:flex-row gap-6 w-full">
                 {/* Columna Izquierda: Artillería y KPIs */}
                 <div className="flex-[3] flex flex-col gap-6">
                     {/* Artillería */}
@@ -377,7 +382,8 @@ KPIs DE SISTEMAS E INFRAESTRUCTURA:
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
+        </main>
 
             <DirectiveNotifier 
                 bunkerId="sistemas"

@@ -291,6 +291,9 @@ Para clonar o replicar la página de beneficios VIP en nuevas localidades, se de
 3. **Reglas de Ejecución:**
    - Toda tarea ejecutada por un subagente debe validarse estáticamente o en runtime antes de ser declarada como finalizada.
    - La documentación y estructura física de los agentes reside en la carpeta `agentes_internos/`.
+4. **La Ley del Laboratorio (Pipeline de Despliegue Obligatorio):**
+   - Todo cambio se sube a la rama `laboratorio` y se prueba en [shopdigital-ar.vercel.app](https://shopdigital-ar.vercel.app).
+   - Solo se promueve a la rama `main` (Producción: [shopdigital.tech](https://shopdigital.tech)) tras la frase clave del Director Waly: *"Luz verde a producción"*.
 
 ---
 
@@ -322,3 +325,22 @@ Para clonar o replicar la página de beneficios VIP en nuevas localidades, se de
 ### Repositorio GitHub:
 - **Único repo:** `walyconexion-wq/shopdigital-ee`
 - Ramas: `main` (producción) y `laboratorio` (staging)
+
+---
+
+## 8. Actualización Antigravity 2.0 & Gemini 3.7 Multiprocesso
+
+> **Activado el 18/08/2026 — Estado: OPERATIVO & AUTÓNOMO**
+
+1. **Razonamiento Híbrido Dinámico (Gemini 3.7):** Selección dinámica entre `flash_lite` (QA/Linter), `flash` (UI/APIs) y `pro` (Clonación Fractal / Refactorización Compleja).
+2. **Workspaces de Subagentes:**
+   - `inherit`: Auditorías e inspecciones sin aislamiento.
+   - `share`: Repositorio compartido para trabajo concurrente.
+   - `branch`: Sandbox totalmente aislado para siembras de datos destructivas.
+3. **Reactive Wakeup:** Luz 01 opera asincrónicamente y despierta al recibir notificaciones de subagentes finalizados (cero polling en bucle).
+4. **Matriz de Células Operativas:**
+   - **Célula 1 (Core & Infra):** Bruno (BK01/05) + Thor (BK03/09).
+   - **Célula 2 (Experiencia & PWA):** Ari (BK02) + Fábrica Gráfica (BK06).
+   - **Célula 3 (Calidad & Blindaje):** Vortex (BK11) + Auto-Healing (BK13).
+   - **Célula 4 (Expansión & Negocio):** Ely (BK07) + Max (BK08) + Mateo (BK04).
+

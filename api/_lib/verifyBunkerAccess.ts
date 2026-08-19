@@ -1,9 +1,11 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import * as admin from 'firebase-admin';
+import { getApps, initializeApp, cert } from 'firebase-admin/app';
+import { getAuth, DecodedIdToken } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
+if (!getApps().length) {
+  initializeApp({
+    credential: cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       // Ojo: la private key suele venir con \n escapados en la env var de Vercel
@@ -49,9 +51,9 @@ export async function verifyBunkerAccess(
 
   const idToken = authHeader.split('Bearer ')[1];
 
-  let decodedToken: admin.auth.DecodedIdToken;
+  let decodedToken: DecodedIdToken;
   try {
-    decodedToken = await admin.auth().verifyIdToken(idToken);
+    decodedToken = await getAuth().verifyIdToken(idToken);
   } catch {
     // No filtrar el motivo exacto (token expirado vs. inválido vs. falsificado)
     res.status(401).json({ error: 'Token inválido o expirado.' });
@@ -59,7 +61,7 @@ export async function verifyBunkerAccess(
   }
 
   // Fuente de verdad: el documento en /autorizados, NO custom claims todavía
-  const userDoc = await admin.firestore().doc(`autorizados/${decodedToken.uid}`).get();
+  const userDoc = await getFirestore().doc(`autorizados/${decodedToken.uid}`).get();
 
   if (!userDoc.exists) {
     res.status(403).json({ error: 'Usuario no autorizado.' });
