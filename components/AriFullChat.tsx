@@ -183,12 +183,10 @@ export const AriFullChat: React.FC<AriFullChatProps> = ({
         await sendUserMessage(text);
 
         try {
-            // 2. Generar respuesta de ARI
+            // 2. Generar respuesta de ARI con la IA
             const ariResponse = await generateAriResponse(
-                text,
-                [],          // mensajes previos (en producción: pasar historial)
-                ariRole as any,
-                shop || {} as Shop,
+                [{ role: 'director', text }],
+                shop?.name ? `Comercio actual: ${shop.name}, Rubro: ${shop.category || 'General'}` : undefined
             );
 
             // 3. Guardar respuesta de ARI en el chat interno

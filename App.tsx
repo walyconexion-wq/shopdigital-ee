@@ -110,7 +110,6 @@ const MaintenanceBunkerPage   = React.lazy(() => import('./pages/MaintenanceBunk
 const SecOpsBunkerPage        = React.lazy(() => import('./pages/SecOpsBunkerPage').then(m => ({ default: m.SecOpsBunkerPage })));
 const CloningBunkerPage       = React.lazy(() => import('./pages/CloningBunkerPage').then(m => ({ default: m.CloningBunkerPage })));
 const LiveBroadcastPage       = React.lazy(() => import('./pages/LiveBroadcastPage'));
-const AriChatLabPage          = React.lazy(() => import('./pages/AriChatLabPage'));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 💤 Suspense fallback — pantalla mínima mientras se descarga el chunk
@@ -339,8 +338,6 @@ const TownController: React.FC = () => {
                     <Route path="embajador/clientes-comerciantes" element={<ProtectedRoute roles={['admin', 'ambassador']}><EnterpriseClientManagementPage allShops={allShops} allClients={allClients} /></ProtectedRoute>} />
                     {/* 💳 POSNET DE CRÉDITOS */}
                     <Route path="embajador/posnet" element={<ProtectedRoute roles={['admin', 'ambassador']}><CreditsPosnetPage /></ProtectedRoute>} />
-                    {/* 🧪 LABORATORIO — ARI Chat Interno (solo DEV) */}
-                    <Route path="lab/ari-chat" element={<AriChatLabPage />} />
                     <Route path="mi-comercio/posnet-virtual" element={<ProtectedRoute roles={['admin', 'ambassador']}><CreditsPosnetPage /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="home" replace />} />
                 </Route>

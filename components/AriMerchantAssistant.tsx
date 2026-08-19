@@ -240,8 +240,24 @@ Regla de Oro: El activo más valioso es la atención del cliente. Cada VIP es un
 `;
 
 
+import { AriFullChat } from './AriFullChat';
+import { useAriInternalChat } from '../hooks/useAriInternalChat';
+
 export const AriMerchantAssistant: React.FC<AriMerchantAssistantProps> = ({ shop, role = 'merchant', allShops, townId = '', publicPages = [], inline = false, candidateName = '', financialMetrics, isDayMode: isDayModeProp = false, globalConfig, shopStats, clientStats, initialMessage }) => {
     const [isOpen, setIsOpen] = useState(inline && role !== 'ambassador-field');
+    const [simulatedRole, setSimulatedRole] = useState<'auto' | 'merchant' | 'visitor'>(() => {
+        return (localStorage.getItem('ari_simulated_role') as any) || 'auto';
+    });
+
+    const isSubscribedMerchant = simulatedRole === 'merchant' || (
+        simulatedRole === 'auto' && Boolean(
+            shop && shop.id && shop.id !== 'global-network' && shop.name
+        )
+    );
+
+    const chatUserId = (shop && shop.id && shop.id !== 'global-network') ? shop.id : 'lab-waly-test-001';
+    const { unreadCount } = useAriInternalChat(chatUserId);
+
     const isIndustrial = role === 'industrial';
     const isMarketing = role === 'marketing';
     const isAcademy = role === 'academy';
@@ -811,7 +827,8 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
 
                     <button 
                         onClick={() => { setIsOpen(true); playNeonClick(); }}
-                        className="w-16 h-16 rounded-full bg-transparent flex items-center justify-center relative z-10 transition-all hover:scale-110 group"
+                        className="w-16 h-16 rounded-full bg-transparent flex items-center justify-center relative z-10 transition-all hover:scale-110 group cursor-pointer border-none"
+                        aria-label="Abrir asistente ARI"
                     >
                         {/* ARI Neon Bubble */}
                         <div className={`absolute inset-0 ${styles.blurBg} rounded-full blur-xl transition-all`}></div>
@@ -819,15 +836,26 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                             <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                         </div>
                         
-                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
-                            <span className="text-[8px] font-black text-white">1</span>
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg animate-pulse">
+                            <span className="text-[8px] font-black text-white">{unreadCount > 0 ? unreadCount : 1}</span>
                         </div>
                     </button>
                 </div>
             )}
 
+            {/* ═══ CASO A: COMERCIANTE SUSCRIPTO → CHAT GRANDE ESTILO WHATSAPP ═══ */}
+            {!inline && isOpen && isSubscribedMerchant && (
+                <AriFullChat
+                    asModal
+                    userId={chatUserId}
+                    userName={shop?.name || 'Comerciante Socio (Waly)'}
+                    shop={shop}
+                    onClose={() => { setIsOpen(false); playNeonClick(); }}
+                />
+            )}
 
-            {!inline && isOpen && (
+            {/* ═══ CASO B: VISITANTE / USUARIO GENERAL → VENTANA COMPACTA TRADICIONAL ═══ */}
+            {!inline && isOpen && !isSubscribedMerchant && (
                 <>
                     {/* Backdrop blur overlay to prevent background mixing and highlight the chat */}
                     <div 
@@ -845,9 +873,21 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                 <img src="/ari-avatar.png" alt="ARI Asistente" className="w-full h-full object-cover" />
                             </div>
                             <div className="text-left">
-                                <h3 className="text-[12px] font-black uppercase tracking-widest text-[#0f172a]">
-                                    {styles.headerTitle}
-                                </h3>
+                                <div className="flex items-center gap-1.5">
+                                    <h3 className="text-[12px] font-black uppercase tracking-widest text-[#0f172a]">
+                                        {styles.headerTitle}
+                                    </h3>
+                                    <button
+                                        onClick={() => {
+                                            setSimulatedRole('merchant');
+                                            localStorage.setItem('ari_simulated_role', 'merchant');
+                                        }}
+                                        title="Probar vista de Comerciante Suscripto"
+                                        className="text-[7.5px] px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-extrabold uppercase tracking-tighter hover:bg-violet-200 transition-colors border-none cursor-pointer"
+                                    >
+                                        ⚡ Chat VIP
+                                    </button>
+                                </div>
                                 <p className="text-[8px] text-emerald-600 font-bold uppercase tracking-widest flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> 
                                     En línea y lista para guiarte

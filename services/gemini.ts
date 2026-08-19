@@ -92,25 +92,51 @@ REGLAS DE SEGURIDAD DE DIRECCIÓN (ESCUDO DE DIRECCIÓN):
   "Idea copiada, Comandante. Para empujar la directiva al buzón de Luz 01, por favor introduzca su Código de Acción de Dirección."
 - Si la clave provista por el usuario es incorrecta o ausente, la herramienta "conmutar_modo_navidad" retornará un error y debes indicarlo en tu respuesta.`;
 
+import { generateAiCompletion, ChatMessage } from './aiProvider';
+
 /**
- * Genera una respuesta de Ari usando la API de Gemini.
- * Usa Chat Session (multi-turn) para mantener contexto de conversación.
+ * Genera una respuesta de Ari usando DeepSeek V3 / OpenRouter (Ultra-bajo costo)
+ * con fallback a Gemini API.
  */
 export const generateAriResponse = async (
     history: { role: 'director' | 'ari', text: string }[], 
     systemContext?: string,
     onRetryProgress?: (msg: string) => void
 ): Promise<string> => {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    
-    if (!apiKey) {
-        return "⚠️ Jefe, no detecto la llave de ignición (API KEY). Pedile al Director que la configure en Vercel → Settings → Environment Variables → VITE_GEMINI_API_KEY.";
-    }
-
-    // Construir el System Instruction completo
+    // 1. Construir el System Prompt
     let systemPrompt = ARI_IDENTITY;
     if (systemContext) {
         systemPrompt += `\n\nCONTEXTO DEL NEGOCIO ACTUAL:\n${systemContext}`;
+    }
+
+    // 2. Intentar primero con la IA China de Ultra-bajo costo (DeepSeek V3 / OpenRouter)
+    try {
+        const aiMessages: ChatMessage[] = [
+            { role: 'system', content: systemPrompt },
+            ...history.map(msg => ({
+                role: (msg.role === 'ari' ? 'assistant' : 'user') as 'assistant' | 'user',
+                content: msg.text
+            }))
+        ];
+
+        const aiResponse = await generateAiCompletion({
+            messages: aiMessages,
+            temperature: 0.7,
+            maxTokens: 500
+        });
+
+        if (aiResponse && aiResponse.trim().length > 0) {
+            return aiResponse;
+        }
+    } catch (chineseAiErr: any) {
+        console.warn('[ARI Engine] ⚠️ DeepSeek/OpenRouter con problemas, activando fallback secundario:', chineseAiErr.message);
+    }
+
+    // 3. Fallback: Gemini API de respaldo si DeepSeek no responde
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    
+    if (!apiKey) {
+        return "⚠️ Hola Socio, estamos operando en modo contingencia con el Búnker Central.";
     }
 
     // Convertir historial al formato de la API
@@ -120,7 +146,7 @@ export const generateAriResponse = async (
     }));
 
     // Retry logic con backoff progresivo
-    const maxRetries = 3;
+    const maxRetries = 2;
     
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {

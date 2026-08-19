@@ -213,18 +213,18 @@ const GlobalHomePage: React.FC = () => {
 
     return (
         <div 
-            className={`w-full font-sans relative select-none ${isDayMode ? 'bg-transparent text-[#2d1e15]' : 'bg-transparent text-white selection:bg-cyan-500/30 overflow-hidden h-screen'}`}
+            className={`w-full h-screen font-sans relative select-none z-10 overflow-hidden ${isDayMode ? 'bg-transparent text-[#2d1e15]' : 'bg-transparent text-white selection:bg-cyan-500/30'}`}
         >
             {/* Fondo Ciber-Digital de Circuitos Animados */}
             <CyberCircuitBackground />
             
             {isDayMode ? (
-                <div className="w-full max-w-md mx-auto min-h-full flex flex-col p-5 pb-6 justify-between relative">
+                <div className="w-full max-w-md mx-auto h-full flex flex-col p-4 sm:p-5 pb-5 justify-between relative z-10">
 
-                    {/* ── Encabezado y Botones Enueltos en el Contenedor Neumórfico Crema ── */}
-                    <div className="neu-plate w-full mt-4 flex flex-col gap-3.5 relative z-10">
+                    {/* ── Encabezado y Botones Envueltos en el Contenedor Neumórfico Crema ── */}
+                    <div className="neu-plate w-full mt-2 sm:mt-4 flex flex-col gap-3 relative z-10">
                         {/* ── Título Interno Hundido (Inset Neumórfico) ── */}
-                        <div className="neu-inset-title py-3 px-6 text-center w-full max-w-[300px] mx-auto flex flex-col items-center justify-center">
+                        <div className="neu-inset-title py-2.5 px-6 text-center w-full max-w-[300px] mx-auto flex flex-col items-center justify-center">
                             <h1 className="text-[19px] font-[900] uppercase tracking-[0.1em] text-[#2c2440] select-none leading-none">
                                 SHOPDIGITAL
                             </h1>
