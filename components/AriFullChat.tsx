@@ -266,6 +266,19 @@ export const AriFullChat: React.FC<AriFullChatProps> = ({
                     </p>
                 </div>
 
+                {/* Switcher a modo visitante */}
+                <button
+                    onClick={() => {
+                        localStorage.setItem('ari_simulated_role', 'visitor');
+                        if (onClose) onClose();
+                        window.location.reload();
+                    }}
+                    title="Cambiar a Vista Visitante / General"
+                    className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 text-[8px] font-extrabold uppercase tracking-wider border border-white/20 cursor-pointer transition-all"
+                >
+                    👤 Modo Visitante
+                </button>
+
                 {/* Botón push */}
                 <button
                     onClick={isPushSubscribed ? undefined : requestPushSubscription}

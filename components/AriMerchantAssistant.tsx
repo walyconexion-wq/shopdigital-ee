@@ -881,11 +881,12 @@ MÉTRICAS FINANCIERAS DE TESORERÍA (en vivo):
                                         onClick={() => {
                                             setSimulatedRole('merchant');
                                             localStorage.setItem('ari_simulated_role', 'merchant');
+                                            window.location.reload();
                                         }}
-                                        title="Probar vista de Comerciante Suscripto"
-                                        className="text-[7.5px] px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-extrabold uppercase tracking-tighter hover:bg-violet-200 transition-colors border-none cursor-pointer"
+                                        title="Abrir vista de Comerciante Suscripto (Estilo WhatsApp)"
+                                        className="text-[7.5px] px-2 py-0.5 rounded-full bg-violet-600 hover:bg-violet-700 text-white font-extrabold uppercase tracking-tighter shadow-sm transition-all border-none cursor-pointer"
                                     >
-                                        ⚡ Chat VIP
+                                        💬 Chat Comerciante
                                     </button>
                                 </div>
                                 <p className="text-[8px] text-emerald-600 font-bold uppercase tracking-widest flex items-center gap-1">
