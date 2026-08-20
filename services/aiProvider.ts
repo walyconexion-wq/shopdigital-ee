@@ -17,19 +17,35 @@ export interface AiRequestOptions {
     preferredProvider?: 'deepseek' | 'openrouter' | 'auto';
 }
 
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || '';
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+const getDeepSeekKey = (): string => {
+    if (typeof window !== 'undefined' && localStorage.getItem('deepseek_api_key')) {
+        return localStorage.getItem('deepseek_api_key') || '';
+    }
+    return import.meta.env.VITE_DEEPSEEK_API_KEY || '';
+};
+
+const getOpenRouterKey = (): string => {
+    if (typeof window !== 'undefined' && localStorage.getItem('openrouter_api_key')) {
+        return localStorage.getItem('openrouter_api_key') || '';
+    }
+    return import.meta.env.VITE_OPENROUTER_API_KEY || '';
+};
 
 /**
  * 1. Llamada directa a DeepSeek API (DeepSeek-V3 / deepseek-chat)
  * Costo ultra-económico: $0.14/M input tokens, ultra rápido.
  */
 async function callDeepSeek(messages: ChatMessage[], temperature = 0.7, maxTokens = 800): Promise<string> {
+    const key = getDeepSeekKey();
+    if (!key) {
+        throw new Error('[DeepSeek] Falta la API Key. Configura VITE_DEEPSEEK_API_KEY');
+    }
+
     const response = await fetch('https://api.deepseek.com/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+            'Authorization': `Bearer ${key}`
         },
         body: JSON.stringify({
             model: 'deepseek-chat',
@@ -59,11 +75,16 @@ async function callDeepSeek(messages: ChatMessage[], temperature = 0.7, maxToken
  * Soporta DeepSeek-R1, Qwen 2.5 72B, Llama 3.3 70B
  */
 async function callOpenRouter(messages: ChatMessage[], temperature = 0.7, maxTokens = 800): Promise<string> {
+    const key = getOpenRouterKey();
+    if (!key) {
+        throw new Error('[OpenRouter] Falta la API Key. Configura VITE_OPENROUTER_API_KEY');
+    }
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Authorization': `Bearer ${key}`,
             'HTTP-Referer': 'https://shopdigital.tech',
             'X-Title': 'ShopDigital ARI Assistant'
         },
