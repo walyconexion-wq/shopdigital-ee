@@ -690,14 +690,23 @@ Directora General ARI: "Comandante, la nave vuela como un Ferrari V12. Las celda
                         )}
                     </div>
 
-                    <button
-                        onClick={handleConsolidateInfo}
-                        disabled={isConsolidating}
-                        className="px-6 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-[1000] uppercase tracking-[0.2em] text-[10px] rounded-2xl border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] disabled:opacity-50 flex items-center gap-2 h-fit"
-                    >
-                        <RefreshCw size={14} className={isConsolidating ? 'animate-spin' : ''} />
-                        {isConsolidating ? 'Consolidando...' : 'CONSOLIDAR INFORMES DE ÁREA'}
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => { playNeonClick(); navigate('/bunker-luz'); }}
+                            className="px-6 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-[1000] uppercase tracking-[0.2em] text-[10px] rounded-2xl border border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 transition-all flex items-center gap-2 h-fit cursor-pointer"
+                        >
+                            <Cpu size={14} /> SALA DE GUERRA (LUZ 01)
+                        </button>
+
+                        <button
+                            onClick={handleConsolidateInfo}
+                            disabled={isConsolidating}
+                            className="px-6 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-[1000] uppercase tracking-[0.2em] text-[10px] rounded-2xl border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] disabled:opacity-50 flex items-center gap-2 h-fit"
+                        >
+                            <RefreshCw size={14} className={isConsolidating ? 'animate-spin' : ''} />
+                            {isConsolidating ? 'Consolidando...' : 'CONSOLIDAR INFORMES DE ÁREA'}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="flex flex-col xl:flex-row w-full gap-6 flex-1 min-h-0 pb-10">

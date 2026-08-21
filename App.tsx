@@ -109,6 +109,8 @@ const InvestmentBunkerPage    = React.lazy(() => import('./pages/InvestmentBunke
 const MaintenanceBunkerPage   = React.lazy(() => import('./pages/MaintenanceBunkerPage').then(m => ({ default: m.MaintenanceBunkerPage })));
 const SecOpsBunkerPage        = React.lazy(() => import('./pages/SecOpsBunkerPage').then(m => ({ default: m.SecOpsBunkerPage })));
 const CloningBunkerPage       = React.lazy(() => import('./pages/CloningBunkerPage').then(m => ({ default: m.CloningBunkerPage })));
+const BunkerLuzPage           = React.lazy(() => import('./pages/BunkerLuzPage'));
+const BunkerTacticoPage       = React.lazy(() => import('./pages/BunkerTacticoPage'));
 const LiveBroadcastPage       = React.lazy(() => import('./pages/LiveBroadcastPage'));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -435,8 +437,12 @@ const App: React.FC = () => {
                     <Route path="/embajador" element={<Navigate to="/" replace />} />
                     <Route path="/embajador/*" element={<Navigate to="/" replace />} />
                     
-                    {/* 🛡️ BÚNKER DE MANDO Y TRANSMISIÓN (DIRECTOR) - Fuera de Layout mobile */}
+                    {/* 🛡️ BÚNKER DE MANDO Y TRANSMISIÓN (DIRECTOR & LUZ 01) - Fuera de Layout mobile */}
                     <Route path="/:townId/bunker-waly" element={<ProtectedRoute roles={['admin']}><DirectorBunkerPage /></ProtectedRoute>} />
+                    <Route path="/:townId/bunker-tactico" element={<ProtectedRoute roles={['admin']}><BunkerTacticoPage /></ProtectedRoute>} />
+                    <Route path="/bunker-tactico" element={<Navigate to="/esteban-echeverria/bunker-tactico" replace />} />
+                    <Route path="/:townId/bunker-luz" element={<ProtectedRoute roles={['admin']}><BunkerLuzPage /></ProtectedRoute>} />
+                    <Route path="/bunker-luz" element={<Navigate to="/esteban-echeverria/bunker-luz" replace />} />
                     <Route path="/:townId/director/transmision-en-vivo" element={<ProtectedRoute roles={['admin']}><LiveBroadcastPage /></ProtectedRoute>} />
                     {/* Alias sin townId — redirige al búnker de EE por defecto */}
                     <Route path="/director/transmision-en-vivo" element={<Navigate to="/esteban-echeverria/director/transmision-en-vivo" replace />} />

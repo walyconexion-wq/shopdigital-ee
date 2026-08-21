@@ -22,7 +22,7 @@ const LabControlPanel: React.FC = () => {
     const [lastAction, setLastAction] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const run = async (label: string, fn: () => Promise<void>) => {
+    const run = async (label: string, fn: () => Promise<any>) => {
         setIsLoading(true);
         setLastAction(null);
         try {

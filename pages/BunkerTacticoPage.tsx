@@ -1,0 +1,476 @@
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { 
+    Cpu, Shield, ShieldCheck, Zap, Radio, Database, Users, 
+    LayoutGrid, Target, Activity, TrendingUp, Sparkles, Terminal, 
+    ExternalLink, CheckCircle2, Clock, AlertTriangle, Copy, Check,
+    Layers, Compass, Flame, ArrowUpRight, BarChart3, Bot, ChevronLeft,
+    BookOpen, Network, RefreshCw, Plus, FileText, Lock
+} from 'lucide-react';
+import { playNeonClick } from '../utils/audio';
+
+export interface StrategicProject {
+    id: string;
+    title: string;
+    bunkerId: string;
+    bunkerName: string;
+    assignedAgent: string;
+    frente: 'experiencia' | 'infraestructura' | 'expansion' | 'blindaje';
+    stage: 'obsidian' | 'forja' | 'laboratorio' | 'produccion';
+    obsidianNode: string;
+    conversationId: string;
+    summary: string;
+    impactMetric: string;
+    updatedAt: string;
+}
+
+const INITIAL_PROJECTS: StrategicProject[] = [
+    {
+        id: 'proj-01',
+        title: 'Interfaces 1, 2 y 3 de la Home (Modo Caramelo 3D)',
+        bunkerId: 'ari-ui-ux',
+        bunkerName: 'Búnker 02: Experiencia & UI/UX',
+        assignedAgent: 'ARI (SQUAD_FRONTEND)',
+        frente: 'experiencia',
+        stage: 'laboratorio',
+        obsidianNode: 'GENERAL_ARI_UX_UI',
+        conversationId: '6c8e16ba-10a9-4a34-a4d1-be97865f38f7',
+        summary: 'Portada Hero, Barra de 24 Rubros 3D y Catálogo de Comercios VIP con diseño neumórfico táctil.',
+        impactMetric: 'UI Silicon Valley & 100% Mobile',
+        updatedAt: '21 Ago 2026'
+    },
+    {
+        id: 'proj-02',
+        title: 'Omni-Gateway Multi-Modelo (DeepSeek + Qwen)',
+        bunkerId: 'bruno-backend',
+        bunkerName: 'Búnker 05: Infraestructura Core',
+        assignedAgent: 'BRUNO (CORE_DATASTORE)',
+        frente: 'infraestructura',
+        stage: 'produccion',
+        obsidianNode: 'GENERAL_BRUNO_BACKEND',
+        conversationId: 'b9472e3a-7a52-4734-aa1b-53c829e06180',
+        summary: 'Enrutador universal con balanceo automático a DeepSeek ($0.14/1M) y OpenRouter sin caídas.',
+        impactMetric: '98% ahorro en costos de IA',
+        updatedAt: '20 Ago 2026'
+    },
+    {
+        id: 'proj-03',
+        title: 'Marketing Masivo de Rubros con DeepSeek Ingestion',
+        bunkerId: 'melisa-marketing',
+        bunkerName: 'Búnker 03: Marketing & Expansión',
+        assignedAgent: 'MELISA (MARKETING_LEAD)',
+        frente: 'expansion',
+        stage: 'laboratorio',
+        obsidianNode: 'BUNKER_CONFIG_AND_SKILLS_MASTER_SNC2',
+        conversationId: 'e2b0ec83-c9bb-44fe-9752-1a21eabd3f18',
+        summary: 'Campaña inteligente de 24 rubros basada en 40 fuentes de NotebookLM para atracción de comerciantes.',
+        impactMetric: 'Generación a costo $0.00 / comercio',
+        updatedAt: '19 Ago 2026'
+    },
+    {
+        id: 'proj-04',
+        title: 'Blindaje de Colección Towns & Protocolo Doberman',
+        bunkerId: 'thor-secops',
+        bunkerName: 'Búnker 06: Ciberseguridad & QA',
+        assignedAgent: 'THOR & VORTEX (SECOPS)',
+        frente: 'blindaje',
+        stage: 'produccion',
+        obsidianNode: 'GENERAL_THOR_SECOPS',
+        conversationId: '04c3114d-9ca3-4882-a010-85f8c6ebf8b6',
+        summary: 'Bloqueo inmutable de claves primarias en Firestore y servidor MCP local para grafo de dependencias.',
+        impactMetric: 'Zero Data Loss & 0 Errores TS',
+        updatedAt: '20 Ago 2026'
+    },
+    {
+        id: 'proj-05',
+        title: 'Clonación Fractal: Ezeiza, Traslasierra y 7 Lagos',
+        bunkerId: 'ely-clonacion',
+        bunkerName: 'Búnker 07: Clonación Fractal',
+        assignedAgent: 'ELY (CLONACION_FRACTAL)',
+        frente: 'expansion',
+        stage: 'laboratorio',
+        obsidianNode: 'LABORATORIO_SHOPDIGITAL',
+        conversationId: 'b1ca1b6d-a719-4f36-8a03-61e8c1ea9825',
+        summary: 'Molde maestro para replicar ShopDigital en cualquier municipio en menos de 10 minutos.',
+        impactMetric: 'Escalabilidad regional ilimitada',
+        updatedAt: '18 Ago 2026'
+    },
+    {
+        id: 'proj-06',
+        title: 'Fusión Superpowers + Spec Kit (.cursorrules)',
+        bunkerId: 'luz-central',
+        bunkerName: 'Búnker 00: Dirección Central & Forja',
+        assignedAgent: 'LUZ 01 (MARISCAL_GENERAL)',
+        frente: 'infraestructura',
+        stage: 'produccion',
+        obsidianNode: 'SUPERPOWERS_FUSION_MAESTRA_SNC2',
+        conversationId: 'a4faed7e-d3c7-472a-a9ae-7b0cabf9f0f0',
+        summary: 'Estándar del 94% Zero-Slop, 3 Fases de la Forja y conexión al ecosistema skills.sh.',
+        impactMetric: '100% de agentes disciplinados',
+        updatedAt: '21 Ago 2026'
+    }
+];
+
+export const BunkerTacticoPage: React.FC = () => {
+    const navigate = useNavigate();
+    const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
+    const [selectedTab, setSelectedTab] = useState<'lienzo' | 'kanban' | 'obsidian' | 'directivas'>('lienzo');
+    const [selectedFrente, setSelectedFrente] = useState<string>('todos');
+    const [projects, setProjects] = useState<StrategicProject[]>(INITIAL_PROJECTS);
+    const [selectedProj, setSelectedProj] = useState<StrategicProject | null>(null);
+    const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedId(text);
+        setTimeout(() => setCopiedId(null), 2000);
+    };
+
+    const filteredProjects = selectedFrente === 'todos'
+        ? projects
+        : projects.filter(p => p.frente === selectedFrente);
+
+    const getStageBadge = (stage: StrategicProject['stage']) => {
+        switch (stage) {
+            case 'obsidian':
+                return { label: '📝 En Obsidian (Plan)', bg: 'bg-purple-950/80 text-purple-300 border-purple-500/40' };
+            case 'forja':
+                return { label: '⚡ En Forja (Código)', bg: 'bg-blue-950/80 text-blue-300 border-blue-500/40' };
+            case 'laboratorio':
+                return { label: '🔬 En Laboratorio (Staging)', bg: 'bg-amber-950/80 text-amber-300 border-amber-500/40 animate-pulse' };
+            case 'produccion':
+                return { label: '🟢 En Producción (Live)', bg: 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40' };
+        }
+    };
+
+    return (
+        <div className="w-full min-h-screen bg-[#050811] text-white p-4 md:p-8 font-sans selection:bg-cyan-500 selection:text-black">
+            {/* 🌟 ENCABEZADO OFICIAL DE MANDO ESTRATÉGICO */}
+            <div className="max-w-7xl mx-auto mb-8">
+                {/* BOTÓN VOLVER AL TABLERO MAESTRO */}
+                <button
+                    onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro`); }}
+                    className="mb-4 px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-black uppercase tracking-wider flex items-center gap-2 transition cursor-pointer"
+                >
+                    <ChevronLeft size={16} /> Volver al Tablero Maestro
+                </button>
+
+                <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#0b1329] via-[#0f1b3d] to-[#0b1329] border-2 border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.2)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-5">
+                        <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 border-2 border-cyan-400/50 flex items-center justify-center shadow-[0_0_25px_rgba(6,182,212,0.4)]">
+                            <Compass className="w-10 h-10 text-cyan-400 animate-spin-slow" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="px-3 py-1 rounded-full text-[10px] font-[1000] uppercase tracking-widest bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
+                                    ESTADO MAYOR • SNC 2.0
+                                </span>
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                            </div>
+                            <h1 className="text-2xl md:text-4xl font-[1000] tracking-tight text-white mt-1">
+                                BÚNKER TÁCTICO Y ESTRATÉGICO
+                            </h1>
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300 font-bold mt-1">
+                                <span className="text-amber-400 flex items-center gap-1">
+                                    👑 Comandante: <strong className="text-white">DIRECTOR WALY OMEGA</strong>
+                                </span>
+                                <span className="text-slate-600">•</span>
+                                <span className="text-cyan-400 flex items-center gap-1">
+                                    ⚡ Orquestación: <strong className="text-white">AGENTE LUZ-01</strong>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* TELEMETRÍA GLOBAL DEL ESTADO MAYOR */}
+                    <div className="grid grid-cols-3 gap-2 bg-[#050a17]/90 p-4 rounded-2xl border border-cyan-500/30">
+                        <div className="text-center px-3">
+                            <div className="text-[10px] uppercase font-black text-slate-400">Proyectos</div>
+                            <div className="text-xl font-[1000] text-cyan-400">{projects.length}</div>
+                        </div>
+                        <div className="text-center px-3 border-x border-slate-800">
+                            <div className="text-[10px] uppercase font-black text-slate-400">En Lab</div>
+                            <div className="text-xl font-[1000] text-amber-400">
+                                {projects.filter(p => p.stage === 'laboratorio').length}
+                            </div>
+                        </div>
+                        <div className="text-center px-3">
+                            <div className="text-[10px] uppercase font-black text-slate-400">En Prod</div>
+                            <div className="text-xl font-[1000] text-emerald-400">
+                                {projects.filter(p => p.stage === 'produccion').length}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 🎛️ SELECTOR DE VISTAS PRINCIPALES */}
+                <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
+                    <div className="flex items-center gap-2 bg-[#0a1020] p-1.5 rounded-2xl border border-slate-800">
+                        {[
+                            { id: 'lienzo', label: '🧠 Lienzo Táctico 3D', icon: Network },
+                            { id: 'kanban', label: '📊 Tablero de Fases (Kanban)', icon: LayoutGrid },
+                            { id: 'obsidian', label: '📖 Sincronía Obsidian', icon: BookOpen },
+                        ].map(tab => {
+                            const Icon = tab.icon;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => {
+                                        playNeonClick();
+                                        setSelectedTab(tab.id as any);
+                                    }}
+                                    className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer border ${
+                                        selectedTab === tab.id
+                                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)]'
+                                            : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'
+                                    }`}
+                                >
+                                    <Icon size={15} /> {tab.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* FILTRO DE FRENTES */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mr-1">
+                            Frente:
+                        </span>
+                        {[
+                            { id: 'todos', label: 'Todos' },
+                            { id: 'experiencia', label: '🎨 Experiencia' },
+                            { id: 'infraestructura', label: '🧱 Infraestructura' },
+                            { id: 'expansion', label: '📢 Expansión' },
+                            { id: 'blindaje', label: '🛡️ Blindaje' },
+                        ].map(f => (
+                            <button
+                                key={f.id}
+                                onClick={() => {
+                                    playNeonClick();
+                                    setSelectedFrente(f.id);
+                                }}
+                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
+                                    selectedFrente === f.id
+                                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow'
+                                        : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
+                                }`}
+                            >
+                                {f.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ─── VISTA 1: LIENZO TÁCTICO (TARJETAS DE PROYECTOS INTERACTIVAS) ─── */}
+            {selectedTab === 'lienzo' && (
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredProjects.map(proj => {
+                        const badge = getStageBadge(proj.stage);
+                        return (
+                            <div
+                                key={proj.id}
+                                onClick={() => {
+                                    playNeonClick();
+                                    setSelectedProj(proj);
+                                }}
+                                className="group relative p-6 rounded-3xl bg-gradient-to-b from-[#0e162c] to-[#080d1a] border-2 border-slate-800 hover:border-cyan-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+                            >
+                                <div>
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${badge.bg}`}>
+                                            {badge.label}
+                                        </span>
+                                        <span className="text-[10px] font-mono text-slate-500">{proj.updatedAt}</span>
+                                    </div>
+
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-1">
+                                        {proj.assignedAgent}
+                                    </div>
+                                    <h3 className="text-lg font-black text-white group-hover:text-cyan-300 transition-colors leading-snug">
+                                        {proj.title}
+                                    </h3>
+                                    <p className="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+                                        {proj.summary}
+                                    </p>
+                                </div>
+
+                                <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                                    <div className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                                        <Zap size={12} /> {proj.impactMetric}
+                                    </div>
+                                    <span className="text-cyan-400 text-xs font-black flex items-center gap-1 group-hover:underline">
+                                        Ver <ArrowUpRight size={14} />
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* ─── VISTA 2: TABLERO KANBAN DE FASES ─── */}
+            {selectedTab === 'kanban' && (
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-5">
+                    {[
+                        { stage: 'obsidian', title: '1. Planificado en Obsidian', color: 'border-purple-500/40 text-purple-400 bg-purple-950/20' },
+                        { stage: 'forja', title: '2. En Forja de Código', color: 'border-blue-500/40 text-blue-400 bg-blue-950/20' },
+                        { stage: 'laboratorio', title: '3. En Laboratorio (Staging)', color: 'border-amber-500/40 text-amber-400 bg-amber-950/20' },
+                        { stage: 'produccion', title: '4. En Producción (Live)', color: 'border-emerald-500/40 text-emerald-400 bg-emerald-950/20' },
+                    ].map(col => {
+                        const colProjects = filteredProjects.filter(p => p.stage === col.stage);
+                        return (
+                            <div key={col.stage} className={`p-4 rounded-3xl border ${col.color} flex flex-col min-h-[500px]`}>
+                                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                                    <h4 className="text-xs font-black uppercase tracking-wider">{col.title}</h4>
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-black/60 text-white">
+                                        {colProjects.length}
+                                    </span>
+                                </div>
+
+                                <div className="space-y-3 flex-1">
+                                    {colProjects.map(p => (
+                                        <div
+                                            key={p.id}
+                                            onClick={() => { playNeonClick(); setSelectedProj(p); }}
+                                            className="p-4 rounded-2xl bg-[#090e1c] border border-slate-800 hover:border-cyan-400/50 cursor-pointer transition shadow hover:shadow-lg"
+                                        >
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400 block mb-1">
+                                                {p.assignedAgent}
+                                            </span>
+                                            <h5 className="text-xs font-bold text-white mb-2">{p.title}</h5>
+                                            <p className="text-[11px] text-slate-400 line-clamp-2">{p.summary}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* ─── VISTA 3: SINCRONÍA OBSIDIAN ─── */}
+            {selectedTab === 'obsidian' && (
+                <div className="max-w-7xl mx-auto p-6 md:p-8 rounded-3xl bg-[#090e1c] border border-purple-500/30">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-400/40 flex items-center justify-center">
+                            <BookOpen className="w-6 h-6 text-purple-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black text-white">Red Neuronal & Segundo Cerebro (Obsidian Vault)</h3>
+                            <p className="text-xs text-slate-400">
+                                Cada nodo forjado por el Director Waly y Luz 01 está sincronizado en tiempo real en la bóveda local.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                            { node: 'LUZ_01_ORQUESTADORA', desc: 'Nodo HUB Central y Orquestación de Agentes' },
+                            { node: 'DIRECTOR_WALY_OMEGA', desc: 'Comandante Supremo y Autorizaciones de Producción' },
+                            { node: 'CONSTITUCION_AGENTICA_SNC2', desc: 'Reglas y Jerarquías de los 12 Búnkeres' },
+                            { node: 'LABORATORIO_SHOPDIGITAL', desc: 'Registro de Despliegues en Staging' },
+                            { node: 'SPEC_KIT_MATT_POCOCK_ADAPTACION_SNC2', desc: 'Guardrails Estrictos y Tipos TypeScript' },
+                            { node: 'SUPERPOWERS_FUSION_MAESTRA_SNC2', desc: 'Estándar del 94% y Directivas Multi-LLM' },
+                            { node: 'ECOSISTEMA_SKILLS_SH_Y_FORJA_SNC2', desc: 'Conexión a la CLI de Skills.sh' },
+                            { node: 'DOSSIER_TECNOLOGICO_INVERSORES_SHOPDIGITAL', desc: 'Documento Ejecutivo para Inversores y CTOs' },
+                            { node: 'SALA_DE_GUERRA_Y_LIENZO_TACTICO_LUZ01', desc: 'Mapa Mental y Planificación de Frentes' }
+                        ].map(n => (
+                            <div key={n.node} className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex flex-col justify-between">
+                                <div>
+                                    <div className="text-[10px] font-mono text-purple-400 font-black mb-1">[[ {n.node} ]]</div>
+                                    <p className="text-xs text-slate-300">{n.desc}</p>
+                                </div>
+                                <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-500">
+                                    <span className="text-emerald-400">🟢 Sincronizado</span>
+                                    <span className="font-mono">Vault Local</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* 📋 MODAL DE DETALLE DEL PROYECTO */}
+            {selectedProj && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+                    <div className="w-full max-w-2xl bg-[#0b1326] border-2 border-cyan-500/50 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(6,182,212,0.3)] relative">
+                        <button
+                            onClick={() => setSelectedProj(null)}
+                            className="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+                        >
+                            ✕
+                        </button>
+
+                        <div className="mb-4">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">
+                                {selectedProj.bunkerName}
+                            </span>
+                            <h2 className="text-2xl font-[1000] text-white mt-1">
+                                {selectedProj.title}
+                            </h2>
+                            <div className="flex items-center gap-2 mt-2">
+                                <span className={`px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStageBadge(selectedProj.stage).bg}`}>
+                                    {getStageBadge(selectedProj.stage).label}
+                                </span>
+                                <span className="text-xs text-slate-400">• Agente: <strong>{selectedProj.assignedAgent}</strong></span>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 text-xs my-6">
+                            <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
+                                <div className="text-[10px] font-bold text-slate-500 uppercase">Resumen Táctico</div>
+                                <div className="text-slate-200 mt-1 font-medium leading-relaxed">
+                                    {selectedProj.summary}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase">Nodo en Obsidian</div>
+                                    <div className="text-purple-400 font-mono font-bold mt-1">[[ {selectedProj.obsidianNode} ]]</div>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex items-center justify-between">
+                                    <div>
+                                        <div className="text-[10px] font-bold text-slate-500 uppercase">Conversation ID</div>
+                                        <div className="font-mono text-cyan-300 mt-0.5 text-[11px] truncate max-w-[180px]">
+                                            {selectedProj.conversationId}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleCopy(selectedProj.conversationId)}
+                                        className="p-2 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-black transition cursor-pointer"
+                                        title="Copiar ID"
+                                    >
+                                        {copiedId === selectedProj.conversationId ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                            <button
+                                onClick={() => setSelectedProj(null)}
+                                className="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-black uppercase tracking-wider hover:bg-slate-700 transition cursor-pointer"
+                            >
+                                Cerrar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    playNeonClick();
+                                    alert(`Directiva enviada a ${selectedProj.assignedAgent}: "Priorizar avance hacia Producción"`);
+                                    setSelectedProj(null);
+                                }}
+                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center gap-2 cursor-pointer"
+                            >
+                                <Zap size={14} /> Transmitir Directiva
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default BunkerTacticoPage;

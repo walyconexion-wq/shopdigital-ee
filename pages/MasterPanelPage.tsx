@@ -712,6 +712,21 @@ const MasterPanelPage: React.FC = () => {
                     <div className="grid grid-cols-1 gap-3">
                         <div 
                             role="button" tabIndex={0}
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/bunker-tactico`); }}
+                            className="w-full p-4 rounded-xl font-[1000] uppercase tracking-wider border-2 border-cyan-400 bg-gradient-to-r from-cyan-950/60 via-[#0d1c38] to-blue-950/60 hover:from-cyan-900/80 hover:to-blue-900/80 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_25px_rgba(6,182,212,0.35)] animate-pulse"
+                        >
+                            <div className="flex items-center gap-2">
+                                <span className="text-lg">🗺️⚡</span>
+                                <div className="text-left">
+                                    <div className="text-[11px] text-cyan-300 font-[1000] tracking-widest">BÚNKER TÁCTICO Y ESTRATÉGICO</div>
+                                    <div className="text-[8px] text-cyan-400/80 font-mono">DIR. WALY & ORQUESTADORA LUZ-01</div>
+                                </div>
+                            </div>
+                            <span className="text-[9px] text-cyan-300 font-black px-2.5 py-1 bg-cyan-500/20 rounded-lg border border-cyan-400/50 shadow">Estado Mayor</span>
+                        </div>
+
+                        <div 
+                            role="button" tabIndex={0}
                             onClick={() => { playNeonClick(); navigate(`/${townId}/bunker-waly`); }}
                             className="w-full p-4 rounded-xl font-bold uppercase tracking-wider border border-violet-500/40 hover:border-violet-400 active:scale-95 transition-all flex items-center justify-between cursor-pointer shadow-[0_0_15px_rgba(139,92,246,0.1)] hover:bg-violet-900/10"
                         >
