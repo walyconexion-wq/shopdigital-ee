@@ -5,7 +5,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBSicRJMwdxG76eaXvQh07ncDYhxMz7mF0",
     authDomain: "shopdigital-ee.firebaseapp.com",
     projectId: "shopdigital-ee",
     storageBucket: "shopdigital-ee.firebasestorage.app",
