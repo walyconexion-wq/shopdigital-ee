@@ -6,7 +6,8 @@ import {
     ExternalLink, CheckCircle2, Clock, AlertTriangle, Copy, Check,
     Layers, Compass, Flame, ArrowUpRight, BarChart3, Bot, ChevronLeft,
     BookOpen, Network, RefreshCw, Plus, FileText, Lock, Search,
-    Send, UserCheck, CheckCheck, FolderKanban
+    Send, UserCheck, CheckCheck, FolderKanban, Crown, Trophy,
+    ScrollText, Award, Lightbulb, Rocket, Milestone, ShieldAlert
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
@@ -42,6 +43,128 @@ export interface SwarmAgent {
     color: string;
     icon: React.ElementType;
 }
+
+export interface CommandDirective {
+    id: string;
+    number: string;
+    title: string;
+    category: 'disciplina' | 'seguridad' | 'calidad' | 'arquitectura' | 'diseno';
+    targetAgents: string;
+    description: string;
+    enforcement: string;
+    icon: React.ElementType;
+}
+
+export interface CommandAchievement {
+    id: string;
+    title: string;
+    date: string;
+    metric: string;
+    description: string;
+    badge: string;
+    icon: React.ElementType;
+}
+
+const COMMAND_DIRECTIVES: CommandDirective[] = [
+    {
+        id: 'dir-01',
+        number: 'DIRECTIVA 01',
+        title: 'La Ley del Laboratorio & Despliegue Escalonado',
+        category: 'disciplina',
+        targetAgents: 'Todos los 12 Agentes del Enjambre',
+        description: 'Ningún agente puede empujar cambios a producción directamente. Todo código se forja y prueba en la rama "laboratorio" (shopdigital-ar.vercel.app). El paso a main (shopdigital.tech) es facultad exclusiva del Director Waly con la orden "Luz verde a producción".',
+        enforcement: '🔒 Estricto: 100% obligatorio sin excepciones',
+        icon: Rocket
+    },
+    {
+        id: 'dir-02',
+        number: 'DIRECTIVA 02',
+        title: 'Inmutabilidad de Bases de Datos & Colección Towns',
+        category: 'seguridad',
+        targetAgents: 'Bruno (Backend), Thor (SecOps), Javi (Mantenimiento)',
+        description: 'Prohibición absoluta de modificar claves primarias, esquemas de documentos o IDs en la colección "Towns" de Firestore sin autorización expresa y escrita del Director Waly OMEGA.',
+        enforcement: '🛡️ Bloqueo Doberman Activo',
+        icon: ShieldAlert
+    },
+    {
+        id: 'dir-03',
+        number: 'DIRECTIVA 03',
+        title: 'El Estándar del 94% Zero-Slop (Superpowers)',
+        category: 'calidad',
+        targetAgents: 'Luz 01 (Forja) y todos los subagentes',
+        description: 'Rechazar tajantemente el 94% de código basura generado por LLMs sin tipado estricto, sin manejo de errores o con imports rotos. Toda línea forjada debe compilar con 0 errores en TypeScript.',
+        enforcement: '⚡ Compilación Limpia Obligatoria (0 Errores TS)',
+        icon: Zap
+    },
+    {
+        id: 'dir-04',
+        number: 'DIRECTIVA 04',
+        title: 'Planificación Primero en Obsidian (Segundo Cerebro)',
+        category: 'arquitectura',
+        targetAgents: 'Luz 01, Gemy, Mateo y Dirección General',
+        description: 'Antes de tocar código en la matriz, cada arquitectura, sistema o refactor se planifica, valida y documenta en la bóveda de Obsidian Vault vinculando sus nodos neuronales.',
+        enforcement: '📖 Registro Obligatorio en Bóveda',
+        icon: BookOpen
+    },
+    {
+        id: 'dir-05',
+        number: 'DIRECTIVA 05',
+        title: 'Neumorfismo 3D Crema & Caramelo HD',
+        category: 'diseno',
+        targetAgents: 'Ari (UI/UX) y Squad Frontend',
+        description: 'Todas las interfaces públicas de ShopDigital deben mantener la identidad visual neumórfica táctil de Silicon Valley, con paletas Crema/Caramelo, respuestas auditivas neón y adaptabilidad móvil absoluta.',
+        enforcement: '🎨 Identidad Visual Unificada 24/7',
+        icon: Sparkles
+    }
+];
+
+const COMMAND_ACHIEVEMENTS: CommandAchievement[] = [
+    {
+        id: 'ach-01',
+        title: 'Cero Errores TypeScript & Blindaje de Build',
+        date: 'Agosto 2026',
+        metric: '0 Errores TS Permanentes',
+        description: 'Erradicación total de tipos inconsistentes y blindaje del compilador en las 104 vistas del sistema.',
+        badge: 'Infraestructura Impecable',
+        icon: CheckCircle2
+    },
+    {
+        id: 'ach-02',
+        title: '98% Ahorro de Costos con Omni-Gateway (DeepSeek V3)',
+        date: 'Agosto 2026',
+        metric: '$0.14 / 1M Tokens',
+        description: 'Sustitución de APIs costosas por balanceo automático a DeepSeek-V3 y Qwen con tolerancia total a fallos.',
+        badge: 'Eficiencia Extrema',
+        icon: Zap
+    },
+    {
+        id: 'ach-03',
+        title: 'Búnker Táctico y Estado Mayor Operativo en Vercel',
+        date: 'Agosto 2026',
+        metric: '12 Búnkeres Conectados',
+        description: 'Centro de comando con Lienzo 3D, Matriz de Agentes, Kanban y fallback seguro de credenciales.',
+        badge: 'Mando Unificado',
+        icon: Crown
+    },
+    {
+        id: 'ach-04',
+        title: 'Conexión Nativa al Ecosistema Abierto de Skills.sh',
+        date: 'Agosto 2026',
+        metric: '5 Skills de Élite Instalados',
+        description: 'Terminal de Luz 01 habilitada para buscar e inyectar habilidades globales (TDD, Web Testing, Frontend Design).',
+        badge: 'Superpoderes Ilimitados',
+        icon: Trophy
+    },
+    {
+        id: 'ach-05',
+        title: 'Red Neuronal de 12 Cuadernos de NotebookLM',
+        date: 'Agosto 2026',
+        metric: '300+ Fuentes Auditadas',
+        description: 'Base de conocimiento profunda estructurada para cada ministro agéntico de la organización.',
+        badge: 'Segundo Cerebro Activo',
+        icon: BookOpen
+    }
+];
 
 const SWARM_AGENTS: SwarmAgent[] = [
     {
@@ -340,7 +463,7 @@ const STRATEGIC_PROJECTS: StrategicProject[] = [
 export const BunkerTacticoPage: React.FC = () => {
     const navigate = useNavigate();
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
-    const [selectedTab, setSelectedTab] = useState<'agentes' | 'lienzo' | 'kanban' | 'obsidian'>('agentes');
+    const [selectedTab, setSelectedTab] = useState<'comandancia' | 'agentes' | 'lienzo' | 'kanban' | 'obsidian'>('comandancia');
     const [selectedFrente, setSelectedFrente] = useState<string>('todos');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [selectedAgent, setSelectedAgent] = useState<SwarmAgent | null>(null);
@@ -442,23 +565,19 @@ export const BunkerTacticoPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* TELEMETRÍA GLOBAL DEL ENJAMBRE */}
+                    {/* TELEMETRÍA GLOBAL */}
                     <div className="grid grid-cols-3 gap-2 bg-[#050a17]/90 p-4 rounded-2xl border border-cyan-500/30">
                         <div className="text-center px-3">
+                            <div className="text-[10px] uppercase font-black text-slate-400">Directivas</div>
+                            <div className="text-xl font-[1000] text-amber-400">{COMMAND_DIRECTIVES.length}</div>
+                        </div>
+                        <div className="text-center px-3 border-x border-slate-800">
                             <div className="text-[10px] uppercase font-black text-slate-400">Ministros</div>
                             <div className="text-xl font-[1000] text-cyan-400">{SWARM_AGENTS.length}</div>
                         </div>
-                        <div className="text-center px-3 border-x border-slate-800">
-                            <div className="text-[10px] uppercase font-black text-slate-400">En Lab</div>
-                            <div className="text-xl font-[1000] text-amber-400">
-                                {SWARM_AGENTS.filter(a => a.status === 'laboratorio').length}
-                            </div>
-                        </div>
                         <div className="text-center px-3">
-                            <div className="text-[10px] uppercase font-black text-slate-400">En Prod</div>
-                            <div className="text-xl font-[1000] text-emerald-400">
-                                {SWARM_AGENTS.filter(a => a.status === 'produccion').length}
-                            </div>
+                            <div className="text-[10px] uppercase font-black text-slate-400">Logros</div>
+                            <div className="text-xl font-[1000] text-emerald-400">{COMMAND_ACHIEVEMENTS.length}</div>
                         </div>
                     </div>
                 </div>
@@ -467,9 +586,10 @@ export const BunkerTacticoPage: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
                     <div className="flex flex-wrap items-center gap-2 bg-[#0a1020] p-1.5 rounded-2xl border border-slate-800">
                         {[
+                            { id: 'comandancia', label: '👑 Comandancia & Directivas', icon: Crown },
                             { id: 'agentes', label: '👥 Matriz de Agentes (12)', icon: Users },
                             { id: 'lienzo', label: '🧠 Lienzo Táctico 3D', icon: Network },
-                            { id: 'kanban', label: '📊 Tablero de Fases (Kanban)', icon: FolderKanban },
+                            { id: 'kanban', label: '📊 Tablero Kanban', icon: FolderKanban },
                             { id: 'obsidian', label: '📖 Sincronía Obsidian', icon: BookOpen },
                         ].map(tab => {
                             const Icon = tab.icon;
@@ -482,7 +602,7 @@ export const BunkerTacticoPage: React.FC = () => {
                                     }}
                                     className={`px-4 md:px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer border ${
                                         selectedTab === tab.id
-                                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)]'
+                                            ? 'bg-gradient-to-r from-amber-500 via-cyan-500 to-blue-600 text-black border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)]'
                                             : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'
                                     }`}
                                 >
@@ -493,43 +613,45 @@ export const BunkerTacticoPage: React.FC = () => {
                     </div>
 
                     {/* FILTRO DE FRENTES & BUSCADOR */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="relative">
-                            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
-                            <input
-                                type="text"
-                                placeholder="Buscar agente o misión..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 pr-4 py-1.5 rounded-xl bg-[#090e1c] border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 w-48 md:w-56"
-                            />
-                        </div>
+                    {selectedTab !== 'comandancia' && (
+                        <div className="flex flex-wrap items-center gap-3">
+                            <div className="relative">
+                                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar agente o misión..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="pl-9 pr-4 py-1.5 rounded-xl bg-[#090e1c] border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 w-48 md:w-56"
+                                />
+                            </div>
 
-                        <div className="flex flex-wrap items-center gap-1.5">
-                            {[
-                                { id: 'todos', label: 'Todos' },
-                                { id: 'experiencia', label: '🎨 Exp.' },
-                                { id: 'infraestructura', label: '🧱 Infra' },
-                                { id: 'expansion', label: '📢 Exp.' },
-                                { id: 'blindaje', label: '🛡️ Sec' },
-                            ].map(f => (
-                                <button
-                                    key={f.id}
-                                    onClick={() => {
-                                        playNeonClick();
-                                        setSelectedFrente(f.id);
-                                    }}
-                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
-                                        selectedFrente === f.id
-                                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow'
-                                            : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
-                                    }`}
-                                >
-                                    {f.label}
-                                </button>
-                            ))}
+                            <div className="flex flex-wrap items-center gap-1.5">
+                                {[
+                                    { id: 'todos', label: 'Todos' },
+                                    { id: 'experiencia', label: '🎨 Exp.' },
+                                    { id: 'infraestructura', label: '🧱 Infra' },
+                                    { id: 'expansion', label: '📢 Exp.' },
+                                    { id: 'blindaje', label: '🛡️ Sec' },
+                                ].map(f => (
+                                    <button
+                                        key={f.id}
+                                        onClick={() => {
+                                            playNeonClick();
+                                            setSelectedFrente(f.id);
+                                        }}
+                                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
+                                            selectedFrente === f.id
+                                                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow'
+                                                : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
+                                        }`}
+                                    >
+                                        {f.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 
@@ -541,6 +663,118 @@ export const BunkerTacticoPage: React.FC = () => {
                         <span className="text-xs font-black uppercase tracking-wider">{transmittedDirective}</span>
                     </div>
                     <span className="text-[10px] font-mono text-emerald-400">🟢 TRANSMISIÓN CONFIRMADA</span>
+                </div>
+            )}
+
+            {/* ─── VISTA 0: COMANDANCIA & DIRECTIVAS (WALY & LUZ 01) ─── */}
+            {selectedTab === 'comandancia' && (
+                <div className="max-w-7xl mx-auto space-y-10">
+                    {/* 1. SECCIÓN: DIRECTIVAS SUPREMAS PARA TODOS LOS AGENTES */}
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <ScrollText className="w-6 h-6 text-amber-400" />
+                                <div>
+                                    <h2 className="text-xl font-[1000] text-white">
+                                        DIRECTIVAS SUPREMAS DE LA COMANDANCIA (LÍNEA DE MANDO)
+                                    </h2>
+                                    <p className="text-xs text-slate-400">
+                                        Doctrina obligatoria que rige las operaciones de todos los agentes y subagentes de ShopDigital.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                                Inmutable
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {COMMAND_DIRECTIVES.map(dir => {
+                                const Icon = dir.icon;
+                                return (
+                                    <div
+                                        key={dir.id}
+                                        className="p-6 rounded-3xl bg-gradient-to-b from-[#101a38] to-[#0a1024] border-2 border-amber-500/30 hover:border-amber-400 transition-all shadow-lg flex flex-col justify-between"
+                                    >
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className="text-[10px] font-mono font-black text-amber-400 tracking-wider">
+                                                    {dir.number}
+                                                </span>
+                                                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                                                    <Icon className="w-4 h-4 text-amber-400" />
+                                                </div>
+                                            </div>
+                                            <h3 className="text-base font-black text-white mb-2 leading-snug">
+                                                {dir.title}
+                                            </h3>
+                                            <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                                                {dir.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="pt-3 border-t border-slate-800/80 flex flex-col gap-1">
+                                            <span className="text-[10px] text-slate-400 font-bold">
+                                                🎯 <strong>Alcance:</strong> {dir.targetAgents}
+                                            </span>
+                                            <span className="text-[10px] text-emerald-400 font-bold">
+                                                {dir.enforcement}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* 2. SECCIÓN: NUESTROS LOGROS CONQUISTADOS (EL CAMINO RECORRIDO) */}
+                    <div>
+                        <div className="flex items-center gap-3 mb-4">
+                            <Trophy className="w-6 h-6 text-emerald-400" />
+                            <div>
+                                <h2 className="text-xl font-[1000] text-white">
+                                    HITOS Y LOGROS CONQUISTADOS (BITÁCORA DE ÉXITO)
+                                </h2>
+                                <p className="text-xs text-slate-400">
+                                    Hitos de infraestructura, optimización y blindaje alcanzados por el Director Waly y Luz 01.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {COMMAND_ACHIEVEMENTS.map(ach => {
+                                const Icon = ach.icon;
+                                return (
+                                    <div
+                                        key={ach.id}
+                                        className="p-6 rounded-3xl bg-gradient-to-b from-[#091829] to-[#050e1c] border-2 border-emerald-500/30 hover:border-emerald-400 transition-all shadow-lg flex flex-col justify-between"
+                                    >
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                                    {ach.badge}
+                                                </span>
+                                                <span className="text-[10px] font-mono text-slate-500">{ach.date}</span>
+                                            </div>
+                                            <h3 className="text-base font-black text-white mb-2 leading-snug">
+                                                {ach.title}
+                                            </h3>
+                                            <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                                                {ach.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                                            <span className="text-xs font-[1000] text-emerald-400 flex items-center gap-1">
+                                                <Icon size={14} /> {ach.metric}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-slate-500">Consolidado</span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -728,8 +962,8 @@ export const BunkerTacticoPage: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {[
-                            { node: 'LUZ_01_ORQUESTADORA', desc: 'Nodo HUB Central y Orquestación de Agentes' },
                             { node: 'DIRECTOR_WALY_OMEGA', desc: 'Comandante Supremo y Autorizaciones de Producción' },
+                            { node: 'LUZ_01_ORQUESTADORA', desc: 'Nodo HUB Central y Orquestación de Agentes' },
                             { node: 'BUNKER_TACTICO_Y_ESTRATEGICO_SNC2', desc: 'Estado Mayor y Matriz de 12 Agentes' },
                             { node: 'CONSTITUCION_AGENTICA_SNC2', desc: 'Reglas y Jerarquías de los 12 Búnkeres' },
                             { node: 'LABORATORIO_SHOPDIGITAL', desc: 'Registro de Despliegues en Staging' },
