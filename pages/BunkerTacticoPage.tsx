@@ -10,6 +10,7 @@ import {
     ScrollText, Award, Lightbulb, Rocket, Milestone, ShieldAlert
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
+import { NeuralNetworkCanvas } from '../components/NeuralNetworkCanvas';
 
 export interface StrategicProject {
     id: string;
@@ -527,9 +528,13 @@ export const BunkerTacticoPage: React.FC = () => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-[#050811] text-white p-4 md:p-8 font-sans selection:bg-cyan-500 selection:text-black">
-            {/* 🌟 ENCABEZADO OFICIAL DE MANDO ESTRATÉGICO */}
-            <div className="max-w-7xl mx-auto mb-8">
+        <div className="w-full min-h-screen bg-[#030610] text-white p-4 md:p-8 pb-40 font-sans selection:bg-cyan-500 selection:text-black relative overflow-y-auto overflow-x-hidden">
+            {/* 🌌 FONDO NEURONAL EN MOVIMIENTO DINÁMICO */}
+            <NeuralNetworkCanvas />
+
+            <div className="relative z-10 max-w-7xl mx-auto">
+                {/* 🌟 ENCABEZADO OFICIAL DE MANDO ESTRATÉGICO */}
+                <div className="mb-8">
                 {/* BOTÓN VOLVER AL TABLERO MAESTRO */}
                 <button
                     onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro`); }}
@@ -1200,6 +1205,8 @@ export const BunkerTacticoPage: React.FC = () => {
                     </div>
                 </div>
             )}
+            {/* Fin de los Modales */}
+            </div>
         </div>
     );
 };
