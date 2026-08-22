@@ -5,7 +5,8 @@ import {
     LayoutGrid, Target, Activity, TrendingUp, Sparkles, Terminal, 
     ExternalLink, CheckCircle2, Clock, AlertTriangle, Copy, Check,
     Layers, Compass, Flame, ArrowUpRight, BarChart3, Bot, ChevronLeft,
-    BookOpen, Network, RefreshCw, Plus, FileText, Lock
+    BookOpen, Network, RefreshCw, Plus, FileText, Lock, Search,
+    Send, UserCheck, CheckCheck, FolderKanban
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 
@@ -24,7 +25,232 @@ export interface StrategicProject {
     updatedAt: string;
 }
 
-const INITIAL_PROJECTS: StrategicProject[] = [
+export interface SwarmAgent {
+    id: string;
+    name: string;
+    roleTitle: string;
+    bunkerName: string;
+    frente: 'experiencia' | 'infraestructura' | 'expansion' | 'blindaje';
+    status: 'produccion' | 'laboratorio' | 'desarrollo' | 'directiva';
+    conversationId: string;
+    notebookUrl: string;
+    notebookSources: number;
+    activeSkill: string;
+    obsidianNode: string;
+    lastMission: string;
+    progressPercentage: number;
+    color: string;
+    icon: React.ElementType;
+}
+
+const SWARM_AGENTS: SwarmAgent[] = [
+    {
+        id: 'melisa-marketing',
+        name: 'MELISA',
+        roleTitle: 'Directora de Campañas, IA & Crecimiento',
+        bunkerName: 'Búnker 03: Marketing & Expansión',
+        frente: 'expansion',
+        status: 'laboratorio',
+        conversationId: 'e2b0ec83-c9bb-44fe-9752-1a21eabd3f18',
+        notebookUrl: 'https://notebooklm.google.com/notebook/cb9442de-e444-4ca0-98a4-914ca6e3980a',
+        notebookSources: 40,
+        activeSkill: 'DeepSeek Ingestion & Marketing Engine',
+        obsidianNode: 'BUNKER_CONFIG_AND_SKILLS_MASTER_SNC2',
+        lastMission: 'Generación masiva de copys para 24 rubros a costo $0.14 / 1M',
+        progressPercentage: 90,
+        color: '#ec4899',
+        icon: TrendingUp
+    },
+    {
+        id: 'ari-ui-ux',
+        name: 'ARI',
+        roleTitle: 'Oficial de Frontend & Neumorfismo 3D',
+        bunkerName: 'Búnker 02: Experiencia & UI/UX',
+        frente: 'experiencia',
+        status: 'laboratorio',
+        conversationId: '6c8e16ba-10a9-4a34-a4d1-be97865f38f7',
+        notebookUrl: 'https://notebooklm.google.com/notebook/cb9442de-e444-4ca0-98a4-914ca6e3980a',
+        notebookSources: 24,
+        activeSkill: 'frontend-design (Anthropic) & ibelick/ui-skills',
+        obsidianNode: 'GENERAL_ARI_UX_UI',
+        lastMission: 'Estructuración 3D de Interfaces 1, 2 y 3 de la Home (Modo Caramelo)',
+        progressPercentage: 85,
+        color: '#f59e0b',
+        icon: Sparkles
+    },
+    {
+        id: 'bruno-backend',
+        name: 'BRUNO',
+        roleTitle: 'Arquitecto de Datastore, EVE & Backend',
+        bunkerName: 'Búnker 05: Infraestructura Core',
+        frente: 'infraestructura',
+        status: 'produccion',
+        conversationId: 'b9472e3a-7a52-4734-aa1b-53c829e06180',
+        notebookUrl: 'https://notebooklm.google.com/notebook/ef87d269-4daf-4a2c-a658-5992c9150042',
+        notebookSources: 32,
+        activeSkill: 'tdd (Matt Pocock) & omniGateway.ts',
+        obsidianNode: 'GENERAL_BRUNO_BACKEND',
+        lastMission: 'Router Multi-Modelo DeepSeek-V3 + Qwen y Edge Functions',
+        progressPercentage: 95,
+        color: '#6366f1',
+        icon: Database
+    },
+    {
+        id: 'thor-secops',
+        name: 'THOR & VORTEX',
+        roleTitle: 'Comandante de Ciberseguridad & QA Doberman',
+        bunkerName: 'Búnker 06: Ciberseguridad & QA',
+        frente: 'blindaje',
+        status: 'produccion',
+        conversationId: '04c3114d-9ca3-4882-a010-85f8c6ebf8b6',
+        notebookUrl: 'https://notebooklm.google.com/notebook/e0e4f151-7847-4631-8769-282ead74c670',
+        notebookSources: 28,
+        activeSkill: 'webapp-testing (Anthropic) & code-review-graph',
+        obsidianNode: 'GENERAL_THOR_SECOPS',
+        lastMission: 'Blindaje de colección Towns en Firestore y servidor MCP local',
+        progressPercentage: 100,
+        color: '#10b981',
+        icon: ShieldCheck
+    },
+    {
+        id: 'mateo-viabilidad',
+        name: 'MATEO',
+        roleTitle: 'Jefe de Viabilidad, Finanzas & Tokenomics',
+        bunkerName: 'Búnker 01: Planificación & Finanzas',
+        frente: 'expansion',
+        status: 'produccion',
+        conversationId: '88340a8c-838a-4835-99d9-6b77e911307b',
+        notebookUrl: 'https://notebooklm.google.com/notebook/88340a8c-838a-4835-99d9-6b77e911307b',
+        notebookSources: 30,
+        activeSkill: 'financial.ts (ROI & Cost Optimizer)',
+        obsidianNode: 'GENERAL_MATEO_VIABILIDAD',
+        lastMission: 'Auditoría de reducción de costos 98% vs WhatsApp API oficial',
+        progressPercentage: 92,
+        color: '#3b82f6',
+        icon: Target
+    },
+    {
+        id: 'ely-clonacion',
+        name: 'ELY',
+        roleTitle: 'Especialista en Expansión & Clonación Fractal',
+        bunkerName: 'Búnker 07: Clonación Fractal',
+        frente: 'expansion',
+        status: 'laboratorio',
+        conversationId: 'b1ca1b6d-a719-4f36-8a03-61e8c1ea9825',
+        notebookUrl: 'https://notebooklm.google.com/notebook/7fa97dfa-6643-4dc9-8690-6c02e8338280',
+        notebookSources: 25,
+        activeSkill: 'protocolo-clonacion-fractal & siembra-hiperrealista',
+        obsidianNode: 'LABORATORIO_SHOPDIGITAL',
+        lastMission: 'Siembra hiperrealista de Ezeiza, Lomas y Traslasierra',
+        progressPercentage: 88,
+        color: '#8b5cf6',
+        icon: Layers
+    },
+    {
+        id: 'cuby-transmision',
+        name: 'CUBY',
+        roleTitle: 'Operador de WebSockets & Transmisión en Vivo',
+        bunkerName: 'Búnker 08: Transmisión & Eventos',
+        frente: 'experiencia',
+        status: 'desarrollo',
+        conversationId: '98d36329-8735-4309-847f-8e2b20755913',
+        notebookUrl: 'https://notebooklm.google.com/notebook/82a1b7bf-3899-49f5-8b4c-3d082fcad671',
+        notebookSources: 18,
+        activeSkill: 'pushNotifier.ts & LiveBroadcastPage.tsx',
+        obsidianNode: 'CENTRO_DE_MANDO_SHOPDIGITAL',
+        lastMission: 'Canal de transmisión en vivo y notificaciones PWA',
+        progressPercentage: 70,
+        color: '#06b6d4',
+        icon: Radio
+    },
+    {
+        id: 'javi-mantenimiento',
+        name: 'JAVI',
+        roleTitle: 'Ingeniero de Saneamiento y Rescate DB',
+        bunkerName: 'Búnker 09: Mantenimiento & Health',
+        frente: 'infraestructura',
+        status: 'produccion',
+        conversationId: '03aa2a10-b131-452d-abb4-f01c21f95e72',
+        notebookUrl: 'https://notebooklm.google.com/notebook/9a90488c-7519-441c-b845-d7b1c3bd5321',
+        notebookSources: 22,
+        activeSkill: 'diagnosing-bugs (Matt Pocock) & healthWatchdog.ts',
+        obsidianNode: 'MATRIZ_MAESTRA_CONVERSACIONES_SNC2',
+        lastMission: 'Verificación de integridad de 42 comercios y rescate de backups',
+        progressPercentage: 96,
+        color: '#64748b',
+        icon: Activity
+    },
+    {
+        id: 'lore-legal',
+        name: 'LORE',
+        roleTitle: 'Auditora de Términos, Contratos y Facturación',
+        bunkerName: 'Búnker 10: Contable & Legales',
+        frente: 'blindaje',
+        status: 'produccion',
+        conversationId: '509fde7f-4b31-4beb-abab-420a30a0973e',
+        notebookUrl: 'https://notebooklm.google.com/notebook/509fde7f-4b31-4beb-abab-420a30a0973e',
+        notebookSources: 35,
+        activeSkill: 'TermsPage.tsx & BillingManagementPage.tsx',
+        obsidianNode: 'CONSTITUCION_AGENTICA_SNC2',
+        lastMission: 'Reglamentación de Beneficios VIP y contratos de comercios',
+        progressPercentage: 94,
+        color: '#ef4444',
+        icon: Shield
+    },
+    {
+        id: 'max-ventas',
+        name: 'MAX',
+        roleTitle: 'Coordinador de Embajadores & Academia',
+        bunkerName: 'Búnker 11: Recursos Humanos & Talento',
+        frente: 'expansion',
+        status: 'laboratorio',
+        conversationId: 'd302846c-db1d-4c88-9f1d-b6e07a456d29',
+        notebookUrl: 'https://notebooklm.google.com/notebook/d302846c-db1d-4c88-9f1d-b6e07a456d29',
+        notebookSources: 20,
+        activeSkill: 'AcademyPage.tsx & AmbassadorRecruit.tsx',
+        obsidianNode: 'ARQUITECTURA_EQUIPO_SHOPDIGITAL_SNC2',
+        lastMission: 'Malla de entrenamiento para embajadores de calle',
+        progressPercentage: 80,
+        color: '#14b8a6',
+        icon: Users
+    },
+    {
+        id: 'dante-inversion',
+        name: 'DANTE',
+        roleTitle: 'Estratega de Capital & Expansión Exponencial',
+        bunkerName: 'Búnker 12: Inversión Exponencial',
+        frente: 'expansion',
+        status: 'desarrollo',
+        conversationId: '71668861-44e3-40fe-8cde-74cf99b11623',
+        notebookUrl: 'https://notebooklm.google.com/notebook/71668861-44e3-40fe-8cde-74cf99b11623',
+        notebookSources: 19,
+        activeSkill: 'DOSSIER_TECNOLOGICO_INVERSORES_SHOPDIGITAL',
+        obsidianNode: 'DOSSIER_TECNOLOGICO_INVERSORES_SHOPDIGITAL',
+        lastMission: 'Estructuración del dossier para inversores y rondas de capital',
+        progressPercentage: 75,
+        color: '#eab308',
+        icon: Zap
+    },
+    {
+        id: 'luz-central',
+        name: 'LUZ 01',
+        roleTitle: 'Orquestadora Central, Jefa de Forja & Mano Derecha',
+        bunkerName: 'Búnker 00: Dirección Central & Forja',
+        frente: 'infraestructura',
+        status: 'produccion',
+        conversationId: 'a4faed7e-d3c7-472a-a9ae-7b0cabf9f0f0',
+        notebookUrl: 'https://notebooklm.google.com/notebook/ef87d269-4daf-4a2c-a658-5992c9150042',
+        notebookSources: 50,
+        activeSkill: 'code-review (Matt Pocock) & .cursorrules',
+        obsidianNode: 'LUZ_01_ORQUESTADORA',
+        lastMission: 'Orquestación de enjambre, control de Laboratorio y merge a Producción',
+        progressPercentage: 100,
+        color: '#38bdf8',
+        icon: Cpu
+    }
+];
+
+const STRATEGIC_PROJECTS: StrategicProject[] = [
     {
         id: 'proj-01',
         title: 'Interfaces 1, 2 y 3 de la Home (Modo Caramelo 3D)',
@@ -114,11 +340,14 @@ const INITIAL_PROJECTS: StrategicProject[] = [
 export const BunkerTacticoPage: React.FC = () => {
     const navigate = useNavigate();
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
-    const [selectedTab, setSelectedTab] = useState<'lienzo' | 'kanban' | 'obsidian' | 'directivas'>('lienzo');
+    const [selectedTab, setSelectedTab] = useState<'agentes' | 'lienzo' | 'kanban' | 'obsidian'>('agentes');
     const [selectedFrente, setSelectedFrente] = useState<string>('todos');
-    const [projects, setProjects] = useState<StrategicProject[]>(INITIAL_PROJECTS);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [selectedAgent, setSelectedAgent] = useState<SwarmAgent | null>(null);
     const [selectedProj, setSelectedProj] = useState<StrategicProject | null>(null);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+    const [directiveInput, setDirectiveInput] = useState<string>('');
+    const [transmittedDirective, setTransmittedDirective] = useState<string | null>(null);
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -126,9 +355,40 @@ export const BunkerTacticoPage: React.FC = () => {
         setTimeout(() => setCopiedId(null), 2000);
     };
 
+    const handleSendDirective = (agentName: string) => {
+        if (!directiveInput.trim()) return;
+        playNeonClick();
+        setTransmittedDirective(`Directiva enviada a ${agentName}: "${directiveInput}"`);
+        setTimeout(() => setTransmittedDirective(null), 4000);
+        setDirectiveInput('');
+    };
+
+    const filteredAgents = SWARM_AGENTS.filter(agent => {
+        const matchesFrente = selectedFrente === 'todos' || agent.frente === selectedFrente;
+        const matchesSearch = searchQuery === '' || 
+            agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            agent.roleTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            agent.lastMission.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            agent.bunkerName.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesFrente && matchesSearch;
+    });
+
     const filteredProjects = selectedFrente === 'todos'
-        ? projects
-        : projects.filter(p => p.frente === selectedFrente);
+        ? STRATEGIC_PROJECTS
+        : STRATEGIC_PROJECTS.filter(p => p.frente === selectedFrente);
+
+    const getStatusBadge = (status: SwarmAgent['status']) => {
+        switch (status) {
+            case 'produccion':
+                return { label: '🟢 En Producción', bg: 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40' };
+            case 'laboratorio':
+                return { label: '🔬 En Laboratorio', bg: 'bg-amber-950/80 text-amber-300 border-amber-500/40 animate-pulse' };
+            case 'desarrollo':
+                return { label: '🟡 En Forja', bg: 'bg-sky-950/80 text-sky-300 border-sky-500/40' };
+            case 'directiva':
+                return { label: '🔴 Esperando Orden', bg: 'bg-rose-950/80 text-rose-300 border-rose-500/40' };
+        }
+    };
 
     const getStageBadge = (stage: StrategicProject['stage']) => {
         switch (stage) {
@@ -182,22 +442,22 @@ export const BunkerTacticoPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* TELEMETRÍA GLOBAL DEL ESTADO MAYOR */}
+                    {/* TELEMETRÍA GLOBAL DEL ENJAMBRE */}
                     <div className="grid grid-cols-3 gap-2 bg-[#050a17]/90 p-4 rounded-2xl border border-cyan-500/30">
                         <div className="text-center px-3">
-                            <div className="text-[10px] uppercase font-black text-slate-400">Proyectos</div>
-                            <div className="text-xl font-[1000] text-cyan-400">{projects.length}</div>
+                            <div className="text-[10px] uppercase font-black text-slate-400">Ministros</div>
+                            <div className="text-xl font-[1000] text-cyan-400">{SWARM_AGENTS.length}</div>
                         </div>
                         <div className="text-center px-3 border-x border-slate-800">
                             <div className="text-[10px] uppercase font-black text-slate-400">En Lab</div>
                             <div className="text-xl font-[1000] text-amber-400">
-                                {projects.filter(p => p.stage === 'laboratorio').length}
+                                {SWARM_AGENTS.filter(a => a.status === 'laboratorio').length}
                             </div>
                         </div>
                         <div className="text-center px-3">
                             <div className="text-[10px] uppercase font-black text-slate-400">En Prod</div>
                             <div className="text-xl font-[1000] text-emerald-400">
-                                {projects.filter(p => p.stage === 'produccion').length}
+                                {SWARM_AGENTS.filter(a => a.status === 'produccion').length}
                             </div>
                         </div>
                     </div>
@@ -205,10 +465,11 @@ export const BunkerTacticoPage: React.FC = () => {
 
                 {/* 🎛️ SELECTOR DE VISTAS PRINCIPALES */}
                 <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
-                    <div className="flex items-center gap-2 bg-[#0a1020] p-1.5 rounded-2xl border border-slate-800">
+                    <div className="flex flex-wrap items-center gap-2 bg-[#0a1020] p-1.5 rounded-2xl border border-slate-800">
                         {[
+                            { id: 'agentes', label: '👥 Matriz de Agentes (12)', icon: Users },
                             { id: 'lienzo', label: '🧠 Lienzo Táctico 3D', icon: Network },
-                            { id: 'kanban', label: '📊 Tablero de Fases (Kanban)', icon: LayoutGrid },
+                            { id: 'kanban', label: '📊 Tablero de Fases (Kanban)', icon: FolderKanban },
                             { id: 'obsidian', label: '📖 Sincronía Obsidian', icon: BookOpen },
                         ].map(tab => {
                             const Icon = tab.icon;
@@ -219,7 +480,7 @@ export const BunkerTacticoPage: React.FC = () => {
                                         playNeonClick();
                                         setSelectedTab(tab.id as any);
                                     }}
-                                    className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer border ${
+                                    className={`px-4 md:px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer border ${
                                         selectedTab === tab.id
                                             ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)]'
                                             : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'
@@ -231,38 +492,139 @@ export const BunkerTacticoPage: React.FC = () => {
                         })}
                     </div>
 
-                    {/* FILTRO DE FRENTES */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mr-1">
-                            Frente:
-                        </span>
-                        {[
-                            { id: 'todos', label: 'Todos' },
-                            { id: 'experiencia', label: '🎨 Experiencia' },
-                            { id: 'infraestructura', label: '🧱 Infraestructura' },
-                            { id: 'expansion', label: '📢 Expansión' },
-                            { id: 'blindaje', label: '🛡️ Blindaje' },
-                        ].map(f => (
-                            <button
-                                key={f.id}
-                                onClick={() => {
-                                    playNeonClick();
-                                    setSelectedFrente(f.id);
-                                }}
-                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
-                                    selectedFrente === f.id
-                                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow'
-                                        : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
-                                }`}
-                            >
-                                {f.label}
-                            </button>
-                        ))}
+                    {/* FILTRO DE FRENTES & BUSCADOR */}
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="relative">
+                            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                            <input
+                                type="text"
+                                placeholder="Buscar agente o misión..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-9 pr-4 py-1.5 rounded-xl bg-[#090e1c] border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 w-48 md:w-56"
+                            />
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-1.5">
+                            {[
+                                { id: 'todos', label: 'Todos' },
+                                { id: 'experiencia', label: '🎨 Exp.' },
+                                { id: 'infraestructura', label: '🧱 Infra' },
+                                { id: 'expansion', label: '📢 Exp.' },
+                                { id: 'blindaje', label: '🛡️ Sec' },
+                            ].map(f => (
+                                <button
+                                    key={f.id}
+                                    onClick={() => {
+                                        playNeonClick();
+                                        setSelectedFrente(f.id);
+                                    }}
+                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
+                                        selectedFrente === f.id
+                                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow'
+                                            : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
+                                    }`}
+                                >
+                                    {f.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* ─── VISTA 1: LIENZO TÁCTICO (TARJETAS DE PROYECTOS INTERACTIVAS) ─── */}
+            {/* NOTIFICACIÓN FLOTANTE DE DIRECTIVA TRANSMITIDA */}
+            {transmittedDirective && (
+                <div className="max-w-7xl mx-auto mb-6 p-4 rounded-2xl bg-emerald-950/80 border-2 border-emerald-400 text-emerald-300 flex items-center justify-between shadow-[0_0_30px_rgba(16,185,129,0.3)] animate-fadeIn">
+                    <div className="flex items-center gap-3">
+                        <CheckCheck className="w-6 h-6 text-emerald-400" />
+                        <span className="text-xs font-black uppercase tracking-wider">{transmittedDirective}</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-emerald-400">🟢 TRANSMISIÓN CONFIRMADA</span>
+                </div>
+            )}
+
+            {/* ─── VISTA 1: MATRIZ DE AGENTES Y MINISTROS (12) ─── */}
+            {selectedTab === 'agentes' && (
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredAgents.map(agent => {
+                        const Icon = agent.icon;
+                        const badge = getStatusBadge(agent.status);
+                        return (
+                            <div
+                                key={agent.id}
+                                onClick={() => {
+                                    playNeonClick();
+                                    setSelectedAgent(agent);
+                                }}
+                                className="group relative p-6 rounded-3xl bg-gradient-to-b from-[#0e162c] to-[#080d1a] border-2 border-slate-800 hover:border-cyan-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+                            >
+                                <div>
+                                    {/* CABECERA DE LA CARD */}
+                                    <div className="flex items-center justify-between gap-2 mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div 
+                                                className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-lg transition-transform group-hover:scale-110"
+                                                style={{ backgroundColor: `${agent.color}15`, borderColor: `${agent.color}60` }}
+                                            >
+                                                <Icon className="w-6 h-6" style={{ color: agent.color }} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-[1000] text-white group-hover:text-cyan-300 transition-colors">
+                                                    {agent.name}
+                                                </h3>
+                                                <div className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                                    {agent.bunkerName}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${badge.bg}`}>
+                                            {badge.label}
+                                        </span>
+                                    </div>
+
+                                    {/* ROL Y MISIÓN */}
+                                    <div className="text-xs font-bold text-slate-200 mb-2">
+                                        {agent.roleTitle}
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed bg-[#050a14] p-2.5 rounded-xl border border-slate-800/80 mb-4">
+                                        🎯 <strong>Última Misión:</strong> {agent.lastMission}
+                                    </p>
+
+                                    {/* BARRA DE PROGRESO */}
+                                    <div className="mb-4">
+                                        <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 mb-1">
+                                            <span>Progreso Operativo</span>
+                                            <span className="text-cyan-400">{agent.progressPercentage}%</span>
+                                        </div>
+                                        <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full rounded-full transition-all duration-500"
+                                                style={{ 
+                                                    width: `${agent.progressPercentage}%`,
+                                                    background: `linear-gradient(90deg, ${agent.color}, #06b6d4)`
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* PIE DE CARD */}
+                                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                                    <span className="text-slate-400 font-mono flex items-center gap-1">
+                                        🧠 {agent.notebookSources} Fuentes LM
+                                    </span>
+                                    <span className="text-cyan-400 font-black flex items-center gap-1 group-hover:underline">
+                                        Ver Expediente <ArrowUpRight size={13} />
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* ─── VISTA 2: LIENZO TÁCTICO 3D (PROYECTOS) ─── */}
             {selectedTab === 'lienzo' && (
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredProjects.map(proj => {
@@ -309,7 +671,7 @@ export const BunkerTacticoPage: React.FC = () => {
                 </div>
             )}
 
-            {/* ─── VISTA 2: TABLERO KANBAN DE FASES ─── */}
+            {/* ─── VISTA 3: TABLERO KANBAN DE 4 FASES ─── */}
             {selectedTab === 'kanban' && (
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-5">
                     {[
@@ -349,7 +711,7 @@ export const BunkerTacticoPage: React.FC = () => {
                 </div>
             )}
 
-            {/* ─── VISTA 3: SINCRONÍA OBSIDIAN ─── */}
+            {/* ─── VISTA 4: SINCRONÍA OBSIDIAN ─── */}
             {selectedTab === 'obsidian' && (
                 <div className="max-w-7xl mx-auto p-6 md:p-8 rounded-3xl bg-[#090e1c] border border-purple-500/30">
                     <div className="flex items-center gap-4 mb-6">
@@ -368,6 +730,7 @@ export const BunkerTacticoPage: React.FC = () => {
                         {[
                             { node: 'LUZ_01_ORQUESTADORA', desc: 'Nodo HUB Central y Orquestación de Agentes' },
                             { node: 'DIRECTOR_WALY_OMEGA', desc: 'Comandante Supremo y Autorizaciones de Producción' },
+                            { node: 'BUNKER_TACTICO_Y_ESTRATEGICO_SNC2', desc: 'Estado Mayor y Matriz de 12 Agentes' },
                             { node: 'CONSTITUCION_AGENTICA_SNC2', desc: 'Reglas y Jerarquías de los 12 Búnkeres' },
                             { node: 'LABORATORIO_SHOPDIGITAL', desc: 'Registro de Despliegues en Staging' },
                             { node: 'SPEC_KIT_MATT_POCOCK_ADAPTACION_SNC2', desc: 'Guardrails Estrictos y Tipos TypeScript' },
@@ -387,6 +750,140 @@ export const BunkerTacticoPage: React.FC = () => {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {/* 📋 MODAL DE EXPEDIENTE DEL AGENTE (MELISA, ARI, BRUNO, ETC.) */}
+            {selectedAgent && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+                    <div className="w-full max-w-2xl bg-[#0b1326] border-2 border-cyan-500/50 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(6,182,212,0.35)] relative max-h-[90vh] overflow-y-auto">
+                        <button
+                            onClick={() => setSelectedAgent(null)}
+                            className="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+                        >
+                            ✕
+                        </button>
+
+                        {/* CABECERA DEL MODAL */}
+                        <div className="flex items-center gap-4 mb-6">
+                            <div 
+                                className="w-16 h-16 rounded-2xl flex items-center justify-center border-2 shadow-lg"
+                                style={{ backgroundColor: `${selectedAgent.color}20`, borderColor: selectedAgent.color }}
+                            >
+                                <selectedAgent.icon className="w-8 h-8" style={{ color: selectedAgent.color }} />
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">
+                                    {selectedAgent.bunkerName}
+                                </span>
+                                <h2 className="text-2xl md:text-3xl font-[1000] text-white">
+                                    {selectedAgent.name}
+                                </h2>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className={`px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusBadge(selectedAgent.status).bg}`}>
+                                        {getStatusBadge(selectedAgent.status).label}
+                                    </span>
+                                    <span className="text-xs text-slate-400 font-bold">{selectedAgent.roleTitle}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* DETALLES Y EXPEDIENTE */}
+                        <div className="space-y-4 text-xs my-6">
+                            {/* ÚLTIMA MISIÓN */}
+                            <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
+                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">🎯 Misión & Planificación Activa</div>
+                                <div className="text-slate-200 mt-1 font-medium leading-relaxed">
+                                    {selectedAgent.lastMission}
+                                </div>
+                            </div>
+
+                            {/* GRILLA DE HERRAMIENTAS Y NOTEBOOKLM */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {/* NOTEBOOKLM */}
+                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex flex-col justify-between">
+                                    <div>
+                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">🧠 Cuaderno NotebookLM</div>
+                                        <div className="text-cyan-300 font-bold mt-1 flex items-center gap-1">
+                                            <span>{selectedAgent.notebookSources} Fuentes Auditadas</span>
+                                        </div>
+                                    </div>
+                                    <a
+                                        href={selectedAgent.notebookUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-3 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition"
+                                    >
+                                        Abrir en NotebookLM <ExternalLink size={12} />
+                                    </a>
+                                </div>
+
+                                {/* SUPERPODER / SKILL */}
+                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex flex-col justify-between">
+                                    <div>
+                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">⚡ Superpoder Activo (Skill)</div>
+                                        <div className="text-amber-300 font-bold mt-1 text-[11px]">
+                                            {selectedAgent.activeSkill}
+                                        </div>
+                                    </div>
+                                    <div className="text-[10px] text-slate-500 mt-2 font-mono">
+                                        Bóveda: [[ {selectedAgent.obsidianNode} ]]
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* CONVERSATION ID */}
+                            <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Conversation ID (Antigravity)</div>
+                                    <div className="font-mono text-cyan-300 mt-0.5 text-[11px] truncate max-w-[280px]">
+                                        {selectedAgent.conversationId}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => handleCopy(selectedAgent.conversationId)}
+                                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-black transition cursor-pointer text-[10px] font-bold flex items-center gap-1"
+                                >
+                                    {copiedId === selectedAgent.conversationId ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                                    <span>{copiedId === selectedAgent.conversationId ? 'Copiado' : 'Copiar'}</span>
+                                </button>
+                            </div>
+
+                            {/* CAJA DE TRANSMISIÓN DE DIRECTIVA DIRECTA */}
+                            <div className="p-4 rounded-2xl bg-gradient-to-r from-[#0c1836] to-[#081026] border-2 border-cyan-500/30">
+                                <div className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    <Zap size={14} className="text-cyan-400" />
+                                    <span>Emitir Directiva Suprema a {selectedAgent.name}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder={`Ej: Priorizar integración en Laboratorio y pruebas con Thor...`}
+                                        value={directiveInput}
+                                        onChange={(e) => setDirectiveInput(e.target.value)}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') handleSendDirective(selectedAgent.name); }}
+                                        className="flex-1 px-4 py-2 rounded-xl bg-black/60 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                                    />
+                                    <button
+                                        onClick={() => handleSendDirective(selectedAgent.name)}
+                                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition shadow flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                        <Send size={13} /> Transmitir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* BOTÓN DE CIERRE */}
+                        <div className="flex items-center justify-end pt-4 border-t border-slate-800">
+                            <button
+                                onClick={() => setSelectedAgent(null)}
+                                className="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-black uppercase tracking-wider hover:bg-slate-700 transition cursor-pointer"
+                            >
+                                Cerrar Expediente
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
