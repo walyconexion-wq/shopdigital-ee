@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { NeuralNetworkCanvas } from '../components/NeuralNetworkCanvas';
+import { NeonMindmapDiagram } from '../components/NeonMindmapDiagram';
 
 export interface StrategicProject {
     id: string;
@@ -528,7 +529,7 @@ export const BunkerTacticoPage: React.FC = () => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-[#030610] text-white p-4 md:p-8 pb-40 font-sans selection:bg-cyan-500 selection:text-black relative overflow-y-auto overflow-x-hidden">
+        <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#030610] text-white p-4 md:p-8 pb-56 font-sans selection:bg-cyan-500 selection:text-black z-20">
             {/* 🌌 FONDO NEURONAL EN MOVIMIENTO DINÁMICO */}
             <NeuralNetworkCanvas />
 
@@ -992,6 +993,9 @@ export const BunkerTacticoPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* 🗺️ MAPA MENTAL NEÓN INTEGRADO (NÚCLEO CENTRAL & 6 FRENTES) */}
+            <NeonMindmapDiagram />
 
             {/* 📋 MODAL DE EXPEDIENTE DEL AGENTE (MELISA, ARI, BRUNO, ETC.) */}
             {selectedAgent && (
