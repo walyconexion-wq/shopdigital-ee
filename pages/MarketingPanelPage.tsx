@@ -9,6 +9,7 @@ import { playNeonClick } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 import Logo from '../components/Logo';
 import { Shop } from '../types';
+import { MASTER_CAMPAIGNS, MasterCampaignTemplate } from '../data/masterCampaigns';
 
 type AudienceType = 'cliente_calle' | 'comerciante' | 'empresario';
 type CampaignType = 'persuasion' | 'fidelizacion' | 'informativa';
@@ -74,6 +75,24 @@ const MarketingPanelPage: React.FC = () => {
 
     const [editingCampaignId, setEditingCampaignId] = useState<string | null>(null);
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
+
+    // Campañas Maestras Helpers
+    const filteredTemplates = useMemo(() => {
+        return MASTER_CAMPAIGNS.filter(t => t.audience === audience);
+    }, [audience]);
+
+    const applyTemplate = (tpl: MasterCampaignTemplate) => {
+        playNeonClick();
+        const formattedTownName = townId
+            .split('-')
+            .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ');
+        setTitle(tpl.title);
+        setMessage(tpl.message.replace(/{zona}/g, formattedTownName));
+        setCampaignType(tpl.type);
+        setMediaUrl(tpl.mediaUrl);
+        setAttachCatalog(tpl.attachCatalog);
+    };
 
     // Bases of contacts & Social configs (localStorage storage)
     const [calleContacts, setCalleContacts] = useState<string>(() => {
@@ -525,6 +544,36 @@ const MarketingPanelPage: React.FC = () => {
                                 >
                                     <Factory size={12} /> Empresario
                                 </button>
+                            </div>
+                        </div>
+
+                        {/* 🌟 CAMPAÑAS MAESTRAS DISPONIBLES */}
+                        <div className={`glass-card-3d bg-white/[0.02] border rounded-2xl p-5 transition-colors duration-1000 ${borderTheme}`}>
+                            <h3 className={`text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 ${textTheme}`}>
+                                <Zap size={14} className="animate-pulse" /> Campañas Maestras Disponibles
+                            </h3>
+                            <p className="text-[8px] text-white/40 uppercase tracking-widest mb-3">
+                                Seleccioná una plantilla optimizada para auto-completar el motor de disparo:
+                            </p>
+                            <div className="grid grid-cols-1 gap-2.5">
+                                {filteredTemplates.map(tpl => (
+                                    <button
+                                        key={tpl.id}
+                                        onClick={() => applyTemplate(tpl)}
+                                        className="bg-black/40 border border-white/10 hover:border-cyan-500/30 p-3 rounded-xl text-left transition-all hover:bg-black/60 group cursor-pointer flex flex-col gap-1.5 w-full"
+                                    >
+                                        <div className="flex justify-between items-center w-full">
+                                            <span className="text-[10.5px] font-black text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider">{tpl.title}</span>
+                                            <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/5 ${textTheme}`}>
+                                                {tpl.type.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <p className="text-[8.5px] text-white/50 uppercase tracking-wider">{tpl.description}</p>
+                                        <p className="text-[9.5px] text-white/30 line-clamp-1 italic mt-0.5">
+                                            "{tpl.message.replace(/{zona}/g, townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '))}"
+                                        </p>
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
