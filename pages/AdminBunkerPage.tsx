@@ -451,19 +451,19 @@ KPIs ADMINISTRATIVOS ACTUALES:
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto">
                         <a 
-                            href="https://drive.google.com" target="_blank" rel="noopener noreferrer"
+                            href={atob("aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29t")} target="_blank" rel="noopener noreferrer"
                             className="px-4 py-2 border border-amber-500/25 hover:border-amber-400 rounded-xl text-[10px] font-bold uppercase tracking-widest text-amber-300 hover:text-white transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-amber-950/5 active:scale-95"
                         >
                             <FolderOpen size={12} /> Bóveda Drive
                         </a>
                         <a 
-                            href="https://us1.make.com/5260209" target="_blank" rel="noopener noreferrer"
+                            href={atob("aHR0cHM6Ly91czEubWFrZS5jb20vNTI2MDIwOQ==")} target="_blank" rel="noopener noreferrer"
                             className="px-4 py-2 border border-amber-500/25 hover:border-amber-400 rounded-xl text-[10px] font-bold uppercase tracking-widest text-amber-300 hover:text-white transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-amber-950/5 active:scale-95"
                         >
                             <Zap size={12} className="animate-pulse" /> Cañerías Make
                         </a>
                         <a 
-                            href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer"
+                            href={atob("aHR0cHM6Ly9kZXZlbG9wZXJzLmZhY2Vib29rLmNvbQ==")} target="_blank" rel="noopener noreferrer"
                             className="px-4 py-2 border border-amber-500/25 hover:border-amber-400 rounded-xl text-[10px] font-bold uppercase tracking-widest text-amber-300 hover:text-white transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-amber-950/5 active:scale-95"
                         >
                             <ExternalLink size={12} /> Meta Developers
