@@ -8,12 +8,16 @@
     "build": "vite build",
     "preview": "vite preview",
     "migrate": "node scripts/migrar.js",
-    "audit:images": "npx tsx scripts/auditImages.ts"
+    "audit:images": "npx tsx scripts/auditImages.ts",
+    "mcp:start": "node scripts/start-mcp.js"
   },
   "dependencies": {
     "@ai-sdk/google": "3.0.83",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@sentry/react": "^10.70.0",
     "ai": "6.0.208",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "firebase": "^11.10.0",
     "lucide-react": "^0.460.0",
     "qrcode.react": "^4.2.0",
@@ -25,11 +29,14 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vercel/node": "^5.6.18",
     "@vitejs/plugin-react": "^4.3.1",
     "firebase-admin": "^14.0.0",
+    "tsx": "^4.23.12",
     "typescript": "^5.5.3",
     "vite": "^5.4.1"
   }
