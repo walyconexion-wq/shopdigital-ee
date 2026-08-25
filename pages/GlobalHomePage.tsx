@@ -6,6 +6,7 @@ import { Region, Shop } from '../types';
 import { playNeonClick } from '../utils/audio';
 import { AriMerchantAssistant } from '../components/AriMerchantAssistant';
 import { CyberCircuitBackground } from '../components/CyberCircuitBackground';
+import { PwaInstallBanner } from '../components/PwaInstallBanner';
 
 const STATIC_REGIONS: Region[] = [
     { 
@@ -230,13 +231,18 @@ const GlobalHomePage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* ── Avatar Central Animado 3D (100% Transparente Nativo Chroma Key HD) ── */}
-                <div className="flex-1 flex flex-col items-center justify-center relative z-10 select-none pointer-events-none my-auto py-2">
-                    <div className="ari-3d-avatar-container flex flex-col items-center justify-center max-h-[325px] sm:max-h-[370px]">
+                {/* ── Avatar Central Animado 3D & Banner PWA ── */}
+                <div className="flex-1 flex flex-col items-center justify-center relative z-10 select-none my-auto py-2">
+                    {/* 📲 Píldora Neumórfica de Instalación PWA */}
+                    <div className="mb-2 pointer-events-auto">
+                        <PwaInstallBanner />
+                    </div>
+
+                    <div className="ari-3d-avatar-container flex flex-col items-center justify-center max-h-[300px] sm:max-h-[350px] pointer-events-none">
                         <img
                             src="/ari-saludando.gif"
                             alt="ARI Asistente Animado"
-                            className="max-h-[315px] sm:max-h-[360px] h-auto w-auto object-contain filter drop-shadow-[0_8px_20px_rgba(40,10,80,0.25)]"
+                            className="max-h-[290px] sm:max-h-[340px] h-auto w-auto object-contain filter drop-shadow-[0_8px_20px_rgba(40,10,80,0.25)]"
                             loading="eager"
                         />
                         <div className="ari-3d-shadow mt-1 opacity-40" />
