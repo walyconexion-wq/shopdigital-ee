@@ -5,14 +5,27 @@
     {
       "src": "/branding.png",
       "type": "image/png",
-      "sizes": "1200x630",
+      "sizes": "192x192 512x512 1200x630",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/branding.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
   "start_url": "/",
-  "background_color": "#000000",
-  "display": "standalone",
-  "scope": "/",
+  "background_color": "#2c2440",
   "theme_color": "#22d3ee",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
   "description": "Accedé a los mejores beneficios en comercios de tu zona. Catálogos exclusivos, descuentos y ofertas."
 }

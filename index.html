@@ -892,6 +892,25 @@
       }
     })();
   </script>
+  <!-- Registro de Service Worker para PWA Install nativo directo -->
+  <script>
+    window.__pwaInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window.__pwaInstallPrompt = e;
+      window.dispatchEvent(new CustomEvent('pwa-prompt-ready'));
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(reg) {
+          console.log('✅ ServiceWorker PWA registrado:', reg.scope);
+        }).catch(function(err) {
+          console.warn('ServiceWorker error:', err);
+        });
+      });
+    }
+  </script>
   <script type="module" src="/index.tsx"></script>
   <!-- Fondo ciber-digital: circuitos animados. Carga después del DOM, no afecta la app -->
   <script src="/sd-circuit-bg.js" defer></script>

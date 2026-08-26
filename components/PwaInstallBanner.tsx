@@ -4,106 +4,140 @@ import { playNeonClick } from '../utils/audio';
 
 interface PwaInstallBannerProps {
     className?: string;
+    variant?: 'compact-3d' | 'full';
 }
 
-export const PwaInstallBanner: React.FC<PwaInstallBannerProps> = ({ className = '' }) => {
+export const PwaInstallBanner: React.FC<PwaInstallBannerProps> = ({ 
+    className = '',
+    variant = 'compact-3d'
+}) => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [isInstalled, setIsInstalled] = useState<boolean>(false);
     const [showInstructions, setShowInstructions] = useState<boolean>(false);
     const [isIos, setIsIos] = useState<boolean>(false);
 
     useEffect(() => {
-        // Detectar si ya está instalada en modo standalone
+        // 1. Detectar si ya está instalada como PWA
         if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true) {
             setIsInstalled(true);
         }
 
-        // Detectar iOS
+        // 2. Detectar si es dispositivo iOS (iPhone / iPad)
         const userAgent = window.navigator.userAgent.toLowerCase();
         const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
         setIsIos(isIosDevice);
 
-        // Capturar evento de instalación de PWA en Android/Chrome
+        // 3. Revisar si ya se capturó el prompt globalmente en index.html
+        if ((window as any).__pwaInstallPrompt) {
+            setDeferredPrompt((window as any).__pwaInstallPrompt);
+        }
+
+        // 4. Escuchar evento nativo y evento personalizado
+        const handlePromptReady = () => {
+            if ((window as any).__pwaInstallPrompt) {
+                setDeferredPrompt((window as any).__pwaInstallPrompt);
+            }
+        };
+
         const handleBeforeInstallPrompt = (e: Event) => {
             e.preventDefault();
+            (window as any).__pwaInstallPrompt = e;
             setDeferredPrompt(e);
         };
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.addEventListener('pwa-prompt-ready', handlePromptReady);
 
-        // Detectar cuando se instala exitosamente
+        // Detectar cuando la app se instala con éxito
         window.addEventListener('appinstalled', () => {
             setIsInstalled(true);
             setDeferredPrompt(null);
+            (window as any).__pwaInstallPrompt = null;
         });
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            window.removeEventListener('pwa-prompt-ready', handlePromptReady);
         };
     }, []);
 
     const handleInstallClick = async () => {
         playNeonClick();
 
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                setIsInstalled(true);
+        const activePrompt = deferredPrompt || (window as any).__pwaInstallPrompt;
+
+        if (activePrompt) {
+            try {
+                // Disparar cartel nativo oficial de Google Chrome / Android
+                await activePrompt.prompt();
+                const choiceResult = await activePrompt.userChoice;
+                if (choiceResult.outcome === 'accepted') {
+                    setIsInstalled(true);
+                }
+                setDeferredPrompt(null);
+                (window as any).__pwaInstallPrompt = null;
+            } catch (err) {
+                console.warn('Error al disparar prompt nativo:', err);
+                setShowInstructions(true);
             }
-            setDeferredPrompt(null);
         } else {
-            // Si no hay prompt nativo disponible (iOS o Chrome escritorio), mostrar guía modal
+            // Fallback elegante (iOS Safari o navegador que no soporta beforeinstallprompt)
             setShowInstructions(true);
         }
     };
 
     if (isInstalled) {
         return (
-            <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-[8px] font-black uppercase tracking-wider shadow-sm select-none ${className}`}>
-                <CheckCircle2 size={11} className="text-emerald-600" />
-                <span>App Instalada en tu Celu</span>
+            <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-[8px] font-black uppercase tracking-wider shadow-sm select-none ${className}`}>
+                <CheckCircle2 size={12} className="text-emerald-600" />
+                <span>App Instalada 🟢</span>
             </div>
         );
     }
 
     return (
         <>
-            {/* 📲 PÍLDORA / BANNER FLOTANTE NEUMÓRFICO 3D */}
+            {/* 📲 BOTÓN NEUMÓRFICO 3D TÁCTIL (ESTILO PURO CARAMELO / CREMA SHOPDIGITAL) */}
             <div className={`relative inline-block z-20 select-none ${className}`}>
                 <button
                     onClick={handleInstallClick}
-                    className="group relative flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#fbf8f2] to-[#f4ebe0] border-[1.5px] border-[#e2d5c3] shadow-[0_6px_16px_rgba(44,36,64,0.12),inset_0_1px_1px_rgba(255,255,255,0.9)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                    className="neu-btn-3d group flex items-center justify-center gap-2 py-2 px-3.5 text-center transition-all cursor-pointer active:scale-95"
+                    style={{
+                        borderRadius: '1.2rem',
+                        border: '1.5px solid #e2d5c3',
+                        background: 'linear-gradient(135deg, #fbf8f2 0%, #f4ebe0 100%)',
+                        boxShadow: '0 6px 14px rgba(44, 36, 64, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+                    }}
                 >
-                    {/* Luz pulsante */}
+                    {/* Luz Pulsante de Alerta Roja */}
                     <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff6b6b] opacity-75" />
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ff5252]" />
                     </span>
 
-                    {/* Icono */}
-                    <div className="w-6 h-6 rounded-xl bg-[#2c2440] text-white flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform">
-                        <Smartphone size={13} className="text-[#22d3ee]" />
+                    {/* Icono Smartphone */}
+                    <div className="w-5 h-5 rounded-lg bg-[#2c2440] text-[#22d3ee] flex items-center justify-center shadow-sm">
+                        <Smartphone size={11} />
                     </div>
 
-                    {/* Textos */}
-                    <div className="text-left flex flex-col">
-                        <span className="text-[7px] font-black uppercase tracking-[0.15em] text-[#ff6b6b] leading-tight flex items-center gap-0.5">
-                            Acceso Directo <Sparkles size={8} />
+                    {/* Texto del Botón 3D */}
+                    <div className="flex flex-col text-left leading-none">
+                        <span className="text-[7px] font-black uppercase tracking-[0.14em] text-[#ff6b6b] mb-0.5">
+                            Acceso Directo
                         </span>
-                        <span className="text-[9px] font-[900] uppercase tracking-wider text-[#2c2440] leading-none">
-                            Instalar App en tu Celu
+                        <span className="text-[8.5px] font-[900] uppercase tracking-wider text-[#2c2440]">
+                            Descargar App en tu Celu
                         </span>
                     </div>
 
-                    {/* Flechita / Download */}
-                    <div className="ml-1 w-5 h-5 rounded-full bg-[#e8dac8] text-[#2c2440] flex items-center justify-center">
-                        <Download size={10} />
+                    {/* Flecha Download */}
+                    <div className="w-4 h-4 rounded-full bg-[#e8dac8] text-[#2c2440] flex items-center justify-center ml-0.5 group-hover:translate-y-0.5 transition-transform">
+                        <Download size={9} />
                     </div>
                 </button>
             </div>
 
-            {/* 📖 MODAL INTERACTIVO DE GUÍA DE INSTALACIÓN (PARA IPHONE O MANUAL) */}
+            {/* 📖 MODAL INTERACTIVO DE GUÍA (SOLO COMO FALLBACK PARA IPHONE O NAVEGADORES SIN POPUP NATIVO) */}
             {showInstructions && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-5 animate-in fade-in duration-200 select-none">
                     <div className="bg-[#fbf8f2] border-2 border-[#e2d5c3] p-6 rounded-[2rem] w-full max-w-xs shadow-2xl relative text-center animate-in zoom-in-95 duration-200">
@@ -158,7 +192,7 @@ export const PwaInstallBanner: React.FC<PwaInstallBannerProps> = ({ className = 
                             onClick={() => { playNeonClick(); setShowInstructions(false); }}
                             className="w-full py-2.5 rounded-xl bg-[#2c2440] text-white font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all shadow-md cursor-pointer"
                         >
-                            ¡Entendido, gracias!
+                            ¡Entendido!
                         </button>
                     </div>
                 </div>

@@ -144,41 +144,41 @@ const GlobalHomePage: React.FC = () => {
           ];
 
     return (
-        <div className="w-full min-h-screen font-sans relative select-none z-10 text-[#2d1e15] overflow-y-auto flex flex-col justify-between items-center">
+        <div className="w-full h-[100dvh] min-h-[100dvh] max-h-[100dvh] font-sans relative select-none z-10 text-[#2d1e15] overflow-hidden flex flex-col justify-between items-center">
             {/* Fondo Ciber-Digital de Circuitos Animados */}
             <CyberCircuitBackground />
             
             {/* Contenedor Central Neumórfico Crema */}
-            <div className="w-full max-w-md mx-auto min-h-screen flex flex-col p-4 sm:p-5 pb-5 justify-between relative z-10">
+            <div className="w-full max-w-md mx-auto h-full flex flex-col p-3 sm:p-5 pb-3 justify-between relative z-10">
 
                 {/* ── Encabezado y Botones Envueltos en el Contenedor Neumórfico Crema ── */}
-                <div className="neu-plate w-full mt-2 sm:mt-4 flex flex-col gap-3.5 relative z-10">
+                <div className="neu-plate w-full mt-1 sm:mt-2 flex flex-col gap-2.5 sm:gap-3.5 relative z-10">
                     {/* ── Título Interno Hundido (Inset Neumórfico) ── */}
-                    <div className="neu-inset-title py-3 px-6 text-center w-full max-w-[300px] mx-auto flex flex-col items-center justify-center">
-                        <h1 className="text-[19px] font-[900] uppercase tracking-[0.1em] text-[#2c2440] select-none leading-none">
+                    <div className="neu-inset-title py-2 sm:py-3 px-5 text-center w-full max-w-[280px] mx-auto flex flex-col items-center justify-center">
+                        <h1 className="text-[17px] sm:text-[19px] font-[900] uppercase tracking-[0.1em] text-[#2c2440] select-none leading-none">
                             SHOPDIGITAL
                         </h1>
-                        <div className="flex items-center justify-center gap-1 mt-1 select-none">
-                            <span className="text-[8.5px] font-bold uppercase tracking-[0.18em] text-[#4a3d6a]">
+                        <div className="flex items-center justify-center gap-1 mt-0.5 select-none">
+                            <span className="text-[8px] sm:text-[8.5px] font-bold uppercase tracking-[0.18em] text-[#4a3d6a]">
                                 SELECCIONA TU REGIÓN
                             </span>
-                            <MapPin size={11} className="text-[#4a3d6a]" />
+                            <MapPin size={10} className="text-[#4a3d6a]" />
                         </div>
                     </div>
 
                     {/* ── Fila 1: Selector de Región — botones Neumórficos 3D ── */}
-                    <div className="grid grid-cols-3 gap-2.5 w-full">
+                    <div className="grid grid-cols-3 gap-2 w-full">
                         {[
                             { id: 'buenos-aires' as const, label: 'BUENOS AIRES', icon: null },
                             { id: 'cordoba' as const, label: 'CÓRDOBA', icon: null },
-                            { id: 'patagonia' as const, label: 'PATAGONIA', icon: <Mountain size={14} className="opacity-70 flex-shrink-0" /> }
+                            { id: 'patagonia' as const, label: 'PATAGONIA', icon: <Mountain size={13} className="opacity-70 flex-shrink-0" /> }
                         ].map(reg => {
                             const isActive = activeRegion === reg.id;
                             return (
                                 <button
                                     key={reg.id}
                                     onClick={() => { playNeonClick(); setActiveRegion(reg.id); }}
-                                    className={`py-3 px-2 text-[8px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1 text-center transition-all ${
+                                    className={`py-2.5 px-1.5 text-[7.5px] sm:text-[8px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-1 text-center transition-all ${
                                         isActive ? 'neu-btn-3d-active' : 'neu-btn-3d'
                                     }`}
                                 >
@@ -190,7 +190,7 @@ const GlobalHomePage: React.FC = () => {
                     </div>
 
                     {/* ── Fila 2: Localidades — botones Neumórficos 3D ── */}
-                    <div className="grid grid-cols-3 gap-2.5 w-full">
+                    <div className="grid grid-cols-3 gap-2 w-full">
                         {localitiesForActiveRegion.map(loc => {
                             const locLower = loc.name.toLowerCase();
                             const isEzeiza = locLower.includes('ezeiza');
@@ -210,7 +210,7 @@ const GlobalHomePage: React.FC = () => {
                                             navigate(loc.path);
                                         }
                                     }}
-                                    className="neu-btn-3d py-2.5 px-1.5 text-[7.5px] leading-tight font-extrabold uppercase tracking-wider flex items-center justify-center gap-1 text-center transition-all"
+                                    className="neu-btn-3d py-2 px-1 text-[7px] sm:text-[7.5px] leading-tight font-extrabold uppercase tracking-wider flex items-center justify-center gap-0.5 text-center transition-all"
                                 >
                                     <span>
                                         {loc.name === 'Esteban Echeverria' ? (
@@ -223,54 +223,54 @@ const GlobalHomePage: React.FC = () => {
                                             loc.name
                                         )}
                                     </span>
-                                    {isEzeiza && <Plane size={13} className="opacity-70 flex-shrink-0 ml-0.5" />}
-                                    {isLomas && <Building2 size={13} className="opacity-70 flex-shrink-0 ml-0.5" />}
+                                    {isEzeiza && <Plane size={11} className="opacity-70 flex-shrink-0 ml-0.5" />}
+                                    {isLomas && <Building2 size={11} className="opacity-70 flex-shrink-0 ml-0.5" />}
                                 </button>
                             );
                         })}
                     </div>
                 </div>
 
-                {/* ── Avatar Central Animado 3D & Banner PWA ── */}
-                <div className="flex-1 flex flex-col items-center justify-center relative z-10 select-none my-auto py-2">
-                    {/* 📲 Píldora Neumórfica de Instalación PWA */}
-                    <div className="mb-2 pointer-events-auto">
+                {/* ── Avatar Central Animado 3D & Botón 3D de Descarga PWA ── */}
+                <div className="flex-1 flex flex-col items-center justify-center relative z-10 select-none my-1 py-1">
+                    {/* 📲 Botón Neumórfico 3D de Instalación PWA */}
+                    <div className="mb-1 sm:mb-2 pointer-events-auto">
                         <PwaInstallBanner />
                     </div>
 
-                    <div className="ari-3d-avatar-container flex flex-col items-center justify-center max-h-[300px] sm:max-h-[350px] pointer-events-none">
+                    <div className="ari-3d-avatar-container flex flex-col items-center justify-center max-h-[220px] sm:max-h-[290px] pointer-events-none">
                         <img
                             src="/ari-saludando.gif"
                             alt="ARI Asistente Animado"
-                            className="max-h-[290px] sm:max-h-[340px] h-auto w-auto object-contain filter drop-shadow-[0_8px_20px_rgba(40,10,80,0.25)]"
+                            className="max-h-[210px] sm:max-h-[280px] h-auto w-auto object-contain filter drop-shadow-[0_8px_20px_rgba(40,10,80,0.25)]"
                             loading="eager"
                         />
-                        <div className="ari-3d-shadow mt-1 opacity-40" />
+                        <div className="ari-3d-shadow mt-0.5 opacity-40" />
                     </div>
                 </div>
 
-                {/* ── Pie de Página Neumórfico Crema HD ── */}
-                <footer className="w-full z-10 mt-auto pt-1 pb-1 mb-0 pr-16 sm:pr-0">
-                    <div className="neu-footer flex items-center justify-between w-full py-2.5 px-4 sm:py-3 sm:px-6">
+                {/* ── Pie de Página Neumórfico Crema HD (Siempre Visible) ── */}
+                <footer className="w-full z-10 mt-auto pt-0 pb-1 mb-0 pr-14 sm:pr-0">
+                    <div className="neu-footer flex items-center justify-between w-full py-2 px-3 sm:py-2.5 sm:px-6">
                         <p
                             onClick={handleCopyrightClick}
-                            className="text-[8px] font-extrabold uppercase tracking-[0.22em] text-[#2c2440] cursor-pointer select-none active:opacity-100 transition-opacity"
+                            className="text-[7.5px] sm:text-[8px] font-extrabold uppercase tracking-[0.2em] text-[#2c2440] cursor-pointer select-none active:opacity-100 transition-opacity"
                         >
                             © 2026 · SHOPDIGITAL
                         </p>
-                        <div className="flex items-center gap-2.5 sm:gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
                             <button
                                 onClick={() => { playNeonClick(); setShowTermsModal(true); }}
-                                className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] flex items-center gap-1 active:opacity-75 transition-all select-none border-none bg-transparent cursor-pointer"
+                                className="text-[7px] sm:text-[7.5px] font-extrabold uppercase tracking-[0.12em] text-[#2c2440] hover:text-[#ff6b6b] flex items-center gap-1 active:opacity-75 transition-all select-none border-none bg-transparent cursor-pointer"
                             >
-                                <FileText size={11} className="opacity-70" />
+                                <FileText size={10} className="opacity-70" />
                                 TÉRMINOS
                             </button>
                             <button
                                 onClick={() => { playNeonClick(); setShowTermsModal(true); }}
-                                className="text-[7.5px] font-extrabold uppercase tracking-[0.14em] text-[#2c2440] hover:text-[#ff6b6b] flex items-center gap-1 active:opacity-75 transition-all select-none border-none bg-transparent cursor-pointer"
+                                className="text-[7px] sm:text-[7.5px] font-extrabold uppercase tracking-[0.12em] text-[#2c2440] hover:text-[#ff6b6b] flex items-center gap-1 active:opacity-75 transition-all select-none border-none bg-transparent cursor-pointer"
                             >
-                                <FileCheck size={11} className="opacity-70" />
+                                <FileCheck size={10} className="opacity-70" />
                                 CONDICIONES
                             </button>
                         </div>
