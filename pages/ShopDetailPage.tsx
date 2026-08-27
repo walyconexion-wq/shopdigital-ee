@@ -24,8 +24,6 @@ import {
     Eye,
     Heart,
     Image as ImageIcon,
-    Sun,
-    Moon,
     Camera,
     ShieldCheck,
     Gamepad2,
@@ -55,17 +53,7 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
     const basePath = isEnterprisePath ? '/empresas' : `/${townId}`;
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [currentTime] = useState(new Date());
-    const checkIsDayMode = () => {
-        const saved = localStorage.getItem('global_home_theme_mode');
-        return (saved || 'light') === 'light';
-    };
-    const [isDayMode, setIsDayMode] = useState(checkIsDayMode);
-
-    useEffect(() => {
-        const syncTheme = () => setIsDayMode(checkIsDayMode());
-        window.addEventListener('theme-changed', syncTheme);
-        return () => window.removeEventListener('theme-changed', syncTheme);
-    }, []);
+    const isDayMode = true;
     const catalogRef = useRef<HTMLDivElement>(null);
     const offersCarouselRef = useRef<HTMLDivElement>(null);
     const offersTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -425,19 +413,6 @@ const ShopDetailPage: React.FC<ShopDetailPageProps> = ({ allShops, globalConfig 
                         </button>
 
                         <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => {
-                                    playNeonClick();
-                                    const current = localStorage.getItem('global_home_theme_mode') || 'light';
-                                    const nextTheme = current === 'light' ? 'dark' : 'light';
-                                    localStorage.setItem('global_home_theme_mode', nextTheme);
-                                    window.dispatchEvent(new Event('theme-changed'));
-                                }}
-                                className="w-10 h-10 flex items-center justify-center neu-btn-pod rounded-2xl cursor-pointer transition-transform active:scale-90"
-                                title="Cambiar Modo"
-                            >
-                                {isDayMode ? <Moon size={16} className="text-[#2c2440]" /> : <Sun size={16} className="text-[#ff6b6b]" />}
-                            </button>
                             <button
                                 onClick={handleShare}
                                 className="w-10 h-10 flex items-center justify-center neu-btn-pod rounded-2xl cursor-pointer transition-transform active:scale-90"

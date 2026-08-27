@@ -1,7 +1,7 @@
 import React from 'react';
 import { CATEGORIES } from '../constants';
 import Logo from '../components/Logo';
-import { Share2, Store, ArrowLeft, Sun, Moon, Clock, Wifi } from 'lucide-react';
+import { Share2, Store, ArrowLeft, Clock, Wifi } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { playNeonClick } from '../utils/audio';
 import { resolveIcon } from '../utils/iconResolver';
@@ -76,18 +76,6 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
     const activeTheme = globalConfig?.isChristmasMode ? 'christmas' : (globalConfig?.theme || 'default');
     const mainSubtitle = globalConfig?.mainSubtitle || `${t('Tu guía de ofertas locales')} - ${townId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`;
     const townName = globalConfig?.townName || 'Esteban Echeverría';
-    const themeMode = globalConfig?.themeMode || 'auto';
-    const checkIsDayMode = () => {
-        const saved = localStorage.getItem('global_home_theme_mode');
-        return (saved || 'light') === 'light';
-    };
-    const [isDayMode, setIsDayMode] = React.useState(checkIsDayMode);
-
-    React.useEffect(() => {
-        const syncTheme = () => setIsDayMode(checkIsDayMode());
-        window.addEventListener('theme-changed', syncTheme);
-        return () => window.removeEventListener('theme-changed', syncTheme);
-    }, []);
 
     const [logoClicks, setLogoClicks] = React.useState(0);
     const [walyClicks, setWalyClicks] = React.useState(0);
@@ -280,23 +268,6 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                        <button
-                            onClick={() => {
-                                playNeonClick();
-                                const current = localStorage.getItem('global_home_theme_mode') || 'light';
-                                const nextTheme = current === 'light' ? 'dark' : 'light';
-                                localStorage.setItem('global_home_theme_mode', nextTheme);
-                                window.dispatchEvent(new Event('theme-changed'));
-                            }}
-                            aria-label="Alternar modo de color"
-                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
-                            title="Modo de Color"
-                        >
-                            {isDayMode 
-                                ? <Moon size={15} className="text-[#2c2440] group-hover:rotate-12 transition-transform" /> 
-                                : <Sun size={15} className="text-[#ff6b6b] group-hover:rotate-45 transition-transform" />
-                            }
-                        </button>
                         <button 
                             onClick={handleShare}
                             className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
@@ -309,16 +280,14 @@ const Home: React.FC<HomeProps> = ({ globalConfig }) => {
                 </div>
 
                 {/* Avatar ARI Integrado en Cabecera */}
-                {isDayMode && (
-                    <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
-                        <img 
-                            src="/ari-pointing.png" 
-                            alt="ARI Asistente Local" 
-                            className="h-20 w-auto object-contain drop-shadow-[0_4px_10px_rgba(44,36,64,0.18)] animate-in fade-in duration-700" 
-                        />
-                        <div className="ari-3d-shadow mt-0.5 scale-75" />
-                    </div>
-                )}
+                <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
+                    <img 
+                        src="/ari-pointing.png" 
+                        alt="ARI Asistente Local" 
+                        className="h-20 w-auto object-contain drop-shadow-[0_4px_10px_rgba(44,36,64,0.18)] animate-in fade-in duration-700" 
+                    />
+                    <div className="ari-3d-shadow mt-0.5 scale-75" />
+                </div>
 
                 {/* SELLO DE VIDA — TIMESTAMP ANTI-FALSIFICACIÓN & TELEMETRÍA */}
                 <div className="w-full flex items-center justify-between neu-inset-title px-4 py-2">

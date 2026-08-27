@@ -4,7 +4,7 @@ import { CATEGORIES } from '../constants';
 import { Shop } from '../types';
 import { TRASLASIERRA_REGION } from '../data/regionalTemplates/traslasierraConfig';
 import { PATAGONIA_7_LAGOS_REGION } from '../data/regionalTemplates/patagonia7LagosConfig';
-import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye, Sun, Moon, Clock, Wifi, Share2, Store } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, BookOpen, ArrowLeft, Eye, Clock, Wifi, Share2, Store } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { incrementarVisitas } from '../firebase';
 import { useTownLocalities } from '../hooks/useTownLocalities';
@@ -46,12 +46,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
     const [titleClicks, setTitleClicks] = React.useState(0);
 
     const themeColor = globalConfig?.primaryColor || '#22d3ee';
-    const themeMode = globalConfig?.themeMode || 'auto';
-    const checkIsDayMode = () => {
-        const saved = localStorage.getItem('global_home_theme_mode');
-        return (saved || 'light') === 'light';
-    };
-    const [isDayMode, setIsDayMode] = React.useState(checkIsDayMode);
 
     const [currentTime, setCurrentTime] = useState(new Date());
     useEffect(() => {
@@ -214,23 +208,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                        <button
-                            onClick={() => {
-                                playNeonClick();
-                                const current = localStorage.getItem('global_home_theme_mode') || 'light';
-                                const nextTheme = current === 'light' ? 'dark' : 'light';
-                                localStorage.setItem('global_home_theme_mode', nextTheme);
-                                window.dispatchEvent(new Event('theme-changed'));
-                            }}
-                            aria-label="Alternar modo de color"
-                            className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
-                            title="Modo de Color"
-                        >
-                            {isDayMode 
-                                ? <Moon size={15} className="text-[#2c2440] group-hover:rotate-12 transition-transform" /> 
-                                : <Sun size={15} className="text-[#ff6b6b] group-hover:rotate-45 transition-transform" />
-                            }
-                        </button>
                         <button 
                             onClick={handleShare}
                             className="w-9 h-9 flex items-center justify-center cursor-pointer transition-all neu-btn-pod group"
@@ -243,16 +220,14 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ allShops, globalConfig }) =
                 </div>
 
                 {/* Avatar ARI Integrado en Cabecera */}
-                {isDayMode && (
-                    <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
-                        <img 
-                            src="/ari-pointing.png" 
-                            alt="ARI Asistente Categorías" 
-                            className="h-20 w-auto object-contain drop-shadow-[0_4px_10px_rgba(44,36,64,0.18)] animate-in fade-in duration-700" 
-                        />
-                        <div className="ari-3d-shadow mt-0.5 scale-75" />
-                    </div>
-                )}
+                <div className="flex flex-col items-center select-none pointer-events-none my-0.5">
+                    <img 
+                        src="/ari-pointing.png" 
+                        alt="ARI Asistente Categorías" 
+                        className="h-20 w-auto object-contain drop-shadow-[0_4px_10px_rgba(44,36,64,0.18)] animate-in fade-in duration-700" 
+                    />
+                    <div className="ari-3d-shadow mt-0.5 scale-75" />
+                </div>
 
                 {/* SELLO DE VIDA — TIMESTAMP ANTI-FALSIFICACIÓN & ESTADO LUZ VERDE */}
                 <div className="w-full flex items-center justify-between neu-inset-title px-4 py-2">
