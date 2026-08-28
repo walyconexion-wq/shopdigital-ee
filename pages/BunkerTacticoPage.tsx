@@ -8,7 +8,7 @@ import {
     BookOpen, Network, RefreshCw, Plus, FileText, Lock, Search,
     Send, UserCheck, CheckCheck, FolderKanban, Crown, Trophy,
     ScrollText, Award, Lightbulb, Rocket, Milestone, ShieldAlert,
-    Calendar, Eye, HelpCircle, ChevronRight, X
+    Calendar, Eye, HelpCircle, ChevronRight, X, DollarSign, Sliders
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { NeuralNetworkCanvas } from '../components/NeuralNetworkCanvas';
@@ -98,6 +98,47 @@ export interface EcosystemSuperpower {
     obsidianDoc: string;
     exampleDirectives: string[];
     techStack: string;
+}
+
+// 🔋 INTERFACES PARA LA TELEMETRÍA DE TOKENS & MODELOS
+export interface AgentTokenUsage {
+    id: string;
+    agentName: string;
+    role: string;
+    pillar: 'ShopDigital' | 'Comunidad Faro de Luz' | 'Fundación Valle de Luz' | 'Ministerio Caminos de Fe';
+    primaryModel: string;
+    thinkingLevel: 'High' | 'Medium' | 'Low' | 'Standard';
+    consumedTokens: number;
+    quotaLimit: number;
+    costUsd: number;
+    lastActive: string;
+    resetCycleDate: string;
+    efficiencyRating: string;
+    color: string;
+}
+
+export interface ModelTelemetry {
+    id: string;
+    name: string;
+    provider: 'Google DeepMind' | 'Anthropic' | 'DeepSeek' | 'Open Source';
+    thinkingMode: string;
+    inputCostPer1M: number;
+    outputCostPer1M: number;
+    totalTokensUsed: number;
+    status: 'activo' | 'standby' | 'optimizado';
+    bestUseCases: string;
+    color: string;
+}
+
+export interface TokenCycleRecord {
+    id: string;
+    cycleName: string;
+    startDate: string;
+    endDate: string;
+    totalConsumed: string;
+    totalBudgetUsd: string;
+    status: 'en curso' | 'completado';
+    nextRechargeDate: string;
 }
 
 const COMMAND_DIRECTIVES: CommandDirective[] = [
@@ -597,6 +638,206 @@ const ECOSYSTEM_SUPERPOWERS: EcosystemSuperpower[] = [
     }
 ];
 
+// 🔋 DATA DE CONSUMO DE TOKENS POR AGENTE
+const AGENT_TOKEN_USAGES: AgentTokenUsage[] = [
+    {
+        id: 'tok-luz01',
+        agentName: 'LUZ 01 (Orquestadora Matriz)',
+        role: 'Orquestación General, Forja & Dirección',
+        pillar: 'ShopDigital',
+        primaryModel: 'Gemini 3.7 Flash',
+        thinkingLevel: 'High',
+        consumedTokens: 5420000,
+        quotaLimit: 15000000,
+        costUsd: 1.62,
+        lastActive: 'Hace 1 min',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '99.8% (Óptima)',
+        color: '#38bdf8'
+    },
+    {
+        id: 'tok-luz02',
+        agentName: 'LUZ 02 (Comunidad Faro)',
+        role: 'Ingeniería Ecotecnológica & Domo',
+        pillar: 'Comunidad Faro de Luz',
+        primaryModel: 'Gemini 3.7 Flash',
+        thinkingLevel: 'High',
+        consumedTokens: 2140000,
+        quotaLimit: 8000000,
+        costUsd: 0.64,
+        lastActive: 'Hace 42 min',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '98.5% (Alta)',
+        color: '#10b981'
+    },
+    {
+        id: 'tok-luz03',
+        agentName: 'LUZ 03 (Fundación Valle de Luz)',
+        role: 'Acción Social, Parajes & Hilux',
+        pillar: 'Fundación Valle de Luz',
+        primaryModel: 'Gemini 3.7 Flash',
+        thinkingLevel: 'High',
+        consumedTokens: 1820000,
+        quotaLimit: 8000000,
+        costUsd: 0.54,
+        lastActive: 'Hace 1 hora',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '98.9% (Alta)',
+        color: '#f59e0b'
+    },
+    {
+        id: 'tok-luz04',
+        agentName: 'LUZ 04 (Ministerio Caminos de Fe)',
+        role: 'Streaming, Sonido & Campañas',
+        pillar: 'Ministerio Caminos de Fe',
+        primaryModel: 'Gemini 3.7 Flash',
+        thinkingLevel: 'High',
+        consumedTokens: 1650000,
+        quotaLimit: 8000000,
+        costUsd: 0.49,
+        lastActive: 'Hace 2 horas',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '99.1% (Alta)',
+        color: '#c084fc'
+    },
+    {
+        id: 'tok-ari',
+        agentName: 'ARI (Squad Frontend)',
+        role: 'UI/UX Neumórfico 3D & CSS',
+        pillar: 'ShopDigital',
+        primaryModel: 'Claude Sonnet 4.6',
+        thinkingLevel: 'High',
+        consumedTokens: 1210000,
+        quotaLimit: 5000000,
+        costUsd: 3.63,
+        lastActive: 'Hace 3 horas',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '97.2% (Visual HD)',
+        color: '#ec4899'
+    },
+    {
+        id: 'tok-bruno',
+        agentName: 'BRUNO (Datastore & EVE)',
+        role: 'Omni-Gateway & Balanceador',
+        pillar: 'ShopDigital',
+        primaryModel: 'DeepSeek-V3',
+        thinkingLevel: 'Standard',
+        consumedTokens: 940000,
+        quotaLimit: 6000000,
+        costUsd: 0.13,
+        lastActive: 'Hace 30 min',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '99.9% (Económica)',
+        color: '#06b6d4'
+    },
+    {
+        id: 'tok-melisa',
+        agentName: 'MELISA (Marketing Lead)',
+        role: 'Campaña 24 Rubros Masivos',
+        pillar: 'ShopDigital',
+        primaryModel: 'DeepSeek-V3',
+        thinkingLevel: 'Standard',
+        consumedTokens: 780000,
+        quotaLimit: 5000000,
+        costUsd: 0.11,
+        lastActive: 'Hace 4 horas',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '99.9% (Económica)',
+        color: '#a855f7'
+    },
+    {
+        id: 'tok-thor',
+        agentName: 'THOR & VORTEX (SecOps)',
+        role: 'Strix-AI Pentesting & QA',
+        pillar: 'ShopDigital',
+        primaryModel: 'Gemini 3.7 Flash',
+        thinkingLevel: 'High',
+        consumedTokens: 890000,
+        quotaLimit: 5000000,
+        costUsd: 0.27,
+        lastActive: 'Hace 5 horas',
+        resetCycleDate: '2026-08-29 00:00 UTC',
+        efficiencyRating: '99.4% (Seguridad)',
+        color: '#10b981'
+    }
+];
+
+// 🤖 CATÁLOGO DE MODELOS LLM EN EL ECOSISTEMA
+const ECOSYSTEM_MODELS: ModelTelemetry[] = [
+    {
+        id: 'mod-gemini37',
+        name: 'Gemini 3.7 Flash',
+        provider: 'Google DeepMind',
+        thinkingMode: 'High Thinking (Razonamiento Profundo)',
+        inputCostPer1M: 0.15,
+        outputCostPer1M: 0.60,
+        totalTokensUsed: 12040000,
+        status: 'activo',
+        bestUseCases: 'Orquestación de enjambre, arquitectura, forja de código TypeScript y análisis estratégico.',
+        color: '#38bdf8'
+    },
+    {
+        id: 'mod-gemini36',
+        name: 'Gemini 3.6 Flash / 3.5 Flash',
+        provider: 'Google DeepMind',
+        thinkingMode: 'Medium / Fast',
+        inputCostPer1M: 0.10,
+        outputCostPer1M: 0.40,
+        totalTokensUsed: 2310000,
+        status: 'activo',
+        bestUseCases: 'Agent-Reach, extracción de subtítulos YouTube, scraping con Jina Reader y búsquedas semánticas.',
+        color: '#06b6d4'
+    },
+    {
+        id: 'mod-claude-sonnet',
+        name: 'Claude Sonnet 4.6',
+        provider: 'Anthropic',
+        thinkingMode: 'Thinking Extendido',
+        inputCostPer1M: 3.00,
+        outputCostPer1M: 15.00,
+        totalTokensUsed: 1210000,
+        status: 'activo',
+        bestUseCases: 'Refactorización compleja de componentes React, diseño neumórfico 3D y maquetado de precisión.',
+        color: '#ec4899'
+    },
+    {
+        id: 'mod-deepseek-v3',
+        name: 'DeepSeek-V3 (Omni-Gateway)',
+        provider: 'DeepSeek',
+        thinkingMode: 'Standard Multi-Head Latent',
+        inputCostPer1M: 0.14,
+        outputCostPer1M: 0.28,
+        totalTokensUsed: 1720000,
+        status: 'optimizado',
+        bestUseCases: 'Generación de copys comerciales masivos de 24 rubros, categorización B2B y ahorro masivo de presupuesto.',
+        color: '#a855f7'
+    },
+    {
+        id: 'mod-claude-opus',
+        name: 'Claude Opus 4.6',
+        provider: 'Anthropic',
+        thinkingMode: 'Deep Thinking',
+        inputCostPer1M: 15.00,
+        outputCostPer1M: 75.00,
+        totalTokensUsed: 420000,
+        status: 'standby',
+        bestUseCases: 'Auditorías de seguridad extrema y análisis corporativos de alta envergadura.',
+        color: '#f59e0b'
+    },
+    {
+        id: 'mod-gpt-oss',
+        name: 'GPT-OSS 120B',
+        provider: 'Open Source',
+        thinkingMode: 'Medium Thinking',
+        inputCostPer1M: 0.05,
+        outputCostPer1M: 0.15,
+        totalTokensUsed: 310000,
+        status: 'standby',
+        bestUseCases: 'Inferencia offline y procesamiento de tareas auxiliares sin conexión externa.',
+        color: '#64748b'
+    }
+];
+
 const SWARM_AGENTS: SwarmAgent[] = [
     {
         id: 'mateo-finanzas',
@@ -894,7 +1135,7 @@ const STRATEGIC_PROJECTS: StrategicProject[] = [
 export const BunkerTacticoPage: React.FC = () => {
     const navigate = useNavigate();
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
-    const [selectedTab, setSelectedTab] = useState<'comandancia' | 'cronograma' | 'superpoderes' | 'agentes' | 'lienzo' | 'kanban' | 'obsidian'>('comandancia');
+    const [selectedTab, setSelectedTab] = useState<'comandancia' | 'cronograma' | 'superpoderes' | 'tokens' | 'agentes' | 'lienzo' | 'kanban' | 'obsidian'>('comandancia');
     const [selectedFrente, setSelectedFrente] = useState<string>('todos');
     const [selectedChronMonth, setSelectedChronMonth] = useState<string>('todos');
     const [selectedChronPillar, setSelectedChronPillar] = useState<string>('todos');
@@ -1001,6 +1242,12 @@ export const BunkerTacticoPage: React.FC = () => {
         }
     };
 
+    // Cálculos de Telemetría Global de Tokens
+    const totalTokensConsumed = AGENT_TOKEN_USAGES.reduce((acc, curr) => acc + curr.consumedTokens, 0);
+    const totalCostUsd = AGENT_TOKEN_USAGES.reduce((acc, curr) => acc + curr.costUsd, 0);
+    const totalGlobalQuota = 50000000; // 50M Tokens
+    const percentageUsed = ((totalTokensConsumed / totalGlobalQuota) * 100).toFixed(1);
+
     return (
         <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#030610] text-white p-4 md:p-8 pb-56 font-sans selection:bg-cyan-500 selection:text-black z-20">
             {/* 🌌 FONDO NEURONAL EN MOVIMIENTO DINÁMICO */}
@@ -1050,11 +1297,15 @@ export const BunkerTacticoPage: React.FC = () => {
                                     <span className="text-cyan-400 flex items-center gap-1">
                                         ⚡ Orquestación: <strong className="text-white">AGENTE LUZ-01</strong>
                                     </span>
+                                    <span className="text-slate-600">•</span>
+                                    <span className="text-purple-400 flex items-center gap-1 font-mono">
+                                        🧠 Modelo Matriz: <strong className="text-purple-300">Gemini 3.7 Flash High</strong>
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* TELEMETRÍA GLOBAL */}
+                        {/* TELEMETRÍA GLOBAL (4 PUNTOS CLAVE) */}
                         <div className="grid grid-cols-4 gap-2 bg-[#050a17]/90 p-4 rounded-2xl border border-cyan-500/30">
                             <div className="text-center px-2.5">
                                 <div className="text-[9px] uppercase font-black text-slate-400">Directivas</div>
@@ -1065,8 +1316,8 @@ export const BunkerTacticoPage: React.FC = () => {
                                 <div className="text-lg font-[1000] text-cyan-400">{SWARM_AGENTS.length}</div>
                             </div>
                             <div className="text-center px-2.5 border-r border-slate-800">
-                                <div className="text-[9px] uppercase font-black text-slate-400">Logros</div>
-                                <div className="text-lg font-[1000] text-emerald-400">{COMMAND_ACHIEVEMENTS.length}</div>
+                                <div className="text-[9px] uppercase font-black text-slate-400">Tokens Hoy</div>
+                                <div className="text-lg font-[1000] text-emerald-400 font-mono">{(totalTokensConsumed / 1000000).toFixed(1)}M</div>
                             </div>
                             <div className="text-center px-2.5">
                                 <div className="text-[9px] uppercase font-black text-slate-400">Poderes</div>
@@ -1075,13 +1326,14 @@ export const BunkerTacticoPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* 🎛️ SELECTOR DE VISTAS PRINCIPALES (7 PESTAÑAS TÁCTICAS) */}
+                    {/* 🎛️ SELECTOR DE VISTAS PRINCIPALES (8 PESTAÑAS TÁCTICAS) */}
                     <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
                         <div className="flex flex-wrap items-center gap-2 bg-[#0a1020] p-1.5 rounded-2xl border border-slate-800">
                             {[
                                 { id: 'comandancia', label: '👑 Comandancia & Directivas', icon: Crown },
                                 { id: 'cronograma', label: '📅 Cronograma Histórico', icon: Clock },
                                 { id: 'superpoderes', label: '⚡ Bóveda de Superpoderes', icon: Zap },
+                                { id: 'tokens', label: '🔋 Telemetría de Tokens & Modelos', icon: Activity },
                                 { id: 'agentes', label: '👥 Matriz de Agentes (12)', icon: Users },
                                 { id: 'lienzo', label: '🧠 Lienzo Táctico 3D', icon: Network },
                                 { id: 'kanban', label: '📊 Tablero Kanban', icon: FolderKanban },
@@ -1333,7 +1585,7 @@ export const BunkerTacticoPage: React.FC = () => {
 
                         {/* Línea de Tiempo / Timeline de Hitos */}
                         <div className="relative pl-6 md:pl-8 border-l-2 border-cyan-500/30 space-y-6 my-8">
-                            {filteredChronogram.map((entry, idx) => (
+                            {filteredChronogram.map((entry) => (
                                 <div key={entry.id} className="relative group">
                                     {/* Indicador de Nodo en la Línea de Tiempo */}
                                     <div className="absolute -left-[31px] md:-left-[39px] top-6 w-5 h-5 rounded-full bg-[#030610] border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.6)] group-hover:scale-125 transition-transform">
@@ -1520,7 +1772,209 @@ export const BunkerTacticoPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* ─── VISTA 3: MATRIZ DE AGENTES (12 MINISTROS) ─── */}
+                {/* ─── VISTA 3: 🔋 TELEMETRÍA DE TOKENS & MODELOS LLM ─── */}
+                {selectedTab === 'tokens' && (
+                    <div className="max-w-7xl mx-auto space-y-8 animate-fadeIn">
+                        {/* 1. TARJETA PRINCIPAL DE TELEMETRÍA GLOBAL Y RECARGAS */}
+                        <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#0a1829] via-[#091522] to-[#120f26] border-2 border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.25)] space-y-6">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border-2 border-cyan-400/50 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                                        🔋
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="px-3 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-widest bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
+                                                ESTADO MAYOR • CONSUMO EN VIVO
+                                            </span>
+                                            <span className="text-xs font-mono text-slate-400">Ventana Diaria 24h</span>
+                                        </div>
+                                        <h2 className="text-xl md:text-3xl font-[1000] text-white mt-1">
+                                            MONITOR DE TOKENS, RECARGAS & MODELOS LLM
+                                        </h2>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <div className="px-4 py-2 rounded-2xl bg-black/60 border border-emerald-500/40 text-left">
+                                        <span className="text-[8.5px] font-mono text-slate-400 uppercase tracking-widest block">Próxima Recarga:</span>
+                                        <span className="text-xs font-mono font-black text-emerald-300 flex items-center gap-1.5 mt-0.5">
+                                            <RefreshCw size={12} className="animate-spin-slow" /> 2026-08-29 00:00 UTC (En ~3h)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* BARRA DE PROGRESO DE CUOTA GLOBAL */}
+                            <div className="space-y-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-black text-white uppercase tracking-wider">Cuota Global de Tokens:</span>
+                                        <span className="font-mono text-cyan-300 font-bold">{(totalTokensConsumed / 1000000).toFixed(2)}M / 50M Tokens Consumidos</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 font-mono text-[11px]">
+                                        <span className="text-slate-400">Saldo Restante: <strong className="text-emerald-400">{((totalGlobalQuota - totalTokensConsumed) / 1000000).toFixed(2)}M</strong></span>
+                                        <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40">{percentageUsed}% Utilizado</span>
+                                    </div>
+                                </div>
+                                <div className="w-full h-3 rounded-full bg-slate-900 border border-slate-800 overflow-hidden p-0.5">
+                                    <div 
+                                        className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-purple-500 transition-all duration-1000 shadow-[0_0_15px_rgba(6,182,212,0.6)]"
+                                        style={{ width: `${percentageUsed}%` }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 4 MÉTRICAS FINANCIERAS Y ESTRATÉGICAS */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                                <div className="p-4 rounded-2xl bg-black/40 border border-slate-800/80">
+                                    <div className="text-[9.5px] uppercase font-bold text-slate-500 tracking-wider">Costo Real Acumulado</div>
+                                    <div className="text-xl font-[1000] text-amber-400 font-mono mt-1">${totalCostUsd.toFixed(2)} USD</div>
+                                    <div className="text-[9px] text-slate-400 mt-0.5">Ciclo 28 Ago 2026</div>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-black/40 border border-slate-800/80">
+                                    <div className="text-[9.5px] uppercase font-bold text-slate-500 tracking-wider">Ahorro Omni-Gateway</div>
+                                    <div className="text-xl font-[1000] text-emerald-400 font-mono mt-1">$184.20 USD</div>
+                                    <div className="text-[9px] text-emerald-500/80 mt-0.5">98% vs modelos legacy</div>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-black/40 border border-slate-800/80">
+                                    <div className="text-[9.5px] uppercase font-bold text-slate-500 tracking-wider">Modelo Predilecto</div>
+                                    <div className="text-base font-[1000] text-purple-300 truncate mt-1">Gemini 3.7 Flash</div>
+                                    <div className="text-[9px] text-purple-400/80 mt-0.5">Thinking High Activo</div>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-black/40 border border-slate-800/80">
+                                    <div className="text-[9.5px] uppercase font-bold text-slate-500 tracking-wider">Frecuencia de Recarga</div>
+                                    <div className="text-base font-[1000] text-cyan-300 font-mono mt-1">Cada 24 Horas</div>
+                                    <div className="text-[9px] text-slate-400 mt-0.5">Reset automático 00:00 UTC</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 2. CATÁLOGO DE MODELOS LLM DISPONIBLES EN EL ENJAMBRE */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Bot className="w-5 h-5 text-purple-400" />
+                                <h3 className="text-lg font-[1000] text-white">
+                                    MODELOS DE INTELIGENCIA ARTIFICIAL EN EL ECOSISTEMA
+                                </h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {ECOSYSTEM_MODELS.map(model => (
+                                    <div
+                                        key={model.id}
+                                        className="p-5 rounded-3xl bg-[#080d1c] border border-slate-800 hover:border-purple-500/50 transition-all shadow-lg flex flex-col justify-between space-y-3"
+                                    >
+                                        <div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] font-mono uppercase font-bold text-slate-400">{model.provider}</span>
+                                                <span className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest ${
+                                                    model.status === 'activo' 
+                                                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                                        : model.status === 'optimizado'
+                                                        ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                                                        : 'bg-slate-800 text-slate-400'
+                                                }`}>
+                                                    {model.status === 'activo' ? '🟢 En Uso' : model.status === 'optimizado' ? '⚡ Omni-Route' : '⚪ Standby'}
+                                                </span>
+                                            </div>
+
+                                            <h4 className="text-base font-[1000] text-white mt-1" style={{ color: model.color }}>
+                                                {model.name}
+                                            </h4>
+
+                                            <div className="px-2.5 py-1 rounded-lg bg-black/50 border border-slate-800/80 my-2">
+                                                <span className="text-[9.5px] font-mono text-purple-300 font-bold block">
+                                                    🧠 Modo: {model.thinkingMode}
+                                                </span>
+                                            </div>
+
+                                            <p className="text-xs text-slate-300 leading-relaxed">
+                                                {model.bestUseCases}
+                                            </p>
+                                        </div>
+
+                                        <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono">
+                                            <span className="text-slate-500">Tarifa In/Out:</span>
+                                            <span className="text-emerald-400 font-bold">
+                                                ${model.inputCostPer1M} / ${model.outputCostPer1M} · 1M
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 3. TABLA DE CONSUMO DETALLADO POR AGENTE & PILAR */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Users className="w-5 h-5 text-cyan-400" />
+                                    <h3 className="text-lg font-[1000] text-white">
+                                        CONSUMO DE TOKENS & MODELO ASIGNADO POR AGENTE
+                                    </h3>
+                                </div>
+                                <span className="text-xs font-mono text-slate-400">Total: {AGENT_TOKEN_USAGES.length} Agentes Monitoreados</span>
+                            </div>
+
+                            <div className="overflow-x-auto rounded-3xl border border-slate-800 bg-[#070b18]">
+                                <table className="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr className="bg-black/60 border-b border-slate-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                            <th className="py-3.5 px-4">Agente & Pilar</th>
+                                            <th className="py-3.5 px-4">Modelo Activo</th>
+                                            <th className="py-3.5 px-4">Thinking</th>
+                                            <th className="py-3.5 px-4">Tokens Consumidos</th>
+                                            <th className="py-3.5 px-4">Costo USD</th>
+                                            <th className="py-3.5 px-4">Próxima Recarga</th>
+                                            <th className="py-3.5 px-4">Eficiencia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-800/60 font-mono">
+                                        {AGENT_TOKEN_USAGES.map(usage => (
+                                            <tr key={usage.id} className="hover:bg-white/5 transition-colors">
+                                                <td className="py-3 px-4">
+                                                    <div className="font-sans font-black text-white">{usage.agentName}</div>
+                                                    <div className="text-[9px] text-slate-400 font-sans">{usage.pillar}</div>
+                                                </td>
+                                                <td className="py-3 px-4">
+                                                    <span className="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 font-bold border border-purple-500/30 text-[10px]">
+                                                        {usage.primaryModel}
+                                                    </span>
+                                                </td>
+                                                <td className="py-3 px-4">
+                                                    <span className={`px-2 py-0.5 rounded-md text-[9.5px] font-bold ${
+                                                        usage.thinkingLevel === 'High' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-slate-800 text-slate-300'
+                                                    }`}>
+                                                        {usage.thinkingLevel}
+                                                    </span>
+                                                </td>
+                                                <td className="py-3 px-4 font-bold text-cyan-300">
+                                                    {(usage.consumedTokens / 1000000).toFixed(2)}M
+                                                    <span className="text-slate-500 text-[9px] block font-normal">de {(usage.quotaLimit / 1000000).toFixed(0)}M límite</span>
+                                                </td>
+                                                <td className="py-3 px-4 font-bold text-amber-400">
+                                                    ${usage.costUsd.toFixed(2)}
+                                                </td>
+                                                <td className="py-3 px-4 text-emerald-400 text-[10px]">
+                                                    {usage.resetCycleDate}
+                                                </td>
+                                                <td className="py-3 px-4 text-[10px] text-slate-300">
+                                                    {usage.efficiencyRating}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ─── VISTA 4: MATRIZ DE AGENTES (12 MINISTROS) ─── */}
                 {selectedTab === 'agentes' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-fadeIn">
                         {filteredAgents.map(agent => {
@@ -1595,14 +2049,14 @@ export const BunkerTacticoPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* ─── VISTA 4: LIENZO TÁCTICO 3D (DIAGRAMA INTERACTIVO) ─── */}
+                {/* ─── VISTA 5: LIENZO TÁCTICO 3D (DIAGRAMA INTERACTIVO) ─── */}
                 {selectedTab === 'lienzo' && (
                     <div className="animate-fadeIn">
                         <NeonMindmapDiagram />
                     </div>
                 )}
 
-                {/* ─── VISTA 5: TABLERO KANBAN DE PROYECTOS ─── */}
+                {/* ─── VISTA 6: TABLERO KANBAN DE PROYECTOS ─── */}
                 {selectedTab === 'kanban' && (
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-fadeIn">
                         {[
@@ -1650,7 +2104,7 @@ export const BunkerTacticoPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* ─── VISTA 6: SINCRONÍA OBSIDIAN (SEGUNDO CEREBRO) ─── */}
+                {/* ─── VISTA 7: SINCRONÍA OBSIDIAN (SEGUNDO CEREBRO) ─── */}
                 {selectedTab === 'obsidian' && (
                     <div className="max-w-7xl mx-auto space-y-6 animate-fadeIn">
                         <div className="p-6 rounded-3xl bg-gradient-to-r from-purple-950/40 via-[#0a0f24] to-cyan-950/40 border-2 border-purple-500/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
