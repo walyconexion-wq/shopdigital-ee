@@ -125,6 +125,7 @@ export interface ModelTelemetry {
     inputCostPer1M: number;
     outputCostPer1M: number;
     totalTokensUsed: number;
+    quotaLimitTokens: number;
     status: 'activo' | 'standby' | 'optimizado';
     bestUseCases: string;
     color: string;
@@ -772,6 +773,7 @@ const ECOSYSTEM_MODELS: ModelTelemetry[] = [
         inputCostPer1M: 0.15,
         outputCostPer1M: 0.60,
         totalTokensUsed: 12040000,
+        quotaLimitTokens: 25000000,
         status: 'activo',
         bestUseCases: 'Orquestación de enjambre, arquitectura, forja de código TypeScript y análisis estratégico.',
         color: '#38bdf8'
@@ -784,6 +786,7 @@ const ECOSYSTEM_MODELS: ModelTelemetry[] = [
         inputCostPer1M: 0.10,
         outputCostPer1M: 0.40,
         totalTokensUsed: 2310000,
+        quotaLimitTokens: 15000000,
         status: 'activo',
         bestUseCases: 'Agent-Reach, extracción de subtítulos YouTube, scraping con Jina Reader y búsquedas semánticas.',
         color: '#06b6d4'
@@ -796,6 +799,7 @@ const ECOSYSTEM_MODELS: ModelTelemetry[] = [
         inputCostPer1M: 3.00,
         outputCostPer1M: 15.00,
         totalTokensUsed: 1210000,
+        quotaLimitTokens: 5000000,
         status: 'activo',
         bestUseCases: 'Refactorización compleja de componentes React, diseño neumórfico 3D y maquetado de precisión.',
         color: '#ec4899'
@@ -808,6 +812,7 @@ const ECOSYSTEM_MODELS: ModelTelemetry[] = [
         inputCostPer1M: 0.14,
         outputCostPer1M: 0.28,
         totalTokensUsed: 1720000,
+        quotaLimitTokens: 20000000,
         status: 'optimizado',
         bestUseCases: 'Generación de copys comerciales masivos de 24 rubros, categorización B2B y ahorro masivo de presupuesto.',
         color: '#a855f7'
@@ -819,7 +824,8 @@ const ECOSYSTEM_MODELS: ModelTelemetry[] = [
         thinkingMode: 'Deep Thinking',
         inputCostPer1M: 15.00,
         outputCostPer1M: 75.00,
-        totalTokensUsed: 420000,
+        totalTokensUsed: 1650000,
+        quotaLimitTokens: 2000000,
         status: 'standby',
         bestUseCases: 'Auditorías de seguridad extrema y análisis corporativos de alta envergadura.',
         color: '#f59e0b'
@@ -831,7 +837,8 @@ const ECOSYSTEM_MODELS: ModelTelemetry[] = [
         thinkingMode: 'Medium Thinking',
         inputCostPer1M: 0.05,
         outputCostPer1M: 0.15,
-        totalTokensUsed: 310000,
+        totalTokensUsed: 540000,
+        quotaLimitTokens: 10000000,
         status: 'standby',
         bestUseCases: 'Inferencia offline y procesamiento de tareas auxiliares sin conexión externa.',
         color: '#64748b'
@@ -1863,48 +1870,97 @@ export const BunkerTacticoPage: React.FC = () => {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {ECOSYSTEM_MODELS.map(model => (
-                                    <div
-                                        key={model.id}
-                                        className="p-5 rounded-3xl bg-[#080d1c] border border-slate-800 hover:border-purple-500/50 transition-all shadow-lg flex flex-col justify-between space-y-3"
-                                    >
-                                        <div>
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[9px] font-mono uppercase font-bold text-slate-400">{model.provider}</span>
-                                                <span className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest ${
-                                                    model.status === 'activo' 
-                                                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                                                        : model.status === 'optimizado'
-                                                        ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
-                                                        : 'bg-slate-800 text-slate-400'
-                                                }`}>
-                                                    {model.status === 'activo' ? '🟢 En Uso' : model.status === 'optimizado' ? '⚡ Omni-Route' : '⚪ Standby'}
-                                                </span>
+                                {ECOSYSTEM_MODELS.map(model => {
+                                    const remainingTokens = Math.max(0, model.quotaLimitTokens - model.totalTokensUsed);
+                                    const remainingPercent = Math.min(100, Math.max(0, Math.round((remainingTokens / model.quotaLimitTokens) * 100)));
+                                    const spentPercent = (100 - remainingPercent);
+                                    const modelCost = ((model.totalTokensUsed / 1000000) * ((model.inputCostPer1M + model.outputCostPer1M) / 2)).toFixed(2);
+
+                                    // Lógica de color según energía restante
+                                    let barColor = 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]';
+                                    let badgeBg = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+                                    let statusDot = 'bg-emerald-400';
+
+                                    if (remainingPercent < 25) {
+                                        barColor = 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)] animate-pulse';
+                                        badgeBg = 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse';
+                                        statusDot = 'bg-rose-400';
+                                    } else if (remainingPercent <= 60) {
+                                        barColor = 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]';
+                                        badgeBg = 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+                                        statusDot = 'bg-amber-400';
+                                    }
+
+                                    return (
+                                        <div
+                                            key={model.id}
+                                            className="p-5 rounded-3xl bg-[#080d1c] border border-slate-800 hover:border-purple-500/50 transition-all shadow-lg flex flex-col justify-between space-y-3 group"
+                                        >
+                                            <div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[9px] font-mono uppercase font-bold text-slate-400">{model.provider}</span>
+                                                    <span className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest ${
+                                                        model.status === 'activo' 
+                                                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                                            : model.status === 'optimizado'
+                                                            ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                                                            : 'bg-slate-800 text-slate-400'
+                                                    }`}>
+                                                        {model.status === 'activo' ? '🟢 En Uso' : model.status === 'optimizado' ? '⚡ Omni-Route' : '⚪ Standby'}
+                                                    </span>
+                                                </div>
+
+                                                <h4 className="text-base font-[1000] text-white mt-1" style={{ color: model.color }}>
+                                                    {model.name}
+                                                </h4>
+
+                                                <div className="px-2.5 py-1 rounded-lg bg-black/50 border border-slate-800/80 my-2">
+                                                    <span className="text-[9.5px] font-mono text-purple-300 font-bold block">
+                                                        🧠 Modo: {model.thinkingMode}
+                                                    </span>
+                                                </div>
+
+                                                {/* 🔋 BARRITA DE CARGA / ENERGÍA RESTANTE (VERDE / AMARILLO / ROJO) */}
+                                                <div className="p-3 rounded-2xl bg-black/60 border border-slate-800/80 space-y-2 my-3">
+                                                    <div className="flex items-center justify-between text-[10.5px] font-mono">
+                                                        <span className="text-slate-300 font-bold flex items-center gap-1.5">
+                                                            <span className={`w-2 h-2 rounded-full ${statusDot}`} />
+                                                            Energía Restante:
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider border ${badgeBg}`}>
+                                                            {remainingPercent}% Disponible
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Barrita Dinámica Visual */}
+                                                    <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden p-0.5 border border-slate-800">
+                                                        <div 
+                                                            className={`h-full rounded-full transition-all duration-1000 ${barColor}`}
+                                                            style={{ width: `${remainingPercent}%` }}
+                                                        />
+                                                    </div>
+
+                                                    {/* Desglose: Gasto vs Saldo */}
+                                                    <div className="flex items-center justify-between text-[9.5px] font-mono text-slate-400 pt-0.5">
+                                                        <span>Gastó: <strong className="text-amber-400">{(model.totalTokensUsed / 1000000).toFixed(2)}M</strong> (${modelCost})</span>
+                                                        <span>Le queda: <strong className="text-emerald-400">{(remainingTokens / 1000000).toFixed(2)}M</strong></span>
+                                                    </div>
+                                                </div>
+
+                                                <p className="text-xs text-slate-300 leading-relaxed mt-2">
+                                                    {model.bestUseCases}
+                                                </p>
                                             </div>
 
-                                            <h4 className="text-base font-[1000] text-white mt-1" style={{ color: model.color }}>
-                                                {model.name}
-                                            </h4>
-
-                                            <div className="px-2.5 py-1 rounded-lg bg-black/50 border border-slate-800/80 my-2">
-                                                <span className="text-[9.5px] font-mono text-purple-300 font-bold block">
-                                                    🧠 Modo: {model.thinkingMode}
+                                            <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono">
+                                                <span className="text-slate-500">Tarifa In/Out:</span>
+                                                <span className="text-emerald-400 font-bold">
+                                                    ${model.inputCostPer1M} / ${model.outputCostPer1M} · 1M
                                                 </span>
                                             </div>
-
-                                            <p className="text-xs text-slate-300 leading-relaxed">
-                                                {model.bestUseCases}
-                                            </p>
                                         </div>
-
-                                        <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono">
-                                            <span className="text-slate-500">Tarifa In/Out:</span>
-                                            <span className="text-emerald-400 font-bold">
-                                                ${model.inputCostPer1M} / ${model.outputCostPer1M} · 1M
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
 
