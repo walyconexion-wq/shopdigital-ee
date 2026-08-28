@@ -474,8 +474,12 @@ const App: React.FC = () => {
                     <Route path="/bunker/clonacion" element={<Navigate to="/esteban-echeverria/bunker/clonacion" replace />} />
                     <Route path="/bunker-secops" element={<Navigate to="/esteban-echeverria/bunker/secops" replace />} />
 
-                    {/* 🧑‍💼 RECLUTAMIENTO RRHH — Pantalla Completa, fuera del Layout mobile */}
+                    {/* 💻 TABLERO MAESTRO GENERAL (DIRECTOR & LUZ 01) - Widescreen Panorámico fuera de Layout mobile */}
+                    <Route path="/:townId/tablero-maestro" element={<ProtectedRoute roles={['admin']}><MasterPanelPage /></ProtectedRoute>} />
+                    <Route path="/:townId/tablero-maestro/configuracion" element={<ProtectedRoute roles={['admin']}><GlobalConfigPage /></ProtectedRoute>} />
+                    <Route path="/:townId/tablero-maestro/fabrica" element={<ProtectedRoute roles={['admin']}><FactoryPanelPage /></ProtectedRoute>} />
                     <Route path="/:townId/tablero-maestro/reclutamiento" element={<ProtectedRoute roles={['admin']}><AmbassadorRecruitmentAdminPage /></ProtectedRoute>} />
+                    <Route path="/:townId/marketing-inteligente" element={<ProtectedRoute roles={['admin']}><MarketingPanelPage /></ProtectedRoute>} />
 
                     {/* 🏫 ACADEMIA SHOPDIGITAL — Bóveda de Entrenamiento */}
                     <Route path="/:townId/academia-embajadores" element={<ProtectedRoute roles={['admin', 'ambassador']}><AcademyPage /></ProtectedRoute>} />
