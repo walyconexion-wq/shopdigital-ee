@@ -279,6 +279,51 @@ const CHRONOGRAM_ENTRIES: ChronogramEntry[] = [
         tags: ['Ecosistema', 'Faro de Luz', 'Fundación', 'Ministerio', 'Obsidian']
     },
     {
+        id: 'log-05a',
+        title: 'Diseño de Logística Territorial para Parajes Vulnerables y Distribución con Hilux/Sprinter',
+        timestamp: '2026-08-26 15:20:00',
+        dateFormatted: 'Miércoles 26 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 03 (Brazo Social & Logística)',
+        pillar: 'Fundación Valle de Luz',
+        pillarBadge: 'border-amber-400 bg-amber-500/20 text-amber-300',
+        summary: 'Mapeo de rutas de acceso a comedores y parajes de montaña en Traslasierra, optimizando la cadena de donaciones y combustible.',
+        impact: 'Cobertura directa a familias vulnerables y asistencia comunitaria',
+        obsidianNode: 'MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2',
+        stage: 'forja',
+        tags: ['Fundación', 'Logística', 'Acción Social', 'Hilux']
+    },
+    {
+        id: 'log-05b',
+        title: 'Configuración del Rider Técnico de Audio Portátil y Misiones de Culto en Plazas',
+        timestamp: '2026-08-25 21:00:00',
+        dateFormatted: 'Martes 25 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 04 (Streaming, Audio & Legal)',
+        pillar: 'Ministerio Caminos de Fe',
+        pillarBadge: 'border-purple-400 bg-purple-500/20 text-purple-300',
+        summary: 'Armado del setup de sonido portátil con microfonía inalámbrica, consolas y streaming satelital para campañas de adoración y cultos.',
+        impact: 'Evangelización de impacto masivo en plazas y parajes rurales',
+        obsidianNode: 'MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2',
+        stage: 'forja',
+        tags: ['Ministerio', 'Sonido', 'Streaming', 'Culto']
+    },
+    {
+        id: 'log-05c',
+        title: 'Dimensionamiento del Domo Geodésico Central (Frecuencia 4/6) y Banco de Baterías de Litio',
+        timestamp: '2026-08-23 17:45:00',
+        dateFormatted: 'Domingo 23 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 02 (Desarrollo Comunitario)',
+        pillar: 'Comunidad Faro de Luz',
+        pillarBadge: 'border-emerald-400 bg-emerald-500/20 text-emerald-300',
+        summary: 'Cálculo de la estructura geodésica central, distribución de los 6 containers habitacionales y dimensionamiento del parque solar fotovoltaico.',
+        impact: 'Autonomía energética 100% renovable y centro de formación',
+        obsidianNode: 'MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2',
+        stage: 'forja',
+        tags: ['Ecotecnología', 'Domo Geodésico', 'Energía Solar', 'Traslasierra']
+    },
+    {
         id: 'log-06',
         title: 'Unificación y Blindaje de Modo Día Crema 3D en Catálogo, Home y Descuentos',
         timestamp: '2026-08-27 02:07:52',
@@ -853,6 +898,7 @@ export const BunkerTacticoPage: React.FC = () => {
     const [selectedFrente, setSelectedFrente] = useState<string>('todos');
     const [selectedChronMonth, setSelectedChronMonth] = useState<string>('todos');
     const [selectedChronPillar, setSelectedChronPillar] = useState<string>('todos');
+    const [selectedSpCategory, setSelectedSpCategory] = useState<string>('todos');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [selectedAgent, setSelectedAgent] = useState<SwarmAgent | null>(null);
     const [selectedProj, setSelectedProj] = useState<StrategicProject | null>(null);
@@ -917,6 +963,16 @@ export const BunkerTacticoPage: React.FC = () => {
             entry.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
             entry.obsidianNode.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesMonth && matchesPillar && matchesSearch;
+    });
+
+    const filteredSuperpowers = ECOSYSTEM_SUPERPOWERS.filter(sp => {
+        const matchesCategory = selectedSpCategory === 'todos' || sp.category === selectedSpCategory;
+        const matchesSearch = searchQuery === '' ||
+            sp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            sp.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            sp.techStack.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            sp.assignedAgents.some(a => a.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesCategory && matchesSearch;
     });
 
     const getStatusBadge = (status: SwarmAgent['status']) => {
@@ -1368,13 +1424,38 @@ export const BunkerTacticoPage: React.FC = () => {
                                 </p>
                             </div>
                             <span className="px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 self-start md:self-auto">
-                                🟢 10 / 10 ACTIVOS EN RED
+                                🟢 {filteredSuperpowers.length} / 10 ACTIVOS EN RED
                             </span>
+                        </div>
+
+                        {/* Filtros de Categoría de Superpoderes */}
+                        <div className="flex flex-wrap items-center gap-2 bg-[#090d1a] p-2 rounded-2xl border border-slate-800">
+                            {[
+                                { id: 'todos', label: 'Todos (10)' },
+                                { id: 'scraping', label: '👁️ Ojos Web & Scraping (2)' },
+                                { id: 'seguridad', label: '🛡️ Ciberseguridad & Red Team (2)' },
+                                { id: 'automatizacion', label: '🎭 QA & Automatización (2)' },
+                                { id: 'inteligencia', label: '🧠 IA & Cerebro Obsidian (2)' },
+                                { id: 'infraestructura', label: '🧱 Infraestructura & Zonas (1)' },
+                                { id: 'diseno', label: '🎨 Neumorfismo & Temas (1)' }
+                            ].map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => { playNeonClick(); setSelectedSpCategory(cat.id); }}
+                                    className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
+                                        selectedSpCategory === cat.id
+                                            ? 'bg-purple-500 text-white border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.4)]'
+                                            : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
+                                    }`}
+                                >
+                                    {cat.label}
+                                </button>
+                            ))}
                         </div>
 
                         {/* Grilla de Superpoderes */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {ECOSYSTEM_SUPERPOWERS.map(sp => (
+                            {filteredSuperpowers.map(sp => (
                                 <div
                                     key={sp.id}
                                     className="p-6 rounded-3xl bg-gradient-to-b from-[#0e162e] to-[#070b18] border border-cyan-500/30 hover:border-cyan-400 transition-all shadow-xl flex flex-col justify-between group"
