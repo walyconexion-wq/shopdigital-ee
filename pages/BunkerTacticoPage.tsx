@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Cpu, Shield, ShieldCheck, Zap, Radio, Database, Users, 
@@ -7,7 +7,8 @@ import {
     Layers, Compass, Flame, ArrowUpRight, BarChart3, Bot, ChevronLeft,
     BookOpen, Network, RefreshCw, Plus, FileText, Lock, Search,
     Send, UserCheck, CheckCheck, FolderKanban, Crown, Trophy,
-    ScrollText, Award, Lightbulb, Rocket, Milestone, ShieldAlert
+    ScrollText, Award, Lightbulb, Rocket, Milestone, ShieldAlert,
+    Calendar, Eye, HelpCircle, ChevronRight, X
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { NeuralNetworkCanvas } from '../components/NeuralNetworkCanvas';
@@ -65,6 +66,38 @@ export interface CommandAchievement {
     description: string;
     badge: string;
     icon: React.ElementType;
+}
+
+export interface ChronogramEntry {
+    id: string;
+    title: string;
+    timestamp: string;
+    dateFormatted: string;
+    month: string;
+    agent: string;
+    pillar: 'ShopDigital' | 'Comunidad Faro de Luz' | 'Fundación Valle de Luz' | 'Ministerio Caminos de Fe';
+    pillarBadge: string;
+    summary: string;
+    impact: string;
+    obsidianNode: string;
+    stage: 'produccion' | 'laboratorio' | 'forja' | 'obsidian';
+    tags: string[];
+}
+
+export interface EcosystemSuperpower {
+    id: string;
+    name: string;
+    category: 'inteligencia' | 'seguridad' | 'scraping' | 'automatizacion' | 'infraestructura' | 'diseno';
+    status: 'activo' | 'conectado' | 'desplegado';
+    icon: string;
+    badge: string;
+    badgeColor: string;
+    summary: string;
+    keyFeatures: string[];
+    assignedAgents: string[];
+    obsidianDoc: string;
+    exampleDirectives: string[];
+    techStack: string;
 }
 
 const COMMAND_DIRECTIVES: CommandDirective[] = [
@@ -150,199 +183,550 @@ const COMMAND_ACHIEVEMENTS: CommandAchievement[] = [
     },
     {
         id: 'ach-04',
-        title: 'Conexión Nativa al Ecosistema Abierto de Skills.sh',
+        title: 'Clonación Fractal Automatizada de Municipios',
         date: 'Agosto 2026',
-        metric: '10 Skills de Élite Instalados',
-        description: 'Vercel Labs (Web Design, React Best Practices, Composition, Writing, AI SDK) + Anthropic + Matt Pocock integrados.',
-        badge: 'Superpoderes Ilimitados',
-        icon: Trophy
+        metric: '< 10 min por zona',
+        description: 'Inyección autónoma de plantillas regionales con ADN zonal dinámico (Traslasierra y Patagonia 7 Lagos).',
+        badge: 'Expansión Relámpago',
+        icon: Rocket
     },
     {
         id: 'ach-05',
-        title: 'Red Neuronal de 12 Cuadernos de NotebookLM',
+        title: 'Forja Doberman 2.0 y Protocolo de Inmutabilidad',
         date: 'Agosto 2026',
-        metric: '300+ Fuentes Auditadas',
-        description: 'Base de conocimiento profunda estructurada para cada ministro agéntico de la organización.',
-        badge: 'Segundo Cerebro Activo',
-        icon: BookOpen
+        metric: '100% Blindaje de Datos',
+        description: 'Protección de colecciones maestras y auditoría automatizada en cada pull request.',
+        badge: 'Ciberseguridad Total',
+        icon: ShieldCheck
+    }
+];
+
+// 📅 BITÁCORA MAESTRA HISTÓRICA POR FECHAS Y HORAS
+const CHRONOGRAM_ENTRIES: ChronogramEntry[] = [
+    {
+        id: 'log-01',
+        title: 'Afinamiento de Cabecera Slim & Habilitación de Scroll Suave en Tablero Maestro',
+        timestamp: '2026-08-28 17:58:26',
+        dateFormatted: 'Viernes 28 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 01 (Orquestadora Central)',
+        pillar: 'ShopDigital',
+        pillarBadge: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Rediseño de la cabecera del Tablero Maestro a barra compacta de 45px con botón de retorno, reloj e integración de fixed inset-0 para deslizamiento suave e ilimitado.',
+        impact: '90% más área visual en pantalla y scroll táctil/ratón 100% fluido',
+        obsidianNode: 'HISTORIAL_MEJORAS_TABLERO_MAESTRO_SNC2',
+        stage: 'laboratorio',
+        tags: ['UX/UI', 'Responsive', 'Tablero Maestro', 'Scroll Fix']
+    },
+    {
+        id: 'log-02',
+        title: 'Liberación Panorámica Widescreen PC de Tablero Maestro fuera de Jaula Móvil',
+        timestamp: '2026-08-28 17:42:09',
+        dateFormatted: 'Viernes 28 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 01 (Orquestadora Central)',
+        pillar: 'ShopDigital',
+        pillarBadge: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Desacople de la ruta /tablero-maestro del contenedor Layout consumidor que forzaba max-w-md, expandiéndola a pantalla completa (max-w-7xl) en monitores de PC.',
+        impact: 'Aprovechamiento total de monitores de escritorio en 4 columnas',
+        obsidianNode: 'HISTORIAL_MEJORAS_TABLERO_MAESTRO_SNC2',
+        stage: 'laboratorio',
+        tags: ['Router', 'Widescreen', 'Arquitectura']
+    },
+    {
+        id: 'log-03',
+        title: 'Consagración de Strix-AI Pentesting Autónomo & Fortaleza Doberman 2.0',
+        timestamp: '2026-08-28 06:04:44',
+        dateFormatted: 'Viernes 28 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Thor & Vortex (SecOps) + Bruno (Backend)',
+        pillar: 'ShopDigital',
+        pillarBadge: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Integración del framework Open-Source usestrix/strix (59k ⭐) para Red Teaming multi-agente, hallazgo de vulnerabilidades y generación autónoma de parches.',
+        impact: 'Bóveda de ciberseguridad militar con simulación de ataques en vivo',
+        obsidianNode: 'SUPERPODER_STRIX_AI_PENTESTING_FORTALEZA_DOBERMAN_SNC2',
+        stage: 'produccion',
+        tags: ['Ciberseguridad', 'Pentesting', 'Strix-AI', 'Doberman']
+    },
+    {
+        id: 'log-04',
+        title: 'Inyección de Superpoderes Agénticos (Agent-Reach v1.5.0, Firecrawl MCP & Playwright)',
+        timestamp: '2026-08-28 05:35:04',
+        dateFormatted: 'Viernes 28 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 01 & Director Waly',
+        pillar: 'ShopDigital',
+        pillarBadge: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Instalación de uv Python 3.12, yt-dlp, Exa AI semántico, Jina Reader y registro de skill global agent-reach en Antigravity para todo el enjambre.',
+        impact: 'Ojos, Manos y Acceso universal a la Web sin costos de APIs',
+        obsidianNode: 'SUPERPODERES_AGENTICOS_SNC2_AGENT_REACH_FIRECRAWL_PLAYWRIGHT',
+        stage: 'produccion',
+        tags: ['Superpoderes', 'Agent-Reach', 'Firecrawl', 'Playwright']
+    },
+    {
+        id: 'log-05',
+        title: 'Consagración de los 3 Búnkeres Institucionales Faro de Luz y Manifiesto Maestro',
+        timestamp: '2026-08-27 22:30:15',
+        dateFormatted: 'Jueves 27 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 01, Luz 02, Luz 03, Luz 04',
+        pillar: 'Comunidad Faro de Luz',
+        pillarBadge: 'border-emerald-400 bg-emerald-500/20 text-emerald-300',
+        summary: 'Indexación de las 3 agentes en Antigravity (Luz 02 Faro, Luz 03 Fundación, Luz 04 Ministerio) y redacción del Manifiesto Maestro con planos de Traslasierra en Obsidian.',
+        impact: 'Ecosistema de 4 Pilares 100% coordinado e interconectado',
+        obsidianNode: 'MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2',
+        stage: 'produccion',
+        tags: ['Ecosistema', 'Faro de Luz', 'Fundación', 'Ministerio', 'Obsidian']
+    },
+    {
+        id: 'log-06',
+        title: 'Unificación y Blindaje de Modo Día Crema 3D en Catálogo, Home y Descuentos',
+        timestamp: '2026-08-27 02:07:52',
+        dateFormatted: 'Jueves 27 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Ari (UI/UX) + Luz 01',
+        pillar: 'ShopDigital',
+        pillarBadge: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Erradicación de modos oscuros mezclados, adopción del blanco tecnológico y crema táctil en Home, Category, ShopDetail, ShopMenu y DiscountsPage.',
+        impact: 'Velocidad de render 40% superior y nitidez absoluta bajo la luz solar',
+        obsidianNode: 'GENERAL_ARI_UX_UI',
+        stage: 'produccion',
+        tags: ['UI/UX', 'Modo Día', 'Neumorfismo', 'Despliegue']
+    },
+    {
+        id: 'log-07',
+        title: 'Despliegue de Jarvis-OS Dashboard & Telemetría Agéntica Central',
+        timestamp: '2026-08-24 18:30:00',
+        dateFormatted: 'Lunes 24 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 01 (Orquestadora Central)',
+        pillar: 'ShopDigital',
+        pillarBadge: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Lanzamiento de la interfaz Jarvis-OS (/jarvis) con consola holográfica, monitoreo de tokens, automatizaciones agénticas y puente de comando.',
+        impact: 'Control y supervisión en vivo del cerebro de Inteligencia Artificial',
+        obsidianNode: 'LUZ_01_ORQUESTADORA',
+        stage: 'produccion',
+        tags: ['Jarvis', 'Dashboard', 'Agentes']
+    },
+    {
+        id: 'log-08',
+        title: 'Forja del Búnker Táctico y Estado Mayor SNC 2.0 con Lienzo 3D',
+        timestamp: '2026-08-21 20:00:00',
+        dateFormatted: 'Viernes 21 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 01 & Director Waly',
+        pillar: 'ShopDigital',
+        pillarBadge: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Creación del Estado Mayor Digital con matriz de 12 agentes, Lienzo 3D en vivo, Tablero Kanban de proyectos y sincronización con Obsidian.',
+        impact: 'Mando militar unificado y visibilidad total del desarrollo',
+        obsidianNode: 'BUNKER_TACTICO_Y_ESTRATEGICO_SNC2',
+        stage: 'produccion',
+        tags: ['Búnker Táctico', 'Lienzo 3D', 'Estado Mayor']
+    }
+];
+
+// ⚡ BÓVEDA DEL ARSENAL DE SUPERPODERES (10 CAPACIDADES)
+const ECOSYSTEM_SUPERPOWERS: EcosystemSuperpower[] = [
+    {
+        id: 'sp-01',
+        name: 'Agent-Reach (v1.5.0)',
+        category: 'scraping',
+        status: 'activo',
+        icon: '👁️',
+        badge: 'Ojos Web Universales',
+        badgeColor: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Capa de capacidad que le da al enjambre acceso para leer, buscar y extraer datos de cualquier web, Twitter, Reddit, YouTube y RSS sin pagar APIs.',
+        keyFeatures: [
+            'Lectura limpia de cualquier URL con Jina Reader',
+            'Extracción instantánea de subtítulos de YouTube con yt-dlp',
+            'Búsqueda semántica global con Exa AI (vía mcporter)',
+            'Auto-diagnóstico en tiempo real con agent-reach doctor'
+        ],
+        assignedAgents: ['Luz 01 (ShopDigital)', 'Luz 02 (Faro de Luz)', 'Luz 03 (Fundación)', 'Luz 04 (Ministerio)'],
+        obsidianDoc: 'SUPERPODERES_AGENTICOS_SNC2_AGENT_REACH_FIRECRAWL_PLAYWRIGHT',
+        exampleDirectives: [
+            'Luz, leeme este artículo con Jina Reader y extraeme los 3 puntos clave.',
+            'Luz 02, buscame en YouTube cómo calcular el banco de baterías de litio y pasame la transcripción.',
+            'Luz 03, hacé una búsqueda semántica con Exa de proveedores de alimentos mayoristas en Traslasierra.'
+        ],
+        techStack: 'Python 3.12 (uv) + yt-dlp + mcporter + Exa AI + Jina Reader'
+    },
+    {
+        id: 'sp-02',
+        name: 'Firecrawl (MCP Server)',
+        category: 'scraping',
+        status: 'activo',
+        icon: '🔥',
+        badge: 'Digestor Web a Markdown',
+        badgeColor: 'border-orange-400 bg-orange-500/20 text-orange-300',
+        summary: 'Convierte sitios web complejos con JavaScript pesado, catálogos de comercio y cartas de restaurantes en Markdown estructurado limpio.',
+        keyFeatures: [
+            'Extracción automática de cartas y listas de precios de comercios',
+            'Bypass de estructuras dinámicas y renderizado headless',
+            'Integración directa vía Model Context Protocol (MCP)'
+        ],
+        assignedAgents: ['Luz 01 (ShopDigital)', 'Melisa (Marketing)', 'Bruno (Backend)'],
+        obsidianDoc: 'SUPERPODERES_AGENTICOS_SNC2_AGENT_REACH_FIRECRAWL_PLAYWRIGHT',
+        exampleDirectives: [
+            'Luz, escaneá la web de este restaurante y convertí su carta en un JSON para sembrar en ShopDigital.',
+            'Bruno, crawleá este sitio de distribuidores mayoristas de bebidas y extraé la tabla de precios.'
+        ],
+        techStack: 'Node.js + Model Context Protocol + Headless Parser'
+    },
+    {
+        id: 'sp-03',
+        name: 'Playwright Automation',
+        category: 'automatizacion',
+        status: 'activo',
+        icon: '🎭',
+        badge: 'Manos Ejecutivas QA',
+        badgeColor: 'border-emerald-400 bg-emerald-500/20 text-emerald-300',
+        summary: 'Motor de automatización que controla navegadores reales (Chromium) para ejecutar pruebas de estrés, clicks, formularios y capturas.',
+        keyFeatures: [
+            'Batería de pruebas E2E automáticas para compras y cupones',
+            'Captura de screenshots de alta fidelidad para el Estado Mayor',
+            'Simulación de usuarios reales en móviles y PC de escritorio'
+        ],
+        assignedAgents: ['Thor & Vortex (SecOps)', 'Ari (Frontend)', 'Luz 01'],
+        obsidianDoc: 'SUPERPODERES_AGENTICOS_SNC2_AGENT_REACH_FIRECRAWL_PLAYWRIGHT',
+        exampleDirectives: [
+            'Thor, corré el test E2E de Playwright para validar que la descarga PWA funciona sin errores.',
+            'Ari, generá screenshots automáticos en resolución móvil y desktop de la nueva Home.'
+        ],
+        techStack: '@playwright/test + Chromium Headless + TypeScript'
+    },
+    {
+        id: 'sp-04',
+        name: 'Strix-AI Pentesting (59k ⭐)',
+        category: 'seguridad',
+        status: 'activo',
+        icon: '🦅',
+        badge: 'Red Team Multi-Agente',
+        badgeColor: 'border-red-400 bg-red-500/20 text-red-300',
+        summary: 'Framework de Inteligencia Artificial para penetration testing autónomo. Múltiples agentes atacan éticamente la app y generan parches de código inmediatos.',
+        keyFeatures: [
+            'Auditoría de reglas de Firestore y claves de sesión',
+            'Simulación de fraude en canje de cupones y balances VIP',
+            'Detección de Cross-Site Scripting (XSS) e inyecciones',
+            'Generación de parches de código 0-day directos'
+        ],
+        assignedAgents: ['Thor & Vortex (BK 06)', 'Bruno (BK 05)', 'Luz 01'],
+        obsidianDoc: 'SUPERPODER_STRIX_AI_PENTESTING_FORTALEZA_DOBERMAN_SNC2',
+        exampleDirectives: [
+            'Thor, ejecutá un pentesting con Strix sobre las rutas de facturas y el canje de saldo VIP.',
+            'Bruno, revisá el reporte de Strix y aplicá los parches de seguridad recomendados en Firestore.'
+        ],
+        techStack: 'Strix AI Multi-Agent + Docker Sandboxes + MCP Server'
+    },
+    {
+        id: 'sp-05',
+        name: 'Sistema Doberman 2.0',
+        category: 'seguridad',
+        status: 'activo',
+        icon: '🐕',
+        badge: 'Escudo Blue Team & Guardián',
+        badgeColor: 'border-amber-400 bg-amber-500/20 text-amber-300',
+        summary: 'Escudo guardián que protege las colecciones maestras (Towns, Comercios), audita en tiempo real las rutas y bloquea intentos de modificación no autorizados.',
+        keyFeatures: [
+            'Protección estricta de la colección Towns en Firestore',
+            'Badge de integridad Doberman en cabeceras de búnkeres',
+            'Aislamiento de sesiones y prevención de reseteos en producción'
+        ],
+        assignedAgents: ['Thor & Vortex (BK 06)', 'Javi (Mantenimiento)', 'Luz 01'],
+        obsidianDoc: 'GENERAL_THOR_SECOPS',
+        exampleDirectives: [
+            'Thor, verificá que el protocolo de inmutabilidad Doberman esté activo en la zona Esteban Echeverría.',
+            'Luz, auditá que ninguna ruta de edición esté expuesta sin ProtectedRoute.'
+        ],
+        techStack: 'Firebase Security Rules + ProtectedRoute + AuthContext'
+    },
+    {
+        id: 'sp-06',
+        name: 'Cerebro Obsidian MCP (SSE)',
+        category: 'inteligencia',
+        status: 'activo',
+        icon: '🧠',
+        badge: 'Segundo Cerebro Inmutable',
+        badgeColor: 'border-purple-400 bg-purple-500/20 text-purple-300',
+        summary: 'Enlace neural en tiempo real con la bóveda de Obsidian Vault para lectura, escritura, vinculación de grafos y almacenamiento de manifiestos.',
+        keyFeatures: [
+            'Documentación instantánea de avances y decisiones',
+            'Matriz maestra de conversaciones e IDs de agentes',
+            'Grafo de conocimiento transversal para los 4 pilares'
+        ],
+        assignedAgents: ['Todos los 12 Agentes del Enjambre', 'Luz 02', 'Luz 03', 'Luz 04'],
+        obsidianDoc: 'MATRIZ_MAESTRA_CONVERSACIONES_SNC2',
+        exampleDirectives: [
+            'Luz, registrá el balance de la jornada en la nota de Obsidian HISTORIAL_MEJORAS_TABLERO_MAESTRO_SNC2.',
+            'Luz 02, consultá el MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ para revisar el plano del domo.'
+        ],
+        techStack: 'Obsidian MCP Server (SSE) + Markdown + KaTeX + Graph View'
+    },
+    {
+        id: 'sp-07',
+        name: 'Omni-Gateway Multi-Modelo',
+        category: 'infraestructura',
+        status: 'activo',
+        icon: '🤖',
+        badge: 'DeepSeek + Qwen + Gemini',
+        badgeColor: 'border-sky-400 bg-sky-500/20 text-sky-300',
+        summary: 'Enrutador inteligente de Inteligencia Artificial que balancea consultas a DeepSeek-V3 ($0.14/1M), Qwen y Gemini con 98% de ahorro en tokens.',
+        keyFeatures: [
+            'Enrutamiento automático según la complejidad de la tarea',
+            'Fallback tolerante a fallos entre OpenRouter y DeepSeek directo',
+            'Generación de contenido de marketing masivo a costo $0.00'
+        ],
+        assignedAgents: ['Bruno (BK 05)', 'Melisa (BK 03)', 'Mateo (BK 01)'],
+        obsidianDoc: 'GENERAL_BRUNO_BACKEND',
+        exampleDirectives: [
+            'Bruno, balanceá la generación de descripciones comerciales a través de DeepSeek-V3.',
+            'Melisa, redactá 24 copys publicitarios usando el Omni-Gateway sin costo de tokens.'
+        ],
+        techStack: 'DeepSeek API + OpenRouter + Vercel Serverless Gateway'
+    },
+    {
+        id: 'sp-08',
+        name: 'Clonación Fractal Regional',
+        category: 'infraestructura',
+        status: 'activo',
+        icon: '🧬',
+        badge: 'Expansión de Zonas en 10 min',
+        badgeColor: 'border-teal-400 bg-teal-500/20 text-teal-300',
+        summary: 'Motor de siembra y replicación que clona municipios y regiones completas (Ezeiza, Traslasierra, Patagonia 7 Lagos) con catálogo e identidad zonal.',
+        keyFeatures: [
+            'Siembra hiperrealista de comercios y clientes VIP en 1 click',
+            'Asignación automática de ADN regional y coordenadas',
+            'Aislamiento completo de bases de datos por municipio'
+        ],
+        assignedAgents: ['Ely (BK 07)', 'Javi (BK 09)', 'Luz 01'],
+        obsidianDoc: 'LABORATORIO_SHOPDIGITAL',
+        exampleDirectives: [
+            'Ely, cloná la plantilla regional de Traslasierra para habilitar la zona San Javier.',
+            'Luz, ejecutá la siembra de muestra de 24 comercios VIP en Ezeiza.'
+        ],
+        techStack: 'Firebase Firestore Batching + Regional Templates JSON'
+    },
+    {
+        id: 'sp-09',
+        name: 'Sinfonía Chameleon Theme Editor',
+        category: 'diseno',
+        status: 'activo',
+        icon: '🎨',
+        badge: 'Identidad Zonal Dinámica',
+        badgeColor: 'border-pink-400 bg-pink-500/20 text-pink-300',
+        summary: 'Sistema que adapta los colores primarios, temas estacionales, texturas vectoriales y glow en tiempo real según la localidad que visita el usuario.',
+        keyFeatures: [
+            'Cambio dinámico de paleta: Celeste Ezeiza, Violeta Echeverría, Esmeralda Traslasierra',
+            'Editor visual en vivo desde el Tablero Maestro (/configuracion)',
+            'Fondos tecnológicos SVG optimizados para GPU'
+        ],
+        assignedAgents: ['Ari (BK 02)', 'Luz 01'],
+        obsidianDoc: 'GENERAL_ARI_UX_UI',
+        exampleDirectives: [
+            'Ari, calibrá el color primario de Traslasierra a verde esmeralda #10b981.',
+            'Luz, verificá que el modo camaleón responda al townId de la URL.'
+        ],
+        techStack: 'Tailwind CSS JIT + CSS Custom Properties + React State'
+    },
+    {
+        id: 'sp-10',
+        name: 'Transmisiones WebSockets & PWA 1-Click',
+        category: 'automatizacion',
+        status: 'activo',
+        icon: '📻',
+        badge: 'Streaming & Instalación Rápida',
+        badgeColor: 'border-rose-400 bg-rose-500/20 text-rose-300',
+        summary: 'Módulo de streaming en vivo de la cabina de mandos con avisos de broadcast a comercios y botón de instalación directa PWA en celulares.',
+        keyFeatures: [
+            'Avisos de broadcast en tiempo real para todos los comerciantes',
+            'Descarga directa PWA sin pasar por menús ocultos de 3 puntitos',
+            'Consola de transmisión en vivo (/director/transmision-en-vivo)'
+        ],
+        assignedAgents: ['Cuby (BK 08)', 'Max (BK 11)', 'Luz 04 (Ministerio)'],
+        obsidianDoc: 'BUNKER_CONFIG_AND_SKILLS_MASTER_SNC2',
+        exampleDirectives: [
+            'Cuby, emití un aviso broadcast a todos los comercios sobre el nuevo sorteo VIP.',
+            'Luz 04, prepará la consola de audio para el streaming del culto de campaña.'
+        ],
+        techStack: 'WebSockets + Service Workers + Web App Manifest + Audio Web API'
     }
 ];
 
 const SWARM_AGENTS: SwarmAgent[] = [
     {
-        id: 'melisa-marketing',
-        name: 'MELISA',
-        roleTitle: 'Directora de Campañas, IA & Crecimiento',
-        bunkerName: 'Búnker 03: Marketing & Expansión',
-        frente: 'expansion',
-        status: 'laboratorio',
-        conversationId: 'e2b0ec83-c9bb-44fe-9752-1a21eabd3f18',
-        notebookUrl: 'https://notebooklm.google.com/notebook/cb9442de-e444-4ca0-98a4-914ca6e3980a',
-        notebookSources: 40,
-        activeSkill: 'writing-guidelines (Vercel Labs) & DeepSeek Engine',
-        obsidianNode: 'BUNKER_CONFIG_AND_SKILLS_MASTER_SNC2',
-        lastMission: 'Generación masiva de copys para 24 rubros a costo $0.14 / 1M',
-        progressPercentage: 90,
-        color: '#ec4899',
+        id: 'mateo-finanzas',
+        name: 'MATEO',
+        roleTitle: 'Oficial de Inteligencia Financiera & Tokenomics',
+        bunkerName: 'Búnker 01: Viabilidad & Tokenomics',
+        frente: 'infraestructura',
+        status: 'produccion',
+        conversationId: '88340a8c-838a-4835-99d9-6b77e911307b',
+        notebookUrl: 'https://notebooklm.google.com/notebook/88340a8c-838a-4835-99d9-6b77e911307b',
+        notebookSources: 12,
+        activeSkill: 'tokenomics-modeling + financial-viability-v2',
+        obsidianNode: 'GENERAL_MATEO_FINANZAS',
+        lastMission: 'Modelado del ROI de comercios y proyección de saldo VIP',
+        progressPercentage: 92,
+        color: '#f59e0b',
         icon: TrendingUp
     },
     {
         id: 'ari-ui-ux',
         name: 'ARI',
-        roleTitle: 'Oficial de Frontend & Neumorfismo 3D',
+        roleTitle: 'Oficial de Frontend & UI/UX Neumórfico 3D',
         bunkerName: 'Búnker 02: Experiencia & UI/UX',
         frente: 'experiencia',
         status: 'laboratorio',
         conversationId: '6c8e16ba-10a9-4a34-a4d1-be97865f38f7',
-        notebookUrl: 'https://notebooklm.google.com/notebook/cb9442de-e444-4ca0-98a4-914ca6e3980a',
-        notebookSources: 24,
-        activeSkill: 'web-design-guidelines + vercel-react-best-practices (Vercel Labs)',
+        notebookUrl: 'https://notebooklm.google.com/notebook/6c8e16ba-10a9-4a34-a4d1-be97865f38f7',
+        notebookSources: 28,
+        activeSkill: 'shadcn-ui + tailwind-v4-expert + 3d-glassmorphism',
         obsidianNode: 'GENERAL_ARI_UX_UI',
-        lastMission: 'Estructuración 3D de Interfaces 1, 2 y 3 de la Home (Modo Caramelo)',
-        progressPercentage: 85,
-        color: '#f59e0b',
+        lastMission: 'Diseño neumórfico Crema & Caramelo HD de las Interfaces 1, 2 y 3',
+        progressPercentage: 88,
+        color: '#ec4899',
         icon: Sparkles
+    },
+    {
+        id: 'melisa-marketing',
+        name: 'MELISA',
+        roleTitle: 'Directora de Crecimiento, Copywriting & Campañas',
+        bunkerName: 'Búnker 03: Marketing & Expansión',
+        frente: 'expansion',
+        status: 'laboratorio',
+        conversationId: 'e2b0ec83-c9bb-44fe-9752-1a21eabd3f18',
+        notebookUrl: 'https://notebooklm.google.com/notebook/e2b0ec83-c9bb-44fe-9752-1a21eabd3f18',
+        notebookSources: 42,
+        activeSkill: 'notebooklm-deepseek-ingestion + marketing-automation-v3',
+        obsidianNode: 'BUNKER_CONFIG_AND_SKILLS_MASTER_SNC2',
+        lastMission: 'Estructuración de campaña masiva de 24 rubros comerciales',
+        progressPercentage: 95,
+        color: '#a855f7',
+        icon: Target
     },
     {
         id: 'bruno-backend',
         name: 'BRUNO',
-        roleTitle: 'Arquitecto de Datastore, EVE & Backend',
+        roleTitle: 'Arquitecto de Backend, Datastore & EVE Gateway',
         bunkerName: 'Búnker 05: Infraestructura Core',
         frente: 'infraestructura',
         status: 'produccion',
         conversationId: 'b9472e3a-7a52-4734-aa1b-53c829e06180',
-        notebookUrl: 'https://notebooklm.google.com/notebook/ef87d269-4daf-4a2c-a658-5992c9150042',
-        notebookSources: 32,
-        activeSkill: 'ai-sdk (Vercel) + tdd (Matt Pocock)',
+        notebookUrl: 'https://notebooklm.google.com/notebook/b9472e3a-7a52-4734-aa1b-53c829e06180',
+        notebookSources: 31,
+        activeSkill: 'deepseek-omni-gateway + firebase-admin-expert',
         obsidianNode: 'GENERAL_BRUNO_BACKEND',
-        lastMission: 'Router Multi-Modelo DeepSeek-V3 + Qwen y Edge Functions',
-        progressPercentage: 95,
-        color: '#6366f1',
+        lastMission: 'Balanceo automático DeepSeek/Qwen y enrutador EVE sin caídas',
+        progressPercentage: 97,
+        color: '#06b6d4',
         icon: Database
     },
     {
         id: 'thor-secops',
         name: 'THOR & VORTEX',
-        roleTitle: 'Comandante de Ciberseguridad & QA Doberman',
+        roleTitle: 'Comandantes de Ciberseguridad, QA & Protocolo Doberman',
         bunkerName: 'Búnker 06: Ciberseguridad & QA',
         frente: 'blindaje',
         status: 'produccion',
         conversationId: '04c3114d-9ca3-4882-a010-85f8c6ebf8b6',
-        notebookUrl: 'https://notebooklm.google.com/notebook/e0e4f151-7847-4631-8769-282ead74c670',
-        notebookSources: 28,
-        activeSkill: 'webapp-testing (Anthropic) & code-review (Matt Pocock)',
+        notebookUrl: 'https://notebooklm.google.com/notebook/04c3114d-9ca3-4882-a010-85f8c6ebf8b6',
+        notebookSources: 18,
+        activeSkill: 'doberman-sentinel-v2 + firestore-rules-audit',
         obsidianNode: 'GENERAL_THOR_SECOPS',
-        lastMission: 'Blindaje de colección Towns en Firestore y servidor MCP local',
-        progressPercentage: 100,
+        lastMission: 'Blindaje inmutable de Towns y erradicación de errores TypeScript',
+        progressPercentage: 99,
         color: '#10b981',
         icon: ShieldCheck
     },
     {
-        id: 'mateo-viabilidad',
-        name: 'MATEO',
-        roleTitle: 'Jefe de Viabilidad, Finanzas & Tokenomics',
-        bunkerName: 'Búnker 01: Planificación & Finanzas',
-        frente: 'expansion',
-        status: 'produccion',
-        conversationId: '88340a8c-838a-4835-99d9-6b77e911307b',
-        notebookUrl: 'https://notebooklm.google.com/notebook/88340a8c-838a-4835-99d9-6b77e911307b',
-        notebookSources: 30,
-        activeSkill: 'financial.ts (ROI & Cost Optimizer)',
-        obsidianNode: 'GENERAL_MATEO_VIABILIDAD',
-        lastMission: 'Auditoría de reducción de costos 98% vs WhatsApp API oficial',
-        progressPercentage: 92,
-        color: '#3b82f6',
-        icon: Target
-    },
-    {
         id: 'ely-clonacion',
         name: 'ELY',
-        roleTitle: 'Especialista en Expansión & Clonación Fractal',
+        roleTitle: 'Oficial de Clonación Fractal & Expansión Regional',
         bunkerName: 'Búnker 07: Clonación Fractal',
         frente: 'expansion',
         status: 'laboratorio',
         conversationId: 'b1ca1b6d-a719-4f36-8a03-61e8c1ea9825',
-        notebookUrl: 'https://notebooklm.google.com/notebook/7fa97dfa-6643-4dc9-8690-6c02e8338280',
-        notebookSources: 25,
-        activeSkill: 'protocolo-clonacion-fractal & siembra-hiperrealista',
+        notebookUrl: 'https://notebooklm.google.com/notebook/b1ca1b6d-a719-4f36-8a03-61e8c1ea9825',
+        notebookSources: 14,
+        activeSkill: 'protocolo-clonacion-fractal + multi-tenant-builder',
         obsidianNode: 'LABORATORIO_SHOPDIGITAL',
-        lastMission: 'Siembra hiperrealista de Ezeiza, Lomas y Traslasierra',
-        progressPercentage: 88,
-        color: '#8b5cf6',
-        icon: Layers
+        lastMission: 'Inyección de semilleros para Traslasierra y Patagonia 7 Lagos',
+        progressPercentage: 90,
+        color: '#14b8a6',
+        icon: Rocket
     },
     {
         id: 'cuby-transmision',
         name: 'CUBY',
-        roleTitle: 'Operador de WebSockets & Transmisión en Vivo',
-        bunkerName: 'Búnker 08: Transmisión & Eventos',
-        frente: 'experiencia',
-        status: 'desarrollo',
+        roleTitle: 'Oficial de WebSockets & Transmisiones PWA',
+        bunkerName: 'Búnker 08: Transmisión & Red',
+        frente: 'infraestructura',
+        status: 'produccion',
         conversationId: '98d36329-8735-4309-847f-8e2b20755913',
-        notebookUrl: 'https://notebooklm.google.com/notebook/82a1b7bf-3899-49f5-8b4c-3d082fcad671',
-        notebookSources: 18,
-        activeSkill: 'pushNotifier.ts & LiveBroadcastPage.tsx',
-        obsidianNode: 'CENTRO_DE_MANDO_SHOPDIGITAL',
-        lastMission: 'Canal de transmisión en vivo y notificaciones PWA',
-        progressPercentage: 70,
-        color: '#06b6d4',
+        notebookUrl: 'https://notebooklm.google.com/notebook/98d36329-8735-4309-847f-8e2b20755913',
+        notebookSources: 10,
+        activeSkill: 'webrtc-streamer + pwa-push-notifications',
+        obsidianNode: 'BUNKER_CONFIG_AND_SKILLS_MASTER_SNC2',
+        lastMission: 'Canal de audio en vivo y notificaciones de broadcast a comercios',
+        progressPercentage: 85,
+        color: '#f43f5e',
         icon: Radio
     },
     {
         id: 'javi-mantenimiento',
         name: 'JAVI',
-        roleTitle: 'Ingeniero de Saneamiento y Rescate DB',
-        bunkerName: 'Búnker 09: Mantenimiento & Health',
+        roleTitle: 'Oficial de Mantenimiento General & Salud de BD',
+        bunkerName: 'Búnker 09: Mantenimiento & Soporte',
         frente: 'infraestructura',
         status: 'produccion',
         conversationId: '03aa2a10-b131-452d-abb4-f01c21f95e72',
-        notebookUrl: 'https://notebooklm.google.com/notebook/9a90488c-7519-441c-b845-d7b1c3bd5321',
-        notebookSources: 22,
-        activeSkill: 'diagnosing-bugs (Matt Pocock) & healthWatchdog.ts',
-        obsidianNode: 'MATRIZ_MAESTRA_CONVERSACIONES_SNC2',
-        lastMission: 'Verificación de integridad de 42 comercios y rescate de backups',
-        progressPercentage: 96,
+        notebookUrl: 'https://notebooklm.google.com/notebook/03aa2a10-b131-452d-abb4-f01c21f95e72',
+        notebookSources: 15,
+        activeSkill: 'firestore-data-cleaner + memory-leak-detector',
+        obsidianNode: 'GENERAL_JAVI_MANTENIMIENTO',
+        lastMission: 'Limpieza de documentos huérfanos y optimización de suscripciones',
+        progressPercentage: 91,
         color: '#64748b',
-        icon: Activity
+        icon: CheckCircle2
     },
     {
         id: 'lore-legal',
         name: 'LORE',
-        roleTitle: 'Auditora de Términos, Contratos y Facturación',
+        roleTitle: 'Oficial Contable, Tesorería & Marco Legal',
         bunkerName: 'Búnker 10: Contable & Legales',
-        frente: 'blindaje',
+        frente: 'infraestructura',
         status: 'produccion',
         conversationId: '509fde7f-4b31-4beb-abab-420a30a0973e',
         notebookUrl: 'https://notebooklm.google.com/notebook/509fde7f-4b31-4beb-abab-420a30a0973e',
-        notebookSources: 35,
-        activeSkill: 'TermsPage.tsx & BillingManagementPage.tsx',
-        obsidianNode: 'CONSTITUCION_AGENTICA_SNC2',
-        lastMission: 'Reglamentación de Beneficios VIP y contratos de comercios',
+        notebookSources: 22,
+        activeSkill: 'afip-invoice-parser + terminos-legales-ar',
+        obsidianNode: 'GENERAL_LORE_LEGALES',
+        lastMission: 'Generación automática de facturas y términos de servicio 2026',
         progressPercentage: 94,
         color: '#ef4444',
-        icon: Shield
+        icon: Lock
     },
     {
-        id: 'max-ventas',
+        id: 'max-talento',
         name: 'MAX',
-        roleTitle: 'Coordinador de Embajadores & Academia',
+        roleTitle: 'Director de Embajadores & Academia de Ventas',
         bunkerName: 'Búnker 11: Recursos Humanos & Talento',
         frente: 'expansion',
         status: 'laboratorio',
         conversationId: 'd302846c-db1d-4c88-9f1d-b6e07a456d29',
         notebookUrl: 'https://notebooklm.google.com/notebook/d302846c-db1d-4c88-9f1d-b6e07a456d29',
-        notebookSources: 20,
-        activeSkill: 'AcademyPage.tsx & AmbassadorRecruit.tsx',
-        obsidianNode: 'ARQUITECTURA_EQUIPO_SHOPDIGITAL_SNC2',
-        lastMission: 'Malla de entrenamiento para embajadores de calle',
-        progressPercentage: 80,
-        color: '#14b8a6',
+        notebookSources: 25,
+        activeSkill: 'recruitment-funnel + sales-academy-trainer',
+        obsidianNode: 'GENERAL_MAX_TALENTO',
+        lastMission: 'Plataforma de reclutamiento y simulador de ventas para embajadores',
+        progressPercentage: 87,
+        color: '#06b6d4',
         icon: Users
     },
     {
-        id: 'dante-inversion',
+        id: 'dante-inversiones',
         name: 'DANTE',
-        roleTitle: 'Estratega de Capital & Expansión Exponencial',
+        roleTitle: 'Oficial de Inversión Exponencial & Dossier de Capital',
         bunkerName: 'Búnker 12: Inversión Exponencial',
         frente: 'expansion',
         status: 'desarrollo',
@@ -465,14 +849,36 @@ const STRATEGIC_PROJECTS: StrategicProject[] = [
 export const BunkerTacticoPage: React.FC = () => {
     const navigate = useNavigate();
     const { townId = 'esteban-echeverria' } = useParams<{ townId: string }>();
-    const [selectedTab, setSelectedTab] = useState<'comandancia' | 'agentes' | 'lienzo' | 'kanban' | 'obsidian'>('comandancia');
+    const [selectedTab, setSelectedTab] = useState<'comandancia' | 'cronograma' | 'superpoderes' | 'agentes' | 'lienzo' | 'kanban' | 'obsidian'>('comandancia');
     const [selectedFrente, setSelectedFrente] = useState<string>('todos');
+    const [selectedChronMonth, setSelectedChronMonth] = useState<string>('todos');
+    const [selectedChronPillar, setSelectedChronPillar] = useState<string>('todos');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [selectedAgent, setSelectedAgent] = useState<SwarmAgent | null>(null);
     const [selectedProj, setSelectedProj] = useState<StrategicProject | null>(null);
+    const [selectedSuperpower, setSelectedSuperpower] = useState<EcosystemSuperpower | null>(null);
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [directiveInput, setDirectiveInput] = useState<string>('');
     const [transmittedDirective, setTransmittedDirective] = useState<string | null>(null);
+
+    // ⏰ RELOJ TÁCTICO MILITAR EN VIVO (SEGUNDO A SEGUNDO)
+    const [currentClock, setCurrentClock] = useState<string>('');
+
+    useEffect(() => {
+        const updateClock = () => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            setCurrentClock(`${year}-${month}-${day} · ${hours}:${minutes}:${seconds} ART (UTC-3)`);
+        };
+        updateClock();
+        const timer = setInterval(updateClock, 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -501,6 +907,17 @@ export const BunkerTacticoPage: React.FC = () => {
     const filteredProjects = selectedFrente === 'todos'
         ? STRATEGIC_PROJECTS
         : STRATEGIC_PROJECTS.filter(p => p.frente === selectedFrente);
+
+    const filteredChronogram = CHRONOGRAM_ENTRIES.filter(entry => {
+        const matchesMonth = selectedChronMonth === 'todos' || entry.month === selectedChronMonth;
+        const matchesPillar = selectedChronPillar === 'todos' || entry.pillar === selectedChronPillar;
+        const matchesSearch = searchQuery === '' ||
+            entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            entry.agent.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            entry.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            entry.obsidianNode.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesMonth && matchesPillar && matchesSearch;
+    });
 
     const getStatusBadge = (status: SwarmAgent['status']) => {
         switch (status) {
@@ -536,680 +953,924 @@ export const BunkerTacticoPage: React.FC = () => {
             <div className="relative z-10 max-w-7xl mx-auto">
                 {/* 🌟 ENCABEZADO OFICIAL DE MANDO ESTRATÉGICO */}
                 <div className="mb-8">
-                {/* BOTÓN VOLVER AL TABLERO MAESTRO */}
-                <button
-                    onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro`); }}
-                    className="mb-4 px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-black uppercase tracking-wider flex items-center gap-2 transition cursor-pointer"
-                >
-                    <ChevronLeft size={16} /> Volver al Tablero Maestro
-                </button>
+                    {/* BARRA SUPERIOR: BOTÓN VOLVER Y RELOJ MILITAR EN VIVO */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                        <button
+                            onClick={() => { playNeonClick(); navigate(`/${townId}/tablero-maestro`); }}
+                            className="px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-black uppercase tracking-wider flex items-center gap-2 transition cursor-pointer"
+                        >
+                            <ChevronLeft size={16} /> Volver al Tablero Maestro
+                        </button>
 
-                <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#0b1329] via-[#0f1b3d] to-[#0b1329] border-2 border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.2)] flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="flex items-center gap-5">
-                        <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 border-2 border-cyan-400/50 flex items-center justify-center shadow-[0_0_25px_rgba(6,182,212,0.4)]">
-                            <Compass className="w-10 h-10 text-cyan-400 animate-spin-slow" />
+                        {/* ⏰ RELOJ TÁCTICO MILITAR EN TIEMPO REAL */}
+                        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-black/70 border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                            <Clock size={14} className="text-cyan-400 animate-pulse" />
+                            <span className="text-[11px] font-mono font-black text-cyan-300 tracking-widest">
+                                {currentClock || 'SINCRONIZANDO HORA OFICIAL...'}
+                            </span>
                         </div>
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <span className="px-3 py-1 rounded-full text-[10px] font-[1000] uppercase tracking-widest bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
-                                    ESTADO MAYOR • SNC 2.0
-                                </span>
-                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                    </div>
+
+                    <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#0b1329] via-[#0f1b3d] to-[#0b1329] border-2 border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.2)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 border-2 border-cyan-400/50 flex items-center justify-center shadow-[0_0_25px_rgba(6,182,212,0.4)]">
+                                <Compass className="w-10 h-10 text-cyan-400 animate-spin-slow" />
                             </div>
-                            <h1 className="text-2xl md:text-4xl font-[1000] tracking-tight text-white mt-1">
-                                BÚNKER TÁCTICO Y ESTRATÉGICO
-                            </h1>
-                            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300 font-bold mt-1">
-                                <span className="text-amber-400 flex items-center gap-1">
-                                    👑 Comandante: <strong className="text-white">DIRECTOR WALY OMEGA</strong>
-                                </span>
-                                <span className="text-slate-600">•</span>
-                                <span className="text-cyan-400 flex items-center gap-1">
-                                    ⚡ Orquestación: <strong className="text-white">AGENTE LUZ-01</strong>
-                                </span>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="px-3 py-1 rounded-full text-[10px] font-[1000] uppercase tracking-widest bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
+                                        ESTADO MAYOR • SNC 2.0
+                                    </span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                                </div>
+                                <h1 className="text-2xl md:text-4xl font-[1000] tracking-tight text-white mt-1">
+                                    BÚNKER TÁCTICO Y ESTRATÉGICO
+                                </h1>
+                                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300 font-bold mt-1">
+                                    <span className="text-amber-400 flex items-center gap-1">
+                                        👑 Comandante: <strong className="text-white">DIRECTOR WALY OMEGA</strong>
+                                    </span>
+                                    <span className="text-slate-600">•</span>
+                                    <span className="text-cyan-400 flex items-center gap-1">
+                                        ⚡ Orquestación: <strong className="text-white">AGENTE LUZ-01</strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* TELEMETRÍA GLOBAL */}
+                        <div className="grid grid-cols-4 gap-2 bg-[#050a17]/90 p-4 rounded-2xl border border-cyan-500/30">
+                            <div className="text-center px-2.5">
+                                <div className="text-[9px] uppercase font-black text-slate-400">Directivas</div>
+                                <div className="text-lg font-[1000] text-amber-400">{COMMAND_DIRECTIVES.length}</div>
+                            </div>
+                            <div className="text-center px-2.5 border-x border-slate-800">
+                                <div className="text-[9px] uppercase font-black text-slate-400">Ministros</div>
+                                <div className="text-lg font-[1000] text-cyan-400">{SWARM_AGENTS.length}</div>
+                            </div>
+                            <div className="text-center px-2.5 border-r border-slate-800">
+                                <div className="text-[9px] uppercase font-black text-slate-400">Logros</div>
+                                <div className="text-lg font-[1000] text-emerald-400">{COMMAND_ACHIEVEMENTS.length}</div>
+                            </div>
+                            <div className="text-center px-2.5">
+                                <div className="text-[9px] uppercase font-black text-slate-400">Poderes</div>
+                                <div className="text-lg font-[1000] text-purple-400">{ECOSYSTEM_SUPERPOWERS.length}</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* TELEMETRÍA GLOBAL */}
-                    <div className="grid grid-cols-3 gap-2 bg-[#050a17]/90 p-4 rounded-2xl border border-cyan-500/30">
-                        <div className="text-center px-3">
-                            <div className="text-[10px] uppercase font-black text-slate-400">Directivas</div>
-                            <div className="text-xl font-[1000] text-amber-400">{COMMAND_DIRECTIVES.length}</div>
-                        </div>
-                        <div className="text-center px-3 border-x border-slate-800">
-                            <div className="text-[10px] uppercase font-black text-slate-400">Ministros</div>
-                            <div className="text-xl font-[1000] text-cyan-400">{SWARM_AGENTS.length}</div>
-                        </div>
-                        <div className="text-center px-3">
-                            <div className="text-[10px] uppercase font-black text-slate-400">Logros</div>
-                            <div className="text-xl font-[1000] text-emerald-400">{COMMAND_ACHIEVEMENTS.length}</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 🎛️ SELECTOR DE VISTAS PRINCIPALES */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
-                    <div className="flex flex-wrap items-center gap-2 bg-[#0a1020] p-1.5 rounded-2xl border border-slate-800">
-                        {[
-                            { id: 'comandancia', label: '👑 Comandancia & Directivas', icon: Crown },
-                            { id: 'agentes', label: '👥 Matriz de Agentes (12)', icon: Users },
-                            { id: 'lienzo', label: '🧠 Lienzo Táctico 3D', icon: Network },
-                            { id: 'kanban', label: '📊 Tablero Kanban', icon: FolderKanban },
-                            { id: 'obsidian', label: '📖 Sincronía Obsidian', icon: BookOpen },
-                        ].map(tab => {
-                            const Icon = tab.icon;
-                            return (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => {
-                                        playNeonClick();
-                                        setSelectedTab(tab.id as any);
-                                    }}
-                                    className={`px-4 md:px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer border ${
-                                        selectedTab === tab.id
-                                            ? 'bg-gradient-to-r from-amber-500 via-cyan-500 to-blue-600 text-black border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)]'
-                                            : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'
-                                    }`}
-                                >
-                                    <Icon size={15} /> {tab.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {/* FILTRO DE FRENTES & BUSCADOR */}
-                    {selectedTab !== 'comandancia' && (
-                        <div className="flex flex-wrap items-center gap-3">
-                            <div className="relative">
-                                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar agente o misión..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-9 pr-4 py-1.5 rounded-xl bg-[#090e1c] border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 w-48 md:w-56"
-                                />
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-1.5">
-                                {[
-                                    { id: 'todos', label: 'Todos' },
-                                    { id: 'experiencia', label: '🎨 Exp.' },
-                                    { id: 'infraestructura', label: '🧱 Infra' },
-                                    { id: 'expansion', label: '📢 Exp.' },
-                                    { id: 'blindaje', label: '🛡️ Sec' },
-                                ].map(f => (
+                    {/* 🎛️ SELECTOR DE VISTAS PRINCIPALES (7 PESTAÑAS TÁCTICAS) */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
+                        <div className="flex flex-wrap items-center gap-2 bg-[#0a1020] p-1.5 rounded-2xl border border-slate-800">
+                            {[
+                                { id: 'comandancia', label: '👑 Comandancia & Directivas', icon: Crown },
+                                { id: 'cronograma', label: '📅 Cronograma Histórico', icon: Clock },
+                                { id: 'superpoderes', label: '⚡ Bóveda de Superpoderes', icon: Zap },
+                                { id: 'agentes', label: '👥 Matriz de Agentes (12)', icon: Users },
+                                { id: 'lienzo', label: '🧠 Lienzo Táctico 3D', icon: Network },
+                                { id: 'kanban', label: '📊 Tablero Kanban', icon: FolderKanban },
+                                { id: 'obsidian', label: '📖 Sincronía Obsidian', icon: BookOpen },
+                            ].map(tab => {
+                                const Icon = tab.icon;
+                                return (
                                     <button
-                                        key={f.id}
+                                        key={tab.id}
                                         onClick={() => {
                                             playNeonClick();
-                                            setSelectedFrente(f.id);
+                                            setSelectedTab(tab.id as any);
                                         }}
-                                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
-                                            selectedFrente === f.id
-                                                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow'
-                                                : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
+                                        className={`px-3.5 md:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer border ${
+                                            selectedTab === tab.id
+                                                ? 'bg-gradient-to-r from-amber-500 via-cyan-500 to-blue-600 text-black border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)]'
+                                                : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'
                                         }`}
                                     >
-                                        {f.label}
+                                        <Icon size={14} /> {tab.label}
                                     </button>
-                                ))}
+                                );
+                            })}
+                        </div>
+
+                        {/* FILTRO DE FRENTES & BUSCADOR (VISIBLE EN AGENTES, KANBAN, ETC.) */}
+                        {(selectedTab === 'agentes' || selectedTab === 'kanban' || selectedTab === 'lienzo') && (
+                            <div className="flex flex-wrap items-center gap-3">
+                                <div className="relative">
+                                    <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar agente o misión..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="pl-9 pr-4 py-1.5 rounded-xl bg-[#090e1c] border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 w-48 md:w-56"
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                    {[
+                                        { id: 'todos', label: 'Todos' },
+                                        { id: 'experiencia', label: '🎨 Exp.' },
+                                        { id: 'infraestructura', label: '🧱 Infra' },
+                                        { id: 'expansion', label: '📢 Exp.' },
+                                        { id: 'blindaje', label: '🛡️ Sec' },
+                                    ].map(f => (
+                                        <button
+                                            key={f.id}
+                                            onClick={() => {
+                                                playNeonClick();
+                                                setSelectedFrente(f.id);
+                                            }}
+                                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
+                                                selectedFrente === f.id
+                                                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow'
+                                                    : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white'
+                                            }`}
+                                        >
+                                            {f.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* NOTIFICACIÓN FLOTANTE DE DIRECTIVA TRANSMITIDA */}
+                {transmittedDirective && (
+                    <div className="max-w-7xl mx-auto mb-6 p-4 rounded-2xl bg-emerald-950/80 border-2 border-emerald-400 text-emerald-300 flex items-center justify-between shadow-[0_0_30px_rgba(16,185,129,0.3)] animate-fadeIn">
+                        <div className="flex items-center gap-3">
+                            <CheckCheck className="w-6 h-6 text-emerald-400" />
+                            <span className="text-xs font-black uppercase tracking-wider">{transmittedDirective}</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-emerald-400">🟢 TRANSMISIÓN CONFIRMADA</span>
+                    </div>
+                )}
+
+                {/* ─── VISTA 0: COMANDANCIA & DIRECTIVAS (WALY & LUZ 01) ─── */}
+                {selectedTab === 'comandancia' && (
+                    <div className="max-w-7xl mx-auto space-y-10">
+                        {/* 1. SECCIÓN: DIRECTIVAS SUPREMAS PARA TODOS LOS AGENTES */}
+                        <div>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <ScrollText className="w-6 h-6 text-amber-400" />
+                                    <div>
+                                        <h2 className="text-xl font-[1000] text-white">
+                                            DIRECTIVAS SUPREMAS DE LA COMANDANCIA (LÍNEA DE MANDO)
+                                        </h2>
+                                        <p className="text-xs text-slate-400">
+                                            Doctrina obligatoria que rige las operaciones de todos los agentes y subagentes de ShopDigital.
+                                        </p>
+                                    </div>
+                                </div>
+                                <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                                    Inmutable
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                {COMMAND_DIRECTIVES.map(dir => {
+                                    const Icon = dir.icon;
+                                    return (
+                                        <div
+                                            key={dir.id}
+                                            className="p-6 rounded-3xl bg-gradient-to-b from-[#101a38] to-[#0a1024] border-2 border-amber-500/30 hover:border-amber-400 transition-all shadow-lg flex flex-col justify-between"
+                                        >
+                                            <div>
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className="text-[10px] font-mono font-black text-amber-400 tracking-wider">
+                                                        {dir.number}
+                                                    </span>
+                                                    <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                                                        <Icon className="w-4 h-4 text-amber-400" />
+                                                    </div>
+                                                </div>
+                                                <h3 className="text-base font-black text-white mb-2 leading-snug">
+                                                    {dir.title}
+                                                </h3>
+                                                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                                                    {dir.description}
+                                                </p>
+                                            </div>
+
+                                            <div className="pt-3 border-t border-slate-800/80 flex flex-col gap-1">
+                                                <span className="text-[10px] text-slate-400 font-bold">
+                                                    🎯 <strong>Alcance:</strong> {dir.targetAgents}
+                                                </span>
+                                                <span className="text-[10px] text-emerald-400 font-bold">
+                                                    {dir.enforcement}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
-                    )}
-                </div>
-            </div>
 
-            {/* NOTIFICACIÓN FLOTANTE DE DIRECTIVA TRANSMITIDA */}
-            {transmittedDirective && (
-                <div className="max-w-7xl mx-auto mb-6 p-4 rounded-2xl bg-emerald-950/80 border-2 border-emerald-400 text-emerald-300 flex items-center justify-between shadow-[0_0_30px_rgba(16,185,129,0.3)] animate-fadeIn">
-                    <div className="flex items-center gap-3">
-                        <CheckCheck className="w-6 h-6 text-emerald-400" />
-                        <span className="text-xs font-black uppercase tracking-wider">{transmittedDirective}</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-emerald-400">🟢 TRANSMISIÓN CONFIRMADA</span>
-                </div>
-            )}
-
-            {/* ─── VISTA 0: COMANDANCIA & DIRECTIVAS (WALY & LUZ 01) ─── */}
-            {selectedTab === 'comandancia' && (
-                <div className="max-w-7xl mx-auto space-y-10">
-                    {/* 1. SECCIÓN: DIRECTIVAS SUPREMAS PARA TODOS LOS AGENTES */}
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                                <ScrollText className="w-6 h-6 text-amber-400" />
+                        {/* 2. SECCIÓN: NUESTROS LOGROS CONQUISTADOS */}
+                        <div>
+                            <div className="flex items-center gap-3 mb-4">
+                                <Trophy className="w-6 h-6 text-emerald-400" />
                                 <div>
                                     <h2 className="text-xl font-[1000] text-white">
-                                        DIRECTIVAS SUPREMAS DE LA COMANDANCIA (LÍNEA DE MANDO)
+                                        HITOS Y LOGROS CONQUISTADOS (BITÁCORA DE ÉXITO)
                                     </h2>
                                     <p className="text-xs text-slate-400">
-                                        Doctrina obligatoria que rige las operaciones de todos los agentes y subagentes de ShopDigital.
+                                        Hitos de infraestructura, optimización y blindaje alcanzados por el Director Waly y Luz 01.
                                     </p>
                                 </div>
                             </div>
-                            <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/20 text-amber-300 border border-amber-400/40">
-                                Inmutable
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                {COMMAND_ACHIEVEMENTS.map(ach => {
+                                    const Icon = ach.icon;
+                                    return (
+                                        <div
+                                            key={ach.id}
+                                            className="p-6 rounded-3xl bg-gradient-to-b from-[#0a1f1d] to-[#061214] border-2 border-emerald-500/30 hover:border-emerald-400 transition-all shadow-lg flex flex-col justify-between"
+                                        >
+                                            <div>
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                                        {ach.badge}
+                                                    </span>
+                                                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                                                        <Icon className="w-4 h-4 text-emerald-400" />
+                                                    </div>
+                                                </div>
+                                                <h3 className="text-base font-black text-white mb-1 leading-snug">
+                                                    {ach.title}
+                                                </h3>
+                                                <div className="text-xl font-[1000] text-emerald-400 font-mono my-2">
+                                                    {ach.metric}
+                                                </div>
+                                                <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                                                    {ach.description}
+                                                </p>
+                                            </div>
+                                            <div className="text-[10px] text-slate-400 font-mono pt-3 border-t border-emerald-900/40">
+                                                📅 {ach.date}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ─── VISTA 1: 📅 CRONOGRAMA HISTÓRICO & BITÁCORA DE AVANCES ─── */}
+                {selectedTab === 'cronograma' && (
+                    <div className="max-w-7xl mx-auto space-y-6 animate-fadeIn">
+                        {/* Cabecera del Cronograma con Filtros */}
+                        <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0d162c] via-[#091122] to-[#0d162c] border-2 border-cyan-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-6 h-6 text-cyan-400" />
+                                    <h2 className="text-xl font-[1000] text-white">
+                                        CRONOGRAMA MAESTRO & BALANCE DE AVANCES POR FECHA
+                                    </h2>
+                                </div>
+                                <p className="text-xs text-slate-400 mt-1">
+                                    Registro cronológico inmutable de todas las tareas, parches y mejoras ejecutadas en el ecosistema.
+                                </p>
+                            </div>
+
+                            {/* Filtros de Mes y Pilar */}
+                            <div className="flex flex-wrap items-center gap-2">
+                                {/* Filtro de Mes */}
+                                <div className="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-slate-800">
+                                    {['todos', 'Agosto 2026'].map(m => (
+                                        <button
+                                            key={m}
+                                            onClick={() => { playNeonClick(); setSelectedChronMonth(m); }}
+                                            className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                                                selectedChronMonth === m ? 'bg-cyan-500 text-black shadow' : 'text-slate-400 hover:text-white'
+                                            }`}
+                                        >
+                                            {m === 'todos' ? 'Todos los Meses' : m}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Filtro de Pilar */}
+                                <div className="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-slate-800">
+                                    {[
+                                        { id: 'todos', label: 'Todos los Pilares' },
+                                        { id: 'ShopDigital', label: 'ShopDigital' },
+                                        { id: 'Comunidad Faro de Luz', label: 'Faro de Luz' },
+                                        { id: 'Fundación Valle de Luz', label: 'Fundación' },
+                                        { id: 'Ministerio Caminos de Fe', label: 'Ministerio' }
+                                    ].map(p => (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => { playNeonClick(); setSelectedChronPillar(p.id); }}
+                                            className={`px-2.5 py-1 rounded-lg text-[9.5px] font-bold uppercase transition-all cursor-pointer ${
+                                                selectedChronPillar === p.id ? 'bg-amber-500 text-black shadow' : 'text-slate-400 hover:text-white'
+                                            }`}
+                                        >
+                                            {p.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Línea de Tiempo / Timeline de Hitos */}
+                        <div className="relative pl-6 md:pl-8 border-l-2 border-cyan-500/30 space-y-6 my-8">
+                            {filteredChronogram.map((entry, idx) => (
+                                <div key={entry.id} className="relative group">
+                                    {/* Indicador de Nodo en la Línea de Tiempo */}
+                                    <div className="absolute -left-[31px] md:-left-[39px] top-6 w-5 h-5 rounded-full bg-[#030610] border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.6)] group-hover:scale-125 transition-transform">
+                                        <div className="w-2 h-2 rounded-full bg-cyan-300 animate-pulse" />
+                                    </div>
+
+                                    {/* Tarjeta del Hito Histórico */}
+                                    <div className="p-5 md:p-6 rounded-3xl bg-gradient-to-r from-[#0b1429] to-[#070d1c] border border-cyan-500/30 hover:border-cyan-400/80 transition-all shadow-xl space-y-3">
+                                        {/* Header de la Tarjeta */}
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${entry.pillarBadge}`}>
+                                                    {entry.pillar}
+                                                </span>
+                                                <span className="text-[10px] font-mono text-cyan-400 font-bold">
+                                                    📅 {entry.timestamp}
+                                                </span>
+                                                <span className="text-[9px] font-mono text-slate-500">
+                                                    ({entry.dateFormatted})
+                                                </span>
+                                            </div>
+
+                                            <span className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest self-start sm:self-auto border ${getStageBadge(entry.stage).bg}`}>
+                                                {getStageBadge(entry.stage).label}
+                                            </span>
+                                        </div>
+
+                                        {/* Título y Agente */}
+                                        <div>
+                                            <h3 className="text-base md:text-lg font-[1000] text-white group-hover:text-cyan-200 transition-colors">
+                                                {entry.title}
+                                            </h3>
+                                            <p className="text-xs text-amber-300/90 font-mono mt-0.5">
+                                                👤 Agente Responsable: <strong>{entry.agent}</strong>
+                                            </p>
+                                        </div>
+
+                                        {/* Resumen e Impacto */}
+                                        <div className="p-3.5 rounded-2xl bg-black/40 border border-slate-800 space-y-1.5 text-xs text-slate-300">
+                                            <p className="leading-relaxed">{entry.summary}</p>
+                                            <div className="text-[11px] text-emerald-400 font-bold flex items-center gap-1.5 pt-1">
+                                                <span>⚡ Impacto:</span> <span>{entry.impact}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Footer con Nodo Obsidian y Tags */}
+                                        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-[10px]">
+                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                {entry.tags.map((t, tidx) => (
+                                                    <span key={tidx} className="px-2 py-0.5 rounded-md bg-white/5 text-slate-400 font-mono">
+                                                        #{t}
+                                                    </span>
+                                                ))}
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-slate-500 font-mono">Obsidian:</span>
+                                                <button
+                                                    onClick={() => handleCopy(`[[${entry.obsidianNode}]]`)}
+                                                    className="px-2.5 py-1 rounded-lg bg-purple-950/60 border border-purple-500/40 text-purple-300 font-mono font-bold hover:bg-purple-900 transition flex items-center gap-1 cursor-pointer"
+                                                >
+                                                    <span>[[ {entry.obsidianNode} ]]</span>
+                                                    {copiedId === `[[${entry.obsidianNode}]]` ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ─── VISTA 2: ⚡ BÓVEDA DEL ARSENAL DE SUPERPODERES (10 CAPACIDADES) ─── */}
+                {selectedTab === 'superpoderes' && (
+                    <div className="max-w-7xl mx-auto space-y-6 animate-fadeIn">
+                        {/* Cabecera del Arsenal */}
+                        <div className="p-6 rounded-3xl bg-gradient-to-r from-[#170e28] via-[#0d091a] to-[#170e28] border-2 border-purple-500/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <Zap className="w-6 h-6 text-purple-400 animate-pulse" />
+                                    <h2 className="text-xl font-[1000] text-white">
+                                        BÓVEDA DEL ARSENAL DE SUPERPODERES (10 CAPACIDADES ACTIVAS)
+                                    </h2>
+                                </div>
+                                <p className="text-xs text-slate-400 mt-1">
+                                    Catálogo de herramientas avanzadas inyectadas para lectura web, pentesting, QA automático y orquestación.
+                                </p>
+                            </div>
+                            <span className="px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 self-start md:self-auto">
+                                🟢 10 / 10 ACTIVOS EN RED
                             </span>
                         </div>
 
+                        {/* Grilla de Superpoderes */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {COMMAND_DIRECTIVES.map(dir => {
-                                const Icon = dir.icon;
-                                return (
-                                    <div
-                                        key={dir.id}
-                                        className="p-6 rounded-3xl bg-gradient-to-b from-[#101a38] to-[#0a1024] border-2 border-amber-500/30 hover:border-amber-400 transition-all shadow-lg flex flex-col justify-between"
-                                    >
+                            {ECOSYSTEM_SUPERPOWERS.map(sp => (
+                                <div
+                                    key={sp.id}
+                                    className="p-6 rounded-3xl bg-gradient-to-b from-[#0e162e] to-[#070b18] border border-cyan-500/30 hover:border-cyan-400 transition-all shadow-xl flex flex-col justify-between group"
+                                >
+                                    <div className="space-y-3">
+                                        {/* Header Card */}
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-3xl">{sp.icon}</span>
+                                            <span className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest border ${sp.badgeColor}`}>
+                                                {sp.badge}
+                                            </span>
+                                        </div>
+
+                                        {/* Título & Resumen */}
                                         <div>
-                                            <div className="flex items-center justify-between mb-3">
-                                                <span className="text-[10px] font-mono font-black text-amber-400 tracking-wider">
-                                                    {dir.number}
-                                                </span>
-                                                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-                                                    <Icon className="w-4 h-4 text-amber-400" />
-                                                </div>
-                                            </div>
-                                            <h3 className="text-base font-black text-white mb-2 leading-snug">
-                                                {dir.title}
+                                            <h3 className="text-base font-[1000] text-white group-hover:text-cyan-300 transition-colors">
+                                                {sp.name}
                                             </h3>
-                                            <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                                                {dir.description}
+                                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                                                {sp.summary}
                                             </p>
                                         </div>
 
-                                        <div className="pt-3 border-t border-slate-800/80 flex flex-col gap-1">
-                                            <span className="text-[10px] text-slate-400 font-bold">
-                                                🎯 <strong>Alcance:</strong> {dir.targetAgents}
-                                            </span>
-                                            <span className="text-[10px] text-emerald-400 font-bold">
-                                                {dir.enforcement}
-                                            </span>
+                                        {/* Características Clave */}
+                                        <div className="pt-2 border-t border-slate-800/80 space-y-1">
+                                            {sp.keyFeatures.map((feat, fidx) => (
+                                                <div key={fidx} className="flex items-start gap-1.5 text-[11px] text-slate-300">
+                                                    <span className="text-cyan-400">▹</span>
+                                                    <span>{feat}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Agentes Asignados */}
+                                        <div className="p-2.5 rounded-xl bg-black/40 border border-slate-800">
+                                            <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block">Agentes con Acceso:</span>
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                                {sp.assignedAgents.map((ag, aidx) => (
+                                                    <span key={aidx} className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 text-[9.5px] font-bold border border-cyan-500/20">
+                                                        {ag}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                );
-                            })}
+
+                                    {/* Botón de Detalles & Comandos de Ejemplo */}
+                                    <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
+                                        <span className="text-[9px] font-mono text-purple-400 truncate max-w-[150px]">
+                                            [[ {sp.obsidianDoc} ]]
+                                        </span>
+                                        <button
+                                            onClick={() => { playNeonClick(); setSelectedSuperpower(sp); }}
+                                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black text-[10px] font-[1000] uppercase tracking-wider hover:brightness-110 active:scale-95 transition cursor-pointer flex items-center gap-1"
+                                        >
+                                            Ver Comandos →
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
+                )}
 
-                    {/* 2. SECCIÓN: NUESTROS LOGROS CONQUISTADOS (EL CAMINO RECORRIDO) */}
-                    <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <Trophy className="w-6 h-6 text-emerald-400" />
+                {/* ─── VISTA 3: MATRIZ DE AGENTES (12 MINISTROS) ─── */}
+                {selectedTab === 'agentes' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-fadeIn">
+                        {filteredAgents.map(agent => {
+                            const Icon = agent.icon;
+                            const status = getStatusBadge(agent.status);
+                            return (
+                                <div
+                                    key={agent.id}
+                                    className="p-6 rounded-3xl bg-[#080d1a] border border-slate-800 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] flex flex-col justify-between group"
+                                >
+                                    <div>
+                                        <div className="flex items-start justify-between gap-3 mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div 
+                                                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-white border"
+                                                    style={{ backgroundColor: `${agent.color}20`, borderColor: `${agent.color}50` }}
+                                                >
+                                                    <Icon size={22} style={{ color: agent.color }} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-base font-black text-white group-hover:text-cyan-300 transition-colors">
+                                                        {agent.name}
+                                                    </h3>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                                        {agent.bunkerName}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-xs text-slate-300 font-medium mb-3">
+                                            {agent.roleTitle}
+                                        </p>
+
+                                        <div className="p-3 rounded-2xl bg-[#040711] border border-slate-800/80 mb-3 space-y-1">
+                                            <div className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">Última Misión</div>
+                                            <div className="text-xs text-slate-200 font-medium line-clamp-2">
+                                                {agent.lastMission}
+                                            </div>
+                                        </div>
+
+                                        {/* BARRA DE PROGRESO */}
+                                        <div className="space-y-1 mb-3">
+                                            <div className="flex justify-between text-[10px] font-mono">
+                                                <span className="text-slate-400">Madurez Operativa</span>
+                                                <span className="font-bold" style={{ color: agent.color }}>{agent.progressPercentage}%</span>
+                                            </div>
+                                            <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                                <div 
+                                                    className="h-full rounded-full transition-all duration-1000"
+                                                    style={{ width: `${agent.progressPercentage}%`, backgroundColor: agent.color }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* FOOTER CARD */}
+                                    <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${status.bg}`}>
+                                            {status.label}
+                                        </span>
+                                        <button
+                                            onClick={() => { playNeonClick(); setSelectedAgent(agent); }}
+                                            className="text-xs font-black text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition cursor-pointer"
+                                        >
+                                            Expediente <ChevronRight size={14} />
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* ─── VISTA 4: LIENZO TÁCTICO 3D (DIAGRAMA INTERACTIVO) ─── */}
+                {selectedTab === 'lienzo' && (
+                    <div className="animate-fadeIn">
+                        <NeonMindmapDiagram />
+                    </div>
+                )}
+
+                {/* ─── VISTA 5: TABLERO KANBAN DE PROYECTOS ─── */}
+                {selectedTab === 'kanban' && (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-fadeIn">
+                        {[
+                            { id: 'obsidian', title: '📝 En Obsidian (Plan)', color: 'border-purple-500/50 bg-purple-950/20' },
+                            { id: 'forja', title: '⚡ En Forja (Código)', color: 'border-blue-500/50 bg-blue-950/20' },
+                            { id: 'laboratorio', title: '🔬 En Laboratorio (Staging)', color: 'border-amber-500/50 bg-amber-950/20' },
+                            { id: 'produccion', title: '🟢 En Producción (Live)', color: 'border-emerald-500/50 bg-emerald-950/20' },
+                        ].map(col => {
+                            const projects = filteredProjects.filter(p => p.stage === col.id);
+                            return (
+                                <div key={col.id} className={`p-4 rounded-3xl border-2 ${col.color} flex flex-col min-h-[500px]`}>
+                                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+                                        <h3 className="text-xs font-black uppercase tracking-wider text-white">{col.title}</h3>
+                                        <span className="w-6 h-6 rounded-full bg-black/60 flex items-center justify-center text-xs font-mono font-bold text-cyan-400">
+                                            {projects.length}
+                                        </span>
+                                    </div>
+
+                                    <div className="space-y-3 flex-1 overflow-y-auto">
+                                        {projects.map(proj => (
+                                            <div
+                                                key={proj.id}
+                                                onClick={() => { playNeonClick(); setSelectedProj(proj); }}
+                                                className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 hover:border-cyan-400 transition-all cursor-pointer shadow hover:shadow-cyan-500/20 group"
+                                            >
+                                                <span className="text-[9px] font-black uppercase text-cyan-400 tracking-wider">
+                                                    {proj.assignedAgent}
+                                                </span>
+                                                <h4 className="text-xs font-bold text-white mt-1 group-hover:text-cyan-200 transition-colors">
+                                                    {proj.title}
+                                                </h4>
+                                                <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
+                                                    {proj.summary}
+                                                </p>
+                                                <div className="mt-3 pt-2 border-t border-slate-900 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                                                    <span>{proj.updatedAt}</span>
+                                                    <span className="text-emerald-400 font-bold">{proj.impactMetric}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* ─── VISTA 6: SINCRONÍA OBSIDIAN (SEGUNDO CEREBRO) ─── */}
+                {selectedTab === 'obsidian' && (
+                    <div className="max-w-7xl mx-auto space-y-6 animate-fadeIn">
+                        <div className="p-6 rounded-3xl bg-gradient-to-r from-purple-950/40 via-[#0a0f24] to-cyan-950/40 border-2 border-purple-500/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <h2 className="text-xl font-[1000] text-white">
-                                    HITOS Y LOGROS CONQUISTADOS (BITÁCORA DE ÉXITO)
-                                </h2>
-                                <p className="text-xs text-slate-400">
-                                    Hitos de infraestructura, optimización y blindaje alcanzados por el Director Waly y Luz 01.
+                                <div className="flex items-center gap-2">
+                                    <BookOpen className="w-6 h-6 text-purple-400" />
+                                    <h2 className="text-xl font-[1000] text-white">
+                                        SINCRONÍA NEURAL CON OBSIDIAN VAULT (SEGUNDO CEREBRO)
+                                    </h2>
+                                </div>
+                                <p className="text-xs text-slate-300 mt-1">
+                                    Toda la arquitectura, directivas y expedientes están respaldados en Markdown inmutable en tu disco local.
                                 </p>
                             </div>
+                            <div className="flex items-center gap-2">
+                                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-400/50">
+                                    🟢 Servidor MCP SSE Activo
+                                </span>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {COMMAND_ACHIEVEMENTS.map(ach => {
-                                const Icon = ach.icon;
-                                return (
-                                    <div
-                                        key={ach.id}
-                                        className="p-6 rounded-3xl bg-gradient-to-b from-[#091829] to-[#050e1c] border-2 border-emerald-500/30 hover:border-emerald-400 transition-all shadow-lg flex flex-col justify-between"
-                                    >
-                                        <div>
-                                            <div className="flex items-center justify-between mb-3">
-                                                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                                                    {ach.badge}
-                                                </span>
-                                                <span className="text-[10px] font-mono text-slate-500">{ach.date}</span>
-                                            </div>
-                                            <h3 className="text-base font-black text-white mb-2 leading-snug">
-                                                {ach.title}
-                                            </h3>
-                                            <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                                                {ach.description}
-                                            </p>
-                                        </div>
-
-                                        <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                                            <span className="text-xs font-[1000] text-emerald-400 flex items-center gap-1">
-                                                <Icon size={14} /> {ach.metric}
-                                            </span>
-                                            <span className="text-[10px] font-bold text-slate-500">Consolidado</span>
-                                        </div>
+                        {/* LISTADO DE NODOS MAESTROS EN OBSIDIAN */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {[
+                                { node: 'MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2', title: 'Manifiesto Maestro Ecosistema Faro de Luz', desc: 'Los 4 pilares, plano radial y renders de Traslasierra.' },
+                                { node: 'HISTORIAL_MEJORAS_TABLERO_MAESTRO_SNC2', title: 'Historial Mejoras Tablero Maestro', desc: 'Registro de diseño widescreen, header slim y scroll fixed.' },
+                                { node: 'SUPERPODERES_AGENTICOS_SNC2_AGENT_REACH_FIRECRAWL_PLAYWRIGHT', title: 'Arsenal de Superpoderes Agénticos', desc: 'Documentación de Agent-Reach, Firecrawl y Playwright.' },
+                                { node: 'SUPERPODER_STRIX_AI_PENTESTING_FORTALEZA_DOBERMAN_SNC2', title: 'Strix-AI Pentesting & Fortaleza Doberman', desc: 'Multi-agentes Red Team para hacking ético y parches.' },
+                                { node: 'MATRIZ_MAESTRA_CONVERSACIONES_SNC2', title: 'Matriz Maestra de Conversaciones', desc: 'Indexación de Conversation IDs de Luz 01 a Luz 04.' },
+                                { node: 'TABLERO_DE_MISIONES_Y_ORDENES_SNC2', title: 'Tablero de Misiones y Órdenes', desc: 'Registro de directivas supremas emitidas por Waly.' }
+                            ].map((item, idx) => (
+                                <div key={idx} className="p-5 rounded-2xl bg-[#070c18] border border-purple-500/30 hover:border-purple-400 transition-all flex flex-col justify-between">
+                                    <div>
+                                        <span className="text-[10px] font-mono text-purple-400 font-bold block mb-1">
+                                            [[ {item.node} ]]
+                                        </span>
+                                        <h4 className="text-sm font-bold text-white mb-1">{item.title}</h4>
+                                        <p className="text-xs text-slate-400">{item.desc}</p>
                                     </div>
-                                );
-                            })}
+                                    <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
+                                        <span className="text-[9px] text-slate-500 font-mono">Bóveda Obsidian</span>
+                                        <button
+                                            onClick={() => handleCopy(`[[${item.node}]]`)}
+                                            className="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 text-xs font-bold hover:bg-purple-500/40 transition cursor-pointer flex items-center gap-1"
+                                        >
+                                            <Copy size={12} /> Copiar Nodo
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {/* ─── VISTA 1: MATRIZ DE AGENTES Y MINISTROS (12) ─── */}
-            {selectedTab === 'agentes' && (
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredAgents.map(agent => {
-                        const Icon = agent.icon;
-                        const badge = getStatusBadge(agent.status);
-                        return (
-                            <div
-                                key={agent.id}
-                                onClick={() => {
-                                    playNeonClick();
-                                    setSelectedAgent(agent);
-                                }}
-                                className="group relative p-6 rounded-3xl bg-gradient-to-b from-[#0e162c] to-[#080d1a] border-2 border-slate-800 hover:border-cyan-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+                {/* 📋 MODAL DE DETALLE DEL EXPEDIENTE DE AGENTE */}
+                {selectedAgent && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+                        <div className="w-full max-w-2xl bg-[#0b1326] border-2 border-cyan-500/50 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(6,182,212,0.3)] relative">
+                            <button
+                                onClick={() => setSelectedAgent(null)}
+                                className="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
                             >
+                                ✕
+                            </button>
+
+                            <div className="flex items-center gap-4 mb-6">
+                                <div 
+                                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-white border-2"
+                                    style={{ backgroundColor: `${selectedAgent.color}25`, borderColor: selectedAgent.color }}
+                                >
+                                    <selectedAgent.icon size={32} style={{ color: selectedAgent.color }} />
+                                </div>
                                 <div>
-                                    {/* CABECERA DE LA CARD */}
-                                    <div className="flex items-center justify-between gap-2 mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div 
-                                                className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-lg transition-transform group-hover:scale-110"
-                                                style={{ backgroundColor: `${agent.color}15`, borderColor: `${agent.color}60` }}
-                                            >
-                                                <Icon className="w-6 h-6" style={{ color: agent.color }} />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-xl font-[1000] text-white group-hover:text-cyan-300 transition-colors">
-                                                    {agent.name}
-                                                </h3>
-                                                <div className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                                                    {agent.bunkerName}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${badge.bg}`}>
-                                            {badge.label}
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-2xl font-[1000] text-white">{selectedAgent.name}</h2>
+                                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusBadge(selectedAgent.status).bg}`}>
+                                            {getStatusBadge(selectedAgent.status).label}
                                         </span>
                                     </div>
-
-                                    {/* ROL Y MISIÓN */}
-                                    <div className="text-xs font-bold text-slate-200 mb-2">
-                                        {agent.roleTitle}
-                                    </div>
-                                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed bg-[#050a14] p-2.5 rounded-xl border border-slate-800/80 mb-4">
-                                        🎯 <strong>Última Misión:</strong> {agent.lastMission}
-                                    </p>
-
-                                    {/* BARRA DE PROGRESO */}
-                                    <div className="mb-4">
-                                        <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 mb-1">
-                                            <span>Progreso Operativo</span>
-                                            <span className="text-cyan-400">{agent.progressPercentage}%</span>
-                                        </div>
-                                        <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                            <div 
-                                                className="h-full rounded-full transition-all duration-500"
-                                                style={{ 
-                                                    width: `${agent.progressPercentage}%`,
-                                                    background: `linear-gradient(90deg, ${agent.color}, #06b6d4)`
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* PIE DE CARD */}
-                                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-                                    <span className="text-slate-400 font-mono flex items-center gap-1">
-                                        🧠 {agent.notebookSources} Fuentes LM
-                                    </span>
-                                    <span className="text-cyan-400 font-black flex items-center gap-1 group-hover:underline">
-                                        Ver Expediente <ArrowUpRight size={13} />
-                                    </span>
+                                    <p className="text-xs text-slate-300 font-medium mt-0.5">{selectedAgent.roleTitle}</p>
+                                    <p className="text-[10px] text-cyan-400 font-mono">{selectedAgent.bunkerName}</p>
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
-            )}
 
-            {/* ─── VISTA 2: LIENZO TÁCTICO 3D (PROYECTOS) ─── */}
-            {selectedTab === 'lienzo' && (
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredProjects.map(proj => {
-                        const badge = getStageBadge(proj.stage);
-                        return (
-                            <div
-                                key={proj.id}
-                                onClick={() => {
-                                    playNeonClick();
-                                    setSelectedProj(proj);
-                                }}
-                                className="group relative p-6 rounded-3xl bg-gradient-to-b from-[#0e162c] to-[#080d1a] border-2 border-slate-800 hover:border-cyan-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
-                            >
-                                <div>
-                                    <div className="flex items-center justify-between gap-2 mb-3">
-                                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${badge.bg}`}>
-                                            {badge.label}
-                                        </span>
-                                        <span className="text-[10px] font-mono text-slate-500">{proj.updatedAt}</span>
-                                    </div>
-
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-1">
-                                        {proj.assignedAgent}
-                                    </div>
-                                    <h3 className="text-lg font-black text-white group-hover:text-cyan-300 transition-colors leading-snug">
-                                        {proj.title}
-                                    </h3>
-                                    <p className="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">
-                                        {proj.summary}
-                                    </p>
+                            <div className="space-y-3 text-xs">
+                                <div className="p-3 rounded-xl bg-[#060a14] border border-slate-800">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase">Skill Principal Activa</div>
+                                    <div className="font-mono text-cyan-300 mt-0.5">{selectedAgent.activeSkill}</div>
                                 </div>
 
-                                <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                                    <div className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                                        <Zap size={12} /> {proj.impactMetric}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div className="p-3 rounded-xl bg-[#060a14] border border-slate-800">
+                                        <div className="text-[10px] font-bold text-slate-500 uppercase">Nodo en Obsidian</div>
+                                        <div className="text-purple-400 font-mono font-bold mt-0.5">[[ {selectedAgent.obsidianNode} ]]</div>
                                     </div>
-                                    <span className="text-cyan-400 text-xs font-black flex items-center gap-1 group-hover:underline">
-                                        Ver <ArrowUpRight size={14} />
-                                    </span>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* ─── VISTA 3: TABLERO KANBAN DE 4 FASES ─── */}
-            {selectedTab === 'kanban' && (
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-5">
-                    {[
-                        { stage: 'obsidian', title: '1. Planificado en Obsidian', color: 'border-purple-500/40 text-purple-400 bg-purple-950/20' },
-                        { stage: 'forja', title: '2. En Forja de Código', color: 'border-blue-500/40 text-blue-400 bg-blue-950/20' },
-                        { stage: 'laboratorio', title: '3. En Laboratorio (Staging)', color: 'border-amber-500/40 text-amber-400 bg-amber-950/20' },
-                        { stage: 'produccion', title: '4. En Producción (Live)', color: 'border-emerald-500/40 text-emerald-400 bg-emerald-950/20' },
-                    ].map(col => {
-                        const colProjects = filteredProjects.filter(p => p.stage === col.stage);
-                        return (
-                            <div key={col.stage} className={`p-4 rounded-3xl border ${col.color} flex flex-col min-h-[500px]`}>
-                                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
-                                    <h4 className="text-xs font-black uppercase tracking-wider">{col.title}</h4>
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-black/60 text-white">
-                                        {colProjects.length}
-                                    </span>
-                                </div>
-
-                                <div className="space-y-3 flex-1">
-                                    {colProjects.map(p => (
-                                        <div
-                                            key={p.id}
-                                            onClick={() => { playNeonClick(); setSelectedProj(p); }}
-                                            className="p-4 rounded-2xl bg-[#090e1c] border border-slate-800 hover:border-cyan-400/50 cursor-pointer transition shadow hover:shadow-lg"
+                                    <div className="p-3 rounded-xl bg-[#060a14] border border-slate-800 flex items-center justify-between">
+                                        <div>
+                                            <div className="text-[10px] font-bold text-slate-500 uppercase">Conversation ID</div>
+                                            <div className="font-mono text-cyan-300 mt-0.5 text-[11px] truncate max-w-[180px]">
+                                                {selectedAgent.conversationId}
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleCopy(selectedAgent.conversationId)}
+                                            className="p-2 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-black transition cursor-pointer"
+                                            title="Copiar ID"
                                         >
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400 block mb-1">
-                                                {p.assignedAgent}
-                                            </span>
-                                            <h5 className="text-xs font-bold text-white mb-2">{p.title}</h5>
-                                            <p className="text-[11px] text-slate-400 line-clamp-2">{p.summary}</p>
+                                            {copiedId === selectedAgent.conversationId ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* TRANSMISOR DE DIRECTIVAS AL AGENTE */}
+                                <div className="p-4 rounded-2xl bg-gradient-to-r from-[#091024] to-[#0d1633] border border-cyan-500/40 space-y-2 mt-4">
+                                    <div className="flex items-center gap-2 text-cyan-300 font-black uppercase text-[10px] tracking-wider">
+                                        <Send size={12} />
+                                        <span>Emitir Directiva Suprema a {selectedAgent.name}</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder={`Ej: Priorizar integración en Laboratorio y pruebas con Thor...`}
+                                            value={directiveInput}
+                                            onChange={(e) => setDirectiveInput(e.target.value)}
+                                            onKeyDown={(e) => { if (e.key === 'Enter') handleSendDirective(selectedAgent.name); }}
+                                            className="flex-1 px-4 py-2 rounded-xl bg-black/60 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                                        />
+                                        <button
+                                            onClick={() => handleSendDirective(selectedAgent.name)}
+                                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition shadow flex items-center gap-1.5 cursor-pointer"
+                                        >
+                                            <Send size={13} /> Transmitir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* BOTÓN DE CIERRE */}
+                            <div className="flex items-center justify-end pt-4 border-t border-slate-800 mt-4">
+                                <button
+                                    onClick={() => setSelectedAgent(null)}
+                                    className="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-black uppercase tracking-wider hover:bg-slate-700 transition cursor-pointer"
+                                >
+                                    Cerrar Expediente
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* 📋 MODAL DE DETALLE DEL PROYECTO */}
+                {selectedProj && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+                        <div className="w-full max-w-2xl bg-[#0b1326] border-2 border-cyan-500/50 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(6,182,212,0.3)] relative">
+                            <button
+                                onClick={() => setSelectedProj(null)}
+                                className="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+                            >
+                                ✕
+                            </button>
+
+                            <div className="mb-4">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">
+                                    {selectedProj.bunkerName}
+                                </span>
+                                <h2 className="text-2xl font-[1000] text-white mt-1">
+                                    {selectedProj.title}
+                                </h2>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <span className={`px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStageBadge(selectedProj.stage).bg}`}>
+                                        {getStageBadge(selectedProj.stage).label}
+                                    </span>
+                                    <span className="text-xs text-slate-400">• Agente: <strong>{selectedProj.assignedAgent}</strong></span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 text-xs my-6">
+                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase">Resumen Táctico</div>
+                                    <div className="text-slate-200 mt-1 font-medium leading-relaxed">
+                                        {selectedProj.summary}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
+                                        <div className="text-[10px] font-bold text-slate-500 uppercase">Nodo en Obsidian</div>
+                                        <div className="text-purple-400 font-mono font-bold mt-1">[[ {selectedProj.obsidianNode} ]]</div>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex items-center justify-between">
+                                        <div>
+                                            <div className="text-[10px] font-bold text-slate-500 uppercase">Conversation ID</div>
+                                            <div className="font-mono text-cyan-300 mt-0.5 text-[11px] truncate max-w-[180px]">
+                                                {selectedProj.conversationId}
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleCopy(selectedProj.conversationId)}
+                                            className="p-2 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-black transition cursor-pointer"
+                                            title="Copiar ID"
+                                        >
+                                            {copiedId === selectedProj.conversationId ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                                <button
+                                    onClick={() => setSelectedProj(null)}
+                                    className="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-black uppercase tracking-wider hover:bg-slate-700 transition cursor-pointer"
+                                >
+                                    Cerrar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        playNeonClick();
+                                        alert(`Directiva enviada a ${selectedProj.assignedAgent}: "Priorizar avance hacia Producción"`);
+                                        setSelectedProj(null);
+                                    }}
+                                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center gap-2 cursor-pointer"
+                                >
+                                    <Zap size={14} /> Transmitir Directiva
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* 📋 MODAL DE DETALLE DE SUPERPODER & COMANDOS PRÁCTICOS */}
+                {selectedSuperpower && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+                        <div className="w-full max-w-2xl bg-[#0c0a1f] border-2 border-purple-500/60 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.35)] relative space-y-4">
+                            <button
+                                onClick={() => setSelectedSuperpower(null)}
+                                className="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+                            >
+                                <X size={16} />
+                            </button>
+
+                            <div className="flex items-center gap-3">
+                                <span className="text-4xl">{selectedSuperpower.icon}</span>
+                                <div>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedSuperpower.badgeColor}`}>
+                                        {selectedSuperpower.badge} · 🟢 ACTIVO EN RED
+                                    </span>
+                                    <h2 className="text-xl md:text-2xl font-[1000] text-white mt-1">
+                                        {selectedSuperpower.name}
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-slate-300 leading-relaxed">
+                                {selectedSuperpower.summary}
+                            </p>
+
+                            {/* Stack y Documentación */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                <div className="p-3 rounded-xl bg-black/50 border border-slate-800">
+                                    <span className="text-[9px] font-mono text-slate-500 uppercase">Stack Tecnológico:</span>
+                                    <p className="text-cyan-300 font-mono font-bold mt-0.5">{selectedSuperpower.techStack}</p>
+                                </div>
+                                <div className="p-3 rounded-xl bg-black/50 border border-slate-800">
+                                    <span className="text-[9px] font-mono text-slate-500 uppercase">Documentación en Obsidian:</span>
+                                    <p className="text-purple-400 font-mono font-bold mt-0.5">[[ {selectedSuperpower.obsidianDoc} ]]</p>
+                                </div>
+                            </div>
+
+                            {/* Comandos y Directivas de Ejemplo en Lenguaje Natural */}
+                            <div className="p-4 rounded-2xl bg-[#060412] border border-purple-500/30 space-y-2">
+                                <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider block">
+                                    💬 Ejemplos de Directivas en Lenguaje Natural (Copiá y dale la orden al Agente):
+                                </span>
+                                <div className="space-y-2">
+                                    {selectedSuperpower.exampleDirectives.map((cmd, cidx) => (
+                                        <div key={cidx} className="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs text-white/90">
+                                            <span className="italic">"{cmd}"</span>
+                                            <button
+                                                onClick={() => handleCopy(cmd)}
+                                                className="p-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/40 text-purple-300 transition cursor-pointer"
+                                                title="Copiar Comando"
+                                            >
+                                                {copiedId === cmd ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
-            )}
 
-            {/* ─── VISTA 4: SINCRONÍA OBSIDIAN ─── */}
-            {selectedTab === 'obsidian' && (
-                <div className="max-w-7xl mx-auto p-6 md:p-8 rounded-3xl bg-[#090e1c] border border-purple-500/30">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-400/40 flex items-center justify-center">
-                            <BookOpen className="w-6 h-6 text-purple-400" />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-black text-white">Red Neuronal & Segundo Cerebro (Obsidian Vault)</h3>
-                            <p className="text-xs text-slate-400">
-                                Cada nodo forjado por el Director Waly y Luz 01 está sincronizado en tiempo real en la bóveda local.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {[
-                            { node: 'DIRECTOR_WALY_OMEGA', desc: 'Comandante Supremo y Autorizaciones de Producción' },
-                            { node: 'LUZ_01_ORQUESTADORA', desc: 'Nodo HUB Central y Orquestación de Agentes' },
-                            { node: 'BUNKER_TACTICO_Y_ESTRATEGICO_SNC2', desc: 'Estado Mayor y Matriz de 12 Agentes' },
-                            { node: 'CONSTITUCION_AGENTICA_SNC2', desc: 'Reglas y Jerarquías de los 12 Búnkeres' },
-                            { node: 'LABORATORIO_SHOPDIGITAL', desc: 'Registro de Despliegues en Staging' },
-                            { node: 'SPEC_KIT_MATT_POCOCK_ADAPTACION_SNC2', desc: 'Guardrails Estrictos y Tipos TypeScript' },
-                            { node: 'SUPERPOWERS_FUSION_MAESTRA_SNC2', desc: 'Estándar del 94% y Directivas Multi-LLM' },
-                            { node: 'ECOSISTEMA_SKILLS_SH_Y_FORJA_SNC2', desc: 'Conexión a la CLI de Skills.sh' },
-                            { node: 'DOSSIER_TECNOLOGICO_INVERSORES_SHOPDIGITAL', desc: 'Documento Ejecutivo para Inversores y CTOs' },
-                            { node: 'SALA_DE_GUERRA_Y_LIENZO_TACTICO_LUZ01', desc: 'Mapa Mental y Planificación de Frentes' }
-                        ].map(n => (
-                            <div key={n.node} className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex flex-col justify-between">
-                                <div>
-                                    <div className="text-[10px] font-mono text-purple-400 font-black mb-1">[[ {n.node} ]]</div>
-                                    <p className="text-xs text-slate-300">{n.desc}</p>
-                                </div>
-                                <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-500">
-                                    <span className="text-emerald-400">🟢 Sincronizado</span>
-                                    <span className="font-mono">Vault Local</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* 🗺️ MAPA MENTAL NEÓN INTEGRADO (NÚCLEO CENTRAL & 6 FRENTES) */}
-            <NeonMindmapDiagram />
-
-            {/* 📋 MODAL DE EXPEDIENTE DEL AGENTE (MELISA, ARI, BRUNO, ETC.) */}
-            {selectedAgent && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-                    <div className="w-full max-w-2xl bg-[#0b1326] border-2 border-cyan-500/50 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(6,182,212,0.35)] relative max-h-[90vh] overflow-y-auto">
-                        <button
-                            onClick={() => setSelectedAgent(null)}
-                            className="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
-                        >
-                            ✕
-                        </button>
-
-                        {/* CABECERA DEL MODAL */}
-                        <div className="flex items-center gap-4 mb-6">
-                            <div 
-                                className="w-16 h-16 rounded-2xl flex items-center justify-center border-2 shadow-lg"
-                                style={{ backgroundColor: `${selectedAgent.color}20`, borderColor: selectedAgent.color }}
-                            >
-                                <selectedAgent.icon className="w-8 h-8" style={{ color: selectedAgent.color }} />
-                            </div>
-                            <div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">
-                                    {selectedAgent.bunkerName}
-                                </span>
-                                <h2 className="text-2xl md:text-3xl font-[1000] text-white">
-                                    {selectedAgent.name}
-                                </h2>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <span className={`px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusBadge(selectedAgent.status).bg}`}>
-                                        {getStatusBadge(selectedAgent.status).label}
-                                    </span>
-                                    <span className="text-xs text-slate-400 font-bold">{selectedAgent.roleTitle}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* DETALLES Y EXPEDIENTE */}
-                        <div className="space-y-4 text-xs my-6">
-                            {/* ÚLTIMA MISIÓN */}
-                            <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
-                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">🎯 Misión & Planificación Activa</div>
-                                <div className="text-slate-200 mt-1 font-medium leading-relaxed">
-                                    {selectedAgent.lastMission}
-                                </div>
-                            </div>
-
-                            {/* GRILLA DE HERRAMIENTAS Y NOTEBOOKLM */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {/* NOTEBOOKLM */}
-                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex flex-col justify-between">
-                                    <div>
-                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">🧠 Cuaderno NotebookLM</div>
-                                        <div className="text-cyan-300 font-bold mt-1 flex items-center gap-1">
-                                            <span>{selectedAgent.notebookSources} Fuentes Auditadas</span>
-                                        </div>
-                                    </div>
-                                    <a
-                                        href={selectedAgent.notebookUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="mt-3 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition"
-                                    >
-                                        Abrir en NotebookLM <ExternalLink size={12} />
-                                    </a>
-                                </div>
-
-                                {/* SUPERPODER / SKILL */}
-                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex flex-col justify-between">
-                                    <div>
-                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">⚡ Superpoder Activo (Skill)</div>
-                                        <div className="text-amber-300 font-bold mt-1 text-[11px]">
-                                            {selectedAgent.activeSkill}
-                                        </div>
-                                    </div>
-                                    <div className="text-[10px] text-slate-500 mt-2 font-mono">
-                                        Bóveda: [[ {selectedAgent.obsidianNode} ]]
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* CONVERSATION ID */}
-                            <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex items-center justify-between">
-                                <div>
-                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Conversation ID (Antigravity)</div>
-                                    <div className="font-mono text-cyan-300 mt-0.5 text-[11px] truncate max-w-[280px]">
-                                        {selectedAgent.conversationId}
-                                    </div>
-                                </div>
+                            {/* Footer Modal */}
+                            <div className="flex items-center justify-end pt-2 border-t border-slate-800">
                                 <button
-                                    onClick={() => handleCopy(selectedAgent.conversationId)}
-                                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-black transition cursor-pointer text-[10px] font-bold flex items-center gap-1"
+                                    onClick={() => setSelectedSuperpower(null)}
+                                    className="px-5 py-2.5 rounded-xl bg-purple-600 text-white font-[1000] uppercase text-xs tracking-wider hover:bg-purple-500 transition cursor-pointer"
                                 >
-                                    {copiedId === selectedAgent.conversationId ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                                    <span>{copiedId === selectedAgent.conversationId ? 'Copiado' : 'Copiar'}</span>
+                                    Entendido, Cerrar
                                 </button>
                             </div>
-
-                            {/* CAJA DE TRANSMISIÓN DE DIRECTIVA DIRECTA */}
-                            <div className="p-4 rounded-2xl bg-gradient-to-r from-[#0c1836] to-[#081026] border-2 border-cyan-500/30">
-                                <div className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                    <Zap size={14} className="text-cyan-400" />
-                                    <span>Emitir Directiva Suprema a {selectedAgent.name}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        placeholder={`Ej: Priorizar integración en Laboratorio y pruebas con Thor...`}
-                                        value={directiveInput}
-                                        onChange={(e) => setDirectiveInput(e.target.value)}
-                                        onKeyDown={(e) => { if (e.key === 'Enter') handleSendDirective(selectedAgent.name); }}
-                                        className="flex-1 px-4 py-2 rounded-xl bg-black/60 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-                                    />
-                                    <button
-                                        onClick={() => handleSendDirective(selectedAgent.name)}
-                                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition shadow flex items-center gap-1.5 cursor-pointer"
-                                    >
-                                        <Send size={13} /> Transmitir
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* BOTÓN DE CIERRE */}
-                        <div className="flex items-center justify-end pt-4 border-t border-slate-800">
-                            <button
-                                onClick={() => setSelectedAgent(null)}
-                                className="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-black uppercase tracking-wider hover:bg-slate-700 transition cursor-pointer"
-                            >
-                                Cerrar Expediente
-                            </button>
                         </div>
                     </div>
-                </div>
-            )}
-
-            {/* 📋 MODAL DE DETALLE DEL PROYECTO */}
-            {selectedProj && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-                    <div className="w-full max-w-2xl bg-[#0b1326] border-2 border-cyan-500/50 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(6,182,212,0.3)] relative">
-                        <button
-                            onClick={() => setSelectedProj(null)}
-                            className="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
-                        >
-                            ✕
-                        </button>
-
-                        <div className="mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">
-                                {selectedProj.bunkerName}
-                            </span>
-                            <h2 className="text-2xl font-[1000] text-white mt-1">
-                                {selectedProj.title}
-                            </h2>
-                            <div className="flex items-center gap-2 mt-2">
-                                <span className={`px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStageBadge(selectedProj.stage).bg}`}>
-                                    {getStageBadge(selectedProj.stage).label}
-                                </span>
-                                <span className="text-xs text-slate-400">• Agente: <strong>{selectedProj.assignedAgent}</strong></span>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3 text-xs my-6">
-                            <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
-                                <div className="text-[10px] font-bold text-slate-500 uppercase">Resumen Táctico</div>
-                                <div className="text-slate-200 mt-1 font-medium leading-relaxed">
-                                    {selectedProj.summary}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800">
-                                    <div className="text-[10px] font-bold text-slate-500 uppercase">Nodo en Obsidian</div>
-                                    <div className="text-purple-400 font-mono font-bold mt-1">[[ {selectedProj.obsidianNode} ]]</div>
-                                </div>
-                                <div className="p-4 rounded-2xl bg-[#060a14] border border-slate-800 flex items-center justify-between">
-                                    <div>
-                                        <div className="text-[10px] font-bold text-slate-500 uppercase">Conversation ID</div>
-                                        <div className="font-mono text-cyan-300 mt-0.5 text-[11px] truncate max-w-[180px]">
-                                            {selectedProj.conversationId}
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => handleCopy(selectedProj.conversationId)}
-                                        className="p-2 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-black transition cursor-pointer"
-                                        title="Copiar ID"
-                                    >
-                                        {copiedId === selectedProj.conversationId ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-                            <button
-                                onClick={() => setSelectedProj(null)}
-                                className="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-black uppercase tracking-wider hover:bg-slate-700 transition cursor-pointer"
-                            >
-                                Cerrar
-                            </button>
-                            <button
-                                onClick={() => {
-                                    playNeonClick();
-                                    alert(`Directiva enviada a ${selectedProj.assignedAgent}: "Priorizar avance hacia Producción"`);
-                                    setSelectedProj(null);
-                                }}
-                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center gap-2 cursor-pointer"
-                            >
-                                <Zap size={14} /> Transmitir Directiva
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {/* Fin de los Modales */}
+                )}
             </div>
         </div>
     );
