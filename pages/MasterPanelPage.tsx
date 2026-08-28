@@ -410,7 +410,7 @@ const MasterPanelPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white pb-28 relative overflow-x-hidden selection:bg-cyan-500/30 master-panel-container">
+        <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#020617] text-white pb-32 selection:bg-cyan-500/30 master-panel-container">
             <style>{`
                 @keyframes pulseGlow {
                     0%, 100% { filter: drop-shadow(0 0 15px ${hexToRgba(zoneColor, 0.4)}); }
@@ -455,31 +455,48 @@ const MasterPanelPage: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/50 to-[#020617]/90"></div>
             </div>
 
-            {/* CABECERA PRINCIPAL STICKY */}
+            {/* CABECERA PRINCIPAL SLIM STICKY */}
             <div 
-                className="backdrop-blur-xl border-b pt-10 pb-6 px-4 sm:px-8 relative z-10 sticky top-0 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                className="w-full backdrop-blur-xl border-b py-2.5 sm:py-3 px-4 sm:px-8 relative z-30 sticky top-0 shadow-[0_4px_25px_rgba(0,0,0,0.6)]"
                 style={{ 
-                    background: 'rgba(24,24,27,0.85)',
+                    background: 'rgba(15,18,28,0.88)',
                     borderBottomColor: hexToRgba(zoneColor, 0.3)
                 }}
             >
-                <div className="max-w-7xl mx-auto flex items-center justify-between relative">
-                    <div role="button" tabIndex={0} onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} className="hover:opacity-70 cursor-pointer flex items-center gap-1.5" style={{ color: zoneColor }}>
-                        <ChevronLeft size={24} />
-                        <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Volver a Home</span>
+                <div className="max-w-7xl mx-auto flex items-center justify-between">
+                    {/* Botón Volver */}
+                    <div 
+                        role="button" 
+                        tabIndex={0} 
+                        onClick={() => { playNeonClick(); navigate(`/${townId}/home`); }} 
+                        className="hover:opacity-80 active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 transition-all group"
+                        style={{ color: zoneColor }}
+                    >
+                        <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/80 group-hover:text-white hidden sm:inline">Volver a Home</span>
                     </div>
 
-                    <div className="flex flex-col items-center">
-                        <Terminal size={34} className="mb-1.5" style={{ color: zoneColor, animation: 'pulseGlow 4s infinite alternate' }} />
-                        <h1 className="text-xl sm:text-2xl font-[1000] uppercase tracking-[0.25em] text-center drop-shadow-md" style={{ color: zoneColor, textShadow: `0 0 20px ${hexToRgba(zoneColor, 0.5)}` }}>
-                            Tablero Maestro
-                        </h1>
-                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.35em] mt-1 text-center" style={{ color: zoneColor, textShadow: `0 0 15px ${hexToRgba(zoneColor, 0.8)}` }}>
-                            {zoneName.toUpperCase()} · CENTRO DE COMANDO GENERAL
-                        </p>
+                    {/* Título Central Compacto y Afinado */}
+                    <div className="flex items-center gap-2.5">
+                        <Terminal size={18} style={{ color: zoneColor, animation: 'pulseGlow 3s infinite alternate' }} className="hidden sm:block" />
+                        <div className="text-center sm:text-left">
+                            <h1 
+                                className="text-sm sm:text-base font-[1000] uppercase tracking-[0.25em] drop-shadow-md leading-none" 
+                                style={{ color: zoneColor, textShadow: `0 0 15px ${hexToRgba(zoneColor, 0.6)}` }}
+                            >
+                                Tablero Maestro
+                            </h1>
+                            <p 
+                                className="text-[8px] font-black uppercase tracking-[0.3em] mt-0.5 text-center sm:text-left" 
+                                style={{ color: hexToRgba(zoneColor, 0.75) }}
+                            >
+                                {zoneName.toUpperCase()} · CENTRO DE COMANDO GENERAL
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="hidden sm:block">
+                    {/* Badge Doberman */}
+                    <div className="flex items-center gap-2">
                         <DobermanBadge />
                     </div>
                 </div>
