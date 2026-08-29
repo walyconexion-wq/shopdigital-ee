@@ -338,12 +338,15 @@ const MasterPanelPage: React.FC = () => {
             agent: 'Luz 02',
             role: 'Ingeniera de Infraestructura y Ecotecnología',
             tag: 'Infraestructura & Domo',
-            badgeColor: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
-            borderColor: 'border-cyan-500/50 hover:border-cyan-400',
-            glowColor: 'shadow-[0_0_25px_rgba(6,182,212,0.25)]',
-            bgGradient: 'from-cyan-950/60 via-slate-900 to-black/80',
+            badgeColor: 'border-emerald-400 bg-emerald-500/20 text-emerald-300',
+            borderColor: 'border-emerald-500/50 hover:border-emerald-400',
+            glowColor: 'shadow-[0_0_25px_rgba(16,185,129,0.25)]',
+            bgGradient: 'from-emerald-950/60 via-slate-900 to-black/80',
             icon: '🏔️⚡',
             location: 'Montaña Traslasierra, Córdoba (1 Ha + Pozo 80m)',
+            liveWebUrl: 'https://comunidad-faro-de-luz.vercel.app',
+            bunkerWebUrl: 'https://comunidad-faro-de-luz.vercel.app/bunker.html',
+            githubUrl: 'https://github.com/walyconexion-wq/comunidad-faro-de-luz',
             features: [
                 'Domo Geodésico Central (Frecuencia 4/5)',
                 '6 Módulos Habitacionales Contenedores 40ft High Cube',
@@ -352,7 +355,7 @@ const MasterPanelPage: React.FC = () => {
                 'Centro de Formación Comunitario y Tecnológico'
             ],
             conversationId: '164bdd4c-1f22-41b0-af68-c4b3f558316d',
-            obsidianNote: '[[MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2.md]]',
+            obsidianNote: '[[05_DESPLIEGUE_PRODUCCION_VERCEL.md]]',
             path: '/region/traslasierra'
         },
         {
@@ -1052,6 +1055,43 @@ const MasterPanelPage: React.FC = () => {
                             </div>
                         </div>
 
+                        {/* Enlaces de Producción en Vivo (si existen) */}
+                        {selectedInstBunker.liveWebUrl && (
+                            <div className="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-2">
+                                <span className="text-[8px] font-mono text-emerald-400 uppercase tracking-widest block">
+                                    🟢 Ecosistema en Producción (Vercel & Supabase):
+                                </span>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <a
+                                        href={selectedInstBunker.liveWebUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="py-2 px-3 rounded-xl bg-emerald-500 text-black font-[1000] text-[9.5px] uppercase tracking-wider hover:brightness-110 flex items-center justify-center gap-1.5 transition text-center"
+                                    >
+                                        <ExternalLink size={12} /> Web Pública
+                                    </a>
+                                    <a
+                                        href={selectedInstBunker.bunkerWebUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="py-2 px-3 rounded-xl bg-slate-900 border border-emerald-500/50 text-emerald-300 font-[1000] text-[9.5px] uppercase tracking-wider hover:bg-emerald-950 flex items-center justify-center gap-1.5 transition text-center"
+                                    >
+                                        <Lock size={12} /> Búnker 5 Modos
+                                    </a>
+                                </div>
+                                {selectedInstBunker.githubUrl && (
+                                    <a
+                                        href={selectedInstBunker.githubUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="py-1.5 px-3 rounded-xl bg-black/60 border border-slate-700 text-slate-300 font-mono text-[8.5px] hover:text-white flex items-center justify-center gap-1.5 transition text-center"
+                                    >
+                                        <Sparkles size={11} className="text-cyan-400" /> Repositorio GitHub (CI/CD)
+                                    </a>
+                                )}
+                            </div>
+                        )}
+
                         {/* Botones de Acción */}
                         <div className="pt-2 flex items-center gap-3">
                             <button
@@ -1063,7 +1103,7 @@ const MasterPanelPage: React.FC = () => {
                                 className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black font-[1000] uppercase text-[10px] tracking-widest hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
                             >
                                 <ExternalLink size={14} />
-                                <span>Ingresar al Búnker</span>
+                                <span>Ingresar al Búnker Zonal</span>
                             </button>
                             <button
                                 onClick={() => { playNeonClick(); setSelectedInstBunker(null); }}

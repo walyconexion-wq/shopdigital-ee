@@ -8,7 +8,8 @@ import {
     BookOpen, Network, RefreshCw, Plus, FileText, Lock, Search,
     Send, UserCheck, CheckCheck, FolderKanban, Crown, Trophy,
     ScrollText, Award, Lightbulb, Rocket, Milestone, ShieldAlert,
-    Calendar, Eye, HelpCircle, ChevronRight, X, DollarSign, Sliders
+    Calendar, Eye, HelpCircle, ChevronRight, X, DollarSign, Sliders,
+    Mountain, Heart, Church
 } from 'lucide-react';
 import { playNeonClick } from '../utils/audio';
 import { NeuralNetworkCanvas } from '../components/NeuralNetworkCanvas';
@@ -245,6 +246,21 @@ const COMMAND_ACHIEVEMENTS: CommandAchievement[] = [
 
 // 📅 BITÁCORA MAESTRA HISTÓRICA POR FECHAS Y HORAS
 const CHRONOGRAM_ENTRIES: ChronogramEntry[] = [
+    {
+        id: 'log-00-faro-prod',
+        title: '🎉 Despliegue en Producción Comunidad Faro de Luz: Scrollytelling 60 FPS + Búnker Privado + Supabase + GitHub + Vercel',
+        timestamp: '2026-08-28 20:12:00',
+        dateFormatted: 'Viernes 28 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 02 (Ingeniería Ecotecnológica) & Director Waly',
+        pillar: 'Comunidad Faro de Luz',
+        pillarBadge: 'border-emerald-400 bg-emerald-500/20 text-emerald-300',
+        summary: 'Puesta en marcha de la nave nodriza: Landing con 240 fotogramas Scrollytelling Lerp a 60 FPS, widget Asistente Luz-02, Convocatoria de Fundadores con Supabase PostgreSQL (São Paulo) y Búnker Privado (/bunker.html) con 5 centros de control.',
+        impact: 'Plataforma comunal 100% viva en Vercel con CI/CD automatizado y arquitectura lista para replicar en Fundación y Ministerio',
+        obsidianNode: 'COMUNIDAD_FARO_DE_LUZ/05_DESPLIEGUE_PRODUCCION_VERCEL',
+        stage: 'produccion',
+        tags: ['Faro de Luz', 'Producción', 'Supabase', 'Vercel', 'Scrollytelling', 'Búnker 5 Modos']
+    },
     {
         id: 'log-01',
         title: 'Afinamiento de Cabecera Slim & Habilitación de Scroll Suave en Tablero Maestro',
@@ -1049,10 +1065,75 @@ const SWARM_AGENTS: SwarmAgent[] = [
         progressPercentage: 100,
         color: '#38bdf8',
         icon: Cpu
+    },
+    {
+        id: 'luz-02-faro',
+        name: 'LUZ 02',
+        roleTitle: 'Ingeniera de Infraestructura Ecotecnológica & Backend',
+        bunkerName: 'Búnker Institucional: Comunidad Faro de Luz',
+        frente: 'infraestructura',
+        status: 'produccion',
+        conversationId: '164bdd4c-1f22-41b0-af68-c4b3f558316d',
+        notebookUrl: 'https://github.com/walyconexion-wq/comunidad-faro-de-luz',
+        notebookSources: 35,
+        activeSkill: 'scrollytelling-canvas-60fps + supabase-postgresql + vercel-cicd',
+        obsidianNode: 'COMUNIDAD_FARO_DE_LUZ/05_DESPLIEGUE_PRODUCCION_VERCEL',
+        lastMission: 'Despliegue de web pública con Scrollytelling 60FPS y Búnker 5 Modos con Supabase',
+        progressPercentage: 96,
+        color: '#10b981',
+        icon: Mountain
+    },
+    {
+        id: 'luz-03-fundacion',
+        name: 'LUZ 03',
+        roleTitle: 'Directora de Impacto Social & Logística Territorial',
+        bunkerName: 'Búnker Institucional: Fundación Valle de Luz',
+        frente: 'expansion',
+        status: 'desarrollo',
+        conversationId: '5349f922-7249-4299-8fad-cd74e4975ed6',
+        notebookUrl: 'https://notebooklm.google.com/notebook/5349f922-7249-4299-8fad-cd74e4975ed6',
+        notebookSources: 24,
+        activeSkill: 'logistica-hilux-territorial + personeria-juridica-ar',
+        obsidianNode: 'ESTRUCTURA_LEGAL_ORGANICA_Y_PERSONERIA_FUNDACION_VALLE_DE_LUZ_SNC2',
+        lastMission: 'Mapeo territorial de parajes y comedores; preparación para recibir receta de Faro de Luz',
+        progressPercentage: 80,
+        color: '#f59e0b',
+        icon: Heart
+    },
+    {
+        id: 'luz-04-ministerio',
+        name: 'LUZ 04',
+        roleTitle: 'Ingeniera de Audio, Streaming Satelital & Asuntos de Culto',
+        bunkerName: 'Búnker Institucional: Ministerio Caminos de Fe',
+        frente: 'infraestructura',
+        status: 'desarrollo',
+        conversationId: 'f1d60dcd-0c5c-453f-a69a-33411d8e377f',
+        notebookUrl: 'https://notebooklm.google.com/notebook/f1d60dcd-0c5c-453f-a69a-33411d8e377f',
+        notebookSources: 20,
+        activeSkill: 'webrtc-audio-streaming + fichero-nacional-cultos',
+        obsidianNode: 'ARQUITECTURA_LEGAL_Y_OPERATIVA_MINISTERIO_CAMINOS_DE_FE_SNC2',
+        lastMission: 'Configuración del rider de audio para cultos de campaña y preparación para clonación institucional',
+        progressPercentage: 80,
+        color: '#c084fc',
+        icon: Church
     }
 ];
 
 const STRATEGIC_PROJECTS: StrategicProject[] = [
+    {
+        id: 'proj-00-faro',
+        title: 'Despliegue Web Scrollytelling 60FPS + Búnker 5 Modos + Supabase',
+        bunkerId: 'luz-02-faro',
+        bunkerName: 'Búnker Institucional: Comunidad Faro de Luz',
+        assignedAgent: 'LUZ 02 (FARO_DE_LUZ)',
+        frente: 'infraestructura',
+        stage: 'produccion',
+        obsidianNode: 'COMUNIDAD_FARO_DE_LUZ/05_DESPLIEGUE_PRODUCCION_VERCEL',
+        conversationId: '164bdd4c-1f22-41b0-af68-c4b3f558316d',
+        summary: 'Landing Scrollytelling de 240 fotogramas Lerp, Asistente Luz-02, Convocatoria de Fundadores con Supabase y Búnker privado (/bunker.html) con CI/CD Vercel.',
+        impactMetric: '100% Producción Live en Vercel',
+        updatedAt: '28 Ago 2026'
+    },
     {
         id: 'proj-01',
         title: 'Interfaces 1, 2 y 3 de la Home (Modo Caramelo 3D)',
