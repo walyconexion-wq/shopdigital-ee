@@ -88,8 +88,8 @@ export interface ChronogramEntry {
 export interface EcosystemSuperpower {
     id: string;
     name: string;
-    category: 'inteligencia' | 'seguridad' | 'scraping' | 'automatizacion' | 'infraestructura' | 'diseno';
-    status: 'activo' | 'conectado' | 'desplegado';
+    category: 'inteligencia' | 'seguridad' | 'scraping' | 'automatizacion' | 'infraestructura' | 'diseno' | 'apis_gratis' | 'vercel_skills';
+    status: 'activo' | 'conectado' | 'desplegado' | 'disponible';
     icon: string;
     badge: string;
     badgeColor: string;
@@ -652,6 +652,250 @@ const ECOSYSTEM_SUPERPOWERS: EcosystemSuperpower[] = [
             'Luz 04, prepará la consola de audio para el streaming del culto de campaña.'
         ],
         techStack: 'WebSockets + Service Workers + Web App Manifest + Audio Web API'
+    },
+    // ⚡ VERCEL AGENT SKILLS (SKILLS.SH DIRECTORY)
+    {
+        id: 'sp-v01',
+        name: 'Vercel Web Design Guidelines',
+        category: 'vercel_skills',
+        status: 'activo',
+        icon: '🎨',
+        badge: 'Diseño Visual Élite Vercel',
+        badgeColor: 'border-cyan-400 bg-cyan-500/20 text-cyan-300',
+        summary: 'Directivas de diseño visual de Vercel Labs: espaciados proporcionales, jerarquía tipográfica Geist, accesibilidad WCAG y paletas de alto impacto.',
+        keyFeatures: [
+            'Estándar estético oficial de Vercel y Silicon Valley',
+            'Reglas de contraste, tipografía y micro-espaciado',
+            'Evita UI descuidada o con elementos desalineados'
+        ],
+        assignedAgents: ['Ari (UI/UX)', 'Luz 02 (Faro de Luz)', 'Luz 03 (Fundación)'],
+        obsidianDoc: 'PROTOCOLO_MAESTRO_INYECCION_SKILLS_VERCEL_SNC2',
+        exampleDirectives: [
+            'Ari, aplicá las guidelines de Vercel Web Design en la portada de comercios.',
+            'Luz 03, estructurá la maqueta de la Fundación siguiendo el espaciado Geist.'
+        ],
+        techStack: 'Vercel Labs + Geist Design System + Tailwind CSS'
+    },
+    {
+        id: 'sp-v02',
+        name: 'Vercel React Best Practices',
+        category: 'vercel_skills',
+        status: 'activo',
+        icon: '⚡',
+        badge: 'Performance React 60 FPS',
+        badgeColor: 'border-emerald-400 bg-emerald-500/20 text-emerald-300',
+        summary: 'Reglas de oro para optimizar el ciclo de vida en React: erradicación de re-renders innecesarios, lazy-loading y fluidez absoluta en celulares.',
+        keyFeatures: [
+            'Renderizado optimizado a 60 FPS constantes en móviles',
+            'Gestión inteligente de hooks (useMemo, useCallback)',
+            'Prevención de fugas de memoria y sobrecarga en el DOM'
+        ],
+        assignedAgents: ['Ari (Frontend)', 'Luz 01 (Forja)', 'Luz 03 (Fundación)'],
+        obsidianDoc: 'PROTOCOLO_MAESTRO_INYECCION_SKILLS_VERCEL_SNC2',
+        exampleDirectives: [
+            'Ari, auditá el catálogo de comercios con la skill de React Best Practices.',
+            'Luz 02, optimizá las animaciones de scroll con React Best Practices.'
+        ],
+        techStack: 'React 19 + Next.js Engine + Profiler'
+    },
+    {
+        id: 'sp-v03',
+        name: 'Vercel Composition Patterns',
+        category: 'vercel_skills',
+        status: 'activo',
+        icon: '🧩',
+        badge: 'Componentes Desacoplados',
+        badgeColor: 'border-purple-400 bg-purple-500/20 text-purple-300',
+        summary: 'Patrones de arquitectura atómica de Vercel Labs para crear componentes limpios, reutilizables y sin prop-drilling innecesario.',
+        keyFeatures: [
+            'Patrón Compound Components y Slot Pattern',
+            'Separación quirúrgica de lógica de negocio y presentación',
+            'Código limpio 100% testeable y escalable'
+        ],
+        assignedAgents: ['Luz 01 (Orquestadora)', 'Bruno (Backend)', 'Luz 02'],
+        obsidianDoc: 'SPEC_KIT_MATT_POCOCK_ADAPTACION_SNC2',
+        exampleDirectives: [
+            'Luz 01, desacoplá los modales del Tablero Maestro usando composition patterns.',
+            'Bruno, estructurá los widgets de telemetría de forma atómica.'
+        ],
+        techStack: 'Compound Components + Slot Pattern + TypeScript'
+    },
+    {
+        id: 'sp-v04',
+        name: 'Anthropic Frontend Design & QA',
+        category: 'vercel_skills',
+        status: 'activo',
+        icon: '💎',
+        badge: 'Estética Premium & Micro-UX',
+        badgeColor: 'border-pink-400 bg-pink-500/20 text-pink-300',
+        summary: 'Habilidad de Anthropic para generar experiencias táctiles refinadas, tarjetas neumórficas 3D, feedback háptico y maquetado de alta gama.',
+        keyFeatures: [
+            'Efectos de vidrio esmerilado (Glassmorphism) optimizados para GPU',
+            'Paletas caramelo y crema de alta legibilidad bajo el sol',
+            'Validaciones interactivas en formularios de captación'
+        ],
+        assignedAgents: ['Ari (UI/UX)', 'Luz 03 (Fundación)', 'Luz 04 (Ministerio)'],
+        obsidianDoc: 'CATALOGO_SUPERPODERES_SKILLS_SH_SNC2',
+        exampleDirectives: [
+            'Ari, aplicá la skill de Anthropic Frontend para pulir los botones táctiles.',
+            'Luz 03, diseñá el formulario de donaciones con estética premium.'
+        ],
+        techStack: 'Anthropic AI + CSS Neumorphism + Framer Motion'
+    },
+    {
+        id: 'sp-v05',
+        name: 'Matt Pocock Zero-Slop & Diagnosing Bugs',
+        category: 'vercel_skills',
+        status: 'activo',
+        icon: '🛡️',
+        badge: 'TypeScript Estricto 0 Slop',
+        badgeColor: 'border-blue-400 bg-blue-500/20 text-blue-300',
+        summary: 'Metodología quirúrgica de Matt Pocock para revisión estricta de código, erradicación de tipos "any" y diagnóstico sistemático de bugs.',
+        keyFeatures: [
+            'Compilación obligatoria con 0 errores TypeScript',
+            'Guardrails contra código basura (Anti-Slop 94%)',
+            'Diagnóstico y parcheo de errores sin efectos colaterales'
+        ],
+        assignedAgents: ['Luz 01 (Forja)', 'Thor & Vortex (QA)', 'Javi (Mantenimiento)'],
+        obsidianDoc: 'SPEC_KIT_MATT_POCOCK_ADAPTACION_SNC2',
+        exampleDirectives: [
+            'Thor, corré una revisión estricta con la skill de Matt Pocock en los tipos de datos.',
+            'Javi, diagnosticá y aislá la inconsistencia en el estado de autenticación.'
+        ],
+        techStack: 'TypeScript 5.x + Static Guardrails + ESLint'
+    },
+    // 🆓 BÓVEDA DE APIS GRATUITAS & LLM ZERO-COST
+    {
+        id: 'sp-api01',
+        name: 'Groq Cloud LPU (350 t/s)',
+        category: 'apis_gratis',
+        status: 'activo',
+        icon: '⚡',
+        badge: 'Inferencia Ultra Rápida $0.00',
+        badgeColor: 'border-amber-400 bg-amber-500/20 text-amber-300',
+        summary: 'Inferencia en microprocesadores LPU a velocidad extrema (350 tokens/seg) para Llama 3.3 70B y transcripción gratuita con Whisper-large-v3.',
+        keyFeatures: [
+            'Respuestas instantáneas en 0.2s para el Asistente en vivo',
+            'Transcripción gratuita de audios de WhatsApp y postulantes',
+            'Cuota gratis permanente de 14,400 solicitudes por día'
+        ],
+        assignedAgents: ['Luz 02 (Asistente Faro)', 'Luz 04 (Ministerio Audio)', 'Bruno'],
+        obsidianDoc: 'GUIA_MAESTRA_APIS_GRATIS_Y_RECURSOS_LLM_SNC2',
+        exampleDirectives: [
+            'Luz 02, conectá el widget de atención en vivo al endpoint de Groq LPU.',
+            'Luz 04, transcribí el audio del culto con Groq Whisper-large-v3.'
+        ],
+        techStack: 'Groq LPU Engine + Llama 3.3 70B + Whisper Large v3'
+    },
+    {
+        id: 'sp-api02',
+        name: 'Google AI Studio (Gemini 2M Context)',
+        category: 'apis_gratis',
+        status: 'activo',
+        icon: '🧠',
+        badge: 'Ventana Gigante 2M $0.00',
+        badgeColor: 'border-sky-400 bg-sky-500/20 text-sky-300',
+        summary: 'Capa gratuita de Gemini 2.0 Flash y Gemini 1.5 Pro con ventana de contexto de 2 millones de tokens para digerir PDFs, libros y balances completos.',
+        keyFeatures: [
+            '1,500 solicitudes por día sin tarjeta de crédito',
+            'Lectura y digestión de expedientes de 500 páginas de una sola pasada',
+            'Análisis multimodal de fotos de parajes, domos y planos'
+        ],
+        assignedAgents: ['Luz 03 (Fundación)', 'Luz 01 (Matriz)', 'Mateo (Finanzas)'],
+        obsidianDoc: 'GUIA_MAESTRA_APIS_GRATIS_Y_RECURSOS_LLM_SNC2',
+        exampleDirectives: [
+            'Luz 03, pasale el balance completo de donaciones a Gemini Studio y extraé el resumen.',
+            'Mateo, analizá el PDF de presupuesto del domo geodésico con Gemini 1.5 Pro.'
+        ],
+        techStack: 'Google AI Studio + Gemini 2.0 Flash + 2M Context'
+    },
+    {
+        id: 'sp-api03',
+        name: 'OpenRouter Free Tier (:free)',
+        category: 'apis_gratis',
+        status: 'activo',
+        icon: '🌐',
+        badge: 'DeepSeek & Qwen Gratis',
+        badgeColor: 'border-teal-400 bg-teal-500/20 text-teal-300',
+        summary: 'Enrutador universal con acceso a modelos gratuitos (DeepSeek-R1:free, Qwen-2.5-72B:free, Llama-3.3-70B:free) para tareas masivas.',
+        keyFeatures: [
+            'Compatibilidad 1:1 con el estándar de OpenAI',
+            'Generación masiva de contenido comercial a costo $0.00',
+            'Fallback automático a múltiples proveedores en la nube'
+        ],
+        assignedAgents: ['Melisa (Marketing 24 Rubros)', 'Bruno (Datastore)', 'Luz 04'],
+        obsidianDoc: 'GUIA_MAESTRA_APIS_GRATIS_Y_RECURSOS_LLM_SNC2',
+        exampleDirectives: [
+            'Melisa, generá 50 publicaciones para carnicerías usando DeepSeek-R1:free.',
+            'Luz 04, redactá el devocional semanal con Qwen-2.5-72B gratis.'
+        ],
+        techStack: 'OpenRouter API + OpenAI Compatible Format'
+    },
+    {
+        id: 'sp-api04',
+        name: 'Pollinations.ai (Flux & SDXL sin Key)',
+        category: 'apis_gratis',
+        status: 'activo',
+        icon: '🖼️',
+        badge: 'Imágenes & Texto Sin Key',
+        badgeColor: 'border-rose-400 bg-rose-500/20 text-rose-300',
+        summary: 'Generador multimodal 100% gratuito sin registro ni API Key. Genera imágenes Flux.1 Schnell y texto directamente por llamada a URL.',
+        keyFeatures: [
+            'Cero configuración y cero claves de API requeridas',
+            'Generación de imágenes fotorrealistas vía REST URL inmediata',
+            'Mockups rápidos de productos y logos para comercios'
+        ],
+        assignedAgents: ['Ari (Banners y Flyers)', 'Melisa (Publicidad)', 'Luz 03'],
+        obsidianDoc: 'GUIA_MAESTRA_APIS_GRATIS_Y_RECURSOS_LLM_SNC2',
+        exampleDirectives: [
+            'Ari, generá una imagen de banner para una pizzería artesanal con Pollinations Flux.',
+            'Melisa, creá un flyer promocional para el sorteo VIP en Ezeiza.'
+        ],
+        techStack: 'Pollinations REST API + Flux.1 Schnell + SDXL'
+    },
+    {
+        id: 'sp-api05',
+        name: 'Cloudflare Workers AI',
+        category: 'apis_gratis',
+        status: 'activo',
+        icon: '☁️',
+        badge: '10k Neuronas/Día en Edge',
+        badgeColor: 'border-orange-400 bg-orange-500/20 text-orange-300',
+        summary: 'Red global de inferencia serverless en el edge con 10,000 neuronas diarias gratuitas para Llama 3.3 y DeepSeek R1 Distill.',
+        keyFeatures: [
+            'Ejecución en más de 300 ciudades del mundo con latencia mínima',
+            'Validación y filtrado de datos antes de entrar a Firebase',
+            'Micro-servicios serverless autónomos sin costo de hosting'
+        ],
+        assignedAgents: ['Bruno (Datastore)', 'Thor (SecOps)', 'Javi'],
+        obsidianDoc: 'GUIA_MAESTRA_APIS_GRATIS_Y_RECURSOS_LLM_SNC2',
+        exampleDirectives: [
+            'Bruno, enrutá la sanitización de cupones a través de Cloudflare Workers AI.',
+            'Thor, verificá la seguridad de los payloads con Llama 3.3 en el edge.'
+        ],
+        techStack: 'Cloudflare Edge + Workers AI Engine + REST'
+    },
+    {
+        id: 'sp-api06',
+        name: 'Nvidia NIM (Inference Microservices)',
+        category: 'apis_gratis',
+        status: 'activo',
+        icon: '🦅',
+        badge: '1,000 Créditos de Potencia',
+        badgeColor: 'border-lime-400 bg-lime-500/20 text-lime-300',
+        summary: 'Microservicios de alta potencia de Nvidia con Llama 3.1 405B y Nemotron 70B para auditorías pesadas de ciberseguridad.',
+        keyFeatures: [
+            '1,000 créditos gratuitos de inferencia de nivel corporativo',
+            'Capacidad de razonamiento sobre arquitecturas gigantescas',
+            'Detección de vulnerabilidades complejas en conjunto con Strix-AI'
+        ],
+        assignedAgents: ['Thor & Vortex (SecOps)', 'Luz 01 (Dirección)'],
+        obsidianDoc: 'GUIA_MAESTRA_APIS_GRATIS_Y_RECURSOS_LLM_SNC2',
+        exampleDirectives: [
+            'Thor, auditá la arquitectura del búnker con Nvidia NIM Llama 405B.',
+            'Luz 01, evaluá la escalabilidad del sistema con Nemotron 70B.'
+        ],
+        techStack: 'Nvidia NIM API + Llama 3.1 405B + Nemotron'
     }
 ];
 
@@ -1420,9 +1664,9 @@ export const BunkerTacticoPage: React.FC = () => {
                             {[
                                 { id: 'comandancia', label: '👑 Comandancia & Directivas', icon: Crown },
                                 { id: 'cronograma', label: '📅 Cronograma Histórico', icon: Clock },
-                                { id: 'superpoderes', label: '⚡ Bóveda de Superpoderes', icon: Zap },
+                                { id: 'superpoderes', label: '⚡ Garage de Superpoderes (21)', icon: Zap },
                                 { id: 'tokens', label: '🔋 Telemetría de Tokens & Modelos', icon: Activity },
-                                { id: 'agentes', label: '👥 Matriz de Agentes (12)', icon: Users },
+                                { id: 'agentes', label: '👥 Matriz de Agentes (15)', icon: Users },
                                 { id: 'lienzo', label: '🧠 Lienzo Táctico 3D', icon: Network },
                                 { id: 'kanban', label: '📊 Tablero Kanban', icon: FolderKanban },
                                 { id: 'obsidian', label: '📖 Sincronía Obsidian', icon: BookOpen },
@@ -1750,34 +1994,36 @@ export const BunkerTacticoPage: React.FC = () => {
                 {/* ─── VISTA 2: ⚡ BÓVEDA DEL ARSENAL DE SUPERPODERES (10 CAPACIDADES) ─── */}
                 {selectedTab === 'superpoderes' && (
                     <div className="max-w-7xl mx-auto space-y-6 animate-fadeIn">
-                        {/* Cabecera del Arsenal */}
+                        {/* Cabecera del Arsenal / Garage */}
                         <div className="p-6 rounded-3xl bg-gradient-to-r from-[#170e28] via-[#0d091a] to-[#170e28] border-2 border-purple-500/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <div className="flex items-center gap-2">
                                     <Zap className="w-6 h-6 text-purple-400 animate-pulse" />
                                     <h2 className="text-xl font-[1000] text-white">
-                                        BÓVEDA DEL ARSENAL DE SUPERPODERES (10 CAPACIDADES ACTIVAS)
+                                        GARAGE DEL ARSENAL DE SUPERPODERES (21 CAPACIDADES ACTIVAS)
                                     </h2>
                                 </div>
                                 <p className="text-xs text-slate-400 mt-1">
-                                    Catálogo de herramientas avanzadas inyectadas para lectura web, pentesting, QA automático y orquestación.
+                                    Armario de herramientas conectadas: Vercel Agent Skills (skills.sh), APIs de IA Gratuitas ($0.00), scraping, pentesting y frameworks.
                                 </p>
                             </div>
                             <span className="px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 self-start md:self-auto">
-                                🟢 {filteredSuperpowers.length} / 10 ACTIVOS EN RED
+                                🟢 {filteredSuperpowers.length} / 21 ACTIVOS EN RED
                             </span>
                         </div>
 
-                        {/* Filtros de Categoría de Superpoderes */}
+                        {/* Filtros de Categoría del Garage */}
                         <div className="flex flex-wrap items-center gap-2 bg-[#090d1a] p-2 rounded-2xl border border-slate-800">
                             {[
-                                { id: 'todos', label: 'Todos (10)' },
-                                { id: 'scraping', label: '👁️ Ojos Web & Scraping (2)' },
-                                { id: 'seguridad', label: '🛡️ Ciberseguridad & Red Team (2)' },
-                                { id: 'automatizacion', label: '🎭 QA & Automatización (2)' },
-                                { id: 'inteligencia', label: '🧠 IA & Cerebro Obsidian (2)' },
-                                { id: 'infraestructura', label: '🧱 Infraestructura & Zonas (1)' },
-                                { id: 'diseno', label: '🎨 Neumorfismo & Temas (1)' }
+                                { id: 'todos', label: 'Todos (21)' },
+                                { id: 'vercel_skills', label: '⚡ Vercel Agent Skills (5)' },
+                                { id: 'apis_gratis', label: '🆓 APIs Gratuitas & LLM (6)' },
+                                { id: 'scraping', label: '👁️ Scraping Web (2)' },
+                                { id: 'seguridad', label: '🛡️ Red Team & SecOps (2)' },
+                                { id: 'automatizacion', label: '🎭 QA & Auto (2)' },
+                                { id: 'inteligencia', label: '🧠 Cerebro Obsidian (2)' },
+                                { id: 'infraestructura', label: '🧱 Infraestructura (1)' },
+                                { id: 'diseno', label: '🎨 Neumorfismo (1)' }
                             ].map(cat => (
                                 <button
                                     key={cat.id}
