@@ -247,6 +247,21 @@ const COMMAND_ACHIEVEMENTS: CommandAchievement[] = [
 // 📅 BITÁCORA MAESTRA HISTÓRICA POR FECHAS Y HORAS
 const CHRONOGRAM_ENTRIES: ChronogramEntry[] = [
     {
+        id: 'log-00-faro-branding',
+        title: '✨ Consagración de Dominio Oficial farodeluz.dpdns.org, Favicon Dorado y Google Brand Card en WhatsApp y Web',
+        timestamp: '2026-08-31 12:00:00',
+        dateFormatted: 'Lunes 31 de Agosto, 2026',
+        month: 'Agosto 2026',
+        agent: 'Luz 02 (Infraestructura), Agente Gemy & Director Waly',
+        pillar: 'Comunidad Faro de Luz',
+        pillarBadge: 'border-emerald-400 bg-emerald-500/20 text-emerald-300',
+        summary: 'Puesta en marcha del dominio propio https://farodeluz.dpdns.org en DigitalPlat con verificación TXT de Vercel. Integración del Isotipo Vectorial del Faro Dorado y haz cyan como Favicon de pestaña, logo en barra superior y tarjeta Open Graph de previsualización rica en WhatsApp y Google.',
+        impact: 'Identidad de marca premium 100% verificada en vivo en WhatsApp, Chrome y Edge lista para replicar en Fundación y Ministerio',
+        obsidianNode: 'COMUNIDAD_FARO_DE_LUZ/07_MANUAL_IDENTIDAD_BRANDING_Y_FAVICON',
+        stage: 'produccion',
+        tags: ['Faro de Luz', 'Dominio Propio', 'Favicon', 'Branding 3D', 'WhatsApp OpenGraph', 'Producción']
+    },
+    {
         id: 'log-00-faro-prod',
         title: '🎉 Despliegue en Producción Comunidad Faro de Luz: Scrollytelling 60 FPS + Búnker Privado + Supabase + GitHub + Vercel',
         timestamp: '2026-08-28 20:12:00',
