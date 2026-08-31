@@ -344,8 +344,8 @@ const MasterPanelPage: React.FC = () => {
             bgGradient: 'from-emerald-950/60 via-slate-900 to-black/80',
             icon: '🏔️⚡',
             location: 'Montaña Traslasierra, Córdoba (1 Ha + Pozo 80m)',
-            liveWebUrl: 'https://comunidad-faro-de-luz.vercel.app',
-            bunkerWebUrl: 'https://comunidad-faro-de-luz.vercel.app/bunker.html',
+            liveWebUrl: 'https://farodeluz.dpdns.org',
+            bunkerWebUrl: 'https://farodeluz.dpdns.org/bunker.html',
             githubUrl: 'https://github.com/walyconexion-wq/comunidad-faro-de-luz',
             features: [
                 'Domo Geodésico Central (Frecuencia 4/5)',

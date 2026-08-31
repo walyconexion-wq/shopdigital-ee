@@ -1374,9 +1374,9 @@ const STRATEGIC_PROJECTS: StrategicProject[] = [
         stage: 'produccion',
         obsidianNode: 'COMUNIDAD_FARO_DE_LUZ/05_DESPLIEGUE_PRODUCCION_VERCEL',
         conversationId: '164bdd4c-1f22-41b0-af68-c4b3f558316d',
-        summary: 'Landing Scrollytelling de 240 fotogramas Lerp, Asistente Luz-02, Convocatoria de Fundadores con Supabase y Búnker privado (/bunker.html) con CI/CD Vercel.',
-        impactMetric: '100% Producción Live en Vercel',
-        updatedAt: '28 Ago 2026'
+        summary: 'Landing Scrollytelling de 240 fotogramas Lerp, Asistente Luz-02, Convocatoria con Supabase, Búnker privado (/bunker.html) y Dominio Oficial https://farodeluz.dpdns.org.',
+        impactMetric: '100% Producción en farodeluz.dpdns.org',
+        updatedAt: '30 Ago 2026'
     },
     {
         id: 'proj-01',
