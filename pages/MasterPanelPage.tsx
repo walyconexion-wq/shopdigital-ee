@@ -370,6 +370,9 @@ const MasterPanelPage: React.FC = () => {
             bgGradient: 'from-amber-950/60 via-stone-900 to-black/80',
             icon: '🤝📦',
             location: 'Valle de Traslasierra (Parajes y Comedores)',
+            liveWebUrl: 'https://fundacion-valle-de-luz.vercel.app',
+            bunkerWebUrl: 'https://fundacion-valle-de-luz.vercel.app/bunker.html',
+            githubUrl: 'https://github.com/walyconexion-wq/fundacion-valle-de-luz-',
             features: [
                 'Asistencia Directa a Familias en Vulnerabilidad',
                 'Soporte y Cadena de Suministro a Comedores Comunitarios',
@@ -378,7 +381,7 @@ const MasterPanelPage: React.FC = () => {
                 'Talleres de Oficios Digitales y Ecotecnología'
             ],
             conversationId: '5349f922-7249-4299-8fad-cd74e4975ed6',
-            obsidianNote: '[[MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2.md]]',
+            obsidianNote: '[[FUNDACION_VALLE_DE_LUZ/02_PLAN_DESPLIEGUE_Y_CONEXION_EXTERNA.md]]',
             path: `/${townId}/red-comercial/descuentos`
         },
         {
@@ -393,6 +396,9 @@ const MasterPanelPage: React.FC = () => {
             bgGradient: 'from-purple-950/60 via-zinc-900 to-black/80',
             icon: '🙏✨',
             location: 'Altar de Montaña & Misiones Regionales',
+            liveWebUrl: 'https://ministerio-caminos-de-fe.vercel.app',
+            bunkerWebUrl: 'https://ministerio-caminos-de-fe.vercel.app/bunker.html',
+            githubUrl: 'https://github.com/walyconexion-wq/-ministerio-caminos-de-fe',
             features: [
                 'Cultos de Campaña en Plazas y Parajes con Sonido Portátil',
                 'Comunión y Red de Jóvenes de Adoración',
@@ -401,7 +407,7 @@ const MasterPanelPage: React.FC = () => {
                 'Personería Jurídica / Fichero Nacional de Culto'
             ],
             conversationId: 'f1d60dcd-0c5c-453f-a69a-33411d8e377f',
-            obsidianNote: '[[MANIFIESTO_MAESTRO_ECOSISTEMA_FARO_DE_LUZ_SNC2.md]]',
+            obsidianNote: '[[MINISTERIO_CAMINOS_DE_FE/01_PLAN_DESPLIEGUE_Y_CONEXION_EXTERNA.md]]',
             path: `/${townId}/director/transmision-en-vivo`
         }
     ];
